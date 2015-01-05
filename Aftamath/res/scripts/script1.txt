@@ -1,0 +1,62 @@
+flags: 9
+
+Script 1
+lockPlayer
+SetSpeaker this
+text "This is a test for individual scripts./l~Perhaps I should enclude a tool to automatically/llimit the amount of text is written per/lline and per page to simplify things.
+text "And this is a test of a second page of text./lit doesn't matter, but I remember when I was/lscripting fo pokemon and there was an/lescape code for new pages.
+text "Should I do that?
+SetChoice YesNo
+Choice 1
+text "I'll think about implementing it into/lwhat I already have.
+setScript 2
+end
+Choice 2
+text "Yeah, maybe it's not such a good idea./lI mean, I already have something implemented to/ldo just that.
+SetSpeaker 1
+text "Something good will happen once it's/lall put together and working, though!
+SetSpeaker this
+text "True.~ We can only hope for the best.
+end
+endChoice
+done
+
+Script 3
+SetSpeaker this
+faceplayer 1
+text false "Look over there.
+wait 2
+focusCamera 1
+lockplayer
+pause
+unfocus
+faceplayer this
+text "That guy is a robber. He'll kill you.
+lowerdialog
+faceplayer 1
+focus 1
+action 1 8
+faceobject this 1
+SetSpeaker 1
+text "Don't think I cant hear you guys/lyapping over there!~ I'm not/lstupid!
+action 1 10
+done
+
+Script 2
+lockplayer
+if PlayerGender = female
+SetSpeaker 1
+text "You are a female.
+movePlayer -10
+else
+SetSpeaker this
+text "You are a male.
+movePlayer 25
+focusCamera 1
+endIf
+done
+
+
+text "hi
+done
+done

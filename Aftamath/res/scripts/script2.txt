@@ -1,0 +1,20 @@
+flags: 0
+
+Script 1
+lockplayer
+SetSpeaker partner
+
+zoom set 4
+
+value set love 2
+
+if love >= 2
+text "Hey bae!~/lI love you!
+endIf
+if love = 0
+text "Hey /player.~ What's up?
+endIf
+if love < 0
+text "Don't talk to me."
+endIf
+done

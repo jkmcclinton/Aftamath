@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
+  <image source="Tiledtest.png" width="1152" height="648"/>
+ </tileset>
+ <layer name="background" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt1leMVVUARuE7hd6URIygEMUKUhTQKCCh997kAYiIEkEQURSkCVhCZ4beVYpRWkBFKSpIU6IPomAoUhUEVAIKBJgBl8kJOSHnjInJZMx1reTLv+dt9tkvN5EwMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM/vvNiQlkRiKYRiOEXgVI1Py+j/7f7aZ774FW7EN2/ElvsIOfI1vfJtrXeRbXMLl6zYL2cHfV3A1kJKaSKQiDenIh/yhLYCCKITCKIKiKIbiKIEbcCNK5rA3oVQObk7N6y+XO9XlXvVQHw3QMGIboXGgKZqhOVqgJVqFtjXaoC3aoT06oCM6oTMeR5d/0BXdctA9Sd9jDPcai3EYjwkROxGTAhnIxBRMxTRMD+0MzMQszMYczMU8zMcCvIW38Q4WxpwXYQkWx+y7Sfoe33KvnfgO32NXxO7GD4E92It92I8fcSC0B3EIh3EER/ETfsYxHMcvOIGTOBVz/hW/47eYPZ2k73FLWiJRGmVwK26L2LIoF7gdd6A87sRduDu09+Be3IcKqIj7UQmVUQVV8QAeRLWYc3U8hBox+3BaXn+53OkJ7tUDT6InnorYp9Er8Ax6ow+eRV/0C3kO/fE8BuAFvIiBeAkvYxAG4xUMiTkPxXAMi9kRSfoe73Gv97EUy7A8YldgZWAVVuMDfIiPsCbkY3yCtViH9diAT/EZPsdGbMIX2Bxz3oJt2Bqz25P0Pc5wr7P4A3/iXMSex4XARVzCZWQhG1dCrv79ndL5XYxUpCEd+ZAfBVAQhVAYRWLORVEcxWK2RHpef7nc6RHu9ShqohZqR+xjqBOoi3qojwZoiEYhjdEETdEMzdECLdEKrdEGbdEO7WPOHdAJHWO2c5K+x0juNQqj8Rpej9g38GZgDMZiHMZjAiaGTMJkZCATUzAV0zAdMzATszAbc2LOczEf82J2QZK+h5mZmZmZ2b/pLxcw7pA=
+  </data>
+ </layer>
+ <layer name="ground" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt1FkuBVEYhVGluwxDz1D0DEPPUPQMQ89Q9MzEfrgST/c83CMRWSv5kkrVzv9YPT0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD3Nak39aX+NJAGfzwPddi02u+Hu7zz/dztnVb7e6c7v7GpaTbNpfm0kBbTUlpOK2nVpripaT8dpMN0lI7TSTpNZ+ncprip6TE9pef0kl7TW3pPH+nTpripaSQ/yNE0lsbTRJpMU2k6zTQ2pU1Na7m3njbSZtpK22kn7aa9xqa0qeki9y7TVbpON+k23aX79NDYlDb8X19LzPdO
+  </data>
+ </layer>
+ <layer name="foreground" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt1rsNwjAUBdCkZhNgGhgFpoEp+INgGlgEI4iUInZoHCnWOdItrHct252rCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKM1koE7ueSmWA3Vyz0uxHaiTe16K10Cd3PNSzOr/O/NEN9Zp1l3ntLuxe6T2l2jV885Fq7NOdGOdZt11zmf2rL6J3SO1v0T3nnduWp1HohvrNOuucz6z6S+xe6T2AwAA47AL//l9yCHkGHIKOYdcQq4ht3qcnbF6A1MtQ5Y=
+  </data>
+ </layer>
+ <objectgroup name="warps" width="100" height="100">
+  <object name="bank" x="620" y="1398" width="37" height="73"/>
+ </objectgroup>
+</map>
