@@ -1,10 +1,9 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import states.Play;
-import main.Game;
 import handlers.Entity;
 import handlers.Vars;
+import main.Game;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -33,7 +32,7 @@ public class SpeechBubble extends Entity {
 		center = new Vector2(x/PPM, y/PPM);
 		v = new Vector2(center.x - owner.getPosition().x, center.y - owner.getPosition().y);
 		
-		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("speechBubble"), width*2, height*2)[ID - 1];
+		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("speechBubble"), width, height)[ID - 1];
 		animation.setFrames(sprites[sprites.length - 1], Vars.ACTION_ANIMATION_RATE*2);
 		animation.setAction(sprites, sprites.length, false, 1, Vars.ACTION_ANIMATION_RATE);
 	}
@@ -80,7 +79,7 @@ public class SpeechBubble extends Entity {
 	public void create(){
 		//hitbox
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((width-2)/PPM, (height)/PPM);
+		shape.setAsBox((rw-2)/PPM, (rh)/PPM);
 		
 		bdef.position.set(x/PPM, y/PPM);
 		bdef.type = BodyType.KinematicBody;

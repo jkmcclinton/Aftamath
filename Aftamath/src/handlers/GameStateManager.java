@@ -1,10 +1,11 @@
 package handlers;
 
 import java.util.ArrayDeque;
+
 import main.Game;
-import states.GameState;
-import states.Play;
-import states.Title;
+import main.GameState;
+import main.Play;
+import main.Title;
 
 public class GameStateManager {
 
@@ -21,8 +22,8 @@ public class GameStateManager {
 	public GameStateManager(Game game) {
 		this.game = game;
 		gameStates = new ArrayDeque<GameState>();
-		pushState(TITLE);
-//		pushState(PLAY);
+//		pushState(TITLE);
+		pushState(PLAY);
 		gameStates.peek().create();
 	}
 

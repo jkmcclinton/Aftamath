@@ -12,6 +12,7 @@ public class MyInputProcessor extends InputAdapter {
 		if(k == Keys.D || k == Keys.RIGHT) MyInput.setKey(MyInput.RIGHT, true);
 		if(k == Keys.SPACE) MyInput.setKey(MyInput.JUMP, true);
 		if(k == Keys.Q || k == Keys.CONTROL_RIGHT) MyInput.setKey(MyInput.INTERACT, true);
+//		if(k == Keys.SHIFT_LEFT || k == Keys.NUMPAD_0) MyInput.setKey(MyInput.ATTACK, true);
 		if(k == Keys.R || k == Keys.NUMPAD_1) MyInput.setKey(MyInput.USE, true);
 		if(k == Keys.ESCAPE) MyInput.setKey(MyInput.PAUSE, true);
 		if(k == Keys.ENTER) MyInput.setKey(MyInput.ENTER, true);
@@ -33,6 +34,7 @@ public class MyInputProcessor extends InputAdapter {
 		if(k == Keys.D || k == Keys.RIGHT) MyInput.setKey(MyInput.RIGHT, false);
 		if(k == Keys.SPACE) MyInput.setKey(MyInput.JUMP, false);
 		if(k == Keys.Q || k == Keys.CONTROL_RIGHT) MyInput.setKey(MyInput.INTERACT, false);
+//		if(k == Keys.SHIFT_LEFT || k == Keys.NUMPAD_0) MyInput.setKey(MyInput.ATTACK, false);
 		if(k == Keys.R || k == Keys.NUMPAD_1) MyInput.setKey(MyInput.USE, false);
 		if(k == Keys.ESCAPE) MyInput.setKey(MyInput.PAUSE, false);
 		if(k == Keys.ENTER) MyInput.setKey(MyInput.ENTER, false);

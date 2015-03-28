@@ -11,8 +11,6 @@ conditions are checked to set initial object event
 interaction
 player loads object's script
 
-urWiNg3R5
-
 /l: new line
 ~: pause
 

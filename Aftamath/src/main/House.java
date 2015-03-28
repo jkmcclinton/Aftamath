@@ -23,6 +23,7 @@ public class House {
 		
 		texture = new Texture(Gdx.files.internal(type + ".png"));
 		sprite = new Sprite(texture);
+		sprite.getColor();
 	}
 	
 	public String getType(){

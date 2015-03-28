@@ -7,8 +7,8 @@ import handlers.Vars;
 import java.text.NumberFormat;
 
 import main.Game;
-import states.GameState;
-import states.Play;
+import main.GameState;
+import main.Play;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;

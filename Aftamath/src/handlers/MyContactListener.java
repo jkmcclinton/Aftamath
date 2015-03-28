@@ -85,10 +85,12 @@ public class MyContactListener implements ContactListener {
 		}
 		
 		if(typeB.equals("interact") && !fa.isSensor() && entA.isInteractable){
-			((Mob) entB).setInteractable(entA);
-			if(entB instanceof Player) 
-				new SpeechBubble(entA, entA.getPosition().x*Vars.PPM + 6, entA.height + 5  +
-					entA.getPosition().y*Vars.PPM, 1);
+//			if(entB.getScript()!=null){
+				((Mob) entB).setInteractable(entA);
+				if(entB instanceof Player) 
+					new SpeechBubble(entA, entA.getPosition().x*Vars.PPM + 6, entA.rh   +
+							entA.getPosition().y*Vars.PPM, 1);
+//			}
 		}
 		
 		if (typeA.equals("warp")) {

@@ -6,7 +6,7 @@ public class FadingSpriteBatch extends SpriteBatch {
 
 	private float fadeTime = 0, fadeInterval;
 	private int fadeType;
-	private boolean fading;
+	public boolean fading;
 
 	public static final float ALPHA = .99607843f;
 	public static final int FADE_OUT = -1;

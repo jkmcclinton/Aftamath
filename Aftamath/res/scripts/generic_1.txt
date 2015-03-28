@@ -1,0 +1,10 @@
+flags: 0
+
+Script 1
+lockplayer
+SetSpeaker this
+
+zoom set 4
+text "Hello.
+
+done

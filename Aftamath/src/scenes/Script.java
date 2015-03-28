@@ -11,13 +11,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.Stack;
 
-import states.Play;
-import characters.NPC;
+import main.Play;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import entities.Mob;
+import entities.NPC;
 import entities.Player;
 import entities.SpeechBubble;
 
@@ -157,6 +157,13 @@ public class Script {
 				if (obj instanceof NPC)
 					((NPC) obj).setState(NPC.FACEOBJECT, obj);
 				else obj.faceObject(e);
+			break;
+		case "forcefollow":
+			if (player.getPartner()!=null){
+				if (player.getPartner().getName()!=null){
+					player.stopPartnerDisabled = Boolean.parseBoolean(lastArg(line));
+				}
+			}
 			break;
 		case "resetstate":
 			obj = findObject(convertToNum(line));

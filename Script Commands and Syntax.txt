@@ -10,7 +10,7 @@ action:
 	action # usually goes from 1 - 9
 		1 - walk
 		2 - jump
-		3 - fall (doesn't actually fall)
+XXXXXXXXXXXXXXXX3 - fall (doesn't actually make the object fall)
 		4 - flinch
 		5 - die
 		6 - power
@@ -55,6 +55,10 @@ face/faceObject:
 	makes a mob face a specific object; does not affect non-mob objects
 	NPCs will have their state set to FACEOBJECT
 	face(object, focus object#)
+forcefollow:
+	changes whether or not the player's partner is forced to follow the player
+	if the player doesn't have a partner, this does nothing
+	forcefollow(true/false)
 resetState:
 	sets the NPC's state to its default state; does not affect non-NPC objects
 	resetState(object#)
@@ -95,7 +99,7 @@ setSpeaker:
 	if object isn't found, the face is not visible
 	setSpeaker(object/object)
 
-	known: partner, narrator
+	known: partner, narrator, this
 setScript:
 	sets the read location for the object's script
 	!!does not change the source file!!

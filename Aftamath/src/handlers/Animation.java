@@ -3,8 +3,6 @@ package handlers;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-import entities.Mob;
-
 public class Animation {
 
 	private float time;

@@ -3,9 +3,11 @@ package handlers;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import main.Play;
 import scenes.Scene;
-import states.Play;
+
 import com.badlogic.gdx.physics.box2d.World;
+
 import entities.Player;
 
 public class Warp extends Entity{

@@ -2,8 +2,8 @@ package handlers;
 
 import static handlers.Vars.PPM;
 import main.Game;
+import main.Play;
 import scenes.Script;
-import states.Play;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,11 +11,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import entities.Player;
 
@@ -38,7 +38,7 @@ public class Entity{
 	public boolean controlled;
 	public float x;
 	public float y;
-	public int height, width,  controlledAction;
+	public int height, width, rw, rh, controlledAction;
 	protected int actionTypes;
 	protected Vector2 goal;
 	protected Texture texture;
@@ -50,9 +50,12 @@ public class Entity{
 		this.x = x2;
 		this.y = y2;
 		
+		this.width = w; 
+		this.height = h;
+		
 		//units in pixels, measures radius of image
-		this.width = w/Vars.OBJ_SCALE; 
-		this.height = h/Vars.OBJ_SCALE;
+		this.rw = w/2; 
+		this.rh = h/2;
 		
 		loadSprite();
 	}
@@ -62,7 +65,7 @@ public class Entity{
 		texture = Game.res.getTexture(ID);
 		
 		if (texture != null){
-			TextureRegion[] sprites = TextureRegion.split(texture, width*2, height*2)[0];
+			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[0];
 			setDefaultAnimation(sprites);
 		}
 	}
@@ -74,7 +77,7 @@ public class Entity{
 	}
 	
 	public void render(SpriteBatch sb) {
-		sb.draw(animation.getFrame(), body.getPosition().x * PPM - width, body.getPosition().y * PPM - height);
+		sb.draw(animation.getFrame(), body.getPosition().x * PPM - rw, body.getPosition().y * PPM - rh);
 	}
 	
 	public void doAction(int action){
@@ -87,6 +90,7 @@ public class Entity{
 	
 	public void setPlayState(Play gs){
 		this.gs = gs;
+		setPlayer(gs.player);
 		this.world = gs.getWorld();
 		if (script != null) script.setPlayState(gs);
 	}
@@ -112,7 +116,10 @@ public class Entity{
 	public String getID() { return ID; }
 	public int getSceneID(){ return sceneID; }
 	public void setSceneID(int ID){ sceneID = ID; }
-
+	public void setPosition(Vector2 location){
+		x=location.x;
+		y=location.y;
+	}
 	public Vector2 getPosition(){ return body.getPosition(); }
 	public Body getBody() { return body; }
 
@@ -133,7 +140,7 @@ public class Entity{
 	}
 
 	public void facePlayer(){
-		float dx = player.getPosition().x - body.getPosition().x;
+		float dx = player.getPosition().x - getPosition().x;
 		if(dx > 0 && direction) changeDirection();
 		else if (dx < 0 && !direction) changeDirection();
 	}
@@ -141,18 +148,24 @@ public class Entity{
 	public void faceObject(Entity obj){
 		if (obj != null)
 			if(obj.getBody() != null){
-				float dx = obj.getPosition().x - body.getPosition().x;
+				float dx = obj.getPosition().x - getPosition().x;
 				if(dx > 0 && direction) changeDirection();
 				else if (dx < 0 && !direction) changeDirection();
 			}
 	}
 	
 	public boolean getDirection(){ return direction; }
+
+	public int compareTo(Entity e){
+		if (layer < e.layer) return 1;
+		if (layer > e.layer) return -1;
+		return 0;
+	}
 	
 	public void create(){
 		//hitbox
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((width-2)/PPM, (height)/PPM);
+		shape.setAsBox((rw-2)/PPM, (rh)/PPM);
 		
 		bdef.position.set(x/PPM, y/PPM);
 		bdef.type = BodyType.DynamicBody;

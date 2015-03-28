@@ -4,11 +4,11 @@ import static handlers.Vars.PPM;
 import handlers.Entity;
 import handlers.Vars;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import main.Game;
-import states.GameState;
-import states.Play;
+import main.Play;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
@@ -18,11 +18,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -32,32 +36,34 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import entities.Ground;
 import entities.Mob;
+import entities.NPC;
 import entities.Player;
 
 public abstract class Scene {
 
 	private Scene previous;
 	private Scene next;
-	protected ArrayList<Entity> entities;
-	protected ArrayList<PointLight> lights;
 	public Script script;
 	public int width;
 	public int height;
 	public String title;
+	public Music DEFAULT_SONG;
 	
+	private OrthogonalTiledMapRenderer tmr, tmr2;
+	
+	protected Vector2 spawnPoint;
+	protected ArrayList<Entity> entities;
+	protected ArrayList<PointLight> lights;
 	protected TiledMap tileMap;
 	protected Texture background;
 	protected Texture foreground;
-	private OrthogonalTiledMapRenderer tmr, tmr2;
-	protected static Vector2 gravity;
-	public Music DEFAULT_SONG;
-	
 	protected World world;
 	protected RayHandler rayHandler;
+	protected static Vector2 gravity;
 	protected static BodyDef bdef = new BodyDef();
 	protected static FixtureDef fdef = new FixtureDef();
 	
-	protected Scene(World world, Scene previous, Scene next, String bg, String fg, String ID, Play p, Player player, int w, int h) {
+	protected Scene(World world, Scene previous, Scene next, String ID, Play p, Player player, int w, int h) {
 		this.world = world;
 		this.previous = previous;
 		this.next = next;
@@ -69,10 +75,11 @@ public abstract class Scene {
 		width = w;
 		height = h;
 		
-		tileMap = new TmxMapLoader().load("res/maps/untitled.tmx");
+		tileMap = new TmxMapLoader().load("res/maps/street.tmx");
 		//tileMap = new TmxMapLoader().load("res/maps/" + title + ".tmx");
 		tmr = new OrthogonalTiledMapRenderer(tileMap, p.getSpriteBatch());
-		background = new Texture(Gdx.files.internal("res/images/scenes/" + bg + ".png"));
+//		background = new Texture(Gdx.files.internal("res/images/scenes/" + ID + "bg.png"));
+		background = new Texture(Gdx.files.internal("res/images/scenes/BGtest.png"));
 		//foreground = new Texture(Gdx.files.internal(fg));
 	}
 	
@@ -116,16 +123,6 @@ public abstract class Scene {
 	public TiledMap getTileMap(){
 		return tileMap;
 	}
-	
-	public Mob getMob(String name) {
-		for (Entity e : entities)
-			if(e instanceof Mob){
-				Mob m = (Mob) e;
-				if(m.getName().equals(name))
-					return m;
-			}
-		return null;
-	}
 
 	@SuppressWarnings("unused")
 	public void create(Play p) {
@@ -148,6 +145,53 @@ public abstract class Scene {
 		Color color = Color.YELLOW;
 		lights.add(new PointLight(rayHandler, Vars.LIGHT_RAYS, color, distance, 0, 0 ));
 		
+		
+		MapObjects objects = tileMap.getLayers().get("objects").getObjects();
+		for(MapObject object : objects) {
+		    if (object instanceof RectangleMapObject) {
+		        Rectangle rect = ((RectangleMapObject) object).getRectangle();
+		        
+		        Object o = object.getProperties().get("NPC");
+		        if(o!=null) {
+		        	String l = object.getProperties().get("Layer", String.class);
+		        	String ID = object.getProperties().get("NPC", String.class);
+		        	String sceneID = object.getProperties().get("ID", String.class);
+		        	String name = object.getProperties().get("Name", String.class);
+		        	String state = object.getProperties().get("State", String.class);
+		        	String script = object.getProperties().get("Script", String.class);
+		        	
+		        	if (l.toLowerCase().equals("back")) l = "3";
+		        	else if(l.toLowerCase().equals("middle")) l = "2";
+		        	else l = "1";
+		        	
+		        	try {
+						Field f = NPC.class.getField(state);
+						int z = f.getInt(f);
+						f = Vars.class.getField("BIT_LAYER"+Integer.parseInt(l));
+						short lyr = f.getShort(f);
+						ID = ID.toLowerCase();
+						
+						if (sceneID==null)
+							System.out.println("NPC: "+ID+", name: "+name+" not given sceneID");
+						else{
+							NPC e = new NPC(name, ID, Integer.parseInt(sceneID), rect.x, rect.y+20, lyr);
+							e.setScript(script);
+							e.setState(z);
+							entities.add(e);
+						}
+		        	} catch (NoSuchFieldException | SecurityException e) {
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+		        }
+		        
+		        o = object.getProperties().get("warp");
+		        if(o!=null);
+		    }
+		}
 		
 		//left wall
 		PolygonShape shape = new PolygonShape();

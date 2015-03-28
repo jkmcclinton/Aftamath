@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.utils.Json.Serializable;
 
 public abstract class Mob extends Entity{
 
@@ -25,11 +24,15 @@ public abstract class Mob extends Entity{
 	public static final int MAD = 3;	
 	public static final int SULTRY = 4;	
 	
+	public static final String MALE = "male";
+	public static final String FEMALE = "female";
+	
 	//characteristic constants
 	protected static final float MAX_VELOCITY = .75f;
 	protected static final float MOVE_DELAY = Vars.ANIMATION_RATE * 2;
 	protected static final int DEFAULT_WIDTH = 20;
 	protected static final int DEFAULT_HEIGHT = 50;
+	protected static final double DEFAULT_MAX_HEALTH = 20;
 	protected static final int INTERACTION_SPACE = 10;
 	
 	//action animation indicies
@@ -99,15 +102,19 @@ public abstract class Mob extends Entity{
 	}
 	
 	protected void setAnimation(int action) {
-		if (actionPriorities[action] < actionPriorities[animation.actionID])
-			return;
-		
-		this.action = action;
-		
 		try{
-			TextureRegion[] sprites = TextureRegion.split(texture, width*2, height*2)[action];
-			animation.setAction(sprites, actionLengths[action], direction, action);
-		} catch(ArrayIndexOutOfBoundsException e) {
+			if (actionPriorities[action] < actionPriorities[animation.actionID])
+				return;
+
+			this.action = action;
+
+			try{
+				TextureRegion[] sprites = TextureRegion.split(texture, width, height)[action];
+				animation.setAction(sprites, actionLengths[action], direction, action);
+			} catch(ArrayIndexOutOfBoundsException e) {
+
+			}
+		}catch(Exception e){
 			
 		}
 	}
@@ -116,7 +123,7 @@ public abstract class Mob extends Entity{
 		this.action = action;
 		
 		try {			
-			TextureRegion[] sprites = TextureRegion.split(texture, width*2, height*2)[action];
+			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[action];
 			animation.setAction(sprites, actionLengths[action], direction, action, Vars.ACTION_ANIMATION_RATE);
 		} catch(ArrayIndexOutOfBoundsException e) {
 
@@ -220,12 +227,15 @@ public abstract class Mob extends Entity{
 		int offset = -1;
 		if (direction) {direction = false; offset = 1; }
 		else direction = true;
-		
+		try{
 		//change position of interaction space
 		PolygonShape shape = (PolygonShape) body.getFixtureList().get(2).getShape();
-		shape.setAsBox((width + INTERACTION_SPACE/2)/PPM, height/PPM, new Vector2(INTERACTION_SPACE*offset/PPM/2, 0), 0);
+		shape.setAsBox((rw + INTERACTION_SPACE/2)/Vars.PPM, rh/Vars.PPM, new Vector2(INTERACTION_SPACE*offset/Vars.PPM/2, 0), 0);
 
 		animation.flip(direction);
+		} catch(Exception e){
+			
+		}
 	}
 	
 	//determine if destination is reachable
@@ -238,7 +248,7 @@ public abstract class Mob extends Entity{
 		
 		if (!direction) changeDirection();
 		if (Math.abs(body.getLinearVelocity().x) < MAX_VELOCITY) body.applyForceToCenter(-5f, 0, true);
-			setAnimation(WALKING);
+		setAnimation(WALKING);
 		
 		if (!(this instanceof Player) && mustJump()){
 			jump();
@@ -249,10 +259,7 @@ public abstract class Mob extends Entity{
 		if (animation.actionID != JUMPING) action = WALKING;
 		if (direction) changeDirection();
 		if (Math.abs(body.getLinearVelocity().x) < MAX_VELOCITY) body.applyForceToCenter(5f, 0, true);
-		if (animation.actionID != JUMPING){
-			TextureRegion[] sprites = TextureRegion.split(texture, width*2, height*2)[WALKING];
-			animation.setAction(sprites, actionLengths[WALKING], direction, WALKING);
-		}
+		setAnimation(WALKING);
 		
 		if (!(this instanceof Player) && mustJump()){
 			jump();
@@ -280,21 +287,22 @@ public abstract class Mob extends Entity{
 	
 	public Entity getInteractable(){ return interactable; }
 	public void setInteractable( Entity d) { interactable = d; }
-	
+
 	public void create(){
 		//hitbox
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((width-2)/PPM, (height)/PPM);
+		shape.setAsBox((rw-4)/Vars.PPM, (rh)/Vars.PPM);
 		
-		bdef.position.set(x/PPM, y/PPM);
+		bdef.position.set(x/Vars.PPM, y/Vars.PPM);
 		bdef.type = BodyType.DynamicBody;
 		fdef.shape = shape;
-
+		
 		body = world.createBody(bdef);
 		body.setUserData(this);
 		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(getID()));
+		body.setFixedRotation(true);
 		
 		createFootSensor();
 		createInteractSensor();
@@ -302,24 +310,24 @@ public abstract class Mob extends Entity{
 	
 	protected void createFootSensor(){
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((width - 3)/PPM, 2/PPM, new Vector2(0, -1 * height/PPM), 0);
+		shape.setAsBox((rw - 5)/Vars.PPM, 2/Vars.PPM, new Vector2(0, -1 * rh/Vars.PPM), 0);
 		fdef.shape = shape;
 		
 		fdef.isSensor = true;
-		fdef.filter.categoryBits = layer;
+		fdef.filter.categoryBits = (short) (layer);
 		fdef.filter.maskBits = (short) (Vars.BIT_HALFGROUND | Vars.BIT_GROUND);
 		body.createFixture(fdef).setUserData("foot");
 	}
 	
 	protected void createInteractSensor(){
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((width + INTERACTION_SPACE/2)/PPM, height/PPM, new Vector2(INTERACTION_SPACE/PPM/2, 0), 0);
+		shape.setAsBox((rw + INTERACTION_SPACE/2)/Vars.PPM, rh/Vars.PPM, new Vector2(INTERACTION_SPACE/Vars.PPM/2, 0), 0);
 		fdef.shape = shape;
-		
+
 		fdef.isSensor = true;
 		fdef.filter.categoryBits = Vars.BIT_GROUND | Vars.BIT_HALFGROUND | Vars.BIT_LAYER1 | Vars.BIT_LAYER2 | Vars.BIT_LAYER3;
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_LAYER2 | Vars.BIT_LAYER3;
 		body.createFixture(fdef).setUserData("interact");
-	} 
+	}
 	
 }

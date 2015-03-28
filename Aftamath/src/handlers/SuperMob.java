@@ -61,6 +61,8 @@ public abstract class SuperMob extends Mob {
 		if(level < 20) level++;
 	}
 	
+	public void resetLevel(){ resetLevel(0); }
+	public void resetLevel(int level){ this.level = level; }
 	public int getLevel(){ return level; }
 	public int getPowerType(){ return type; }
 	public void setPowerType(int type){

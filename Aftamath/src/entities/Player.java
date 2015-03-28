@@ -1,18 +1,19 @@
 package entities;
 
-import states.Play;
-import main.House;
 import handlers.SuperMob;
 import handlers.Vars;
+import main.House;
+import main.Play;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
 public class Player extends SuperMob {
 
+	public boolean stopPartnerDisabled = false;
+	
 	private double money, goalMoney;
 	private House home;
-	private Partner myPartner;
+	private NPC myPartner;
 	//private String nickName;
 	private String gender;
 	
@@ -20,17 +21,18 @@ public class Player extends SuperMob {
 	private double bravery;
 	private double nicety;
 	private float N, B, H, L;
+	private String info;
 	
 	private Array<Mob> followers;
 	
-	public Player(String name, String gender, String newID, int x, int y) {
-		super(name, gender + newID, 0, 0, x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, Vars.BIT_LAYER2);
+	public Player(String name, String gender, String newID) {
+		super(name, gender + newID, 0, 0, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, Vars.BIT_LAYER2);
 		this.name = name;
 		this.gender = gender;
 		
 		money = goalMoney = 1500.00;
-		myPartner = new Partner("Kira", "female", 1, x - width * 4, y + 30);
-		myPartner.setScript("script2");
+//		myPartner = new Partner("Kira", "female", 1, x - width * 4, y + 30);
+//		myPartner.setScript("script2");
 //		myPartner = new Partner();
 		home = new House();
 		followers = new Array<>();
@@ -39,10 +41,16 @@ public class Player extends SuperMob {
 	}
 	
 	//following methods are getters and setters
-	
+
 	public void update(float dt) {
 		super.update(dt);
 		updateMoney();
+	}
+	
+	//must only be used for copying player data
+	public void setHealth(double health, double maxHealth){
+		this.health = health;
+		this.MAX_HEALTH = maxHealth;
 	}
 	
 	public void heal(double healVal){
@@ -53,8 +61,7 @@ public class Player extends SuperMob {
 	public void damage(double damageVal){
 		if (!dead) {
 			if (!invulnerable) health -= H * damageVal;
-			TextureRegion[] sprites = TextureRegion.split(texture, width*2, height*2)[FLINCHING];
-			animation.setAction(sprites, actionLengths[FLINCHING], direction, FLINCHING);
+			setAnimation(FLINCHING, Vars.ACTION_ANIMATION_RATE);
 		}
 		if (health <= 0 && !dead) die();
 	}
@@ -63,19 +70,21 @@ public class Player extends SuperMob {
 		return gender;
 	}
 	
-	public void goOut(Partner newPartner, String info){
+	public void goOut(NPC newPartner, String info){
 		myPartner = newPartner;
-		myPartner.setInfo(info);
+		this.info = info;
 		relationship = 0;
+		L = 0;
 	}
 	
 	public void breakUp(){
-		myPartner = new Partner();
-		relationship = 0;
+		myPartner = new NPC();
+//		relationship = 0;
+//		L = 0;
 	}
 	
-	public Partner getPartner(){ return myPartner; }
-	
+	public NPC getPartner(){ return myPartner; }
+	public void resetRelationship(double d){ relationship = d; }
 	public void increaseRelationship(double amount){ relationship += amount * L; }
 	public void decreaseRelationship(double amount){ relationship -= amount * L; }
 	public void setLoveScale(float val){ L = val; }
@@ -87,6 +96,11 @@ public class Player extends SuperMob {
 	public int getFollowerIndex(Mob m) {
 		Play.debugText = "" + followers; 
 		return followers.indexOf(m, true) + 1; 
+	}
+	
+	public void resetFollowers(Array <Mob> followers){
+		for(Mob m : followers)
+			this.followers.add(m);
 	}
 	
 	public void subtractMoney(double amount){ goalMoney -= amount; } 
@@ -105,13 +119,36 @@ public class Player extends SuperMob {
 	public void moveHome(House newHouse){ home = newHouse; }
 	public House getHome(){  return home; }
 	
+	public void resetNiceness(double d){ nicety = d; }
 	public void setNiceness(double d){ nicety += d * N; }
 	public void setNicenessScale(float val){ N = val; }
 	public double getNiceness() { return nicety; }
-	
+
+	public void resetBravery(double d){ nicety = d; }
 	public void setBravery(double d){ bravery += d * B; }
 	public void setBraveryScale(float val){ B = val; }
 	public double getBravery() { return bravery; }
 	
 	public void setHealthScale(float val){ H = val; }
+	
+	public Player copy(){
+		Player p = new Player(name, gender, ID);
+		
+		//copy stats
+		p.setHealth(health, MAX_HEALTH);
+		p.setHealthScale(H);
+		p.resetBravery(bravery);
+		p.setBraveryScale(B);
+		p.resetNiceness(nicety);
+		p.setNicenessScale(N);
+		p.resetRelationship(relationship);
+		p.setLoveScale(L);
+		p.resetFollowers(followers);
+		p.moveHome(p.getHome());
+		
+		p.setPowerType(type);
+		p.resetLevel(level);
+		
+		return p;
+	}
 }
