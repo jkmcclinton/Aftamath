@@ -1,12 +1,9 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.Entity;
 import handlers.Vars;
-import main.Game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -82,7 +79,7 @@ public class NPC extends Mob {
 		
 		//stepping sound
 		if (time >= MOVE_DELAY && isOnGround() && Math.abs(body.getLinearVelocity().x) >= MAX_VELOCITY / 2){
-			Gdx.audio.newSound(new FileHandle("res/sounds/step1.wav")).play(Game.volume);
+			gs.playSound(getPosition(), "step1");
 			time = 0;
 		}
 		
@@ -173,6 +170,18 @@ public class NPC extends Mob {
 		createInteractSensor();
 	}
 	
+	private void determineGender(){
+		Array<String> males = new Array<String>(new String[] {"narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
+				"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2",
+				"bballer","boss1","boss2","cashier","hero1","hero2", "villain1", "villain2","biker1","bot1","policeman1",
+				"policeman2","civilian1","civilian2","civilian3","civilian4"});
+		if (males.contains(ID, true))
+			gender = MALE;
+		else gender = FEMALE;
+	}
+	
+	public String getGender(){return gender;}
+	
 	private static int getWidth(String ID){
 		try{
 			Texture src = new Texture(Gdx.files.internal("res/images/entities/mobs/"+ID+"base.png"));
@@ -181,18 +190,6 @@ public class NPC extends Mob {
 			return DEFAULT_WIDTH;
 		}
 	}
-	
-	private void determineGender(){
-		Array<String> males = new Array<String>(new String[] {"gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
-				"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2",
-				"bballer","boss1","boss2","cashier","hero1","hero2","biker1","bot1","policeman1",
-				"policeman2","civilian1","civilian2","civilian3","civilian4"});
-		if (males.contains(ID, true))
-			gender = MALE;
-		else gender = FEMALE;
-	}
-	
-	public String getGender(){return gender;}
 
 	private static int getHeight(String ID){
 		try{

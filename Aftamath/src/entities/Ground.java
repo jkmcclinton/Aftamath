@@ -1,7 +1,6 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.Entity;
 import handlers.Vars;
 
 import com.badlogic.gdx.math.Vector2;
@@ -11,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Ground extends Entity{
 	
-	public static final int TILE_SIZE = 16;
+	private static final int TILE_SIZE = 16;
 
 	public Ground(World world, String ID, float x, float y){
 		super(x, y - 4 / PPM, TILE_SIZE, TILE_SIZE, ID);

@@ -3,23 +3,17 @@ package handlers;
 import main.Play;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class RefocusTrigger {
+import entities.Entity;
+
+public class RefocusTrigger extends Entity{
 
 	public float x, y, zoom, width, height;
 	
 	private String focus;
-	private Body body;
-	private BodyDef bdef = new BodyDef();
-	private FixtureDef fdef = new FixtureDef();
-	private Play play;
-	private World world;
 	private Camera camera, b2dCam;
 	
 	public RefocusTrigger(World world, Play play, float x, float y, 
@@ -33,7 +27,7 @@ public class RefocusTrigger {
 		this.focus = focus;
 		camera = play.getCam();
 		b2dCam = play.getB2dCam();
-		this.play = play; 
+		this.gs = play; 
 		
 		create();
 	}
@@ -42,9 +36,9 @@ public class RefocusTrigger {
 		camera.setTrigger(this);
 		camera.zoom(zoom);
 		if(camera.getCharacter()==null)
-			camera.setCharacter(play.player);
+			camera.setCharacter(gs.player);
 		if(b2dCam.getCharacter()==null)
-			b2dCam.setCharacter(play.player);
+			b2dCam.setCharacter(gs.player);
 		
 		b2dCam.setTrigger(this);
 		b2dCam.instantZoom(zoom);

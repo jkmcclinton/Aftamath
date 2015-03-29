@@ -1,17 +1,19 @@
 package main;
 
 import static handlers.Vars.PPM;
-import handlers.Assets;
 import handlers.Camera;
 import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyInput;
 import handlers.MyInputProcessor;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 
 public class Game implements ApplicationListener {
 
@@ -22,7 +24,8 @@ public class Game implements ApplicationListener {
 	public static final float STEP = 1 / 60f;
 	public static final float defaultZoom = 3f;
 
-	public static float volume = .33f;
+	public static float musicVolume = 1f;
+	public static float soundVolume = .75f;
 	public Music song;
 
 	private FadingSpriteBatch sb;
@@ -79,7 +82,13 @@ public class Game implements ApplicationListener {
 	public Camera getB2DCamera() { return b2dCam; }
 
 	public void loadImages() {
+		res.loadTexture("res/images/empty.png", "empty");
+		
 		//mobs
+//		res.loadTexture("res/images/entities/mobs/narrator1.png", "narrator1");
+//		res.loadTexture("res/images/entities/mobs/narrator1face.png", "narrator1face");
+//		res.loadTexture("res/images/entities/mobs/narrator2.png", "narrator2");
+//		res.loadTexture("res/images/entities/mobs/narrator2face.png", "narrator2face");
 		res.loadTexture("res/images/entities/mobs/gangster1.png", "gangster1");
 		res.loadTexture("res/images/entities/mobs/gangster1face.png", "gangster1face");
 //		res.loadTexture("res/images/entities/mobs/gangster2.png", "gangster2");
@@ -115,8 +124,10 @@ public class Game implements ApplicationListener {
 		res.loadTexture("res/images/entities/mobs/reaperface.png", "reaperface");
 		res.loadTexture("res/images/entities/mobs/bballer.png", "bballer");
 		res.loadTexture("res/images/entities/mobs/bballerface.png", "bballerface");
-		res.loadTexture("res/images/entities/mobs/boss.png", "boss");
-		res.loadTexture("res/images/entities/mobs/bossface.png", "bossface");
+		res.loadTexture("res/images/entities/mobs/boss1.png", "boss1");
+		res.loadTexture("res/images/entities/mobs/boss1face.png", "boss1face");
+//		res.loadTexture("res/images/entities/mobs/boss2.png", "boss2");
+//		res.loadTexture("res/images/entities/mobs/boss2face.png", "boss2face");
 		res.loadTexture("res/images/entities/mobs/burly1.png", "burly1");
 		res.loadTexture("res/images/entities/mobs/burly1face.png", "burly1face");
 //		res.loadTexture("res/images/entities/mobs/burly2.png", "burly2");
@@ -141,10 +152,10 @@ public class Game implements ApplicationListener {
 		res.loadTexture("res/images/entities/mobs/witchface.png", "witchface");
 //		res.loadTexture("res/images/entities/mobs/magician.png", "magician");
 //		res.loadTexture("res/images/entities/mobs/magicianface.png", "magicianface");
-		res.loadTexture("res/images/entities/mobs/oldlady.png", "oldlady1");
-		res.loadTexture("res/images/entities/mobs/oldladyface.png", "oldlady1face");
-//		res.loadTexture("res/images/entities/mobs/oldlady.png", "oldlady2");
-//		res.loadTexture("res/images/entities/mobs/oldladyface.png", "oldlady2face");
+		res.loadTexture("res/images/entities/mobs/oldlady1.png", "oldlady1");
+		res.loadTexture("res/images/entities/mobs/oldlady1face.png", "oldlady1face");
+//		res.loadTexture("res/images/entities/mobs/oldlady2.png", "oldlady2");
+//		res.loadTexture("res/images/entities/mobs/oldlady2face.png", "oldlady2face");
 //		res.loadTexture("res/images/entities/mobs/oldman1.png", "oldman1");
 //		res.loadTexture("res/images/entities/mobs/oldman1face.png", "oldman1face");
 //		res.loadTexture("res/images/entities/mobs/oldman2.png", "oldman2");
@@ -180,14 +191,38 @@ public class Game implements ApplicationListener {
 		res.loadTexture("res/images/entities/projectiles/fireball.png", "fireball");
 
 		//particles
+//		res.loadTexture("res/images/entities/particles/.png", "");
 
 		//gui
 		res.loadTexture("res/images/hudTextures.png", "hudTextures");
 		res.loadTexture("res/images/entities/speechBubbles.png", "speechBubble");
+		res.loadTexture("res/images/entities/arrow.png", "arrow");
 	}
 
 	public void setSong(Music song) {
 		this.song = song;
 	}
 
+	public static class Assets {
+
+		private HashMap<String, Texture> textures;
+		
+		public Assets() {
+			textures = new HashMap<>();
+		}
+		
+		public void loadTexture(String path, String key){
+			Texture tex = new Texture(Gdx.files.internal(path));
+			textures.put(key, tex);
+		}
+		
+		public Texture getTexture(String key){
+			return textures.get(key);
+		}
+		
+		public void disposeTexture(String key){
+			Texture tex = textures.get(key);
+			if (tex!= null) tex.dispose();
+		}
+	}
 }

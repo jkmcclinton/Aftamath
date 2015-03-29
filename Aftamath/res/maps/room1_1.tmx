@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="16" tileheight="16" nextobjectid="29">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="6"/>
+ </properties>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16">
+  <image source="indoors.png" width="480" height="271"/>
+ </tileset>
+ <layer name="bg1" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYAJixhFMMwMxywDYqwjESjS2Rx6IFdBoeyB2wCJOTdoWiO3Q6FggjsMiTk0aG6gG4hoccqNgaAEATB0NVg==
+  </data>
+ </layer>
+ <layer name="bg2" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIKhAQAEsAAB
+  </data>
+ </layer>
+ <layer name="ground" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2D4gGggjhkAehTQBwAAsocKug==
+  </data>
+ </layer>
+ <layer name="fg" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIKhAQAEsAAB
+  </data>
+ </layer>
+ <objectgroup name="objects">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="26" name="outside" x="83.5" y="42.5" width="24.5" height="53">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="street"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="27" name="Spawn" x="86.75" y="79.5" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="28" x="176.5" y="79.75" width="16" height="16">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="Layer" value="front"/>
+    <property name="NPC" value="gangster1"/>
+    <property name="Name" value="Darrius"/>
+    <property name="Script" value="generic_1"/>
+    <property name="State" value="IDLEWALK"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

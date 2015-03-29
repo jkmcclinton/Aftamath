@@ -1,5 +1,7 @@
 package handlers;
 
+import com.badlogic.gdx.graphics.Color;
+
 public class Vars {
 	
 	//collision type data
@@ -18,6 +20,12 @@ public class Vars {
 	public static final int FONT_OFFSET = -33;
 	public static final int OBJ_SCALE = 2;
 	public static final int LIGHT_RAYS = 50;
+	public static final int TILE_SIZE = 16;
+	public static final float ALPHA = .99607843f;
+	
+	public static final Color INDOOR = new Color(2f,2f,2f, ALPHA);
+	public static final Color DAY = new Color(2f,2f,2f, ALPHA);
+	public static final Color NIGHT = new Color(2f,2f,2f, ALPHA);
 
 	public static String trimNumbers(String s){
 		String newS = "";

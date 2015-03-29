@@ -1,10 +1,11 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.Entity;
 import handlers.Vars;
 import main.Game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -21,22 +22,40 @@ public class SpeechBubble extends Entity {
 	private int time = idleTime;
 	private float px, py;
 	
+	public static final int DEFAULT_WIDTH = 14;
+	public static final int DEFAULT_HEIGHT = 12;
+	
 	//Standard interaction based bubble, e.g. speech
 	public SpeechBubble(Entity d, float x, float y, int ID) {
 		super(x, y, 14, 12, "speechBubble");
 		setPlayState(d.getPlayState());
 		gs.addObject(this);
-		this.ID = String.valueOf(ID);
+		this.ID += ID;
 		owner = d;
 		player = d.getPlayer();
 		center = new Vector2(x/PPM, y/PPM);
 		v = new Vector2(center.x - owner.getPosition().x, center.y - owner.getPosition().y);
 		
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("speechBubble"), width, height)[ID - 1];
-		animation.setFrames(sprites[sprites.length - 1], Vars.ACTION_ANIMATION_RATE*2);
+		setDefaultAnimation(sprites[sprites.length - 1]);
 		animation.setAction(sprites, sprites.length, false, 1, Vars.ACTION_ANIMATION_RATE);
 	}
 	
+	public SpeechBubble(Entity d, float x, float y, String ID){
+		super(x, y, getWidth(ID), getHeight(ID), ID);
+		setPlayState(d.getPlayState());
+		gs.addObject(this);
+		owner = d;
+		player = d.getPlayer();
+		center = new Vector2(x/PPM, y/PPM);
+		v = new Vector2(center.x - owner.getPosition().x, center.y - owner.getPosition().y);
+		
+		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture(ID), width, height)[0];
+		setDefaultAnimation(sprites, Vars.ACTION_ANIMATION_RATE*2);
+		animation.setAction(TextureRegion.split(texture, width, height)[1], determineLength(ID), 
+				false, 1, Vars.ACTION_ANIMATION_RATE/2);
+	}
+
 	public void update(float dt){
 		animation.update(dt);
 		
@@ -49,7 +68,7 @@ public class SpeechBubble extends Entity {
 			if(goal != null) goal = new Vector2(goal.x + dc.x, goal.y + dc.y);
 		}
 		
-		if(body != null && player.getInteractable() != owner && ID.equals("1")) 
+		if(body != null && player.getInteractable() != owner && ID.equals("speechBubble1")) 
 			gs.addBodyToRemove(body);
 	}
 	
@@ -91,5 +110,31 @@ public class SpeechBubble extends Entity {
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(getID()));
 	}
 	
+	private static int getWidth(String ID){
+		try{
+			Texture src = new Texture(Gdx.files.internal("res/images/entities/"+ID+"base.png"));
+			return src.getWidth();
+		} catch(Exception e) {
+			return DEFAULT_WIDTH;
+		}
+	}
 
+	private static int getHeight(String ID){
+		try{
+			Texture src = new Texture(Gdx.files.internal("res/images/entities/"+ID+"base.png"));
+			return src.getHeight();
+		} catch(Exception e) {
+			return DEFAULT_HEIGHT;
+		}
+	}
+	
+	private static int determineLength(String ID){
+		switch(ID){
+		case "arrow":
+			return 3;
+		}
+		return 1;
+	}
+
+	public Entity getOwner() { return owner;}
 }

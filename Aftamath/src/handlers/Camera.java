@@ -174,6 +174,6 @@ public class Camera extends OrthographicCamera{
 	
 	public void setTrigger(RefocusTrigger trigger){ this.trigger = trigger; }
 	public RefocusTrigger getTrigger(){ return trigger; }
-	public void setCharacter(Mob mob) { this.character = mob; }
+	public void setCharacter(Mob mob) { this.character = mob; }  //set camera focus to the character
 	public Mob getCharacter(){ return character; }
 }

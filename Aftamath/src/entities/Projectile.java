@@ -1,7 +1,6 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.Entity;
 import handlers.Vars;
 
 import com.badlogic.gdx.Gdx;

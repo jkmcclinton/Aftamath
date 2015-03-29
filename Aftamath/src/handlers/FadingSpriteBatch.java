@@ -1,21 +1,25 @@
 package handlers;
 
+import box2dLight.RayHandler;
+
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class FadingSpriteBatch extends SpriteBatch {
 
+	public boolean fading;
+	
+	private RayHandler rh;
+	private Color rhAmbient;
 	private float fadeTime = 0, fadeInterval;
 	private int fadeType;
-	public boolean fading;
 
-	public static final float ALPHA = .99607843f;
 	public static final int FADE_OUT = -1;
 	public static final int FADE_IN = 1;
 	
 	public FadingSpriteBatch(){
 		super();
 	}
-	
 	
 	//updates fade if fading;
 	//returns true if it has completely faded in or out
@@ -36,8 +40,16 @@ public class FadingSpriteBatch extends SpriteBatch {
 			if (color < 0)
 				color = 0;
 
-			setColor(color, color, color, ALPHA);
-
+			setColor(color, color, color, Vars.ALPHA);
+			
+			//fade rayHandler as well
+			//to be perfected
+			if(rh!=null){
+				rh.setAmbientLight(rhAmbient.r-color, rhAmbient.g-color, 
+						rhAmbient.b-color, Vars.ALPHA);
+//				System.out.println(rhAmbient.r+":\t"+(rhAmbient.r-color)+":\t"+Color.BLACK.r);
+			}
+				
 			if(fadeTime >= 2f / (fadeInterval)){
 				fadeTime = 0;
 				faded = true;
@@ -45,7 +57,7 @@ public class FadingSpriteBatch extends SpriteBatch {
 					fadeType = FADE_IN;
 				else  {
 					fading = false;
-					setColor(1, 1, 1, ALPHA);
+					setColor(1, 1, 1, Vars.ALPHA);
 				}
 			}
 		}
@@ -66,6 +78,14 @@ public class FadingSpriteBatch extends SpriteBatch {
 	
 	public void fastFade() {
 		fade(4f);
+	}
+	
+	public void setRayHandler(RayHandler rh){
+		this.rh = rh;
+	}
+	
+	public void setAmbient(Color ambient){
+		rhAmbient = ambient;
 	}
 	
 	public int getFadeType() { return fadeType; }

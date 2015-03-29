@@ -1,7 +1,6 @@
 package entities;
 
 import handlers.Animation;
-import handlers.Entity;
 import handlers.Vars;
 
 import java.text.NumberFormat;

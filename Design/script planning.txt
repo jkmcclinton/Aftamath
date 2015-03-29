@@ -1,0 +1,32 @@
+every object has a script
+	-one for interactions
+	-one for events with conditions
+on every object update call, check current conditions based on event flag
+do not check for all conditions
+
+scene loads its list of events  
+scene gives objects their events
+conditions are checked to set initial object event
+
+interaction
+player loads object's script
+
+/l: new line
+~: pause
+
+comparables:
+PlayerMoney
+PlayerGender
+PlayerLocation
+
+PartnerID
+
+
+SetChoice 1,2,3,4,5
+
+if 1 health lessThan 10
+if flag 1 true
+then setFlag
+
+syntax(add/set, what, value)
+ChangeVal add 2 health 1 

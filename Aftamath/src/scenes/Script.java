@@ -1,12 +1,12 @@
 package scenes;
 
-import handlers.Entity;
 import handlers.Vars;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.Stack;
@@ -16,6 +16,7 @@ import main.Play;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+import entities.Entity;
 import entities.Mob;
 import entities.NPC;
 import entities.Player;
@@ -23,7 +24,7 @@ import entities.SpeechBubble;
 
 
 /* ----------------------------------------------------------------------
- *  this class contains a file that controls the object its attached to
+ *  this class contains a file that controls the object it's attached to
  *  and also provides the necessary functions to parse the script file
  * ----------------------------------------------------------------------  */
 public class Script {
@@ -209,6 +210,21 @@ public class Script {
 			player.setGoal(convertToNum(line));
 			activeObj = player;
 			break;
+		case "setemotion":
+			String arg = lastArg(line);
+			int emotion = 0;
+			if(Vars.isNumeric(arg)){
+				emotion = Integer.parseInt(arg);
+				if (emotion > 4 || emotion < 0) emotion = 0;
+			} else 
+				try {
+					Field f = Mob.class.getField(arg.toUpperCase());
+					emotion = f.getInt(f);
+				} catch(Exception e1){
+					
+				}
+				
+			play.currentEmotion = emotion;
 		case "setflag":
 			play.getScene().script.flags[Integer.parseInt(middleArg(line))] =
 			Boolean.parseBoolean(lastArg(line));
@@ -218,6 +234,7 @@ public class Script {
 
 			if (Vars.isNumeric(lastArg(line)))
 				speaker = findObject(convertToNum(line));
+			
 			else switch(lastArg(line)) {
 			case "partner":
 				if(player.getPartner().getName() != null)

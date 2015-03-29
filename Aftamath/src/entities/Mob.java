@@ -1,14 +1,11 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.Entity;
 import handlers.Vars;
 import main.Game;
 import scenes.Script;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -16,18 +13,31 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public abstract class Mob extends Entity{
+	
+	public int numContacts;
+	public Sound voice;
+	public boolean dead, positioning, canWarp, canClimb;
+	
+	protected String name;
+	protected double health, MAX_HEALTH;
+	protected boolean invulnerable;
+	protected int invulnerableTime, action;
+	protected float time;
+	protected TextureRegion[] face;
+	protected Warp warp;
 
+	private Entity interactable;
+	
 	//emotion indicies
 	public static final int NORMAL = 0;
 	public static final int HAPPY = 1;
 	public static final int SAD = 2;
 	public static final int MAD = 3;	
-	public static final int SULTRY = 4;	
-	
-	public static final String MALE = "male";
-	public static final String FEMALE = "female";
+	public static final int FLIRTY = 4;
 	
 	//characteristic constants
+	public static final String MALE = "male";
+	public static final String FEMALE = "female";
 	protected static final float MAX_VELOCITY = .75f;
 	protected static final float MOVE_DELAY = Vars.ANIMATION_RATE * 2;
 	protected static final int DEFAULT_WIDTH = 20;
@@ -48,20 +58,6 @@ public abstract class Mob extends Entity{
 	public static final int SPECIAL2 = 9;
 	protected static int[] actionLengths = {0, 4, 1, 2, 2, 4, 2, 2};
 	protected static int[] actionPriorities = {0,1,2,3,4,5,4,4,4,4}; // determines what animation gets played first
-	
-	public Sound voice;
-	public boolean dead, positioning;
-	protected String name;
-	protected double health;
-	protected double MAX_HEALTH;
-	protected boolean invulnerable;
-	protected int invulnerableTime;
-	private Entity interactable;
-	
-	public int numContacts;
-	protected TextureRegion[] face;
-	protected int action;
-	protected float time;
 	
 	protected Mob(String name, String ID, float x, float y, int w, int h, short layer) {
 		super(x, y, w, h, ID);
@@ -90,7 +86,7 @@ public abstract class Mob extends Entity{
 		//stepping sound
 		time += dt;
 		if (time >= MOVE_DELAY && isOnGround() && Math.abs(body.getLinearVelocity().x) >= MAX_VELOCITY / 2){
-			Gdx.audio.newSound(new FileHandle("res/sounds/step1.wav")).play(Game.volume);
+			gs.playSound(getPosition(), "step1");
 			time = 0;
 		}
 		
@@ -101,32 +97,29 @@ public abstract class Mob extends Entity{
 		} 
 	}
 	
-	protected void setAnimation(int action) {
-		try{
-			if (actionPriorities[action] < actionPriorities[animation.actionID])
-				return;
-
-			this.action = action;
-
-			try{
-				TextureRegion[] sprites = TextureRegion.split(texture, width, height)[action];
-				animation.setAction(sprites, actionLengths[action], direction, action);
-			} catch(ArrayIndexOutOfBoundsException e) {
-
-			}
-		}catch(Exception e){
-			
-		}
+	protected void setAnimation(int action){
+		setAnimation(action, false);
+	}
+	
+	protected void setAnimation(int action, boolean repeat){
+		setAnimation(action, Vars.ANIMATION_RATE, repeat);
 	}
 	
 	protected void setAnimation(int action, float delay){
+		setAnimation(action, delay, false);
+	}
+
+	protected void setAnimation(int action, float delay, boolean repeat) {
+//		idleTime = 0;
+		if (actionPriorities[action] < actionPriorities[animation.actionID])
+			return;
 		this.action = action;
 		
-		try {			
+		try{
 			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[action];
-			animation.setAction(sprites, actionLengths[action], direction, action, Vars.ACTION_ANIMATION_RATE);
+			animation.setAction(sprites, actionLengths[action], direction, action/*,repeat*/);
 		} catch(ArrayIndexOutOfBoundsException e) {
-
+			
 		}
 	}
 
@@ -208,10 +201,14 @@ public abstract class Mob extends Entity{
 		}
 	}
 	
+	public void lookUp(){
+		
+	}
+	
 	public void jump() {
 		if (isOnGround()) {
 			action = JUMPING;
-			Gdx.audio.newSound(new FileHandle("res/sounds/jump1.wav")).play(Game.volume);
+			gs.playSound(getPosition(), "jump1");
 			body.applyForceToCenter(0f, 160f, true);
 			
 			setAnimation(JUMPING);
@@ -287,6 +284,9 @@ public abstract class Mob extends Entity{
 	
 	public Entity getInteractable(){ return interactable; }
 	public void setInteractable( Entity d) { interactable = d; }
+	
+	public Warp getWarp(){ return warp; }
+	public void setWarp(Warp warp){ this.warp = warp; }
 
 	public void create(){
 		//hitbox

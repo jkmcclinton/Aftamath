@@ -9,17 +9,19 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class EventTrigger {
+import entities.Entity;
+
+public class EventTrigger extends Entity{
 	
 	public float x, y, width, height;
 	public boolean triggered;
 	
+	@SuppressWarnings("unused")
 	private String condition, value;
 	private Body body;
 	private BodyDef bdef = new BodyDef();
 	private FixtureDef fdef = new FixtureDef();
 	private World world;
-	private Play play;
 	
 	public EventTrigger(World world, Play play, float x, float y, float w, float h, String condition, String value){
 		this.x = x;
@@ -29,7 +31,7 @@ public class EventTrigger {
 		this.condition = condition;
 		this.value = value;
 		this.world = world;
-		this.play = play;
+		this.gs = play;
 		
 		create();
 	}

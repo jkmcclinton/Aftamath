@@ -17,7 +17,7 @@ public class GameStateManager {
 	public static final int PLAY = 1;
 	public static final int TITLE = 2;
 	
-	public float volume = Game.volume;
+	public float volume = Game.musicVolume;
 	
 	public GameStateManager(Game game) {
 		this.game = game;
@@ -33,8 +33,8 @@ public class GameStateManager {
 		
 		if(fading){
 			volume += dt/2 * fadeType;
-			if (volume > Game.volume)
-				volume = Game.volume;
+			if (volume > Game.musicVolume)
+				volume = Game.musicVolume;
 			if (volume < 0)
 				volume = 0;
 

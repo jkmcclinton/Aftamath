@@ -89,6 +89,7 @@ public class Player extends SuperMob {
 	public void decreaseRelationship(double amount){ relationship -= amount * L; }
 	public void setLoveScale(float val){ L = val; }
 	public double getRelationship(){ return relationship; }
+	public String getPartnerInfo(){ return info; }
 	
 	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
 	public void removeFollower(Mob m){ followers.removeValue(m, true); }

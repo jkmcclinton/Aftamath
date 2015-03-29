@@ -2,7 +2,6 @@ package main;
 
 import static handlers.Vars.PPM;
 import handlers.Camera;
-import handlers.Entity;
 import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyContactListener;
@@ -33,42 +32,44 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
+import entities.Entity;
 import entities.Ground;
 import entities.HUD;
 import entities.Mob;
 import entities.NPC;
 import entities.Player;
 import entities.SpeechBubble;
+import entities.Warp;
 
 public class Play extends GameState {
 	
 	public Mob character;
 	public Player player;
+	public Warp warp;
 	public NPC narrator;
-	public boolean paused;
-	private World world;
-	private Scene scene, nextScene;
 	public HUD hud;
-	private Array<Body> bodies;
-	private ArrayList<Entity> objects;
-	private ArrayList<PositionalAudio> sounds;
-	private Box2DDebugRenderer b2dr;
-	private RayHandler rayHandler;
-	private MyContactListener cl = new MyContactListener();
-	
 	public Script currentScript;
-	public boolean warping, warpe; //for changing between scenes
-	public boolean analyzing;
+	public int stateType, currentEmotion;
+	public boolean paused, analyzing, choosing;
+	public boolean warping, warped; //for changing between scenes
 	public boolean speaking; //are letters currently being drawn individually
+	
+	public float dayTime;
+	
 	private int sx, sy;
 	private float speakTime, speakDelay = .025f;
 	private ArrayDeque<String> displayText; //all text pages to display
 	private String[] speakText; //current text page displaying
-	
-	int stateType;
+	private World world;
+	private Scene scene, nextScene;
+	private Array<Body> bodiesToRemove;
+	private ArrayList<Entity> objects;
+	private ArrayList<PositionalAudio> sounds;
+	private Box2DDebugRenderer b2dr;
+	private RayHandler rayHandler;
+	private MyContactListener cl = new MyContactListener(this);
 	private int prevStateType;
 	private SpeechBubble[] choices;
-	public boolean choosing;
 	
 	//input states
 	public static final int MOVE = 0; //can move
@@ -94,7 +95,7 @@ public class Play extends GameState {
 	}
 	
 	public void create(){
-		bodies = new Array<>();
+		bodiesToRemove = new Array<>();
 
 		objects = new ArrayList<Entity>();
 		sounds = new ArrayList<PositionalAudio>();
@@ -105,8 +106,8 @@ public class Play extends GameState {
 		rayHandler.setAmbientLight(0.5f);
 		player = new Player("TestName", "male", "player1");
 		scene = new Street(world, this, player);
-		cam.setBounds(6, scene.width, 0, 220);
-		b2dCam.setBounds(6/PPM, (scene.width)/PPM, 0, 220/PPM);
+		cam.setBounds(Vars.TILE_SIZE*4, (scene.width-Vars.TILE_SIZE*4), 0, scene.height);
+		b2dCam.setBounds((Vars.TILE_SIZE*4)/PPM, (scene.width-Vars.TILE_SIZE*4)/PPM, 0, scene.height/PPM);
 		world.setGravity(scene.getGravity());
 		
 		stateType = MOVE;
@@ -114,22 +115,17 @@ public class Play extends GameState {
 		displayText = new ArrayDeque<String>();
 		
 		scene.setRayHandler(rayHandler);
-		scene.create(this);
+		scene.create();
 		
 		initEntities();
 		hud = new HUD(player, hudCam);
 		//new PointLight(rayHandler, Vars.LIGHT_RAYS, Color.RED, 1000000000, player.getPosition().x, player.getPosition().y + 10);
 		
-//		character = getMob("Olivierre");
-		character = player;
-		cam.setCharacter(character); //set camera focus to the character
-		
-		setSong(scene.DEFAULT_SONG, Game.volume);
-		//displayText.add("This place is extremely boring and actually/lquite pointless.~ Even my words are pointless./lThis is Just an extra line or two to show/loff some zesty letters I got in meh.");
-		//speak();
+		setSong(scene.DEFAULT_SONG, Game.musicVolume);
 	}
 	
 	public void update(float dt) {
+		if(warped) return;
 			buttonTime += dt;
 			hud.update(dt);
 		
@@ -145,7 +141,7 @@ public class Play extends GameState {
 			
 			for(PositionalAudio s : sounds)
 				updateSound(s.location, s.sound);
-			bodies = cl.getBodies();
+			bodiesToRemove = cl.getBodies();
 			
 			if(currentScript != null){
 				float dx = player.getPosition().x - currentScript.getOwner().getPosition().x;
@@ -160,7 +156,7 @@ public class Play extends GameState {
 			}
  
 			for (Entity d : objects){
-				if (d instanceof Entity && !(d instanceof Ground)) { 
+				if (d instanceof Entity && !(d instanceof Ground)) {
 					d.update(dt);
 
 					//kill object
@@ -171,13 +167,13 @@ public class Play extends GameState {
 							//Game Over
 							//System.out.println("die"); 
 						} else {
-							bodies.add(d.getBody());
+							bodiesToRemove.add(d.getBody());
 						}
 					}
 				}
 			}
 
-			for (Body b : bodies){
+			for (Body b : bodiesToRemove){
 				if (b != null) if (b.getUserData() != null){
 					//System.out.println(((Displayable) b.getUserData()).getID());
 					objects.remove(b.getUserData());
@@ -185,7 +181,7 @@ public class Play extends GameState {
 				}
 			}
 
-			bodies.clear();
+			bodiesToRemove.clear();
 
 			if(warping){
 				if (sb.getFadeType() == FadingSpriteBatch.FADE_IN)
@@ -193,10 +189,23 @@ public class Play extends GameState {
 				if (!sb.fading && scene.equals(nextScene)){
 					warping = false;
 					nextScene = null;
+				} else if(sb.fading &&nextScene.newSong){
+					float volume = song.getVolume();
+					volume += dt * sb.getFadeType();
+					if (volume > Game.musicVolume)
+						volume = Game.musicVolume;
+					if (volume < 0){
+						volume = 0;
+						if(song.isPlaying()) song.stop();
+					}
+
+					if(song.isPlaying())
+						song.setVolume(volume);
 				}
 			}
-			debugText= ""+song.getVolume();
-//			debugText = character.getName() + " x: " + (int) (character.getPosition().x*PPM) + "    y: " + ((int) (character.getPosition().y*PPM) - player.height);
+			debugText= "Volume: "+song.getVolume();
+			debugText +="/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + "    y: " + ((int) (character.getPosition().y*PPM) - player.height);
+			debugText +="/lCamera" + " x: " + (int) (cam.position.x) + "    y: " + ((int) (cam.position.y));
 			rayHandler.lightList.first().setPosition(character.getPosition().x, character.getPosition().y - 1000);  // moving point light
 			//debugText += "/lLight x: " + (int) (rayHandler.lightList.first().getX()*PPM) + "    y: " + (int) (rayHandler.lightList.first().getY()*PPM);
 		} else {
@@ -230,7 +239,7 @@ public class Play extends GameState {
 
 		if (speaking) speak();
 		if (rayHandling) rayHandler.updateAndRender();
-		hud.render(sb, Mob.NORMAL);
+		hud.render(sb, currentEmotion);
 		updateDebugText();
 		
 		b2dCam.setPosition(character.getPosition().x, character.getPosition().y + 15 / PPM);
@@ -330,13 +339,24 @@ public class Play extends GameState {
 			}
 		} else switch (stateType){
 		case LOCKED:
-			if(MyInput.isPressed(MyInput.PAUSE)) pause();
+			if(MyInput.isPressed(MyInput.PAUSE) && !quitting) pause();
 			break;
 		case MOVE:
-			if(MyInput.isPressed(MyInput.PAUSE)) pause();
-			if(cam.moving) return;
+			if(MyInput.isPressed(MyInput.PAUSE) && !quitting) pause();
+			if(cam.moving||cam.focusing||warping||quitting||character.dead) return;
 			if(MyInput.isPressed(MyInput.JUMP)) character.jump();
-			if(MyInput.isDown(MyInput.UP)) character.climb();
+			if(MyInput.isDown(MyInput.UP)) {
+				if(character.canWarp && player.isOnGround()) {
+					warping = true;
+					warped = false;
+					warp = character.getWarp();
+					nextScene = warp.getNext();
+//					scene.saveLevel();
+					sb.fade();
+				}
+				else if(character.canClimb) character.climb();
+				else character.lookUp();
+			}
 			if(MyInput.isDown(MyInput.DOWN)) character.descend();
 			if(MyInput.isPressed(MyInput.USE)) use();
 			if(MyInput.isPressed(MyInput.INTERACT)) {
@@ -344,7 +364,7 @@ public class Play extends GameState {
 				if (currentScript != null) {
 					for (Entity d : objects)
 						if (d instanceof SpeechBubble)
-							bodies.add(d.getBody()); //remove talking speech bubble
+							bodiesToRemove.add(d.getBody()); //remove talking speech bubble
 					currentScript.analyze();
 					if (currentScript.limitDistance) {
 						stateType = MOVELISTEN;
@@ -360,13 +380,14 @@ public class Play extends GameState {
 			if(MyInput.isDown(MyInput.ATTACK))player.attack(); 
 			break;
 		case MOVELISTEN:
+			if(MyInput.isPressed(MyInput.PAUSE)) pause();
+			if(cam.moving||cam.focusing||warping||quitting||character.dead) return;
 			if(MyInput.isDown(MyInput.UP)) character.climb();
 			if(MyInput.isDown(MyInput.DOWN)) character.descend();
 			if(MyInput.isDown(MyInput.LEFT)) character.left();
 			if(MyInput.isDown(MyInput.RIGHT)) character.right();
-			if(MyInput.isPressed(MyInput.PAUSE)) pause();
 			if(MyInput.isPressed(MyInput.JUMP) && !speaking && buttonTime >= DELAY) {
-				Gdx.audio.newSound(new FileHandle("res/sounds/ok1.wav")).play(Game.volume);
+				playSound(player.getPosition(), "ok1");
 
 				if(displayText.isEmpty()) {
 					if (currentScript != null) {
@@ -384,9 +405,9 @@ public class Play extends GameState {
 			}
 			break;
 		case LISTEN:
-			if(MyInput.isPressed(MyInput.PAUSE)) pause();
+			if(MyInput.isPressed(MyInput.PAUSE) && !quitting) pause();
 			if(MyInput.isPressed(MyInput.JUMP) && !speaking && buttonTime >= DELAY) {
-				Gdx.audio.newSound(new FileHandle("res/sounds/ok1.wav")).play(Game.volume);
+				playSound(player.getPosition(), "ok1");
 				if(displayText.isEmpty()) {
 					if (currentScript != null) {
 						currentScript.paused = currentScript.forcedPause =
@@ -406,7 +427,7 @@ public class Play extends GameState {
 			}
 			break;
 		case CHOICE:
-			if(MyInput.isPressed(MyInput.PAUSE)) pause();
+			if(MyInput.isPressed(MyInput.PAUSE) && !quitting) pause();
 			if (buttonTime >= buttonDelay){
 				if(MyInput.isDown(MyInput.LEFT)){
 					buttonTime = 0;
@@ -414,19 +435,19 @@ public class Play extends GameState {
 					if (choiceIndex >= choices.length)
 						choiceIndex = 0;
 
-					Gdx.audio.newSound(new FileHandle("res/sounds/text1.wav")).play(Game.volume);
+					playSound(player.getPosition(), "text1");
 				} else if (MyInput.isDown(MyInput.RIGHT)){
 					buttonTime = 0;
 					choiceIndex--;
 					if (choiceIndex < 0)
 						choiceIndex = choices.length - 1;
 
-					Gdx.audio.newSound(new FileHandle("res/sounds/text1.wav")).play(Game.volume);
+					playSound(player.getPosition(), "text1");
 				} else if(MyInput.isPressed(MyInput.ENTER)){
 					for (SpeechBubble b : choices)
-						bodies.add(b.getBody()); 
+						bodiesToRemove.add(b.getBody()); 
 
-					Gdx.audio.newSound(new FileHandle("res/sounds/ok1.wav")).play(Game.volume);
+					playSound(player.getPosition(), "ok1");
 
 					currentScript.paused = choosing = false;
 					currentScript.getChoiceIndex(choiceIndex);
@@ -481,7 +502,6 @@ public class Play extends GameState {
 		float dx = (player.getPosition().x - obj.getPosition().x) * Vars.PPM;
 		float gx = min * dx / Math.abs(dx) - dx ;
 		
-			System.out.println("Hello");
 		if (Math.abs(dx) < min -2){
 			player.positioning = true;
 			player.setGoal(gx);
@@ -540,7 +560,7 @@ public class Play extends GameState {
 				if(c != "~".charAt(0)){
 					hud.addChar(sy, c);
 					Gdx.audio.newSound(new FileHandle("res/sounds/text1.wav"))
-					.play(Game.volume * .9f, (float) Math.random()*.15f + .9f, 1);
+					.play(Game.soundVolume * .9f, (float) Math.random()*.15f + .9f, 1);
 				} else speakDelay = .75f;
 
 				sx++;
@@ -613,10 +633,9 @@ public class Play extends GameState {
 		if(warped) return;
 		destroyBodies();
 		scene = nextScene;
-		scene.create(this);
+		scene.create();
 		initEntities();
-//		createPlayer(warp.getLink());
-		createPlayer(scene.getSpawnpoint());
+		createPlayer(warp.getLink());
 		if(scene.newSong)
 			setSong(scene.DEFAULT_SONG);
 		warped = true;
@@ -629,14 +648,15 @@ public class Play extends GameState {
 
 	public void addSound(PositionalAudio s){ sounds.add(s); }
 	public void addObject(Entity d){ objects.add(d); }
-	public void addBodyToRemove(Body b){ bodies.add(b); }
+	public void addBodyToRemove(Body b){ bodiesToRemove.add(b); }
 	
 	public void createPlayer(Vector2 location){
+		System.out.println(location);
 		player.setPlayState(this);
 		player.setPosition(location);
 		player.create();
 		character = player;
-		cam.setCharacter(character);
+		cam.setCharacter(character); 
 		b2dCam.setCharacter(character);
 		objects.add(player);
 		sortObjects();
@@ -656,8 +676,7 @@ public class Play extends GameState {
 			d.create();
 		}
 		
-//		createPlayer(scene.getSpawnLocation());
-		createPlayer(new Vector2(Game.width/2, 151));
+		createPlayer(scene.getSpawnpoint());
 		sortObjects();
 	}
 	
@@ -733,6 +752,11 @@ public class Play extends GameState {
 		colors.add(Color.PURPLE);
 		colors.add(Color.TEAL);
 		colors.add(Color.WHITE);
+	}
+	
+	public Color getAmbient(){
+		// should be dependant on time;
+		return new Color(2,2,2,Vars.ALPHA);
 	}
 }
 

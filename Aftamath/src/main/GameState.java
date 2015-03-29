@@ -67,7 +67,7 @@ public abstract class GameState {
 	}
 	
 	public void setSong(Music song){
-		setSong(song, Game.volume);
+		setSong(song, Game.musicVolume);
 	}
 	
 	public void setSong(Music song, float volume){
@@ -106,10 +106,14 @@ public abstract class GameState {
 		float dy = cam.position.y - cam.YOFFSET - position.y;
 		float distance = (float) Math.sqrt(dx*dx + dy*dy);
 		
-		float pan = (float) (2/(1+Math.exp(-dx/3.5)) - 1);      		  //Logaritmic curve
-		float s = 55000, a = .3183f;
+		float pan;
+		float s = 21400, a = .3183f, f = 5;
 		float volume = (float) (Math.exp(-1*(distance*distance)/(2*s))/   //Gaussian curve
-				(Math.sqrt((a*Math.PI)/(Game.volume*Game.volume))));
+				(Math.sqrt((a*Math.PI)/(Game.soundVolume*Game.soundVolume))));
+		if(Math.abs(dx)>f)
+			pan = (float) -(2/(1+Math.exp(-(dx-f*dx/Math.abs(dx))/3.5)) - 1);      		  //Logaritmic curve
+		else 
+			pan = 0;
 		
 //		System.out.println("pan "+pan+" : dx "+dx+" : volume "+volume+" : distance "+distance);
 		sound.setPan(pan, volume);
