@@ -107,7 +107,7 @@ public class SpeechBubble extends Entity {
 		body.setUserData(this);
 		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
 		fdef.filter.categoryBits = layer;
-		body.createFixture(fdef).setUserData(Vars.trimNumbers(getID()));
+		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 	}
 	
 	private static int getWidth(String ID){

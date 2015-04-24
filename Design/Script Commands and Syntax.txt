@@ -106,10 +106,17 @@ setScript:
 	setScript(script#)
 setChoice:
 	creates a choice situation with the specified types of choices;
-	minimum of 2 choices, maximum of five choices
+	minimum of 2 choices, maximum of 5 choices
 	setChoice(type# 1, type# 2, ... type# 5)
 
-	choice types: YesNo, 1(simple), 2(exciting), 3(curious), 4(cowardly), 5(powerful)
+	choice types: YesNo, 1(simple), 2(exciting), 3(curious), 4(cowardly), 5(power)
+song/setSong:
+	sets the current song to the song given;
+	if no song gound with given parameters than song will not change
+	setSong(song#/song title)
+
+	Since songs indicicies might change througout development, it is better to use song titles
+	see the music resource folder (/res/music/ for song names. Names must be EXACT
 spawn:
 	spawns the object at the specified location
 	spawn(objectType, x, y)

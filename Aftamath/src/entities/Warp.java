@@ -50,7 +50,7 @@ public class Warp extends Entity {
 	@Override
 	public void create() {
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((rw-2)/Vars.PPM, (rh)/Vars.PPM);
+		shape.setAsBox((rw)/Vars.PPM, (rh)/Vars.PPM);
 
 		bdef.position.set(x/Vars.PPM, y/Vars.PPM);
 		bdef.type = BodyType.KinematicBody;
@@ -61,9 +61,11 @@ public class Warp extends Entity {
 		body.setUserData(this);
 		fdef.filter.maskBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_LAYER2| Vars.BIT_LAYER3);
 		fdef.filter.categoryBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_LAYER2| Vars.BIT_LAYER3);
-		body.createFixture(fdef).setUserData(Vars.trimNumbers(getID()));
+		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
+		
+		createCenter();
 	}
 
 	public Vector2 getLink() { return warpLocation; }
-	public void setLink(Vector2 link){ warpLocation = new Vector2(link.x*Vars.PPM, link.y*Vars.PPM); }
+	public void setLink(Vector2 link){ warpLocation = link.cpy(); }
 }

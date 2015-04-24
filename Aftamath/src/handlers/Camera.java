@@ -19,7 +19,7 @@ public class Camera extends OrthographicCamera{
 	private float goalZoom, oldZoom;
 	private float zoomTime, goalTime;
 	private boolean flipPlayer;
-	private Vector2 focus;
+	private Vector2 focus, lastPosition;
 	private Mob character;
 	private RefocusTrigger trigger;
 	
@@ -52,7 +52,7 @@ public class Camera extends OrthographicCamera{
 		final float min = 1f;
 		final float max = 20f;
 			if(reached)
-				position.set(new Vector3(focus, 0));
+				setPosition(focus);
 			else {
 				float dx = focus.x - position.x;
 				float dy = focus.y - position.y; 
@@ -84,7 +84,15 @@ public class Camera extends OrthographicCamera{
 					if(x1 < minx + viewportWidth / 2) x1 = minx + viewportWidth / 2;
 					if(y1 > maxy) y1 = maxy;
 					if(y1 < miny) y1 = miny;
+					
+					lastPosition = new Vector2(position.x, position.y);
 					position.set(new Vector2(x1, y1), 0);
+					
+					//if focus is out of bounds, hence no camera movement
+					if(position.x-lastPosition.x==0 && position.y-lastPosition.y==0){
+						reached = true;
+						moving = false;
+					}
 				}
 			}
 		}
@@ -157,6 +165,7 @@ public class Camera extends OrthographicCamera{
 	public Vector2 getFocus() {return focus;}
 	public void setVerticalOffset(float y){ YOFFSET = y; }
 
+	public void setPosition(Vector2 v){ setPosition(v.x, v.y); }
 	public void setPosition(float x, float y) {
 		if(x > maxx - viewportWidth / 2) x = maxx - viewportWidth / 2;
 		if(x < minx + viewportWidth / 2) x = minx + viewportWidth / 2;

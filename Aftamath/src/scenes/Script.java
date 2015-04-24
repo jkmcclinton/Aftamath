@@ -13,6 +13,9 @@ import java.util.Stack;
 
 import main.Play;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -285,6 +288,27 @@ public class Script {
 			play.setStateType(Play.CHOICE);
 			play.choosing = true;
 			paused = true;
+			break;
+		case "song":
+		case "setsong":
+			if(Vars.isNumeric(lastArg(line))){
+				try{
+					int s = convertToNum(lastArg(line));
+					Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+Scene.BGM.get(s)+".wav"));
+					play.addSong(song);
+				} catch(Exception e1){
+					e1.printStackTrace();
+				}
+			} else {
+				String title = line.substring(line.indexOf(" "));
+				
+				try{
+					Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+title+".wav"));
+					play.addSong(song);
+				} catch (Exception e1){
+					e1.printStackTrace();
+				}
+			}
 			break;
 		case "spawn":
 			spawn(line);
@@ -656,7 +680,7 @@ public class Script {
 				object = String.valueOf(player.getRelationship());
 				break;
 			case "partnerid":
-				object = player.getPartner().getID();
+				object = player.getPartner().ID;
 				break;
 			case "house":
 				object = player.getHome().getType();

@@ -35,19 +35,17 @@ public class Room extends Scene {
 		tileMap = new TmxMapLoader().load("res/maps/"+ID+".tmx");
 		tmr = new OrthogonalTiledMapRenderer(tileMap, p.getSpriteBatch());
 		MapProperties prop = tileMap.getProperties();
-		width = prop.get("width", Integer.class);
-		height = prop.get("height", Integer.class);
+		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
+		height = prop.get("height", Integer.class)*Vars.TILE_SIZE;
 
 		try{
 			String bgm ="";
 			if((bgm =prop.get("bgm", String.class))!=null){
 				bgm = BGM.get(Integer.parseInt(bgm));
-				if (!bgm.equals(owner.DEFAULT_SONG)){
-					DEFAULT_SONG = Gdx.audio.newMusic(new FileHandle("res/music/"+
-							bgm+".wav"));
-					DEFAULT_SONG.setLooping(true);
+				DEFAULT_SONG = Gdx.audio.newMusic(new FileHandle("res/music/"+bgm+".wav"));
+				DEFAULT_SONG.setLooping(true);
+				if (!bgm.equals(owner.DEFAULT_SONG))
 					newSong = true;
-				}
 			}
 
 			String light= "";

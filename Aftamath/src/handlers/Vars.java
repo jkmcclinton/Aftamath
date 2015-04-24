@@ -13,6 +13,7 @@ public class Vars {
 	public static final short BIT_PROJECTILE = 64;
 	
 	//global constants
+	public static final float DT = .016666668f;
 	public static final float PPM = 100f;
 	public static final float GRAVITY = -9.81f;
 	public static final float ANIMATION_RATE = 1/5f;

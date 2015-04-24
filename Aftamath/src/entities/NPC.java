@@ -150,26 +150,6 @@ public class NPC extends Mob {
 	public void lock() { locked = true; }
 	public void unlock() { locked = false; }
 	
-	public void create(){
-		//hitbox
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((rw-4)/Vars.PPM, (rh)/Vars.PPM);
-		
-		bdef.position.set(x/Vars.PPM, y/Vars.PPM);
-		bdef.type = BodyType.DynamicBody;
-		fdef.shape = shape;
-		
-		body = world.createBody(bdef);
-		body.setUserData(this);
-		fdef.filter.maskBits = (short) (Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
-		fdef.filter.categoryBits = layer;
-		body.createFixture(fdef).setUserData(Vars.trimNumbers(getID()));
-		body.setFixedRotation(true);
-		
-		createFootSensor();
-		createInteractSensor();
-	}
-	
 	private void determineGender(){
 		Array<String> males = new Array<String>(new String[] {"narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
 				"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2",
@@ -198,5 +178,41 @@ public class NPC extends Mob {
 		} catch(Exception e) {
 			return DEFAULT_HEIGHT;
 		}
+	}
+	
+	public NPC copy(){
+		NPC n = new NPC(name, ID, sceneID, 0, 0, layer);
+		
+		n.resetHealth(health, MAX_HEALTH);
+		n.setDefaultState(defaultState);
+		
+		return n;
+	}
+	
+	public void spawn(Vector2 location){
+		setPosition(location);
+		create();
+		gs.addObject(this);
+	}
+	
+	public void create(){
+		//hitbox
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox((rw-4)/Vars.PPM, (rh)/Vars.PPM);
+		
+		bdef.position.set(x/Vars.PPM, y/Vars.PPM);
+		bdef.type = BodyType.DynamicBody;
+		fdef.shape = shape;
+		
+		body = world.createBody(bdef);
+		body.setUserData(this);
+		fdef.filter.maskBits = (short) (Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+		fdef.filter.categoryBits = layer;
+		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
+		body.setFixedRotation(true);
+		
+		createFootSensor();
+		createInteractSensor();
+		createCenter();
 	}
 }

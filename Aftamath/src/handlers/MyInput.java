@@ -20,8 +20,14 @@ public class MyInput {
 	public static final int DEBUG_DOWN = 12;
 	public static final int DEBUG_LEFT = 13;
 	public static final int DEBUG_RIGHT = 14;
-	public static final int DEBUG = 15;
-	public static final int DEBUG1 = 16;
+	public static final int DEBUG_LEFT1 = 15;
+	public static final int DEBUG_RIGHT1 = 16;
+	public static final int DEBUG_LEFT2 = 17;
+	public static final int DEBUG_RIGHT2 = 18;
+	public static final int DEBUG_CENTER = 19;
+	public static final int DEBUG = 20;
+	public static final int DEBUG1 = 21;
+	public static final int DEBUG2 = 22;
 	
 	static {
 		keys = new boolean[NUM_KEYS];

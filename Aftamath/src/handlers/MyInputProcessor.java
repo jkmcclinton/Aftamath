@@ -22,8 +22,12 @@ public class MyInputProcessor extends InputAdapter {
 		if(k == Keys.NUMPAD_6) MyInput.setKey(MyInput.DEBUG_RIGHT, true);
 		if(k == Keys.L) MyInput.setKey(MyInput.DEBUG, true);
 		if(k == Keys.P) MyInput.setKey(MyInput.DEBUG1, true);
-		
-		
+		if(k == Keys.NUMPAD_7) MyInput.setKey(MyInput.DEBUG_LEFT2, true);
+		if(k == Keys.NUMPAD_9) MyInput.setKey(MyInput.DEBUG_RIGHT2, true);
+		if(k == Keys.NUMPAD_5) MyInput.setKey(MyInput.DEBUG_CENTER, true);
+		if(k == Keys.L) MyInput.setKey(MyInput.DEBUG, true);
+		if(k == Keys.P) MyInput.setKey(MyInput.DEBUG1, true);
+		if(k == Keys.TAB) MyInput.setKey(MyInput.DEBUG2, true);
 		return true; 
 	}
 	
@@ -44,6 +48,12 @@ public class MyInputProcessor extends InputAdapter {
 		if(k == Keys.NUMPAD_6) MyInput.setKey(MyInput.DEBUG_RIGHT, false);
 		if(k == Keys.L) MyInput.setKey(MyInput.DEBUG, false);
 		if(k == Keys.P) MyInput.setKey(MyInput.DEBUG1, false);
+		if(k == Keys.NUMPAD_7) MyInput.setKey(MyInput.DEBUG_LEFT2, false);
+		if(k == Keys.NUMPAD_9) MyInput.setKey(MyInput.DEBUG_RIGHT2, false);
+		if(k == Keys.NUMPAD_5) MyInput.setKey(MyInput.DEBUG_CENTER, false);
+		if(k == Keys.L) MyInput.setKey(MyInput.DEBUG, false);
+		if(k == Keys.P) MyInput.setKey(MyInput.DEBUG1, false);
+		if(k == Keys.TAB) MyInput.setKey(MyInput.DEBUG2, false);
 		
 		return true;
 	}

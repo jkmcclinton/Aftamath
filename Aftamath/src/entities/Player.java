@@ -5,6 +5,7 @@ import handlers.Vars;
 import main.House;
 import main.Play;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Player extends SuperMob {
@@ -47,12 +48,6 @@ public class Player extends SuperMob {
 		updateMoney();
 	}
 	
-	//must only be used for copying player data
-	public void setHealth(double health, double maxHealth){
-		this.health = health;
-		this.MAX_HEALTH = maxHealth;
-	}
-	
 	public void heal(double healVal){
 		health += healVal * H;
 		if (health > MAX_HEALTH) health = MAX_HEALTH;
@@ -90,6 +85,7 @@ public class Player extends SuperMob {
 	public void setLoveScale(float val){ L = val; }
 	public double getRelationship(){ return relationship; }
 	public String getPartnerInfo(){ return info; }
+//	public void resetPartnerInfo(String info){this.info=info;}
 	
 	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
 	public void removeFollower(Mob m){ followers.removeValue(m, true); }
@@ -115,6 +111,7 @@ public class Player extends SuperMob {
 	}
 	
 	public double getMoney(){ return money; }
+	public void resetMoney(double money){ this.money = money; }
 	
 	public void evict(){ home = new House(); }
 	public void moveHome(House newHouse){ home = newHouse; }
@@ -136,12 +133,14 @@ public class Player extends SuperMob {
 		Player p = new Player(name, gender, ID);
 		
 		//copy stats
-		p.setHealth(health, MAX_HEALTH);
+		p.resetMoney(money);
+		p.resetHealth(health, MAX_HEALTH);
 		p.setHealthScale(H);
 		p.resetBravery(bravery);
 		p.setBraveryScale(B);
 		p.resetNiceness(nicety);
 		p.setNicenessScale(N);
+		p.goOut(myPartner.copy(), info);
 		p.resetRelationship(relationship);
 		p.setLoveScale(L);
 		p.resetFollowers(followers);
@@ -149,7 +148,12 @@ public class Player extends SuperMob {
 		
 		p.setPowerType(type);
 		p.resetLevel(level);
+		p.setPlayState(gs);
 		
 		return p;
+	}
+	
+	public void spawnPartner(Vector2 location){
+		myPartner.spawn(location);
 	}
 }

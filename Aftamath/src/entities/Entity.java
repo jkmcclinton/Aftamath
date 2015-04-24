@@ -21,6 +21,20 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Entity{
 	
+	public boolean isInteractable;
+	public String ID;
+	
+	public Animation animation;
+	public boolean controlled;
+	public float x;
+	public float y;
+	public int height, width, rw, rh, controlledAction;
+	
+	protected int sceneID;
+	protected int actionTypes;
+	protected Vector2 goal;
+	protected Texture texture;
+	protected boolean direction;
 	protected World world;
 	protected Play gs;
 	protected Player player;
@@ -30,22 +44,9 @@ public class Entity{
 	protected final FixtureDef fdef = new FixtureDef();
 	protected short layer;
 	
-	public boolean isInteractable;
-	protected String ID;
-	protected int sceneID;
-	
-	public Animation animation;
-	public boolean controlled;
-	public float x;
-	public float y;
-	public int height, width, rw, rh, controlledAction;
-	protected int actionTypes;
-	protected Vector2 goal;
-	protected Texture texture;
-	protected boolean direction;
 	protected static final float MAX_DISTANCE = 50; 
 	
-	protected Entity (float x2, float y2, int w, int h, String ID) {
+	public Entity (float x2, float y2, int w, int h, String ID) {
 		this.ID = ID;
 		this.x = x2;
 		this.y = y2;
@@ -123,7 +124,6 @@ public class Entity{
 	
 	public short getLayer(){ return layer; }
 	
-	public String getID() { return ID; }
 	public int getSceneID(){ return sceneID; }
 	public void setSceneID(int ID){ sceneID = ID; }
 	public void setPosition(Vector2 location){
@@ -140,7 +140,7 @@ public class Entity{
 
 	public Script getScript() { return script; }
 	
-	public String toString(){ return getID(); }
+	public String toString(){ return ID; }
 	
 	public void changeDirection(){
 		if (direction) direction = false;
@@ -175,15 +175,28 @@ public class Entity{
 	public void create(){
 		//hitbox
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((rw-2)/PPM, (rh)/PPM);
+		shape.setAsBox((rw)/PPM, (rh)/PPM);
 		
 		bdef.position.set(x/PPM, y/PPM);
-		bdef.type = BodyType.DynamicBody;
+		bdef.type = BodyType.StaticBody;
 		fdef.shape = shape;
 		body = world.createBody(bdef);
 		body.setUserData(this);
 		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
 		fdef.filter.categoryBits = layer;
-		body.createFixture(fdef).setUserData(Vars.trimNumbers(getID()));
+		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
+		
+		createCenter();
+	}
+	
+	protected void createCenter(){
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(1/Vars.PPM, 1/Vars.PPM);
+		fdef.shape = shape;
+		
+		fdef.isSensor = true;
+		fdef.filter.categoryBits = (short) (layer);
+		fdef.filter.maskBits = (short) (Vars.BIT_HALFGROUND | Vars.BIT_GROUND);
+		body.createFixture(fdef).setUserData("center");
 	}
 }

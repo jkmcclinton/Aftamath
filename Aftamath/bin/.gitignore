@@ -1,6 +1,4 @@
-/characters
-/entities
-/handlers
-/main
-/scenes
-/states
+/entities/
+/handlers/
+/main/
+/scenes/

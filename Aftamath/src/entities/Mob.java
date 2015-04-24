@@ -17,7 +17,8 @@ public abstract class Mob extends Entity{
 	public int numContacts;
 	public Sound voice;
 	public boolean dead, positioning, canWarp, canClimb;
-	
+
+	protected Vector2 respawnPoint;
 	protected String name;
 	protected double health, MAX_HEALTH;
 	protected boolean invulnerable;
@@ -60,7 +61,7 @@ public abstract class Mob extends Entity{
 	protected static int[] actionPriorities = {0,1,2,3,4,5,4,4,4,4}; // determines what animation gets played first
 	
 	protected Mob(String name, String ID, float x, float y, int w, int h, short layer) {
-		super(x, y, w, h, ID);
+		super(x, y+h/2f, w, h, ID);
 		this.name = name;
 		this.layer = layer;
 		actionTypes = 7;
@@ -95,6 +96,18 @@ public abstract class Mob extends Entity{
 		if (animation.actionID < 4 && animation.actionID != JUMPING && animation.actionID != FLINCHING) {
 			action = IDLE;
 		} 
+	}
+	
+	//must only be used for copying data
+	public void resetHealth(double health, double maxHealth){
+		this.health = health;
+		this.MAX_HEALTH = maxHealth;
+	}
+	
+	public void setPosition(Vector2 location){
+		x=location.x;
+		y=location.y+rh;
+		setRespawnpoint(location);
 	}
 	
 	protected void setAnimation(int action){
@@ -160,13 +173,28 @@ public abstract class Mob extends Entity{
 	
 	public void die(){
 //		Play.debugText = getID() + ": DIE!!!";
-		System.out.println(getID() + ": DIE!!!");
+		System.out.println(ID + ": DIE!!!");
 		dead = true;
 		
 //		if(this instanceof Player)
 //			//do death event
 //			Gdx.app.exit();
 	}
+	
+	public void respawn(){
+		if (respawnPoint!=null){
+			System.out.println("respawning");
+			setPosition(respawnPoint);
+			dead = false;
+			animation.removeAction();
+//			gs.getCam().zoom(Camera.ZOOM_NORMAL);
+//			gs.getB2dCam().zoom(Camera.ZOOM_NORMAL);
+			gs.addBodyToRemove(body);
+			create();
+		}
+	}
+	
+	public void setRespawnpoint(Vector2 location){ respawnPoint = location.cpy(); }
 	
 	public void doAction(int action){
 		if (action > actionTypes) {
@@ -290,6 +318,7 @@ public abstract class Mob extends Entity{
 
 	public void create(){
 		//hitbox
+		direction = false;
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw-4)/Vars.PPM, (rh)/Vars.PPM);
 		
@@ -301,11 +330,12 @@ public abstract class Mob extends Entity{
 		body.setUserData(this);
 		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
 		fdef.filter.categoryBits = layer;
-		body.createFixture(fdef).setUserData(Vars.trimNumbers(getID()));
+		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 		body.setFixedRotation(true);
 		
 		createFootSensor();
 		createInteractSensor();
+		createCenter();
 	}
 	
 	protected void createFootSensor(){

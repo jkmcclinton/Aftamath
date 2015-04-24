@@ -23,12 +23,13 @@ public class Ground extends Entity{
 		bdef.position.set(x, y);
 		
 		ChainShape cs = new ChainShape();
-		Vector2[] v = new Vector2[4];
+		Vector2[] v = new Vector2[5];
 		
 		v[0] = new Vector2(-TILE_SIZE / 2 / PPM, -TILE_SIZE / 2 / PPM);
 		v[1] = new Vector2(-TILE_SIZE / 2 / PPM, TILE_SIZE / 2 / PPM);
 		v[2] = new Vector2(TILE_SIZE / 2 / PPM, TILE_SIZE / 2 / PPM);
 		v[3] = new Vector2(TILE_SIZE / 2 / PPM, -TILE_SIZE / 2 / PPM);
+		v[4] = new Vector2(-Vars.TILE_SIZE / 2 / Vars.PPM, -Vars.TILE_SIZE / 2 / Vars.PPM);
 		cs.createChain(v);
 		
 		fdef.friction = .25f;

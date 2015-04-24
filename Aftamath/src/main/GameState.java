@@ -66,6 +66,10 @@ public abstract class GameState {
 			song.play();
 	}
 	
+	public void setSong(String src){
+		setSong(Gdx.audio.newMusic(new FileHandle("res/music/"+src+".wav")));
+	}
+	
 	public void setSong(Music song){
 		setSong(song, Game.musicVolume);
 	}

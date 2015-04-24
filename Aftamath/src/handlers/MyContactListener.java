@@ -45,11 +45,11 @@ public class MyContactListener implements ContactListener {
 
 		if(typeB.equals("foot") && !unstandable.contains(typeA, true) && 
 				!fb.getBody().getUserData().equals(typeA)) {
-			play.playSound(entB.getPosition(), "step1");
+//			play.playSound(entB.getPosition(), "step1");
 			((Mob) entB).numContacts++;
 		} if(typeA.equals("foot") && !unstandable.contains(typeB, true) && 
 				!fa.getBody().getUserData().equals(typeB)) {
-			play.playSound(entA.getPosition(), "step1");
+//			play.playSound(entA.getPosition(), "step1");
 			((Mob) entA).numContacts++;
 		} if(typeB.equals("projectile")) {
 			if (entA instanceof Mob){
@@ -87,7 +87,7 @@ public class MyContactListener implements ContactListener {
 		} if(typeA.equals("warp") && typeB.equals("foot")){
 			if(((Warp) entA).conditionsMet()) {
 				if (entB instanceof Player)
-					new SpeechBubble(entA, entA.getPosition().x*Vars.PPM, entA.rh +
+					new SpeechBubble(entA, entA.getPosition().x*Vars.PPM, ((Warp)entA).rh +
 							entA.getPosition().y*Vars.PPM, "arrow");
 				Mob m = (Mob) entB;
 				m.canWarp = true;
@@ -96,7 +96,7 @@ public class MyContactListener implements ContactListener {
 		} if(typeB.equals("warp") && typeA.equals("foot")){
 			if(((Warp) entB).conditionsMet()) {
 				if (entA instanceof Player)
-					new SpeechBubble(entB, entB.getPosition().x*Vars.PPM, entB.rh +
+					new SpeechBubble(entB, entB.getPosition().x*Vars.PPM, ((Warp)entB).rh +
 							entB.getPosition().y*Vars.PPM, "arrow");
 			Mob m = (Mob) entA;
 			m.canWarp = true;
@@ -149,11 +149,23 @@ public class MyContactListener implements ContactListener {
 				((Mob) entB).setInteractable(null);
 			}
 		} if(typeA.equals("warp")){
+			Mob m = (Mob) entB;
+			if(m.getWarp()!=null)
+				if(m.getWarp().equals(entA)) {
+					m.setWarp(null);
+					m.canWarp = false;
+				}
 			for(Entity e:play.getObjects())
 				if(e instanceof SpeechBubble)
 					if(((SpeechBubble)e).getOwner().equals(entA))
 						bodiesToRemove.add(e.getBody());
 		} if(typeB.equals("warp")){
+			Mob m = (Mob) entA;
+			if(m.getWarp()!=null)
+				if(m.getWarp().equals(entB)) {
+					m.setWarp(null);
+					m.canWarp = false;
+				}  
 			for(Entity e:play.getObjects())
 				if(e instanceof SpeechBubble)
 					if(((SpeechBubble)e).getOwner().equals(entB))

@@ -75,12 +75,17 @@ public abstract class Scene {
 		BGM.add("Silence");
 		BGM.add("Bright Days");			//1
 		BGM.add("Elevator Music");		//2
-		BGM.add("Explosive");			//3
-		BGM.add("Grand");				//4
-		BGM.add("Incredible");			//5
-		BGM.add("Relax");				//6
-		BGM.add("Suspense");			//7
-		BGM.add("Title");				//8
+		BGM.add("Excitement");			//3
+		BGM.add("Explosive");			//4
+		BGM.add("Grand");				//5
+		BGM.add("Incredible");			//6
+		BGM.add("Relax");				//7
+		BGM.add("Suspense");			//8
+		BGM.add("Title");				//9
+		BGM.add("Yesterday");
+		BGM.add("Jamming");
+		BGM.add("Incinerate");
+		BGM.add("Justice");
 	}
 	
 	protected Scene(){}
@@ -185,7 +190,7 @@ public abstract class Scene {
 				if (cell == null) continue;
 				if (cell.getTile() == null) continue;
 
-				new Ground(world, "ground", x * Vars.TILE_SIZE / PPM,
+				new Ground(world, "ground", (x * Vars.TILE_SIZE +7.1f) / PPM,
 						(y * Vars.TILE_SIZE+Vars.TILE_SIZE/1.8f) / PPM);
 				
 //				cell = fg.getCell(x, y);
@@ -220,9 +225,12 @@ public abstract class Scene {
 		for(MapObject object : objects) {
 		    if (object instanceof RectangleMapObject) {
 		        Rectangle rect = ((RectangleMapObject) object).getRectangle();
-		        rect.set(rect.x, rect.y+Vars.TILE_SIZE, rect.width, rect.height);
+		        	if(object.getProperties().get("warp")!=null)System.out.println(new Vector2(rect.x,rect.y));
+		        rect.set(rect.x+7.1f, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
 //		        System.out.println(new Vector2(rect.x, rect.y));
 		        
+		        entities.add(new Entity(rect.x,rect.y,(int)rect.width,(int)rect.height,"TiledObject"));
+				
 		        Object o = object.getProperties().get("NPC");
 		        if(o!=null) {
 		        	String l = object.getProperties().get("Layer", String.class);
@@ -267,8 +275,8 @@ public abstract class Scene {
 		        	String id = object.getProperties().get("ID", String.class);
 		        	int warpID = Integer.parseInt(id);
 		        	int nextID = Integer.parseInt(nextWarp);
-		        	entities.add(new Warp(this, next, warpID, nextID, rect.x+Vars.TILE_SIZE, 
-		        			rect.y+Vars.TILE_SIZE, rect.width, rect.height));
+		        	entities.add(new Warp(this, next, warpID, nextID, rect.x, 
+		        			rect.y+rect.height/2, rect.width, rect.height));
 		        }
 
 		        o = object.getProperties().get("spawn");
@@ -314,9 +322,9 @@ public abstract class Scene {
 			if(warp!=null)
 				if(!warp.owner.newSong) s.newSong = false;
 			
-			Warp nextWarp = s.findWarp(warpID);
+			Vector2 nextWarp = s.findWarpLoc(warpID);
 			s.setRayHandler(rayHandler);
-			if(nextWarp!=null) warp.setLink(nextWarp.getPosition());
+			if(nextWarp!=null) warp.setLink(nextWarp);
 			else warp.setLink(s.spawnpoint);
 			
 			return s;
@@ -326,14 +334,14 @@ public abstract class Scene {
 			try {
 				ID = ID.substring(0,1).toUpperCase() + ID.substring(1);
 				c = Class.forName("scenes."+ID);
-				Constructor<?> cr = c.getConstructor(World.class, String.class, Play.class, Player.class);
-				Object o = cr.newInstance(world, ID, play, play.player);
+				Constructor<?> cr = c.getConstructor(World.class, Play.class, Player.class);
+				Object o = cr.newInstance(world, play, play.player);
 				if(warp!=null)
 					if(!warp.owner.newSong) ((Scene) o).newSong = false;
 				
-				Warp nextWarp = ((Scene)o).findWarp(warpID);
+				Vector2 nextWarp = ((Scene)o).findWarpLoc(warpID);
 				((Scene)o).setRayHandler(rayHandler);
-				if(nextWarp!=null) warp.setLink(nextWarp.getPosition());
+				if(nextWarp!=null) warp.setLink(nextWarp);
 				else warp.setLink(((Scene)o).spawnpoint);
 					
 				return (Scene) o;
@@ -359,22 +367,19 @@ public abstract class Scene {
 		}
 	}
 	
-	public Warp findWarp(int warpID){
+	public Vector2 findWarpLoc(int warpID){
 		MapObjects objects = tileMap.getLayers().get("objects").getObjects();
 		for(MapObject object : objects) {
 			if (object instanceof RectangleMapObject) {
 				Rectangle rect = ((RectangleMapObject) object).getRectangle();
+		        rect.set(rect.x+7.1f*2, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
 
 				Object o = object.getProperties().get("warp");
 				if(o!=null) {
-		        	String next = object.getProperties().get("next", String.class);
-		        	String nextWarp = object.getProperties().get("nextWarp", String.class);
 		        	String id = object.getProperties().get("ID", String.class);
 		        	int warp = Integer.parseInt(id);
-		        	int nextID = Integer.parseInt(nextWarp);
 					if(warp==warpID)
-						return new Warp(this, next, warp, nextID, rect.x, rect.y,
-								rect.width, rect.height);
+			        	return new Vector2(rect.x, rect.y-rect.height/2+10);
 				}
 			}
 		}
