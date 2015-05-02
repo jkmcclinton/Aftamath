@@ -1,7 +1,7 @@
 Narrator: New game, ~huh? So you want to start yor life over?
 	Old life not good enough for?
 	Well, I don't knoe exactly what it is you're thinking of finding in here...
-	But I'm sre there's a whole bunch of stupid stff in this dumb game yo may find worthwile.
+	But I'm sre there's a whole bunch of stupid stuff in this dumb game yo may find worthwile.
 	So let's start with the basics. ~The real slims./pName, gender, DOB, all that jazz.
 	You know the drill. ~How could you not? Oh wait, I forgot you weren't the brightest.
 	Sorry, sorry. Get over it. We're starting for real now.

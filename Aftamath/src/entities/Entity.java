@@ -40,8 +40,8 @@ public class Entity{
 	protected Player player;
 	protected Body body;
 	protected Script script;
-	protected final BodyDef bdef = new BodyDef();
-	protected final FixtureDef fdef = new FixtureDef();
+	protected BodyDef bdef = new BodyDef();
+	protected FixtureDef fdef = new FixtureDef();
 	protected short layer;
 	
 	protected static final float MAX_DISTANCE = 50; 
@@ -81,7 +81,7 @@ public class Entity{
 	}
 	
 	public void render(SpriteBatch sb) {
-		sb.draw(animation.getFrame(), body.getPosition().x * PPM - rw, body.getPosition().y * PPM - rh);
+		sb.draw(animation.getFrame(), getPosition().x * PPM - rw, getPosition().y * PPM - rh);
 	}
 	
 	public void doAction(int action){

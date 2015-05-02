@@ -28,6 +28,7 @@ public class MyInputProcessor extends InputAdapter {
 		if(k == Keys.L) MyInput.setKey(MyInput.DEBUG, true);
 		if(k == Keys.P) MyInput.setKey(MyInput.DEBUG1, true);
 		if(k == Keys.TAB) MyInput.setKey(MyInput.DEBUG2, true);
+		if(k == Keys.F3) MyInput.setKey(MyInput.DEBUG3, true);
 		return true; 
 	}
 	
@@ -54,6 +55,7 @@ public class MyInputProcessor extends InputAdapter {
 		if(k == Keys.L) MyInput.setKey(MyInput.DEBUG, false);
 		if(k == Keys.P) MyInput.setKey(MyInput.DEBUG1, false);
 		if(k == Keys.TAB) MyInput.setKey(MyInput.DEBUG2, false);
+		if(k == Keys.F3) MyInput.setKey(MyInput.DEBUG3, false);
 		
 		return true;
 	}

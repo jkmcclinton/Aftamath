@@ -100,7 +100,7 @@ public class Title extends GameState {
 	
 	public void updateDebugText() {
 		sb.begin();
-			drawString(sb, font, 13, debugText,1,  Game.height/2 - font[0].getRegionHeight() - 2);
+			drawString(sb, font, 13, debugText, 1,  Game.height/2 - font[0].getRegionHeight() - 2);
 			//1drawString(sb, debugText,1,  Game.height/2 - font[0].getRegionHeight()*4 - 2);
 		sb.end();
 	}

@@ -20,7 +20,7 @@ public abstract class GameState {
 	
 	protected GameStateManager gsm;
 	protected Game game;
-	protected Music song;
+	protected Music song, nextSong;
 	protected static TextureRegion[] font;
 	
 	static { 
@@ -36,7 +36,7 @@ public abstract class GameState {
 	public int[] menuIndex = new int[2];
 	public String[][] menuOptions;
 	protected float buttonTime, buttonDelay = .2f;
-	protected boolean quitting = false;
+	protected boolean quitting = false, changingSong;
 	
 	protected static final float DELAY = .2f;
 	protected static final int PERIODX = 7;
@@ -123,6 +123,39 @@ public abstract class GameState {
 		sound.setPan(pan, volume);
 	}
 	
+	public void fadeSong(float dt, boolean spritebatch){
+		float volume = song.getVolume();
+		volume += dt * sb.getFadeType();
+		if (volume > Game.musicVolume)
+			volume = Game.musicVolume;
+		if (volume < 0){
+			volume = 0;
+			if(song.isPlaying()) {
+				song.stop();
+				song.dispose();
+			}
+		}
+
+		if(song.isPlaying())
+			song.setVolume(volume);
+	}
+	
+	public boolean fadeOutSong(float dt){
+		float volume = song.getVolume();
+		volume -= dt;
+		if (volume > Game.musicVolume)
+			volume = Game.musicVolume;
+		if (volume < 0){
+			volume = 0;
+			if(song.isPlaying()) song.stop();
+			return true;
+		}
+		
+		if(song.isPlaying())
+			song.setVolume(volume);
+		return false;
+	}
+	
 	public void loadGame(){
 		
 	}
@@ -147,12 +180,12 @@ public abstract class GameState {
 			Gdx.app.exit();
 	}
 	
-	public static void drawString(SpriteBatch sb, String text, int x, int y) {
+	public static void drawString(SpriteBatch sb, String text, float x, float y) {
 		drawString(sb, font, font[0].getRegionWidth(), text, x, y);
 	}
 	
 	//draw entire string at location
-	public static void drawString(SpriteBatch sb, TextureRegion[] font, int px, String text, int x, int y) {
+	public static void drawString(SpriteBatch sb, TextureRegion[] font, int px, String text, float x, float y) {
 		String[] lines = text.split("/l");
 		
 		for (int j = 0; j < lines.length; j++){

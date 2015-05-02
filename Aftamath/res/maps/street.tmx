@@ -98,7 +98,7 @@
     <property name="Layer" value="back"/>
     <property name="NPC" value="logger"/>
     <property name="Name" value="John"/>
-    <property name="Script" value="generic_1"/>
+    <property name="Script" value="choice test"/>
     <property name="State" value="STATIONARY"/>
    </properties>
   </object>

@@ -1,11 +1,33 @@
 Script Commands and Syntax
 
+================================================
+*************	Important Info    **************
+================================================
+
+Every section of a script must be section off into "sub scripts", or scripts within scripts.
+Example: Brackets are NOT included 
+	Script [enter some kind of name here]
+	[script code]
+	done
+
+Typically, dialoges with an NPC begin by locking the player, forcing the NPC to face the player,
+and setting the current speaker to that NPC. This can all be done like so:
+	lockPlayer
+	faceObject(this, player)
+	setSpeaker(this)
+
+Use # at the beginning of a line to denote text that is not code
+
+
+================================================
+		Commands
+================================================
 attack:
 	~ not implemented
-	attack(object)
+	attack(objectName)
 action:
 	makes object do an action animation of their class; type of action depends on object
-	action(object#, action#)
+	action(objectName, action#)
 
 	action # usually goes from 1 - 9
 		1 - walk
@@ -21,21 +43,19 @@ XXXXXXXXXXXXXXXX3 - fall (doesn't actually make the object fall)
 choice:
 	provides handling for the indicated choice
 	must be ended with "end" command
-	choice(choice#[1-5])
-
-	i.e. if player chooses choice 1, the logic for "choice 1" is handled
+	[choiceName]
 done:
 	ends handling for the entire script
 	resets the state of all NPCs
 	lowers the dialog box
 	focuses camera on player
-	done()
+	done
 endChoice:
 	~ ends recent choice handling
-	endChoice()
+	endChoice
 endIf:
 	ends condition handling
-	endIf()
+	endIf
 if:
 	compares values and flags
 	if("flag", flag#, boolean)
@@ -47,86 +67,87 @@ if:
 	  houseType, partnerID
 
 	~capitalization does not matter
-facePlayer:
-	makes a mob face the player; does not affect non-mob objects
-	NPCs will have their state set to FACEPLAYER
-	facePlayer(object#)
 face/faceObject:
 	makes a mob face a specific object; does not affect non-mob objects
 	NPCs will have their state set to FACEOBJECT
-	face(object, focus object#)
+	face(objectName, focus objectName)
 forcefollow:
 	changes whether or not the player's partner is forced to follow the player
 	if the player doesn't have a partner, this does nothing
 	forcefollow(true/false)
+follow:
+	makes the mob object follow the target
+	follow(objectName, focus objectName
 resetState:
 	sets the NPC's state to its default state; does not affect non-NPC objects
-	resetState(object#)
+	resetState(objectName)
 lockPlayer:
 	prevents the player from being able to move by setting the PlayState type to LISTEN
-	lockPlayer()
+	lockPlayer
 lock:
 	locks the mob
-	lock(object#)
+	lock(objectName)
 lowerDialog:
 	lowers the dialog box from visibility
-	lowerDialog()
+	lowerDialog
 moveCamera:
 	moves the camera to the indicated location
 	moveCamera(x, y)
 focus/focusCamera:
 	focuses the camera on the specified object
-	focus(object#)
+	focus(objectName)
 unfocus/unfocusCamera/removeFocus:
 	focuses the camera back on the player
-	unfocus()
+	unfocus
 moveObject:
 	moves the object to the specified location; units in pixels
-	moveObject(object#, x)
+	moveObject(objectName, x)
 movePlayer:
 	offsets the player by specified amount; units in pixels
 	movePlayer(offset)
 pause:
 	makes the dialog wait for user input
-	pause()
+	pause
 setFlag:
 	~ not fully theorized
 	sets the flag to the indicated state
-	setFlag(flag#, state)
+	setFlag(flagName, state)
 setSpeaker:
 	sets ther face on the dialog box to the indicated mob;
 	~ non-Mob objects might not have a face
 	if object isn't found, the face is not visible
-	setSpeaker(object/object)
+	boolean [focus] is optional. if included (regardless of value), 
+		camera focus will be set to current speaker
+	setSpeaker(objectName, [focus])
 
 	known: partner, narrator, this
 setScript:
 	sets the read location for the object's script
 	!!does not change the source file!!
-	setScript(script#)
+	setScript(scriptTitle)
 setChoice:
 	creates a choice situation with the specified types of choices;
 	minimum of 2 choices, maximum of 5 choices
-	setChoice(type# 1, type# 2, ... type# 5)
+	setChoice(type# 1:message, type# 2:message, ... type# 5:message)
 
 	choice types: YesNo, 1(simple), 2(exciting), 3(curious), 4(cowardly), 5(power)
 song/setSong:
 	sets the current song to the song given;
 	if no song gound with given parameters than song will not change
-	setSong(song#/song title)
+	setSong(song#/songTitle)
 
 	Since songs indicicies might change througout development, it is better to use song titles
-	see the music resource folder (/res/music/ for song names. Names must be EXACT
+	see the music resource folder (/res/music/ for song names. Names must be EXACT)
 spawn:
 	spawns the object at the specified location
 	spawn(objectType, x, y)
 
+	x and y are in pixels
 	refer to object type list for possible values
 text:
 	gives text to the dialog box; consecutive text commands provide multiple pages of text
-	if unpause is included, the dialogbox won't automatically wait for user input.
-	~ if a pause is wanted, the script must outline when it is necessary to wait for user input with the pause command
-	text([unpause], "text$)
+	boolean [unpause] is optional. if included (regardless of value), the dialogbox won't automatically wait for user input.
+	text(emotion, {text$}, [unpause])
 
 	delimiters:
 		/l - line
@@ -139,7 +160,7 @@ text:
 		~ /address - player's house address
 value/changeValue:
 	changes the identified value
-	value(add/set, object#, value, new value)
+	value(add/set, objectName, value, new value)
 	value(add/set, value, new Value)
 
 	known: playerHealth, playerMoney, playerBravery, playerNicety, relationship/love, health
@@ -148,10 +169,14 @@ wait:
 	~ accuracy in time not implemented
 	wait(time#)
 
-====================================
-arguments
-====================================
-	this: refers to the owner of the script
-
+================================================
+		Arguments
+================================================
+this: 
+	refers to the owner of the script
+objectName: 
+	If NPC, then this refers to the name given. Otherwise this refers to the ID. 
+	For example, a bird would have the ID bird1
+	
 
 	

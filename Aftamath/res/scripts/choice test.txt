@@ -1,0 +1,8 @@
+Script Main
+lockplayer
+SetSpeaker(this)
+
+text(happy, {What kind of house do you live in?})
+setChoice(1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion, 1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion, 1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion)
+
+done

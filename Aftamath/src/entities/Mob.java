@@ -9,7 +9,9 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public abstract class Mob extends Entity{
@@ -316,7 +318,9 @@ public abstract class Mob extends Entity{
 	public Warp getWarp(){ return warp; }
 	public void setWarp(Warp warp){ this.warp = warp; }
 
-	public void create(){
+	public void create(){;
+		bdef = new BodyDef();
+		fdef = new FixtureDef();
 		//hitbox
 		direction = false;
 		PolygonShape shape = new PolygonShape();

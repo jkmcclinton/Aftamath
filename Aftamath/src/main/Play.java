@@ -6,6 +6,7 @@ import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyContactListener;
 import handlers.MyInput;
+import handlers.Pair;
 import handlers.PositionalAudio;
 import handlers.Vars;
 
@@ -26,6 +27,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 //import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -49,6 +51,7 @@ public class Play extends GameState {
 	public Warp warp;
 	public NPC narrator;
 	public HUD hud;
+	public History history;
 	public Script currentScript;
 	public int stateType, currentEmotion;
 	public boolean paused, analyzing, choosing, waiting;
@@ -60,7 +63,7 @@ public class Play extends GameState {
 	
 	private int sx, sy;
 	private float speakTime, speakDelay = .025f;
-	private ArrayDeque<String> displayText; //all text pages to display
+	private ArrayDeque<Pair<String, Integer>> displayText; //all text pages to display
 	private String[] speakText; //current text page displaying
 	private World world;
 	private Scene scene, nextScene;
@@ -88,10 +91,11 @@ public class Play extends GameState {
 	//private int debugX;
 	//private int debugY = 244;
 	
-	private boolean dbRender = false, rayHandling, render = true;
+	private boolean dbRender = false, rayHandling, render = true, debugtxt = true;
 	private float light = .5f;
 	private static ArrayList<Color> colors = new ArrayList<Color>();
 	private int colorIndex;
+	private String songTitle="";
 	
 	public Play(GameStateManager gsm) {
 		super(gsm);
@@ -99,6 +103,7 @@ public class Play extends GameState {
 	
 	public void create(){
 		bodiesToRemove = new Array<>();
+		history = new History();
 
 		objects = new ArrayList<Entity>();
 		sounds = new ArrayList<PositionalAudio>();
@@ -117,7 +122,7 @@ public class Play extends GameState {
 		
 		stateType = MOVE;
 		speakTime = 0;
-		displayText = new ArrayDeque<String>();
+		displayText = new ArrayDeque<Pair<String, Integer>>();
 		
 		scene.setRayHandler(rayHandler);
 		scene.create();
@@ -203,22 +208,20 @@ public class Play extends GameState {
 					warping = false;
 					nextScene = null;
 				} else if(sb.fading &&nextScene.newSong){
-					float volume = song.getVolume();
-					volume += dt * sb.getFadeType();
-					if (volume > Game.musicVolume)
-						volume = Game.musicVolume;
-					if (volume < 0){
-						volume = 0;
-						if(song.isPlaying()) song.stop();
-					}
-
-					if(song.isPlaying())
-						song.setVolume(volume);
+					fadeSong(dt, true);
+				}
+			}
+			
+			if(changingSong){
+				if(fadeOutSong(dt)){
+					setSong(nextSong);
+					changingSong = false;
 				}
 			}
 			
 //			Mob e1 = (Mob) objects.get(1);
 			debugText= "Volume: "+song.getVolume();
+			debugText+= "/l"+songTitle;
 			debugText +="/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + "    y: " + ((int) (character.getPosition().y*PPM) - character.height);
 			debugText +="/lCamera" + " x: " + (int) (cam.position.x) + "    y: " + ((int) (cam.position.y));
 //			debugText +="/l"+ e1.getName() + " x: " + (int) (e1.getPosition().x*PPM) + "    y: " + ((int) (e1.getPosition().y*PPM) - e1.height);
@@ -259,13 +262,12 @@ public class Play extends GameState {
 		if (speaking) speak();
 		if (rayHandling) rayHandler.updateAndRender();
 		hud.render(sb, currentEmotion);
-		updateDebugText();
 		
 		b2dCam.setPosition(character.getPosition().x, character.getPosition().y + 15 / PPM);
 		b2dCam.update();
 		if (dbRender) b2dr.render(world, b2dCam.combined);
 
-		updateDebugText();
+		if(debugtxt) updateDebugText();
 	}
 	
 	public void updateDebugText() {
@@ -293,9 +295,9 @@ public class Play extends GameState {
 		}
 		
 		if(MyInput.isPressed(MyInput.DEBUG_LEFT2)) {
-			song.stop();
-			song.dispose();
-			setSong(Scene.BGM.get((int) (Math.random()*(Scene.BGM.size - 1))));
+			changingSong = true;
+			songTitle = Scene.BGM.get((int) (Math.random()*(Scene.BGM.size)));
+			nextSong = Gdx.audio.newMusic(new FileHandle("res/music/"+songTitle+".wav"));
 		}
 		
 		if(MyInput.isPressed(MyInput.DEBUG_RIGHT)) {
@@ -307,8 +309,9 @@ public class Play extends GameState {
 		
 		if(MyInput.isPressed(MyInput.DEBUG)) rayHandling = !rayHandling ;
 		if(MyInput.isPressed(MyInput.DEBUG1)) dbRender = !dbRender ;
-		if(MyInput.isDown(MyInput.DEBUG2)) character.respawn();
-//			render = !render ;
+		if(MyInput.isPressed(MyInput.DEBUG2)) character.respawn();
+//		if(MyInput.isPressed(MyInput.DEBUG2)) character.respawn();
+		if(MyInput.isPressed(MyInput.DEBUG3)) debugtxt=!debugtxt;
 		
 		if (paused){
 			if (stateType == PAUSED) {
@@ -454,6 +457,7 @@ public class Play extends GameState {
 			}
 			break;
 		case CHOICE:
+			int prevIndex = choiceIndex;
 			if(MyInput.isPressed(MyInput.PAUSE) && !quitting) pause();
 			if (buttonTime >= buttonDelay){
 				if(MyInput.isDown(MyInput.LEFT)){
@@ -463,6 +467,8 @@ public class Play extends GameState {
 						choiceIndex = 0;
 
 					playSound(player.getPosition(), "text1");
+					choices[choiceIndex].expand();
+					choices[prevIndex].collapse();
 				} else if (MyInput.isDown(MyInput.RIGHT)){
 					buttonTime = 0;
 					choiceIndex--;
@@ -470,15 +476,18 @@ public class Play extends GameState {
 						choiceIndex = choices.length - 1;
 
 					playSound(player.getPosition(), "text1");
+					choices[choiceIndex].expand();
+					choices[prevIndex].collapse();
 				} else if(MyInput.isPressed(MyInput.ENTER)){
-					for (SpeechBubble b : choices)
-						bodiesToRemove.add(b.getBody()); 
-
 					playSound(player.getPosition(), "ok1");
 					wait(1f);
 
 					currentScript.paused = choosing = false;
-					currentScript.getChoiceIndex(choiceIndex);
+					currentScript.getChoiceIndex(choices[choiceIndex].getMessage());
+					
+					//delete speechBubbles from world
+					for (SpeechBubble b : choices)
+						bodiesToRemove.add(b.getBody()); 
 				}
 			}
 			
@@ -493,22 +502,22 @@ public class Play extends GameState {
 					stateType = LISTEN;
 
 					if (player.stopPartnerDisabled) {
-						displayText.add("No, I'm coming with you.");
+						displayText.add(new Pair<>("No, I'm coming with you.", Mob.NORMAL));
 						hud.changeFace(player.getPartner());
 						player.faceObject(player.getPartner());
 						speak();
 					} else if(player.getPartner().getState() == NPC.FOLLOWING) {
-						displayText.add("I'll just stay here.");
+						displayText.add(new Pair<>("I'll just stay here.", Mob.NORMAL));
 						hud.changeFace(player.getPartner());
 						speak();
 						player.getPartner().stay();
 					}
 					else {
 						if(player.getRelationship()<-2){ 
-							displayText.add("No way. I'm staying here.");
+							displayText.add(new Pair<>("No way. I'm staying here.", Mob.MAD));
 							player.faceObject(player.getPartner());
-						} else if(player.getPartner().getGender().equals("female")) displayText.add("Coming!");
-						else displayText.add("On my way.");
+						} else if(player.getPartner().getGender().equals("female")) displayText.add(new Pair<>("Coming!", Mob.HAPPY));
+						else displayText.add(new Pair<>("On my way.", Mob.NORMAL));
 
 						hud.changeFace(player.getPartner());
 						speak();
@@ -518,14 +527,14 @@ public class Play extends GameState {
 					String partner;
 					if (player.getPartner().getGender().equals(Mob.MALE)) partner = "boyfriend";
 					else partner = "girlfriend";
-					displayText.add("Your "+partner+" isn't here at the moment.");
+					displayText.add(new Pair<>("Your "+partner+" isn't here at the moment.", Mob.NORMAL));
 					hud.changeFace(narrator);
 					speak();
 					stateType = LISTEN;
 				}
 			}
 		} else {
-			displayText.add("You ain't got nobody to follow you!");
+			displayText.add(new Pair<>("You ain't got nobody to follow you!", Mob.NORMAL));
 			hud.changeFace(narrator);
 			speak();
 			stateType = LISTEN;
@@ -546,7 +555,8 @@ public class Play extends GameState {
 		}
 	}
 	
-	public void displayChoice(int[] types){
+	//show choices in a circle around the player
+	public void displayChoice(int[] types, String[] messages){
 		final float h = 30 / PPM;
 		float x, y, theta;
 		int c = types.length;
@@ -554,24 +564,36 @@ public class Play extends GameState {
 		choiceIndex = 0;
 		
 		for (int i = 0; i < c; i++){
+			int positioning;
 			theta = (float) (i * 2 * Math.PI / c);
 			x = (float) (h * Math.cos(theta) + player.getPosition().x) * PPM;
-			y = (float) (h * Math.sin(theta) + player.getPosition().y) * PPM + 4;
-			choices[i] = new SpeechBubble(player, x, y, types[i]);
+			y = (float) (h * Math.sin(theta) + player.getPosition().y) * PPM + 15;
+			
+			if((theta>Math.PI/2-Math.PI/20 && theta<Math.PI/2+Math.PI/20) ||
+					(theta>3*Math.PI/2-Math.PI/20 && theta<3*Math.PI/2+Math.PI/20)) 
+				positioning = SpeechBubble.CENTERED;
+			else if((theta>=0 && theta<Math.PI/2-Math.PI/20) ||
+					(theta<=2*Math.PI && theta>3*Math.PI/2+Math.PI/20))
+				positioning = SpeechBubble.LEFT_MARGIN;
+			else positioning = SpeechBubble.RIGHT_MARGIN;
+			choices[i] = new SpeechBubble(player, x, y, types[i], messages[i], positioning);
 		}
+		choices[0].expand();
 	}
 	
 	public void dispose() { 
 		if(song != null)
 			song.stop();
-		}
+	}
 	
 	public void speak(){
 		if (!speaking) {
 			speaking = true;
 			//stateType = LISTEN;
 
-			String line = displayText.poll();
+			Pair<String, Integer> current = displayText.poll();
+			String line = current.getKey();
+			currentEmotion = current.getValue();
 			
 			speakText = line.split("/l");
 			hud.createSpeech(speakText);
@@ -691,7 +713,7 @@ public class Play extends GameState {
 		return false;
 	}
 	
-	public void setDispText(ArrayDeque<String> dispText) { displayText = dispText;}
+	public void setDispText(ArrayDeque<Pair<String, Integer>> dispText) { displayText = dispText;}
 	public void setStateType(int type) {stateType = type; }
 	public int getStateType(){ return stateType; }
 	public SpeechBubble[] getChoices(){ return choices; }
@@ -811,5 +833,54 @@ public class Play extends GameState {
 		// should be dependant on time;
 		return new Color(2,2,2,Vars.ALPHA);
 	}
+	
+	//class that contains minor handling for all events and flags
+	public class History {
+
+		private Array<Pair<String, String>> eventList;
+		private Array<Pair<String, Boolean>> flagList;
+		
+		public History(){
+			eventList = new Array<>();
+			flagList = new Array<>();
+		}
+		
+		public History(String loadedData){
+			
+		}
+		
+		public boolean getFlag(String flag){ 
+			for(Pair<String, Boolean> p : flagList)
+				if (p.getKey().equals(flag))
+					return p.getValue();
+			return false;
+		}
+	
+		public void setFlag(String flag, boolean val){
+			for(Pair<String, Boolean> p : flagList)
+				if(p.getKey().equals(flag))
+					p.setValue(val);
+		}
+		public void addFlag(String flag, boolean val){ flagList.add(new Pair<>(flag, val)); }
+		public void setEvent(String event, String description){ eventList.add(new Pair<>(event, description)); }
+		public boolean findEvent(String event){ 
+			for(Pair<String, String> p : eventList)
+				if (p.getKey().equals(event))
+					return true;
+			return false;
+		}
+		
+		//for use in the thing
+		public Texture getEventIcon(String event, String descriptor){
+			switch(event){
+			case "BrokeAnOldLadyCurse":
+				return Game.res.getTexture("girlfriend1");
+			default:
+				return null;
+			}
+		}
+	}
 }
+
+
 

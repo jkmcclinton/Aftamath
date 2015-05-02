@@ -128,6 +128,7 @@ public class Animation {
 		}
 	}
 	
+	public Array<TextureRegion[]> getFrames(){ return frames; }
 	public TextureRegion getFrame() { 
 		return frames.peek()[currentFrame]; 
 		}

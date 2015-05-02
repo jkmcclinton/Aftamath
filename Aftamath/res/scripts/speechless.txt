@@ -1,5 +1,3 @@
-flags: 0
-
 Script 1
 lockplayer
 faceplayer

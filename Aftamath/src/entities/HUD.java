@@ -24,9 +24,9 @@ public class HUD {
 	private Play play;
 	private Mob face;
 	private Texture textures;
-	private TextureRegion[] hearts, cubeFrames, highFrames, btnHighFrames;
-	private TextureRegion cash, faceHud, textHud, pauseHud;
-	private Animation cube, highlight, buttonHigh;
+	private TextureRegion[] hearts, cubeFrames, btnHighFrames;
+	private TextureRegion cash, /*faceHud,*/ textHud, pauseHud;
+	private Animation cube, buttonHigh;
 	private String[] speakText; //amount of text already displaying
 	
 	public int moving;
@@ -65,12 +65,6 @@ public class HUD {
 		cube = new Animation();
 		cube.setFrames(cubeFrames, .09f, false);
 		
-		highFrames = new TextureRegion[10];
-		for (int i = 0; i < highFrames.length;i++)
-			highFrames[i] = new TextureRegion (textures, i * 14, 97, 14, 14);
-		highlight = new Animation();
-		highlight.setFrames(highFrames, .1f, false);
-		
 		btnHighFrames = new TextureRegion[9];
 		for (int i = 0; i < btnHighFrames.length; i++)
 			btnHighFrames[i] = new TextureRegion(textures, 0, i * 18 + 361, 238, 11);
@@ -78,8 +72,9 @@ public class HUD {
 		buttonHigh.setFrames(btnHighFrames, .1f, false);
 		
 		cash = new TextureRegion(textures, 9 * 19, 78, 21, 19);
-		faceHud = new TextureRegion(textures, 0, 0, 72, 78);
-		textHud = new TextureRegion(textures, 72, 0, 361, 78);
+//		faceHud = new TextureRegion(textures, 0, 0, 72, 78);
+//		textHud = new TextureRegion(textures, 72, 0, 361, 78);
+		textHud = new TextureRegion(textures, 0, 0, 433, 78);
 		pauseHud = new TextureRegion(textures, 96, 166, 240, 139);
 		hide();
 	}
@@ -87,23 +82,12 @@ public class HUD {
 	public void update(float dt){
 		if (moving > 0) moveDialog();
 		cube.update(dt);
-		highlight.update(dt);
 		buttonHigh.update(dt);
 	}
 	
 	@SuppressWarnings("static-access")
 	public void render(SpriteBatch sb, int emotion) {
 		sb.begin();
-			SpeechBubble b = null;
-			if (player.getPlayState().getChoices() != null) {
-				b = player.getPlayState().getChoices()[player.getPlayState().choiceIndex];
-			}
-			if(player.getPlayState().choosing && !player.getPlayState().speaking && b!= null) 
-				if (b.getBody() != null) sb.draw(highlight.getFrame(), 
-						b.getPosition().x*Vars.PPM - highFrames[0].getRegionWidth()/2, 
-						b.getPosition().y*Vars.PPM - highFrames[0].getRegionHeight()/2);
-			
-
 			sb.setProjectionMatrix(cam.combined);
 			drawDialog(sb, emotion);
 			drawStats(sb);
@@ -132,11 +116,12 @@ public class HUD {
 	
 	//draw dialog graphics
 	public void drawDialog(SpriteBatch sb, int emotion) {
-		sb.draw(textHud, x + 71, y - 76);
+//		sb.draw(textHud, x + 71, y - 76);
+		sb.draw(textHud, x, y - 76);
 		
 		drawString(sb);
 		if (face != null) if (face.name != null) {
-			sb.draw(faceHud, x, y - 76);
+//			sb.draw(faceHud, x, y - 76);
 			sb.draw(face.getFace(emotion), x + 7, y - 69);
 		}
 		if (!busy())
@@ -217,7 +202,7 @@ public class HUD {
 			if (speakText[i] == null) {System.out.println(i+ "\n" + true);return;}
 			for (int j = 0; j < speakText[i].length(); j++){
 				char c = speakText[i].charAt(j);
-				if (c != " ".charAt(0)) sb.draw(font2[c + Vars.FONT_OFFSET], HUDX + j * PERIODX, HUDY + y + i * PERIODY);
+				if (c != " ".charAt(0) && c+Vars.FONT_OFFSET<font2.length) sb.draw(font2[c + Vars.FONT_OFFSET], HUDX + j * PERIODX, HUDY + y + i * PERIODY);
 			} 
 		}
 	}

@@ -28,6 +28,7 @@ public class MyInput {
 	public static final int DEBUG = 20;
 	public static final int DEBUG1 = 21;
 	public static final int DEBUG2 = 22;
+	public static final int DEBUG3 = 23;
 	
 	static {
 		keys = new boolean[NUM_KEYS];

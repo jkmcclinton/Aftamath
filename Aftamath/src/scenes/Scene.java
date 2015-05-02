@@ -86,6 +86,8 @@ public abstract class Scene {
 		BGM.add("Jamming");
 		BGM.add("Incinerate");
 		BGM.add("Justice");
+		BGM.add("Midnight");
+		BGM.add("Helpful");
 	}
 	
 	protected Scene(){}
