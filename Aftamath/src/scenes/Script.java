@@ -1,5 +1,6 @@
 package scenes;
 
+import handlers.Pair;
 import handlers.Vars;
 
 import java.io.BufferedReader;
@@ -9,6 +10,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
+import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.Stack;
 
 import main.Play;
@@ -34,17 +37,17 @@ public class Script {
 
 	public String ID;
 	public Array<String> source;
-	public Stack<int[]> choiceIndices;
-	public boolean[] flags;
+	public Stack<HashMap<String, Integer>> choiceIndices;
 	public boolean paused, limitDistance, forcedPause, dialog;
 	public int[] choices;
+	public String[] messages;
 	public int current, index, waitTime, time;
-	private int[] indices;
 
 	//outside references
 	private Entity activeObj, owner;
 	private Play play;
 	private Player player;
+	private HashMap<String, Integer> subScripts;
 
 	//private int c;
 
@@ -54,18 +57,17 @@ public class Script {
 			loadScript(scriptID);
 			getIndicies();
 			choiceIndices = new Stack<>();
-			getFlags();
 			getDistanceLimit();
 
 			activeObj = new Entity();
 
-			setIndex(0);
+			setIndex();
 
 			play = p;
 			this.player = player;
 			this.owner = owner;
 		} catch (Exception e) {
-			System.out.println("!! Script issue !!");
+			System.out.println("!! Script init issue !!");
 			e.printStackTrace();
 		}
 	}
@@ -77,21 +79,17 @@ public class Script {
 			if(!paused){
 				if (!activeObj.controlled) 
 					analyze();
-			}
-			else {
+			} else {
 				if (waitTime > 0){
 					time++;
 					if (time/50 >= waitTime){ 
 						waitTime = 0;
 						paused = false;
 					}
-				} else {
+				} else
 					if (play.getCam().reached && !play.getCam().moving && 
-							!forcedPause && !dialog) {
+							!forcedPause && !dialog)
 						paused = false;
-						//System.out.println("\n!!!  unpausing   !!!\n");
-					}
-				}
 			}
 		}
 	}
@@ -100,252 +98,271 @@ public class Script {
 		//System.out.println(source.get(index));
 
 		if(!play.analyzing && !paused) {
-			index = indices[current];
+			index = current;
 			play.analyzing = true;
 		}
 
 		String line = source.get(index);
 		String command;//, s;
 		String[] tmp;
-		Entity obj;
+		Entity obj = null;
 
-		if (line.indexOf(" ") == -1) command = line;
-		else command = line.substring(0, line.indexOf(" "));
+		if (!line.startsWith("#")){
+			if (line.indexOf("(") == -1)
+				if(line.startsWith("["))
+					command = line.substring(line.indexOf("[")+1, line.indexOf("]"));
+				else command = line;
+			else command = line.substring(0, line.indexOf("("));
 
-		switch(command.toLowerCase()){
-		case "attack":
-			break;
-		case "action":
-			doAction(line);
-			break;
-		case "value":
-		case "changeval":
-			changeValue(line);
-			break;
-		case "else":
-			while(!source.get(index).toLowerCase().equals("end"))
-				index++;
-			index--;
-			break;
-		case "if":
-			if (!compare(line)){
-				while(!source.get(index).toLowerCase().startsWith("endif") && 
-						!source.get(index).toLowerCase().startsWith("else"))
+			System.out.println(command);
+			switch(command.toLowerCase()){
+			case "attack":
+				break;
+			case "action":
+				doAction(line);
+				break;
+			case "value":
+			case "changeval":
+				changeValue(line);
+				break;
+			case "else":
+				while(!source.get(index).toLowerCase().equals("end"))
 					index++;
-			}
-			break;
-		case "faceplayer":
-			if (Vars.isNumeric(lastArg(line)))
-				obj = findObject(convertToNum(line));
-			else
-				obj = owner;
-
-			if (obj != null)
-				if (obj instanceof Mob){
+				index--;
+				break;
+			case "if":
+				if (!compare(line)){
+					while(!source.get(index).toLowerCase().startsWith("endif") && 
+							!source.get(index).toLowerCase().startsWith("else"))
+						index++;
+				}
+				break;
+			case "face":
+			case "faceobject":
+				Entity target=null;
+				switch(firstArg(line)){
+				case "player":
+					obj = player;
+					break;
+				case "narrator":
+					obj = play.narrator;
+					break;
+				case "partner":
+					obj = player.getPartner();
+					break;
+				}
+				switch(lastArg(line)){
+				case "player":
+					target = player;
+					break;
+				case "narrator":
+					target = play.narrator;
+					break;
+				case "partner":
+					target = player.getPartner();
+					break;
+				}
+				
+				if (obj != null && target != null)
 					if (obj instanceof NPC)
-						((NPC) obj).setState(NPC.FACEPLAYER);
-					else
-						((Mob) obj).facePlayer();
+						((NPC) obj).setState(NPC.FACEOBJECT, obj);
+					else obj.faceObject(target);
+				break;
+			case "forcefollow":
+				if (player.getPartner()!=null){
+					if (player.getPartner().getName()!=null){
+						player.stopPartnerDisabled = Boolean.parseBoolean(lastArg(line));
+					}
+				}
+				break;
+			case "follow":
+				break;
+			case "resetstate":
+				obj = findObject(lastArg(line));
+				if (obj != null)
+					if(obj instanceof NPC)
+						((NPC) obj).resetState();
+				break;
+			case "lockplayer":
+				play.setStateType(Play.LISTEN);
+				break;
+			case "lock":
+				break;
+			case "lowerdialog":
+				play.hud.hide();
+				break;
+			case "movecamera":
+				createFocus(line);
+				break;
+			case "focus":
+			case "focuscamera":
+				Vector2 focus = null;
+				Entity object = findObject(lastArg(line));
+
+				if (object != null) {
+					focus = object.getPosition();
+					paused = true;
+					play.getCam().setFocus(focus);
+				}
+				break;
+			case "unfocus":
+			case "unfocuscamera":
+			case "removefocus":
+				play.getCam().removeFocus();
+				break;
+			case "moveobject":
+				obj = findObject(middleArg(line));
+				if (obj != null) {
+					obj.setGoal(convertToNum(line) - obj.getPosition().x * Vars.PPM);
+					activeObj = obj;
+				}
+				break;
+			case "moveplayer":
+				player.setGoal(convertToNum(line));
+				activeObj = player;
+				break;
+			case "setflag":
+				try{
+					play.history.setFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
+				} catch (Exception e){
+					System.out.println("Could not set flag \"" +firstArg(line) + "\"");
+				}
+				break;
+			case "setspeaker":
+				Entity speaker = null;
+
+				switch(firstArg(line)) {
+				case "partner":
+					if(player.getPartner().getName() != null)
+						speaker = player.getPartner();
+					break;
+				case "narrator":
+					speaker = play.narrator;
+					break;
+				case "this":
+					speaker = owner;
+					break;
+					default:
+						speaker = findObject(firstArg(line));
 				}
 
-			break;
-		case "face":
-		case "faceobject":
-			if(Vars.isNumeric(middleArg(line)))
-				obj = findObject(Integer.parseInt(middleArg(line)));
-			else
-				obj = owner;
-			Entity e = findObject(convertToNum(line));
-
-			if (obj != null && e != null)
-				if (obj instanceof NPC)
-					((NPC) obj).setState(NPC.FACEOBJECT, obj);
-				else obj.faceObject(e);
-			break;
-		case "forcefollow":
-			if (player.getPartner()!=null){
-				if (player.getPartner().getName()!=null){
-					player.stopPartnerDisabled = Boolean.parseBoolean(lastArg(line));
+				if(speaker != null) {
+					if(speaker instanceof Mob){
+						if( play.hud.getFace() != speaker) 
+							play.hud.changeFace((Mob) speaker);
+						}
+					else play.hud.changeFace(null);
+					if(countArgs(line) ==2)
+						play.getCam().setFocus(speaker.getPosition());
 				}
-			}
-			break;
-		case "resetstate":
-			obj = findObject(convertToNum(line));
-			if (obj != null)
-				if(obj instanceof NPC)
-					((NPC) obj).resetState();
-			break;
-		case "lockplayer":
-			play.setStateType(Play.LISTEN);
-			break;
-		case "lock":
-			break;
-		case "lowerdialog":
-			play.hud.hide();
-			break;
-		case "movecamera":
-			createFocus(line);
-			break;
-		case "focus":
-		case "focuscamera":
-			Vector2 focus = null;
-			Entity object = findObject(convertToNum(line));
+				
+				break;
+			case "setscript":
+				setIndex(lastArg(line));
+				break;
+			case "setchoice":
+				if (lastArg(line).toLowerCase().equals("yesno")){
+					choices = new int[2]; messages = new String[2];
+					choices[0] = 6; messages[0] = "Yes";
+					choices[1] = 7; messages[1] = "No";
+				} else {
+					tmp = args(line);
+					choices = new int[tmp.length];
+					messages = new String[tmp.length];
+					String num, mes;
 
-			if (object != null) {
-				focus = object.getPosition();
+					//syntax ---- typeNum:Message
+					for (int j = 0; j < tmp.length; j++){
+						num = tmp[j].split(":")[0];
+						mes = tmp[j].split(":")[1];
+						choices[j] = Integer.parseInt(num.replaceAll(" ", "")); 
+						messages[j] = new String(mes);
+					}
+				}
+
+				int i = index; int j = 0;
+				HashMap<String, Integer> tmp1 = new HashMap<>();
+				String s1;
+				while((j != choices.length ||
+						!source.get(i).toLowerCase().startsWith("endchoice")) && i < source.size){
+					if (source.get(i).toLowerCase().startsWith("[")) {
+						s1 = source.get(i);
+						s1 = s1.substring(s1.indexOf(" ")+1, s1.indexOf("]"));
+						tmp1.put(s1, i);
+						j++;
+					}
+					i++;
+				}
+
+				choiceIndices.add(tmp1);
+				play.displayChoice(choices, messages);
+				play.setStateType(Play.CHOICE);
+				play.choosing = true;
 				paused = true;
-				play.getCam().setFocus(focus);
-			}
-			break;
-		case "unfocus":
-		case "unfocuscamera":
-		case "removefocus":
-			play.getCam().removeFocus();
-			break;
-		case "moveobject":
-			obj = findObject(Integer.parseInt(middleArg(line)));
-			if (obj != null) {
-				obj.setGoal(convertToNum(line) - obj.getPosition().x * Vars.PPM);
-				activeObj = obj;
-			}
-			break;
-		case "moveplayer":
-			player.setGoal(convertToNum(line));
-			activeObj = player;
-			break;
-		case "setemotion":
-			String arg = lastArg(line);
-			int emotion = 0;
-			if(Vars.isNumeric(arg)){
-				emotion = Integer.parseInt(arg);
-				if (emotion > 4 || emotion < 0) emotion = 0;
-			} else 
+				break;
+			case "song":
+			case "setsong":
+				if(Vars.isNumeric(lastArg(line))){
+					try{
+						int s = convertToNum(line);
+						Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+Scene.BGM.get(s)+".wav"));
+						play.addSong(song);
+					} catch(Exception e){
+						e.printStackTrace();
+					}
+				} else {
+					String title = line.substring(line.indexOf(" "));
+
+					try{
+						Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+title+".wav"));
+						play.addSong(song);
+					} catch (Exception e){
+						e.printStackTrace();
+					}
+				}
+				break;
+			case "spawn":
+				spawn(line);
+				break;
+			case "text":
+				text(line);
+				break;
+			case "wait":
+				time = 0;
+				waitTime = convertToNum(line);
+				paused = true;
+				break;
+			case "pause":
+				paused = forcedPause = true;
+				break;
+			case "end":
+				while(!source.get(index + 1).toLowerCase().startsWith("endchoice"))
+					index++;
+				break;
+			case "endchoice":
 				try {
-					Field f = Mob.class.getField(arg.toUpperCase());
-					emotion = f.getInt(f);
-				} catch(Exception e1){
-					
+				choiceIndices.pop();
+				} catch (EmptyStackException e){
+					System.out.println("Could not end choices because there are no more encapsulations.");
+					e.printStackTrace();
 				}
-				
-			play.currentEmotion = emotion;
-		case "setflag":
-			play.getScene().script.flags[Integer.parseInt(middleArg(line))] =
-			Boolean.parseBoolean(lastArg(line));
-			break;
-		case "setspeaker":
-			Entity speaker = null;
-
-			if (Vars.isNumeric(lastArg(line)))
-				speaker = findObject(convertToNum(line));
-			
-			else switch(lastArg(line)) {
-			case "partner":
-				if(player.getPartner().getName() != null)
-					speaker = player.getPartner();
 				break;
-			case "narrator":
-				speaker = play.narrator;
-				break;
-			case "this":
-				speaker = owner;
-				break;
-			}
-
-			if(speaker != null) {
-				if(speaker instanceof Mob) 
-				{if( play.hud.getFace() != speaker) play.hud.changeFace((Mob) speaker);}
-				else play.hud.changeFace(null);
-			}
-			break;
-		case "setscript":
-			setIndex(Integer.parseInt(lastArg(line)) - 1);
-			break;
-		case "setchoice":
-			if (lastArg(line).toLowerCase().equals("yesno")){
-				choices = new int[2];
-				choices[0] = 7;
-				choices[1] = 8;
-			} else {
-				tmp = lastArg(line).split(",");
-				choices = new int[tmp.length];
-				for (int j = 0; j < tmp.length; j++)
-					choices[j] = Integer.parseInt(tmp[j]); 
-			}
-
-			int i = index; int j = 0;
-			int[] tmp1 = new int[choices.length];
-			while((j != choices.length ||
-					!source.get(i).toLowerCase().startsWith("endchoice")) && i < source.size){
-				if (source.get(i).toLowerCase().startsWith("choice")) {
-					tmp1[j] = i;
-					j++;
-				}
-				i++;
-			}
-			choiceIndices.add(tmp1);
-
-			play.displayChoice(choices);
-			play.setStateType(Play.CHOICE);
-			play.choosing = true;
-			paused = true;
-			break;
-		case "song":
-		case "setsong":
-			if(Vars.isNumeric(lastArg(line))){
-				try{
-					int s = convertToNum(lastArg(line));
-					Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+Scene.BGM.get(s)+".wav"));
-					play.addSong(song);
-				} catch(Exception e1){
-					e1.printStackTrace();
-				}
-			} else {
-				String title = line.substring(line.indexOf(" "));
-				
-				try{
-					Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+title+".wav"));
-					play.addSong(song);
-				} catch (Exception e1){
-					e1.printStackTrace();
-				}
-			}
-			break;
-		case "spawn":
-			spawn(line);
-			break;
-		case "text":
-			text(line);
-			break;
-		case "wait":
-			time = 0;
-			waitTime = convertToNum(line);
-			paused = true;
-			break;
-		case "pause":
-			paused = forcedPause = true;
-			break;
-		case "end":
-			while(!source.get(index + 1).toLowerCase().startsWith("endchoice"))
-				index++;
-			break;
-		case "endchoice":
-			choiceIndices.pop();
-			break;
-		case "zoom":
-			if (middleArg(line).toLowerCase().equals("set"))
+			case "zoom":
 				//(Float.parseFloat(lastArg(line)));
 				break;
-		case "done":
-			finish();
-			break;
+			case "done":
+				finish();
+				break;
+			}
 		}
 
+		//step analyzing; continue stepping if next line contains a note
 		if(index < source.size-1) index++;
+		while(source.get(index).startsWith("#"))
+			if(index < source.size-1) index++;
 	}
 
 	private void finish(){
-		//System.out.println("hi");
-
 		play.setStateType(Play.MOVE);
 		play.analyzing = false;
 		if(play.hud.raised)
@@ -361,13 +378,23 @@ public class Script {
 
 		//redisplay speechbubble
 		if (player.getInteractable() == owner)
-			new SpeechBubble(owner, owner.getPosition().x*Vars.PPM + 6, owner.height + 5  +
-					owner.getPosition().y*Vars.PPM, 1);
+			new SpeechBubble(owner, owner.getPosition().x*Vars.PPM + 6, owner.rh + 5  +
+					owner.getPosition().y*Vars.PPM, 0, "...", SpeechBubble.LEFT_MARGIN);
 	}
 
-	public void setIndex(int i){
-		if(i < indices.length)
-			current = i;
+	public void setIndex(String key){
+		try{
+			current = subScripts.get(key);
+		} catch(Exception e){
+			System.out.println("Invalid subscript name \""+key+"\"");
+		}
+	}
+
+	public void setIndex(){
+		int i = source.size - 1;
+		for (String key : subScripts.keySet())
+			if(subScripts.get(key) < i)
+				i = subScripts.get(key);
 	}
 
 	private void loadScript(String path) throws IOException{
@@ -394,84 +421,94 @@ public class Script {
 		}
 	}
 
-	private void getFlags(){
-		if (source.get(0).toLowerCase().startsWith("flags:")){
-			flags = new boolean[Integer.parseInt(lastArg(source.get(0)))];
-		}
-	}
-
 	private void getIndicies(){
-		Array<String> tmp = new Array<>();
-		for (int i = 0; i< source.size; i++)
-			if(source.get(i).toLowerCase().startsWith("script")) 
-				tmp.add(String.valueOf(i));
-
-		indices = new int[tmp.size];
-
-		for (int i = 0; i < tmp.size; i++)
-			indices[i] = Integer.parseInt(tmp.get(i));
-
+		subScripts = new HashMap<String, Integer>();
+		String line;
+		for (int i = 0; i< source.size; i++){
+			line = source.get(i);
+			if(line.toLowerCase().startsWith("script"))
+				subScripts.put(line.substring("script ".length()), i);
+		}
 	}
 
 	private int convertToNum(String s){
 		return Integer.parseInt(lastArg(s));
 	}
 
-	private String firstArg(String s){
-		int i = s.indexOf(" ");
+	private String firstArg(String s){ return args(s)[0]; }
 
-		if (i != -1) return s.substring(0, i);
-		else return "";
-	}
+	//only use if #args >= 3
+	//if #args > 3, must use in succession
+	private String middleArg(String src){
+		String s = "";
+		String[] tmp = args(src);
+		if(tmp.length<=2) return tmp[0];
 
-	private String middleArg(String s){
-		int i = s.lastIndexOf(" ");
-		int c = s.indexOf(" ");
-		if (i != -1 && c != -1) return s.substring(c + 1, i);
-		else return "";
+		for (int i = 1; i < tmp.length - 1; i++)
+			s+=tmp[i];
+		return s;
 	}
 
 	private String lastArg(String s){
-		int i = s.lastIndexOf(" ");
-		if (i != -1) return s.substring(i + 1);
-		else return "";
+		String[] args = args(s);
+		return args[args.length-1];
 	}
 
 	private int countArgs(String line){
-		int i = line.indexOf(" ");
-		int c = 1;
-
-		while(i >= 0){
-			c++;
-			line = line.substring(i + 1);
-			i = line.indexOf(" ");
-		}
-		return c;
+		int i = line.indexOf("(");
+		if(i >= 0)
+			return args(line.substring(i, line.indexOf(")"))).length;
+		return 1;
 	}
-
-	private String removeSpaces(String s){
-		String[] tmp = s.split(" ");
-
+	
+	@SuppressWarnings("unused")
+	private String remove(String s, String r){
+		String[] tmp = s.split(r);
 		s = "";
 		for (String i : tmp)
 			s += i;
 		return s;
 	}
 
-	private Entity findObject(int ID){
-		for(Entity d : play.getObjects()){
-			if (d.getSceneID() == ID) return d;
+	//return everything inside ()
+	public String[] args(String line){
+		String[] a = {line};
+		if(line.indexOf("(") == -1 || line.indexOf(")") == -1)
+			return a;
+		String tmp = line.substring(line.indexOf("(")+1 , line.indexOf(")"));
+		return tmp.split(",");
+	}
+
+	private Entity findObject(String objectName){
+		if(Vars.isNumeric(objectName)){
+			for(Entity d : play.getObjects())
+				if (d.getSceneID() == Integer.parseInt(objectName)) return d;
+		} else 
+			for(Entity d : play.getObjects()){
+			if(d instanceof Mob){
+				if (((Mob)d).getName().toLowerCase().equals(objectName.toLowerCase()))
+					return d;
+			} else
+				if (d.ID.toLowerCase().equals(objectName.toLowerCase()))
+					return d;
 		}
 		return null;
 	}
 
-	public void getChoiceIndex(int choice){
-		index =  choiceIndices.peek()[choice];
-		play.setStateType(Play.LISTEN);
+	public void getChoiceIndex(String choice){
+		try{
+			index = choiceIndices.peek().get(choice);
+			play.setStateType(Play.LISTEN);
+		} catch(Exception e){
+			System.out.println("\n------------------------\nMost likely not all choices have cases."
+					+ "\nPlease recheck script: "+ ID);
+			e.printStackTrace();
+			System.out.println("------------------------");
+		}
 	}
 
 	private void doAction(String line){
-		Entity obj = findObject(Integer.parseInt(middleArg(line)));
+		Entity obj = findObject((middleArg(line)));
 		if (obj != null) obj.doAction(convertToNum(line));
 	}
 
@@ -489,51 +526,64 @@ public class Script {
 	}
 
 	private void text(String line){
-		ArrayDeque<String> displayText = new ArrayDeque<>();
-		String s;
+		try{
+			ArrayDeque<Pair<String, Integer>> displayText = new ArrayDeque<>();
+			String txt;
 
-		while(source.get(index).toLowerCase().startsWith("text")){
-			s = source.get(index).substring(source.get(index).indexOf("\"") + 1);
+			while(source.get(index).toLowerCase().startsWith("text")){
+				txt = source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
 
-			if(s.indexOf("/player") >= 0){
-				s = s.substring(0, s.indexOf("/player")) + player.getName() + 
-						s.substring(s.indexOf("/player") + "/player".length());
+				if(txt.indexOf("/player") >= 0){
+					txt = txt.substring(0, txt.indexOf("/player")) + player.getName() + 
+							txt.substring(txt.indexOf("/player") + "/player".length());
+				}
+
+				if(txt.indexOf("/partner") >= 0){
+					txt = txt.substring(0, txt.indexOf("/partner")) + player.getPartner().getName() + 
+							txt.substring(txt.indexOf("/partner") + "/partner".length());
+				}
+
+				if(txt.indexOf("/house") >= 0){
+					txt = txt.substring(0, txt.indexOf("/house")) + player.getHome().getType() + 
+							txt.substring(txt.indexOf("/house") + "/house".length());
+				}
+
+				if(txt.indexOf("/address") >= 0){
+					txt = txt.substring(0, txt.indexOf("/address")) + player.getHome().getType() + 
+							txt.substring(txt.indexOf("/address") + "/address".length());
+				}
+
+				Field f = Mob.class.getField(firstArg(source.get(index)).toUpperCase());
+				int emotion = f.getInt(f);
+				displayText.add(new Pair<>(txt, emotion));
+				index++;
 			}
 
-			if(s.indexOf("/partner") >= 0){
-				s = s.substring(0, s.indexOf("/partner")) + player.getPartner().getName() + 
-						s.substring(s.indexOf("/partner") + "/partner".length());
-			}
+//			txt = line.substring(line.indexOf("{") + 1, line.indexOf("}"));
+//			txt = txt.replaceAll(" ", "");
+			if (countArgs(line) == 3)
+				paused = dialog = true;
+			else
+				paused = true;
 
-			if(s.indexOf("/house") >= 0){
-				s = s.substring(0, s.indexOf("/house")) + player.getHome().getType() + 
-						s.substring(s.indexOf("/house") + "/house".length());
-			}
+			index--;
+			play.setDispText(displayText);
+			play.speak();
+		} catch (NumberFormatException e){
 
-			if(s.indexOf("/address") >= 0){
-				s = s.substring(0, s.indexOf("/address")) + player.getHome().getType() + 
-						s.substring(s.indexOf("/address") + "/address".length());
-			}
-
-			displayText.add(s);
-			index++;
-		}
-
-		s = line.substring(line.indexOf("\"") + 1);
-		s = removeSpaces(s);
-		if (countArgs(line.substring(0, line.indexOf("\"")) + s) == 2)
-			paused = dialog = true;
-
-		index--;
-		play.setDispText(displayText);
-		play.speak();
+		} catch (NoSuchFieldException e) {
+			System.out.println("No such emotion \"" + firstArg(source.get(index)) + "\"");
+			e.printStackTrace();
+		} catch (SecurityException e) { e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+		} catch (IllegalAccessException e) { }
 	}
 
 	private void changeValue(String line){
 		line = line.substring(line.indexOf(" ") + 1);
 		Entity obj = null;
 		String function = firstArg(line);
-		String object = middleArg(line);
+		String target = middleArg(line);
 		int value = 0;
 
 		try{
@@ -543,14 +593,14 @@ public class Script {
 		}
 
 
-		if (Vars.isNumeric(firstArg(object))){
-			obj = findObject(Integer.parseInt(firstArg(object)));
+		if (countArgs(line)==4){
+			obj = findObject(firstArg(target));
 			if (obj == null) return;
-			object = lastArg(object);
+			target = lastArg(target);
 		} 
 
 		if (function.toLowerCase().equals("add")){
-			switch(object) {
+			switch(target) {
 			case "playerhealth":
 				if(value >= 0) player.heal(value);
 				else player.damage(value); 
@@ -579,7 +629,7 @@ public class Script {
 			}
 		} else if (function.toLowerCase().equals("set")){
 			double v;
-			switch(object) {
+			switch(target) {
 			case "playerhealth":
 				v = value - player.getHealth();
 				if(v >= 0) player.heal(v);
@@ -624,13 +674,6 @@ public class Script {
 		index++;
 	}
 
-	private boolean compareFlag(String line){
-		String arguments = line.substring(line.indexOf(" ") + 1);
-		int flag = Integer.parseInt(firstArg(arguments));
-		boolean value = Boolean.parseBoolean(lastArg(arguments));
-		return play.getScene().script.flags[flag] = value;
-	}
-
 	private boolean compare(String line){
 		String arguments = middleArg(line);
 		String object = firstArg(arguments);
@@ -642,7 +685,7 @@ public class Script {
 
 		if (Vars.isNumeric(firstArg(object))){
 			String type = middleArg(arguments);
-			Entity obj = findObject(Integer.parseInt(object));
+			Entity obj = findObject(object);
 			if (obj == null) return false;
 
 			switch (type){
@@ -653,8 +696,6 @@ public class Script {
 				else return false;
 				break;
 			}
-		} else if(object.toLowerCase().equals("flag")){
-			return compareFlag(line);
 		} else	{
 			switch(object) {
 			case "playerhealth":
@@ -684,6 +725,9 @@ public class Script {
 				break;
 			case "house":
 				object = player.getHome().getType();
+				break;
+			default:
+				object = String.valueOf(play.history.getFlag(object));
 			}
 		}
 
@@ -735,7 +779,7 @@ public class Script {
 			play.addObject(obj);
 		}
 	}
-	
+
 	private Entity getObjectType(String indicator, Vector2 location) {
 		return getObjectType(indicator, location, Vars.BIT_LAYER1);
 	}
@@ -751,11 +795,11 @@ public class Script {
 					break;
 				C = C.getSuperclass();
 			}
-			
+
 			Constructor<?> cr = c.getConstructor(Float.class, Float.class, Short.class);
 			Object o = cr.newInstance(location.x, location.y, layer);
 			return (Entity) o;
-			
+
 		} catch (NoSuchMethodException | SecurityException e) {
 			System.out.println("no such constructor");
 		} catch (InstantiationException e) {
