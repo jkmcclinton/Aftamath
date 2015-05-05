@@ -88,7 +88,7 @@
     <property name="Layer" value="front"/>
     <property name="NPC" value="girlfriend3"/>
     <property name="Name" value="Sam"/>
-    <property name="Script" value="generic_1"/>
+    <property name="Script" value="ask out"/>
     <property name="State" value="STATIONARY"/>
    </properties>
   </object>

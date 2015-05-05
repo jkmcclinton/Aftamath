@@ -15,6 +15,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 
 import scenes.Scene;
 import scenes.Script;
@@ -279,12 +280,12 @@ public class Play extends GameState {
 	public void handleInput() {
 		if(MyInput.isPressed(MyInput.DEBUG_UP)) {
 //			light += .1f; rayHandler.setAmbientLight(light);
-			player.addMoney(100d);
+			player.addFunds(100d);
 		}
 		
 		if(MyInput.isPressed(MyInput.DEBUG_DOWN)){
 //			light -= .1f; rayHandler.setAmbientLight(light);
-			player.subtractMoney(100d);
+			player.addFunds(-100d);
 		}
 		
 		if(MyInput.isPressed(MyInput.DEBUG_LEFT)) {
@@ -466,7 +467,7 @@ public class Play extends GameState {
 					if (choiceIndex >= choices.length)
 						choiceIndex = 0;
 
-					playSound(player.getPosition(), "text1");
+					playSound("text1");
 					choices[choiceIndex].expand();
 					choices[prevIndex].collapse();
 				} else if (MyInput.isDown(MyInput.RIGHT)){
@@ -475,12 +476,13 @@ public class Play extends GameState {
 					if (choiceIndex < 0)
 						choiceIndex = choices.length - 1;
 
-					playSound(player.getPosition(), "text1");
+					playSound("text1");
 					choices[choiceIndex].expand();
 					choices[prevIndex].collapse();
 				} else if(MyInput.isPressed(MyInput.ENTER)){
-					playSound(player.getPosition(), "ok1");
-					wait(1f);
+//					stateType = prevStateType;
+					playSound("ok1");
+//					wait(.5f);
 
 					currentScript.paused = choosing = false;
 					currentScript.getChoiceIndex(choices[choiceIndex].getMessage());
@@ -521,7 +523,7 @@ public class Play extends GameState {
 
 						hud.changeFace(player.getPartner());
 						speak();
-						player.getPartner().follow();
+						player.getPartner().follow(player);
 					}
 				}else{
 					String partner;
@@ -587,7 +589,7 @@ public class Play extends GameState {
 	}
 	
 	public void speak(){
-		if (!speaking) {
+		if (!speaking && !displayText.isEmpty()) {
 			speaking = true;
 			//stateType = LISTEN;
 
@@ -609,30 +611,34 @@ public class Play extends GameState {
 		if (hud.moving == 0){
 			if (speakTime >= speakDelay) {
 				speakTime = 0;
-				if(hud.raised) speakDelay = .025f;
+				if(hud.raised) speakDelay = .020f;
 				else speakDelay = 2f;
 
-				char c = speakText[sy].charAt(sx);
-				if (c == ".".charAt(0) || c == ",".charAt(0)) speakDelay = .25f;
-				if(c != "~".charAt(0)){
-					hud.addChar(sy, c);
-					Gdx.audio.newSound(new FileHandle("res/sounds/text1.wav"))
-					.play(Game.soundVolume * .9f, (float) Math.random()*.15f + .9f, 1);
-				} else speakDelay = .75f;
+				if(speakText[sy].length()>0){
+					char c = speakText[sy].charAt(sx);
+					if (c == ".".charAt(0) || c == ",".charAt(0)|| c == "!".charAt(0)|| c == "?".charAt(0)) 
+						speakDelay = .25f;
+					if(c != "~".charAt(0)){
+						hud.addChar(sy, c);
+						Gdx.audio.newSound(new FileHandle("res/sounds/text1.wav"))
+						.play(Game.soundVolume * .9f, (float) Math.random()*.15f + .9f, 1);
+					} else speakDelay = .75f;
 
-				sx++;
-				if (sx == speakText[sy].length()) {sx = 0; sy++; }
-				if (sy == speakText.length) {
-					speaking = false;
-					speakText = null;
-					
-					if (currentScript != null){
-						if(currentScript.peek() != null)
-							if(currentScript.peek().toLowerCase().equals("choice")
-									&& displayText.isEmpty())
-								currentScript.readNext();
+					sx++;
+					if (sx == speakText[sy].length()) {sx = 0; sy++; }
+					if (sy == speakText.length) {
+						speaking = false;
+						speakText = null;
+
+						if (currentScript != null){
+							if(currentScript.peek() != null)
+								if(currentScript.peek().toLowerCase().equals("choice")
+										&& displayText.isEmpty())
+									currentScript.readNext();
+						}
 					}
-				}
+				}else
+					sy++;
 			}
 		}
 	}
@@ -837,32 +843,50 @@ public class Play extends GameState {
 	//class that contains minor handling for all events and flags
 	public class History {
 
-		private Array<Pair<String, String>> eventList;
-		private Array<Pair<String, Boolean>> flagList;
+		private HashSet<Pair<String, String>> eventList;
+		private HashSet<Pair<String, Boolean>> flagList;
+		private HashSet<Pair<String, Object>> variableList;
 		
 		public History(){
-			eventList = new Array<>();
-			flagList = new Array<>();
+			eventList = new HashSet<>();
+			flagList = new HashSet<>();
+			variableList = new HashSet<>();
+			
+			flagList.add(new Pair<>("true",true));
+			flagList.add(new Pair<>("false",false));
 		}
 		
 		public History(String loadedData){
 			
 		}
 		
-		public boolean getFlag(String flag){ 
+		public Boolean getFlag(String flag){ 
 			for(Pair<String, Boolean> p : flagList)
 				if (p.getKey().equals(flag))
 					return p.getValue();
-			return false;
+			return null;
 		}
 	
+		//creates the flag if no flag found
 		public void setFlag(String flag, boolean val){
 			for(Pair<String, Boolean> p : flagList)
-				if(p.getKey().equals(flag))
+				if(p.getKey().equals(flag)){
 					p.setValue(val);
+					return;
+				}
+			addFlag(flag, val);
 		}
-		public void addFlag(String flag, boolean val){ flagList.add(new Pair<>(flag, val)); }
-		public void setEvent(String event, String description){ eventList.add(new Pair<>(event, description)); }
+		
+		public boolean addFlag(String flag, boolean val){ return flagList.add(new Pair<>(flag, val)); 	}
+		
+		public boolean setEvent(String event, String description){ 
+			for(Pair<String, String> p : eventList)
+				if (p.getKey().equals(event))
+					return false;
+			eventList.add(new Pair<>(event, description)); 
+			return true;
+		}
+		
 		public boolean findEvent(String event){ 
 			for(Pair<String, String> p : eventList)
 				if (p.getKey().equals(event))
@@ -870,11 +894,59 @@ public class Play extends GameState {
 			return false;
 		}
 		
-		//for use in the thing
+		public String getDescription(String event){
+			for(Pair<String, String> p : eventList)
+				if (p.getKey().equals(event))
+					return p.getValue();
+			return null;
+		}
+		
+		public boolean declareVariable(String variableName, Object value){
+			if (value instanceof Boolean) return addFlag(variableName, (Boolean)value);
+			for(Pair<String, Object> p : variableList)
+				if (p.getKey().equals(variableName))
+					return false;
+			if (!(value instanceof String) && !(value instanceof Integer) && !(value instanceof Float))
+				return false;
+			
+			variableList.add(new Pair<>(variableName, value));
+			return true;
+		}
+		
+		public Object getVariable(String variableName){
+			for(Pair<String, Object> p : variableList)
+				if (p.getKey().equals(variableName))
+					return p.getValue();
+			return null;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+		}
+	
+		public void setVariable(String var, Object val){
+			for(Pair<String, Object> p : variableList)
+				if(p.getKey().equals(var)){
+					String type = p.getValue().getClass().getSimpleName();
+					if(!var.getClass().getSimpleName().equals(type)){
+						try{
+							if(type.toLowerCase().equals("float"))
+								p.setValue((float) val);
+							if(type.toLowerCase().equals("integer"))
+								p.setValue((int) val);
+							if(type.toLowerCase().equals("string"))
+								p.setValue((String) val);
+						} catch (Exception e){ }
+					} else 
+						p.setValue(val);
+				}
+		}
+		
+		//for use in the history section in the stats window
+		//only includes major events
 		public Texture getEventIcon(String event, String descriptor){
 			switch(event){
-			case "BrokeAnOldLadyCurse":
-				return Game.res.getTexture("girlfriend1");
+			case "BrokeAnOldLadyCurse": return Game.res.getTexture("girlfriend1face");
+			case "MetTheBadWitch": return Game.res.getTexture("witchface");
+			case "RobbedTwoGangsters": return Game.res.getTexture("gangster1face");
+			case "FellFromNowhere": return Game.res.getTexture(player.ID+"base");
+			case "FoundTheNarrator": return Game.res.getTexture("narrator1face");
 			default:
 				return null;
 			}

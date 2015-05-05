@@ -90,6 +90,12 @@ public abstract class GameState {
 		song.play();
 	}
 	
+	//UI sound
+	public void playSound(String src){
+		Music sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
+		sound.play();
+	}
+	
 	public void playSound(Vector2 position, String src){
 		Music sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
 		playSound(position, sound);
@@ -206,5 +212,5 @@ public abstract class GameState {
 	public Music getSong() { return song; }
 	public FadingSpriteBatch getSpriteBatch() { return sb; }
 	public Camera getB2dCam(){ return b2dCam; }
-	
+	public GameStateManager getGSM(){return gsm; }
 }

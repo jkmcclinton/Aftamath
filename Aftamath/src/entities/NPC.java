@@ -20,7 +20,6 @@ public class NPC extends Mob {
 	public static final int FACEPLAYER = 3;
 	public static final int FACEOBJECT = 4;
 	
-	protected String gender;
 	protected Vector2 goalPosition;
 	protected float idleWait;
 	protected float idleTime;
@@ -47,12 +46,12 @@ public class NPC extends Mob {
 	}
 	
 	public void setState(int state){ 
-		if (state == FOLLOWING) follow();
+		if (state == FOLLOWING) follow(player);
 		else this.state = state;
 	}
 	
 	public void setState(int state, Entity focus){ 
-		if (state == FOLLOWING) follow();
+		if (state == FOLLOWING) follow(focus);
 		else this.state = state;
 		
 		this.focus = focus;
@@ -137,9 +136,9 @@ public class NPC extends Mob {
 		return false;
 	}
 	
-	public void follow(){
+	public void follow(Entity focus){
 		state = FOLLOWING;
-		player.addFollower(this);
+		focus.addFollower(this);
 	}
 	
 	public void stay(){

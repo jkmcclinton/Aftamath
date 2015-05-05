@@ -4,7 +4,6 @@ import static handlers.Vars.PPM;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 import entities.Mob;
 
@@ -18,7 +17,7 @@ public class Camera extends OrthographicCamera{
 	public boolean reached, focusing, moving, zooming;
 	private float goalZoom, oldZoom;
 	private float zoomTime, goalTime;
-	private boolean flipPlayer;
+	private boolean originalDirection;
 	private Vector2 focus, lastPosition;
 	private Mob character;
 	private RefocusTrigger trigger;
@@ -139,16 +138,20 @@ public class Camera extends OrthographicCamera{
 		}
 	}
 	
+	public void setFocus(float x, float y){
+		setFocus(new Vector2(x, y));
+	}
+	
 	public void setFocus(Vector2 f){
 		this.focus = new Vector2(f.x * Vars.PPM, f.y * Vars.PPM);
 		focusing = moving = true;
 		reached = false;
 		
-		flipPlayer = character.getDirection();
+		originalDirection = character.getDirection();
 		float dx = focus.x - character.getPosition().x;
 		
-		if(dx > 0 && flipPlayer) character.changeDirection();
-		if(dx < 0 && !flipPlayer) character.changeDirection();
+		if(dx > 0 && originalDirection) character.changeDirection();
+		if(dx < 0 && !originalDirection) character.changeDirection();
 	}
 	
 	public void removeFocus(){ 
@@ -158,7 +161,7 @@ public class Camera extends OrthographicCamera{
 		reached = focusing = false;
 //		moving = true;
 		
-		if (flipPlayer != character.getDirection())
+		if (originalDirection != character.getDirection())
 			character.changeDirection();
 	}
 	

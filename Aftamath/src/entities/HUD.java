@@ -19,6 +19,10 @@ import com.badlogic.gdx.math.Vector2;
 public class HUD {
 	
 	public TextureRegion[] font, font2;
+	public int moving;
+	public boolean raised, showStats;
+	
+	private boolean top;
 	private OrthographicCamera cam;
 	private Player player;
 	private Play play;
@@ -28,10 +32,8 @@ public class HUD {
 	private TextureRegion cash, /*faceHud,*/ textHud, pauseHud;
 	private Animation cube, buttonHigh;
 	private String[] speakText; //amount of text already displaying
-	
-	public int moving;
-	public boolean raised;
-	private boolean top;
+//	private float rotf;
+//	private boolean flipping;
 	
 	public static final int HUDX = 82;
 	public static final int HUDY = -16;
@@ -90,7 +92,7 @@ public class HUD {
 		sb.begin();
 			sb.setProjectionMatrix(cam.combined);
 			drawDialog(sb, emotion);
-			drawStats(sb);
+			if(showStats) drawStats(sb);
 			
 			if (play.paused && play.getStateType() == play.PAUSED)
 				drawPauseMenu(sb);
@@ -155,6 +157,18 @@ public class HUD {
 		//Gdx.audio.newSound(new FileHandle("res/sounds/slidedown.wav"));
 	}
 	
+	public void showStats(){
+		
+	}
+	
+	public void hideStats(){
+		
+	}
+	
+	public void moveStats(){
+		
+	}
+	
 	public void moveDialog(){
 		final int speed = 4;
 		
@@ -184,7 +198,6 @@ public class HUD {
 	
 	public void changeFace(Mob face){
 		this.face = face;
-		hide();
 	}
 	
 	public void removeFace(){

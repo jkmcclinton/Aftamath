@@ -26,6 +26,7 @@ public abstract class Mob extends Entity{
 	protected boolean invulnerable;
 	protected int invulnerableTime, action;
 	protected float time;
+	protected String gender;
 	protected TextureRegion[] face;
 	protected Warp warp;
 
@@ -66,6 +67,7 @@ public abstract class Mob extends Entity{
 		super(x, y+h/2f, w, h, ID);
 		this.name = name;
 		this.layer = layer;
+		gender = "";
 		actionTypes = 7;
 		this.health = MAX_HEALTH = 25;
 		
@@ -138,13 +140,9 @@ public abstract class Mob extends Entity{
 		}
 	}
 
-	public double getHealth(){
-		return health;
-	}
-	
-	public String getName(){
-		return name;
-	}
+	public double getHealth(){ return health; }
+	public String getName(){ return name; }
+	public void setName(String name) {this.name = name;}
 	
 	public void damage(double damageVal){
 		if (!dead) {
@@ -312,6 +310,10 @@ public abstract class Mob extends Entity{
 		else return false;
 	}
 	
+	public String getGender(){
+		return gender;
+	}
+	
 	public Entity getInteractable(){ return interactable; }
 	public void setInteractable( Entity d) { interactable = d; }
 	
@@ -363,5 +365,6 @@ public abstract class Mob extends Entity{
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_LAYER2 | Vars.BIT_LAYER3;
 		body.createFixture(fdef).setUserData("interact");
 	}
+
 	
 }

@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 public class Entity{
 	
@@ -43,6 +44,7 @@ public class Entity{
 	protected BodyDef bdef = new BodyDef();
 	protected FixtureDef fdef = new FixtureDef();
 	protected short layer;
+	protected Array<Mob> followers;
 	
 	protected static final float MAX_DISTANCE = 50; 
 	
@@ -59,6 +61,7 @@ public class Entity{
 		this.rh = h/2;
 		
 		loadSprite();
+		followers = new Array<>();
 	}
 	
 	protected void loadSprite() {
@@ -198,5 +201,10 @@ public class Entity{
 		fdef.filter.categoryBits = (short) (layer);
 		fdef.filter.maskBits = (short) (Vars.BIT_HALFGROUND | Vars.BIT_GROUND);
 		body.createFixture(fdef).setUserData("center");
+	}
+
+	public void addFollower(Entity npc) {
+		// TODO Auto-generated method stub
+		
 	}
 }

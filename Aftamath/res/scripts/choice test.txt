@@ -1,8 +1,75 @@
-Script Main
+Script intro
+#setSpeaker(narrator)
+setSpeaker(this)
+declare(counter, local, Integer, 0)
+text(normal, {Tell me your gender.}, false)
+checkpoint(GenderChoice)
+#setChoice(6:Male, 6:Female, 1:Other)
+
+setChoice(1:Male, 1:Female, 1:Other)
+  [choice Male]
+    value(set, player.gender, male)
+    text(normal, {Congradulations, you're now a guy. ~W00t.})
+  endOption
+  
+  [choice Female]
+    value(set, player.gender, female)
+    text(normal, {Congradulations, you're now a girl. Horray.})
+    text(normal, {Have you played this before?})
+    setChoice(yesno)
+      [choice yes]
+        text(normal, {Then welcome back. ~Try to go somewhere new.}
+      endOption
+      [choice no]
+        text(happy, {Well your in for a treat! This game is great!})
+      endOption
+    endChoice
+  endOption
+  
+  [Choice Other]
+    value(add, counter, 1)
+    if([counter = 1])
+      text(special, {Sorry mate, but "other" isn't actually a choice. /l/lChoose again.})
+      return(GenderChoice)
+    endIf
+    if([counter = 2])
+      text(annoyed, {What did I just finish saying? ~/l"Other" is NOT an option! ~/l/lChoose again!})
+      return(GenderChoice)
+    endIf
+    if([counter = 3])
+      text(mad, {Seriously! Why do I even bother?})
+      return(GenderChoice)
+    endIf
+    if([counter = 4])
+      text(mad, {Alright. ~Game over.})
+      text(mad, {I'm not putting up with you. I can't-~I'm done. /l~I'm Just done.})
+      endGame()
+    endIf
+  endOption
+endChoice
+done
+
+Script declaration
+declare(NightmareFuel, local, String, {Our Death})
+declare(NightmareFuel, local, String, {Our Death})
+setScript(intro)
+done
+
+Script if
 lockplayer
+faceObject(player)
+setSpeaker(this)
+setFlag(GaveSoul, true)
+if(!MetTheBadWitch or (GaveSoul and [player.love <= 1]))
+text(normal, {hello})
+endIf
+done
+
+Script choice
+lockplayer
+faceObject(player)
 SetSpeaker(this)
 
 text(happy, {What kind of house do you live in?})
 setChoice(1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion, 1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion, 1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion)
-
 done

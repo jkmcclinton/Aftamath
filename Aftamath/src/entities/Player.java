@@ -16,15 +16,12 @@ public class Player extends SuperMob {
 	private House home;
 	private NPC myPartner;
 	//private String nickName;
-	private String gender;
 	
 	private double relationship;
 	private double bravery;
 	private double nicety;
 	private float N, B, H, L;
 	private String info;
-	
-	private Array<Mob> followers;
 	
 	public Player(String name, String gender, String newID) {
 		super(name, gender + newID, 0, 0, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, Vars.BIT_LAYER2);
@@ -36,7 +33,6 @@ public class Player extends SuperMob {
 //		myPartner.setScript("script2");
 //		myPartner = new Partner();
 		home = new House();
-		followers = new Array<>();
 		
 		H = 1; L = 1; B = 1; N = 1;
 	}
@@ -61,31 +57,30 @@ public class Player extends SuperMob {
 		if (health <= 0 && !dead) die();
 	}
 	
-	public String getGender(){
-		return gender;
-	}
-	
 	public void goOut(NPC newPartner, String info){
 		myPartner = newPartner;
 		this.info = info;
 		relationship = 0;
 		L = 0;
+		
+		gs.history.setFlag("hasPatner", true);
 	}
 	
 	public void breakUp(){
 		myPartner = new NPC();
+		gs.history.setFlag("hasPatner", false);
 //		relationship = 0;
 //		L = 0;
 	}
 	
 	public NPC getPartner(){ return myPartner; }
 	public void resetRelationship(double d){ relationship = d; }
-	public void increaseRelationship(double amount){ relationship += amount * L; }
-	public void decreaseRelationship(double amount){ relationship -= amount * L; }
+	public void setRelationship(double amount){ relationship += amount * L; }
 	public void setLoveScale(float val){ L = val; }
+	public float getLoveScale(){return L;}
 	public double getRelationship(){ return relationship; }
 	public String getPartnerInfo(){ return info; }
-//	public void resetPartnerInfo(String info){this.info=info;}
+	public void resetPartnerInfo(String info){this.info=info;}
 	
 	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
 	public void removeFollower(Mob m){ followers.removeValue(m, true); }
@@ -100,8 +95,7 @@ public class Player extends SuperMob {
 			this.followers.add(m);
 	}
 	
-	public void subtractMoney(double amount){ goalMoney -= amount; } 
-	public void addMoney(double amount){ goalMoney += amount; }
+	public void addFunds(double amount){ goalMoney += amount; }
 	
 	private void updateMoney(){
 		double dx = (goalMoney - money)/2;
@@ -121,11 +115,13 @@ public class Player extends SuperMob {
 	public void setNiceness(double d){ nicety += d * N; }
 	public void setNicenessScale(float val){ N = val; }
 	public double getNiceness() { return nicety; }
+	public float getNicenessScale() { return N; }
 
 	public void resetBravery(double d){ nicety = d; }
 	public void setBravery(double d){ bravery += d * B; }
 	public void setBraveryScale(float val){ B = val; }
 	public double getBravery() { return bravery; }
+	public float getBraveryScale() { return B; }
 	
 	public void setHealthScale(float val){ H = val; }
 	
@@ -141,6 +137,7 @@ public class Player extends SuperMob {
 		p.resetNiceness(nicety);
 		p.setNicenessScale(N);
 		p.goOut(myPartner.copy(), info);
+		p.resetPartnerInfo(info);
 		p.resetRelationship(relationship);
 		p.setLoveScale(L);
 		p.resetFollowers(followers);
@@ -156,4 +153,6 @@ public class Player extends SuperMob {
 	public void spawnPartner(Vector2 location){
 		myPartner.spawn(location);
 	}
+
+	public void setGender(String gender) { this.gender = gender;}
 }

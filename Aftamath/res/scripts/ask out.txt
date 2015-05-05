@@ -1,0 +1,26 @@
+Script AskOut
+lockPlayer
+declare(asked, global, Integer, 0)
+setSpeaker(player)
+if([asked < 4])
+  value(add, asked, 1)
+  text(normal, {...})
+  setSpeaker(this,true)
+  text(normal, {Will I go out with you?})
+  if(hasPartner)
+    text(normal, {Ask me later.})
+  else
+    text(happy, {Sure!})
+    addPartner(this)
+    setScript(WentOut)
+  endIf
+else
+  text(mad, {Go away. I'm not in the mood.}
+  setSpeaker(narrator)
+  text(normal, {You asked her out /variable[asked] times.}
+endIf
+done
+
+Script WentOut
+text(flirty, {Hey there, /player!})
+done

@@ -2,13 +2,11 @@ Script Intro
 lockPlayer
 faceobject(this, player)
 SetSpeaker(this)
-text(normal, {This is a test for individual scripts./l~Perhaps I should enclude a tool to automatically/llimit the amount of text is written per/lline and per page to simplify things.})
-text(normal, {And this is a test of a second page of text./lit doesn't matter, but I remember when I was/lscripting fo pokemon and there was an/lescape code for new pages.})
-text(normal, {Should I do that?})
+text(normal, {This is a test for individual scripts./l~Perhaps I should include a tool to automatically/llimit the amount of text is written per/lline and per page to simplify things.})
 SetChoice(YesNo)
 [Choice Yes]
 text(normal, {I'll think about implementing it into/lwhat I already have.})
-setScript(2)
+setScript(RobberIntro)
 end
 
 [Choice No]
