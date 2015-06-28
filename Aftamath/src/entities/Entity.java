@@ -2,68 +2,98 @@ package entities;
 
 import static handlers.Vars.PPM;
 import handlers.Animation;
+import handlers.FadingSpriteBatch;
 import handlers.Vars;
 import main.Game;
-import main.Play;
+import main.Main;
 import scenes.Script;
+import scenes.Script.ScriptType;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 public class Entity{
 	
-	public boolean isInteractable;
 	public String ID;
-	
 	public Animation animation;
-	public boolean controlled;
-	public float x;
-	public float y;
-	public int height, width, rw, rh, controlledAction;
+	public boolean isInteractable, isAttackable, dead, controlled;
+	public boolean burning, flamable, frozen;
+	public float x, y;
+	public int height, width, rw, rh;
+
+	//damage constants
+	public static final float MAX_BURN_TIME = 10f; // in seconds
+	public static final float MAX_FROZEN_TIME = 20f; // in seconds
+	public static final float VULNERABLE = 2.15f;
+	public static final float WEAK = 1.5f;
+	public static final float RESISTANT = 1/2f;
+	public static final float VERY_RESISTANT = 1/5f;
 	
+	protected double health, maxHealth, resistance = 1;
+	protected boolean invulnerable;
 	protected int sceneID;
-	protected int actionTypes;
-	protected Vector2 goal;
+	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
+	protected float invulnerableTime;
+	protected Vector2 goalPosition;
 	protected Texture texture;
-	protected boolean direction;
+	protected boolean facingLeft;
 	protected World world;
-	protected Play gs;
-	protected Player player;
+	protected Main main;
+	protected Mob character;
 	protected Body body;
-	protected Script script;
+	protected Script script, attackScript;
 	protected BodyDef bdef = new BodyDef();
 	protected FixtureDef fdef = new FixtureDef();
-	protected short layer;
+	protected MassData mdat = new MassData();
+	protected short layer, origLayer;
 	protected Array<Mob> followers;
 	
-	protected static final float MAX_DISTANCE = 50; 
+	public enum DamageType{
+		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND;
+	}
 	
-	public Entity (float x2, float y2, int w, int h, String ID) {
+	protected static final float MAX_DISTANCE = 50;
+	protected static final double DEFAULT_MAX_HEALTH = 20;
+
+	public Entity(){} 
+	
+	public Entity (float x, float y, String ID) {
 		this.ID = ID;
-		this.x = x2;
-		this.y = y2;
+		this.x = x;
+		this.y = y;
+		isAttackable = false;
 		
-		this.width = w; 
-		this.height = h;
+		setDimensions();
 		
-		//units in pixels, measures radius of image
-		this.rw = w/2; 
-		this.rh = h/2;
+		this.health = maxHealth = DEFAULT_MAX_HEALTH;
+		loadSprite();
+		followers = new Array<>();
+		origLayer = Vars.BIT_LAYER1;
+	}
+	
+	public Entity(float x, float y, int width, int height, String ID) {
+		this.ID = ID;
+		this.x = x;
+		this.y = y;
+		isAttackable = false;
 		
+		setDimensions(width, height);
+		
+		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		loadSprite();
 		followers = new Array<>();
 	}
-	
+
 	protected void loadSprite() {
 		animation = new Animation();
 		texture = Game.res.getTexture(ID);
@@ -76,20 +106,44 @@ public class Entity{
 			setDefaultAnimation(sprites);
 		}
 	}
-
-	public Entity(){}
 	
 	public void update(float dt){
-		animation.update(dt);
+		if(!frozen) animation.update(dt);
+		else{
+			frozenTime+=dt;
+			if (frozenTime>=totFreezeLength)
+				frozen = false;
+		}
+		
+		if (invulnerable && invulnerableTime > 0) 
+			invulnerableTime-= dt;
+		else if (invulnerable && invulnerableTime <= 0 && invulnerableTime > -1) 
+			invulnerable = false;
+		
+		if(burning){
+			burnTime+=dt;
+			burnDelay+=dt;
+			if(burnDelay>= 3){
+				damage(maxHealth/(2*DEFAULT_MAX_HEALTH), DamageType.FIRE);
+				burnDelay = 0;
+			} if(burnTime >= totBurnLength){
+				burning = false;
+				burnTime = 0;
+			}
+		}
 	}
 	
-	public void render(SpriteBatch sb) {
+	public void render(FadingSpriteBatch sb) {
+		Color overlay = sb.getColor();
+		if(frozen)
+			sb.setColor(Vars.blendColors(Vars.FROZEN_OVERLAY, overlay));
 		sb.draw(animation.getFrame(), getPosition().x * PPM - rw, getPosition().y * PPM - rh);
+		if(frozen)
+			sb.setColor(overlay);
 	}
 	
-	public void doAction(int action){
-		controlled = false;	
-	}
+	//used by scripts to change animations, possitbly??
+	public void doAction(int action){ }
 	
 	public void setDefaultAnimation(TextureRegion reg){
 		setDefaultAnimation(new TextureRegion[]{reg}, Vars.ANIMATION_RATE);
@@ -99,30 +153,41 @@ public class Entity{
 	}
 	
 	public void setDefaultAnimation(TextureRegion[] reg, float delay){
-		animation.setFrames(reg, delay, direction);
+		animation.setFrames(reg, delay, facingLeft);
 	}
 	
-	public void setPlayState(Play gs){
-		this.gs = gs;
+	public void setGameState(Main gs){
+		this.main = gs;
 		setPlayer(gs.player);
 		this.world = gs.getWorld();
 		if (script != null) script.setPlayState(gs);
 	}
 	
-	public Play getPlayState(){return gs;}
-	public void setScript(String ID){ 
-		script = new Script(ID, gs, player, this);
+	public Main getGameState(){return main;}
+	public void setDialogueScript(String ID){  
+		if(ID==null)return;
+		script = new Script(ID, ScriptType.DIALOGUE, main, this);
 		isInteractable = true;
 	}
+
+	public void setAttackScript(String ID){  
+		if(ID==null)return;
+		attackScript = new Script(ID, ScriptType.ATTACKED, main, this);
+	}
 	
-	public void setPlayer(Player player){this.player = player;}
-	public Player getPlayer(){return player; }
+	public void setPlayer(Player player){this.character = player;}
+	public Mob getPlayer(){return character; }
 	
 	public void changeLayer(short layer){
 		this.layer = layer;
-		Filter filter = body.getFixtureList().first().getFilterData();
-		filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
-		filter.categoryBits = layer;
+		if(body!=null){
+			main.addBodyToRemove(body);
+			create();
+		} else {
+			System.out.println(layer);
+			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+			fdef.filter.categoryBits = layer;
+		}
 	}
 	
 	public short getLayer(){ return layer; }
@@ -136,43 +201,164 @@ public class Entity{
 	public Vector2 getPosition(){ return body.getPosition(); }
 	public Body getBody() { return body; }
 
-	public void setGoal(float gx) { 
-		this.goal = new Vector2((float) gx/PPM + getPosition().x, getPosition().y); 
-		doAction(1);
-	}
-
 	public Script getScript() { return script; }
-	
 	public String toString(){ return ID; }
 	
 	public void changeDirection(){
-		if (direction) direction = false;
-		else direction = true;
+		if (facingLeft) facingLeft = false;
+		else facingLeft = true;
 
-		animation.flip(direction);
+		animation.flip(facingLeft);
+	}
+	
+	public void ignite(){
+		if(!flamable || burning) return;
+		totBurnLength = (float) (Math.random()*MAX_BURN_TIME);
+		burning = true;
+		burnTime = 0;
+//		gs.addParticleEffect(new Particle(Particle.FIRE, this));
+	}
+	
+	public void freeze(){
+		main.playSound(getPosition(), "freeze");
+		totFreezeLength = (float) (Math.random()*MAX_FROZEN_TIME);
+		frozen = true;
+		frozenTime = 0;
+//		gs.addParticleEffect(new Particle(Particle.SPARKLE, this));
+	}
+	
+	public void thaw(){
+		main.playSound(getPosition(), "thaw");
+		frozen = false;
+	}
+	
+	public void setResistance(float val){ resistance = val; }
+	
+	public void damage(double val){
+		damage(val, DamageType.PHYSICAL);
+	}
+	
+	public void damage (double val, DamageType type){
+		if(!dead)
+			if(!invulnerable){
+				main.playSound(getPosition(), "damage");
+				health -= val*resistance;
+				
+				if(type==DamageType.FIRE){
+					double chance = Math.random();
+					if(chance>=.7d)
+						ignite();
+					
+					if(frozen)
+						thaw();
+				} if (type==DamageType.ICE){
+					double chance = Math.random();
+					if(chance>=.8d)
+						freeze();
+				}
+				
+				if(health<=0)
+					die();
+				else;
+					//shake
+			}
+	}
+	
+	public void die(){
+		main.playSound(getPosition(), "fallhit");
+		dead = true;
+//		deadTime = 0;
+		
+		body.setLinearVelocity(0, 0);
+		//break
 	}
 
 	public void facePlayer(){
-		float dx = player.getPosition().x - getPosition().x;
-		if(dx > 0 && direction) changeDirection();
-		else if (dx < 0 && !direction) changeDirection();
+		if(main.character!=null){
+			float dx = main.character.getPosition().x - getPosition().x;
+			if(dx > 0 && facingLeft) changeDirection();
+			else if (dx < 0 && !facingLeft) changeDirection();
+		}
 	}
 	
 	public void faceObject(Entity obj){
 		if (obj != null)
 			if(obj.getBody() != null){
 				float dx = obj.getPosition().x - getPosition().x;
-				if(dx > 0 && direction) changeDirection();
-				else if (dx < 0 && !direction) changeDirection();
+				if(dx > 0 && facingLeft) changeDirection();
+				else if (dx < 0 && !facingLeft) changeDirection();
 			}
 	}
 	
-	public boolean getDirection(){ return direction; }
+	public boolean getDirection(){ return facingLeft; }
+	
+
+	protected void setDimensions(){
+		setDimensions(getWidth(ID), getHeight(ID));
+	}
+	
+	protected void setDimensions(int width, int height){
+		this.width = width; 
+		this.height = height;
+
+		//units in pixels, measures radius of image
+		this.rw = width/2; 
+		this.rh = height/2;
+	}
+	
+	protected static int getWidth(String ID){
+		try{
+			Texture src = Game.res.getTexture(ID+"base");
+			return src.getWidth();
+		} catch(Exception e) {
+			try{
+				Texture src = Game.res.getTexture(ID);
+				return src.getWidth();
+			} catch(Exception e1) {
+				return 1;
+			}
+		}
+	}
+
+	protected static int getHeight(String ID){
+		try{
+			Texture src = Game.res.getTexture(ID+"base");
+			return src.getHeight();
+		} catch(Exception e) {
+			try{
+				Texture src = Game.res.getTexture(ID);
+				return src.getHeight();
+			} catch(Exception e1) {
+				return 1;
+			}
+		}
+	}
+	
+	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
+	public void removeFollower(Mob m){ followers.removeValue(m, true); }
+	public Array<Mob> getFollowers(){ return followers; }
+	public int getFollowerIndex(Mob m) {
+		Main.debugText = "" + followers; 
+		return followers.indexOf(m, true) + 1; 
+	}
 
 	public int compareTo(Entity e){
 		if (layer < e.layer) return 1;
 		if (layer > e.layer) return -1;
 		return 0;
+	}
+	
+	public boolean equals(Object o){
+		if(o instanceof Entity){
+			Entity e = (Entity) o;
+			if(e.getBody()==null || getBody()==null)
+				return super.equals(o);
+			if(e.ID.equals(ID) && this.getClass().equals(o.getClass()) && 
+					e.getPosition().equals(getPosition()) && e.facingLeft==facingLeft && 
+					e.animation.equals(animation))
+				return true;
+		}
+		return false;
 	}
 	
 	public void create(){
@@ -188,6 +374,7 @@ public class Entity{
 		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
+		body.setMassData(mdat);
 		
 		createCenter();
 	}
@@ -201,10 +388,5 @@ public class Entity{
 		fdef.filter.categoryBits = (short) (layer);
 		fdef.filter.maskBits = (short) (Vars.BIT_HALFGROUND | Vars.BIT_GROUND);
 		body.createFixture(fdef).setUserData("center");
-	}
-
-	public void addFollower(Entity npc) {
-		// TODO Auto-generated method stub
-		
 	}
 }

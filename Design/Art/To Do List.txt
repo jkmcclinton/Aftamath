@@ -1,0 +1,83 @@
+Characters To Do:
+
+narrator1
+narrator2
+gangster3
+gangster4
+boyfriend1
+boyfriend2
+boyfriend3
+maleplayer1
+maleplayer2
+maleplayer3
+maleplayer4
+femaleplayer1
+femaleplayer2
+femaleplayer3
+femaleplayer4
+boss2
+burly2
+barista
+barber
+hero1
+hero2
+hero3
+hero4
+witch
+magician
+nighter1	------enemy that spawns at night--------
+nighter2			|
+nighter3			|
+nighter4			|
+nighter5			V
+nighter6	---------------------------------------
+oldlady2
+oldlady3
+oldman1
+oldman2
+oldman3
+biker1
+biker2
+biker3
+biker4
+bot1
+bot2
+bot3
+bot4
+policeman1
+policeman2
+policeman3
+policewoman1
+policewoman2
+civilian1
+civilian2
+civilian3
+civilian4
+civilian5
+civilian6
+civilian7
+civilian8
+civilian9
+civilian10
+kid1
+kid2
+kid3
+kid4
+kid5
+kid6
+
+Particles To Do:
+
+General
+Fire
+Frost
+Electricity
+Warp??
+
+Projectiles To Do:
+
+Ice Spike
+Electric Bolt
+
+
+

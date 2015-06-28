@@ -3,12 +3,15 @@ package main;
 import handlers.Animation;
 import handlers.GameStateManager;
 import handlers.MyInput;
+import handlers.MyInput.Input;
 import handlers.Vars;
 
 import java.lang.reflect.Method;
 
+import scenes.Song;
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,14 +26,18 @@ public class Title extends GameState {
 	private float titleWait, titleTime;
 	private TextureRegion[] font;
 	private int titleYMax;
+	private boolean dbtrender;
 	
 	public Title(GameStateManager gsm){
 		super(gsm);
 	}
 	
 	public void handleInput() {
-		if(MyInput.isPressed(MyInput.JUMP)||
-				MyInput.isPressed(MyInput.ENTER) && !gsm.isFading()){
+		if(MyInput.isPressed(Input.DEBUG_TEXT))
+			dbtrender=!dbtrender;
+			
+		if(MyInput.isPressed(Input.JUMP)||
+				MyInput.isPressed(Input.ENTER) && !gsm.isFading()){
 			try {
 				Method m = Title.class.getMethod(
 						Vars.formatMethodName(menuOptions[menuIndex[0]][menuIndex[1]]));
@@ -41,7 +48,7 @@ public class Title extends GameState {
 		}
 
 		if(buttonTime >= DELAY){
-			if(MyInput.isDown(MyInput.DOWN)){
+			if(MyInput.isDown(Input.DOWN)){
 				if(menuIndex[1] < menuMaxY){
 					menuIndex[1]++;
 					//play menu sound
@@ -51,7 +58,7 @@ public class Title extends GameState {
 				buttonTime = 0;
 			}
 
-			if(MyInput.isDown(MyInput.UP)){
+			if(MyInput.isDown(Input.UP)){
 				if(menuIndex[1] > 0){
 					menuIndex[1]--;
 					//play menu sound
@@ -64,7 +71,7 @@ public class Title extends GameState {
 	}
 	
 	public void play() {
-		gsm.setState(GameStateManager.PLAY, true);
+		gsm.setState(GameStateManager.MAIN, true);
 	}
 
 	public void update(float dt) {
@@ -79,7 +86,7 @@ public class Title extends GameState {
 		if (titleTime >= titleWait)
 			titleReached = false;
 		
-		debugText = ""+song.getVolume();
+		debugText = ""+music.getVolume();
 		
 		if(quitting)
 			quit();
@@ -95,13 +102,13 @@ public class Title extends GameState {
 			drawOptions(sb);
 		sb.end();
 
-		updateDebugText();
+		if(dbtrender) updateDebugText();
 	}
 	
 	public void updateDebugText() {
 		sb.begin();
 			drawString(sb, font, 13, debugText, 1,  Game.height/2 - font[0].getRegionHeight() - 2);
-			//1drawString(sb, debugText,1,  Game.height/2 - font[0].getRegionHeight()*4 - 2);
+			//drawString(sb, debugText,1,  Game.height/2 - font[0].getRegionHeight()*4 - 2);
 		sb.end();
 	}
 
@@ -146,14 +153,17 @@ public class Title extends GameState {
 	}
 	
 	public void dispose() { 
-		if(song != null)
-			song.stop();
+		if(this.music!=null)
+			music.dispose();
 		}
 
 	@Override
 	public void create() {
-		song = Gdx.audio.newMusic(new FileHandle("res/music/Title.wav"));
-		setSong(song, gsm.volume);
+		Song song = new Song("Title");
+		setSong(song, false);
+		song.fadeIn();
+		sb.setOverlay(Color.WHITE);
+		sb.setOverlayDraw(false);
 
 		font = TextureRegion.split(new Texture(Gdx.files.internal("res/images/text4.png")), 14, 20 )[0];
 		

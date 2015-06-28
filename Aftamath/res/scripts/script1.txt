@@ -1,29 +1,31 @@
 Script Intro
 lockPlayer
+eventMusic(Explosive)
 faceobject(this, player)
 SetSpeaker(this)
 text(normal, {This is a test for individual scripts./l~Perhaps I should include a tool to automatically/llimit the amount of text is written per/lline and per page to simplify things.})
 SetChoice(YesNo)
-[Choice Yes]
-text(normal, {I'll think about implementing it into/lwhat I already have.})
-setScript(RobberIntro)
-end
+  [Choice Yes]
+    text(normal, {I'll think about implementing it into/lwhat I already have.})
+   setScript(RobberIntro)
+  end
 
-[Choice No]
-text(normal, {Yeah, maybe it's not such a good idea./lI mean, I already have something implemented to/ldo just that.})
-SetSpeaker(Sasha, true)
-text(normal, {Something good will happen once it's/lall put together and working, though!})
-SetSpeaker(this, true)
-text(normal, {True.~ We can only hope for the best.})
+  [Choice No]
+    text(normal, {Yeah, maybe it's not such a good idea./lI mean, I already have something implemented to/ldo just that.})
+    SetSpeaker(Sasha, true)
+    text(normal, {Something good will happen once it's/lall put together and working, though!})
+    SetSpeaker(this, true)
+    text(normal, {True.~ We can only hope for the best.})
+    setScript(GenderTest)
+  end
 end
-endChoice
 done
 
 Script RobberIntro
 SetSpeaker(this)
 faceobject(this, player)
-text(normal, {"Look over there.}, false)
-wait(2)
+text(normal, {Look over there.}, false)
+wait(1)
 focusCamera(1)
 lockplayer
 pause
@@ -33,23 +35,22 @@ text(normal, {That guy is a robber. He'll kill you.})
 lowerdialog
 faceobject(this, player)
 focus(1)
-action(1, 8)
-faceobject(this, player)
+doAction(1, aim)
+faceobject(1, player)
 SetSpeaker(1)
 text(mad, {Don't think I cant hear you guys/lyapping over there!~ I'm not/lstupid!})
-action(1, 10)
+doAction(1, loseaim)
 done
 
 Script GenderTest
 lockplayer
-if PlayerGender = female
-SetSpeaker(1)
-text(sad, {You are a female.})
-movePlayer(-10)
+if([player.gender = female])
+  SetSpeaker(1, true)
+  text(sad, {You are a female.})
+  movePlayer(-10)
 else
-SetSpeaker(this)
-text(normal, {You are a male.})
-movePlayer(25)
-focusCamera(1)
-endIf
+  SetSpeaker(this)
+  text(normal, {You are a male.})
+  movePlayer(25)
+end
 done

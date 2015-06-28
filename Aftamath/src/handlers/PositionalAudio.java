@@ -1,7 +1,7 @@
 package handlers;
 
 import main.GameState;
-import main.Play;
+import main.Main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -18,7 +18,7 @@ public class PositionalAudio {
 		sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
 		sound.setLooping(true);
 		gs.playSound(location, sound);
-		if(gs instanceof Play)
-			((Play) gs).addSound(this);
+		if(gs instanceof Main)
+			((Main) gs).addSound(this);
 	}
 }

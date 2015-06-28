@@ -1,6 +1,6 @@
 package handlers;
 
-import main.Play;
+import main.Main;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -16,7 +16,7 @@ public class RefocusTrigger extends Entity{
 	private String focus;
 	private Camera camera, b2dCam;
 	
-	public RefocusTrigger(World world, Play play, float x, float y, 
+	public RefocusTrigger(World world, Main play, float x, float y, 
 			float w, float h, float zoom, String focus){
 		this.x = x;
 		this.y = y;
@@ -27,7 +27,7 @@ public class RefocusTrigger extends Entity{
 		this.focus = focus;
 		camera = play.getCam();
 		b2dCam = play.getB2dCam();
-		this.gs = play; 
+		this.main = play; 
 		
 		create();
 	}
@@ -36,9 +36,9 @@ public class RefocusTrigger extends Entity{
 		camera.setTrigger(this);
 		camera.zoom(zoom);
 		if(camera.getCharacter()==null)
-			camera.setCharacter(gs.player);
+			camera.setCharacter(main.player);
 		if(b2dCam.getCharacter()==null)
-			b2dCam.setCharacter(gs.player);
+			b2dCam.setCharacter(main.player);
 		
 		b2dCam.setTrigger(this);
 		b2dCam.instantZoom(zoom);
@@ -66,8 +66,8 @@ public class RefocusTrigger extends Entity{
 		fdef.isSensor = true;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_LAYER2| Vars.BIT_LAYER3);
-		fdef.filter.categoryBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_LAYER2| Vars.BIT_LAYER3);
+		fdef.filter.maskBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
+		fdef.filter.categoryBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
 		body.createFixture(fdef).setUserData(Vars.trimNumbers("refocusTrigger"));
 	}
 

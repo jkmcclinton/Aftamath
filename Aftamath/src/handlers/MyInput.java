@@ -1,53 +1,60 @@
 package handlers;
 
+import java.util.HashMap;
+
 public class MyInput {
 
-	public static boolean[] keys;
-	public static boolean[] pkeys;
-	
-	public static int NUM_KEYS = 76;
-	public static final int UP = 0;
-	public static final int DOWN = 1;
-	public static final int LEFT = 2;
-	public static final int RIGHT = 3;
-	public static final int JUMP = 4;
-	public static final int INTERACT = 5;
-	public static final int USE = 7;
-	public static final int ATTACK = 8;
-	public static final int PAUSE = 9;
-	public static final int ENTER = 10;
-	public static final int DEBUG_UP = 11;
-	public static final int DEBUG_DOWN = 12;
-	public static final int DEBUG_LEFT = 13;
-	public static final int DEBUG_RIGHT = 14;
-	public static final int DEBUG_LEFT1 = 15;
-	public static final int DEBUG_RIGHT1 = 16;
-	public static final int DEBUG_LEFT2 = 17;
-	public static final int DEBUG_RIGHT2 = 18;
-	public static final int DEBUG_CENTER = 19;
-	public static final int DEBUG = 20;
-	public static final int DEBUG1 = 21;
-	public static final int DEBUG2 = 22;
-	public static final int DEBUG3 = 23;
-	
-	static {
-		keys = new boolean[NUM_KEYS];
-		pkeys = new boolean[NUM_KEYS];
-	}
-	
-	public static void update(){
-		for(int i = 0; i < NUM_KEYS; i++){
-			pkeys[i] = keys[i];
+	public static HashMap<Input, Boolean> keys = new HashMap<>(), pkeys = new HashMap<>();
+	static{
+		for(Input k : Input.values()){
+			keys.put(k, false);
+			pkeys.put(k,  false);
 		}
 	}
 	
-	public static void setKey(int i, boolean b) { keys[i] = b; }
-	public static boolean isDown(int i) { return keys[i]; }
+	public static enum Input{
+	 UP,
+	 DOWN,
+	 LEFT,
+	 RIGHT,
+	 JUMP,
+	 INTERACT,
+	 USE,
+	 ATTACK,
+	 RUN,
+	 PAUSE,
+	 ENTER,
+	 DEBUG_UP,
+	 DEBUG_DOWN,
+	 DEBUG_LEFT,
+	 DEBUG_RIGHT,
+	 DEBUG_LEFT1,
+	 DEBUG_RIGHT1,
+	 DEBUG_LEFT2,
+	 DEBUG_RIGHT2,
+	 DEBUG_CENTER,
+	 LIGHTS,
+	 COLLISION,
+	 DEBUG,
+	 DEBUG2,
+	 DEBUG_TEXT,
+	 ZOOM_IN,
+	 ZOOM_OUT,
+	}
+	
+	public static void update(){
+		for(Input k : Input.values())
+			pkeys.put(k, keys.get(k));
+	}
+	
+	public static void setKey(Input k, boolean b) { 	keys.put(k, b);  }
+	public static boolean isDown(Input k) { return keys.get(k); }
 	public static boolean isDown(){
-		for(boolean b : keys)
-			if(b)return b;
+		for(Input k : keys.keySet())
+			if(keys.get(k))
+				return true;
 		return false;
 	}
-	public static boolean isPressed(int i) { return keys[i] && !pkeys[i]; }
+	public static boolean isPressed(Input k) { return keys.get(k) && !pkeys.get(k); }
 	
 }

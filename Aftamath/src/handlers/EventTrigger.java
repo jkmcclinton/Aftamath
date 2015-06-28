@@ -1,6 +1,6 @@
 package handlers;
 
-import main.Play;
+import main.Main;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -23,7 +23,7 @@ public class EventTrigger extends Entity{
 	private FixtureDef fdef = new FixtureDef();
 	private World world;
 	
-	public EventTrigger(World world, Play play, float x, float y, float w, float h, String condition, String value){
+	public EventTrigger(World world, Main play, float x, float y, float w, float h, String condition, String value){
 		this.x = x;
 		this.y = y;
 		this.width = w;
@@ -31,7 +31,7 @@ public class EventTrigger extends Entity{
 		this.condition = condition;
 		this.value = value;
 		this.world = world;
-		this.gs = play;
+		this.main = play;
 		
 		create();
 	}
@@ -55,8 +55,8 @@ public class EventTrigger extends Entity{
 		fdef.isSensor = true;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_LAYER2| Vars.BIT_LAYER3);
-		fdef.filter.categoryBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_LAYER2| Vars.BIT_LAYER3);
+		fdef.filter.maskBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
+		fdef.filter.categoryBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
 		body.createFixture(fdef).setUserData(Vars.trimNumbers("eventTrigger"));
 	}
 

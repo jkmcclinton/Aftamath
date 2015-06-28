@@ -1,0 +1,402 @@
+The information on this file regards using Tiled specifically with the game.
+If you need help on some of the tools it has, there are plenty of sites and video tuts
+you can consult, but if it's really simple I can help you ot as well (though it might
+easier for you to figure it out yourself)
+
+Of course, some things haven't yet been decided on, so the stuff that's here is mainly
+what was set up before the project started.
+
+===================================================
+		Level Properties
+===================================================
+
+Level properties define the characteristics of a level, from BGM to whether the level is
+open to the outdoors. There isn't much to define for a level, so don't focus too much on
+it.
+
+How to Access
+- Go into the Map toolbar menu at the top and select "Map Properties"
+- A property window should show up somewhere, depending on your setup. Here's where all the
+  important stuff will happen. 
+
+Adding
+- Make sure you have the "Map Properties" window open. 
+- Under the section "Custom Properties" you'll want to press the "Add Property" button. 
+- In the next window, type in the name of the property, not its value. 
+- After you hit OK you should be able to then type in the value.
+- If you mess up the property name, you'll have to hit the "edit" button with the property
+  highlighted to re-access it. The button should be that pencil icon located directly beneath
+  the custom properties.
+Adding properties is pretty much the same across the board. While accessing them for objects
+is a little different, adding the property names and values stays the same.
+ 
+NOTE: If you don't type in the NAME of the property exactly as it appears on the list, the property 
+      will not be recognized. This goes for every property name, so double check spelling and 
+      capitalization! Property VALUES aren't always case sensitive, but please keep track of those 
+      that are and those that aren't.
+
+===================================================
+		Level Property List
+===================================================
+format: name | value
+*: case sensitive VALUE
+~: not yet fully implemented
+
+REMEMBER: names are ALWAYS case sensitive.
+
+	*bgm day | songName
+	*bgm noon | songName
+	*bgm night | songName
+	*bgm | songName
+		"bgm" denotes static music. The other three denote dynamic music that 
+		changes with the day/night cycle. As of right now, all three must be defined
+		for them to actually take effect.
+
+		see the music folder (Aftamath/Aftamath/res/music) for the list of song names.
+
+	~ambient | lightType
+		the type of ambient lighting for the level. Generally this determines whether
+		or not the level is outside and is privvy to both day/night changes and
+		the planned weather mechanic
+
+		There isn't much to use now, so this property will mainly be a touch-up effect
+		type list:
+			indoors
+
+	next | levelName
+	prev | levelName
+		if the level is outside, "next" denotes what location the player warps to when
+		they walk to the far right of the screen, while "prev" denotes the level on the
+		far left
+
+		see the maps folder (Aftamath/Aftamath/res/maps) for the list of .tmx files.
+		Use the names of these and you should be good. You can also check the level design
+		folder (Aftamath/Design/Levels) for the list of planned levels, but keep in mind
+		the names might not be exact.
+
+===================================================
+		Tilesets
+===================================================
+
+Since there isn't much art as of now, you could probably just make your own tileset for testing
+purposes. They're basically an image with 16x16 tiles. It's easier to make them using an
+image editor that supports layers (like Paint.NET, Gimp, or of course Photoshop), so you can
+keep to the grid as much as possible.
+
+Some tiles can even have their own animations
+You can go into the "View" menu from the toolbar and select "Tile Animation Editor" to bring 
+up the window. The tile that you're editing depends on whatever tile is highlighted in the
+"Tilesets" window. To actually make the animations you simply drag and drop from the "animation" 
+window in the order you want them in. The timing can be controlled by the number next to each frame.
+
+BUT...
+You really shouldn't have to worry about these. As of right of right now I plan to make
+template levels that include things like tilesets that are already predefined with animations 
+and everything, so all you have to do is focus on the level design.
+
+If you ever need to load a tileset:
+- Go to the "Map" menu in the toolbar
+- Select "New Tileset"
+- give it a sensible name
+- browse to Aftamath/Aftamath/res/maps/tilesets to find a tileset
+- for now, keep the tile width and height to 16 x 16. Leave the other two options as 0.
+- In the "Tilesets" window, a new tab should appear containing the new tileset
+
+===================================================
+		Layers
+===================================================
+
+Each level MUST contain the following layers in this order:
+	entities --	object layer
+	fg 	 --	tile layer
+	ground 	 --	tile layer
+	bg2 	 --	tile layer
+ 	bg1 	 --	tile layer
+
+If for some reason these layers are renamed or nonexistant, you might cause the game to crash
+unexpectedly. I haven't spent time to handle stupid things like that, so make sure you always
+have these layers. If you stick to using the templates you should be fine.
+
+Tile layers can only have tiles, which can be pulled from the "Tilesets" window. Object layers
+contain things like circles, polygons, and lines. We only use one of these layers as layer order
+and properties do not matter.
+
+The draw order for the layers is not something you have to worry about, but just in case
+the topmost layers should appear above the bottom ones. I think there might be somewhere in the
+"Map Properties" window where you can change that, but for now just stick to the templates.
+The two background layers give you room to do crazy stuff with some of the tiles. 
+The forground layer appears in front of all objects, but behind anything that happens on the 
+street.
+
+Any object that needs to be spawned in goes in the "entities" layer. Keep in mind though, that
+the draw order for objects is not inherited from the layer and is defined separately. So some
+objects can be specifically placed in front of or behind other objects, but will always be 
+behind the foreground.
+
+As of right now, layers do not need properties. 
+
+===================================================
+		Spawning Objects
+===================================================
+
+For things like NPCs, warps, paths, and spawnpoints, use the "entities" layer. In order to put 
+stuff in the layer, you'll need to use either the rectangle tool or the polyline tool. Since 
+this is a pixel art game, we don't really use the other object drawing tools.
+
+Aligning to Grid
+Some objects are better off drawn with the tile grid. To turn in it on or off, 
+- Go to the "View" menu in the toolbar.
+- select "Snap to Grid"
+It's that simple. I haven't played around with the other snapping tool and I don't think it's
+really necessary to use it, so just use the first one.
+
+Naming 
+You can give each object a name under the "Object" section in the property window so it can show 
+up visually in Tiled (make sure it's "Onject" and NOT "Object Layer", or you won't actually be 
+modifying the object). This can help from not getting confused when seeing a whole buch of lines 
+and squares everywhere.
+
+---Objects---
+~Certain objects can be spawned during specific events. Check the Object Properties list for those
+that have the option. (the property is defined as "event whitelist"/"event blacklist")
+
+Right now the plan is for the level to spawn objects once when the player first visits the level 
+and keep a list of those that could not be spawned due to event whitelisting/blacklisting. If an 
+object such as an NPC goes to another level, the object won't be respawned in that level unless it 
+is physically moved back. So keep in mind that all these spawning locations are only the initial 
+spawn points.
+
+Spawn point
+Each level should only have one spawn point, at max and min. This object is used to spawn the
+player in when the player does not come from a warp tile (e.g. a door or window) or when there
+is no save data to pull the location from. 
+- It requires nothing more than the object property name "spawn" in all lower case. 
+- Sizing generally does not matter, but try to keep it to a 16 x 16 box.
+
+NPC
+NPCs are what drive the main parts of the game. If stuff needs to happen, generally an NPC is 
+involved. So populate the world! 
+- NPCs should generally be drawn to the grid, but it isnt't necessary
+- Use a 16 x 16 box for simplicity's sake. The location of this box determines where the NPC's
+  feet will be.
+- in order for an NPC to talk or do anything, it must be given a script. See the Object Properties
+  for more info
+
+~Civilian/Ghoul Spawner
+These planned objects spawn in certain mobs according to the time of day at whatever location they
+are placed.
+- They should not be placed indoors unless that is the intention.
+- in outside levels, they should typically be placed on the sides of the level so it can appear
+  as if they come from other parts of the city
+- at day these things spawn peaceful civilians that walk around the city. They generally have
+  nothing important to say, if anything at all.
+- at night these things spawn mobs that attack the player
+
+Warp
+These connect to other levels. I plan to have two types of warp tiles: those that link to objects
+in the background and those that link to the foreground (for things like crossing the street).
+- Normaly these should be drawn to fit the shape of the object in the background. For instance,
+  if you're linking a door, the warp box should cover the object entirely.
+- These should not be drawn to the grid.
+- Sizing DOES matter for these. The shape of the box determines what objects can collide with.
+- Keep in mind that mobs can only use warps if they are on the ground. So don't put anything
+  in the air if you want them to be able to use it.
+- if you want to name them, try using the "ID" property VALUE instead to make tagging easier
+- in the future, I might make it so you can align the warps to a 1x1 pixel grid, so if there's
+  something like a door behind it an animation can play when the warp is used...
+
+~Event Triggers
+These trigger events by running a script and checking conditions when the player collides with it.
+The main thing it checks for is if the event has already been triggered or if the conditions have
+been met.
+- the shape of the box should be made so that the player has no way of skip the trigger.
+- in the future they might disappear when the script has been triggered successfully
+
+~Path
+These still need to be planned out. Check the Pathing section for more info.
+- these should not be aligned to the grid
+
+In the future there will also be things like signs and stuff that the player can interact with.
+Here's a list of things I think might make it into the game:
+	signs
+	platforms
+	water
+	shops
+	hazards (like lasers or puddles or whatever)
+
+===================================================
+		Object Property List
+===================================================
+format: name | value
+*: case sensitive VALUE
+~: not yet fully implemented
+
+REMEMBER: names are ALWAYS case sensitive.
+REMEMBER: if not explicity stated, all properties must be inclulded for the specific object type
+	  (this would be so much easier in Unity...)
+
+To access object properties, simply select the object layer (which shouuld be the "entities" layer)
+and select the object you want to modify. Its properties should come up in a new window,
+depending on your configuration.
+
+--------------------NPC Properties--------------------
+
+	ID | number
+		This gives each NPC a specific identity. The value must be an integer and be unique
+		from other NPCs in the entire game... or so that will be the idea. For now, the
+		scope is limited to the
+		~Should you give an NPC the same ID as another NPC, Most of the values will be
+		read from disk from the last time it was loaded in. (Which means if you intended
+		for the NPC to be unique, fields like name and NPCtype will be overrwitten)
+		
+		NOTE: I'll set up a list of all the canonical NPCs that end up being made, so if you ever
+		      are unsure of what numbers to use please refer to that first. There will be alot,
+		      seeing as what type of game this is.
+		
+	layer | layerType
+		determines whether the NPC appears in front of or behind the player.
+		Valid values are:
+			front
+			back
+		
+		putting the NPC on the same layer as the player is a little more complicated,
+		because then they both would collide with each other... (collision between mobs
+		period hasn't yet been decided)
+		
+		if it's at all necessary for the NPC to collide with the player, then give
+		the NPC the state
+
+	NPC | NPCtype
+		this property defines what image gets used for the NPC. It must be included
+		to denote that the object is an NPC
+		
+		see the mobs folder (Aftamath/Aftamath/res/images/entities/mobs) for a list of all 
+		current NPCs. there's also a ToDo list for planned images.
+
+	name | name
+		gives the NPC a name. This shows up in dialog boxes and practically everything else.
+		As of right now, the script witers can also find NPCs in the world by using their
+		name, so try to keep them unique.
+
+		Also, any NPC you spawn in has a permanent life unless it dies,
+
+	*script | scriptName
+		Optional property
+
+		see the scripts folder (Aftamath/Aftamath/res/scripts) for a list of scripts
+
+	state | stateType
+		Optional property
+		this property defines what AI the NPC follows on a regular basis. At anytime it can
+		be changed by scripts
+
+		type list:
+			stationary
+			idlewalk 	- walk around a general area
+			~idlefly 	- fly around a general vicinity 
+			~walkpath	- walk along a path
+			~flypath 	- fly along a path
+			following 	- follow close behind an object
+			faceplayer 	- always face the player
+			faceobject 	- always face a certain object
+			attacking 	- attack once
+			fighting 	- fight to death
+			~timedFight 	- fight until health below certain value or time expires
+			evading 	- evade a certain object on sight
+			evading_all 	- evade all objects on sight
+			dancing 	- dance stationary
+			blockpath 	- collide w/ player to prevent passagey
+		
+	on attacked | attackType
+		Optional property
+		this property defines when the NPC will attack anything.
+
+		type list:
+			on_attacked	- fights back when attacked
+			on_defend	- attacks once when attacked, but CAN fight back as well
+			on_sight	- fights when player is seen
+			~random		- attacks randomly
+			never
+
+	*attackScript | scriptName
+		Optional property
+		defines the script that gets triggered when the NPC is attacked.
+		~This can only be triggered if the NPC isn't currently attacking or fighting
+		back (There is a difference)
+
+		see the scripts folder (Aftamath/Aftamath/res/scripts) for a list of scripts
+
+	on sight | discoverType
+		Optional property
+		defines what the NPC does when it sees the player
+
+		type list:
+			attack		- engages battle w/ the player
+			follow		- immediately follows the player
+			evade		- runs away from the player
+			~talk		- engages conversation
+			ignore
+
+	*discoverScript | scriptName
+		Optional property
+		defines the script that runs only when the NPC spots the player.
+		~This can only be triggered once. When the NPC respawns, it can most likely be
+		triggered again, but this is a feature that hasn't been thoroughly defined.
+
+		see the scripts folder (Aftamath/Aftamath/res/scripts) for a list of scripts
+
+
+--------------------Warp Properties--------------------
+
+	warp |
+		This must be included to denote that the object is a warp tile
+	ID | number
+		This gives each warp a specific identity. The value must be an integer and be unique
+		from other warps on the same level.
+	next | levelName
+		denotes the level where the next warp is located.
+
+		see the maps folder (Aftamath/Aftamath/res/maps) for the list of .tmx files.
+		Use the names of these and you should be good. You can also check the level design
+		folder (Aftamath/Design/Levels) for the list of planned levels, but keep in mind
+		the names might not be exact.
+	nextWarp | warpNumber
+		denotes the ID of the next warp from the level given. The value must be an integer
+		If no unique one found, the first warp with the given ID is used
+
+		~the value can also be "random" to denote a random warp from the given level
+	~transition | type
+		Optional property
+		denotes how the screen transitions to the next level
+
+		by default, the transition type is fade
+
+		type list:
+			horizontal bars		- bars come from sides of screen 
+			pinhole			- classic loony toons style circle
+			zoom			- zoom into character's face, blackout
+			blackout		- instant blackout
+			fade			- regular fade to black
+			fade white		- regular fade to black
+			fade and rise		- fade to black and move camera upward
+			fade and sink		- fade to black and move camera downward
+
+
+--------------------Event Trigger Properties--------------------
+
+	event |
+		This is necessary to denote that the object is an event trigger
+
+	*script | scriptName
+		use this to define which script is used to identify the conditions for
+		triggering events.
+		
+		see the events folder (Aftamath/Aftamath/res/scripts/events) for a list of
+		event related scripts
+		
+===================================================
+		Pathing
+===================================================
+
+Pathing hasn't been coded yet, but the basic idea is that the polylines and other object shapes
+in Tiled can be used to create paths that either the camera or NPCs can follow

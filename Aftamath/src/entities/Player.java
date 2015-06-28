@@ -1,14 +1,15 @@
 package entities;
 
-import handlers.SuperMob;
 import handlers.Vars;
+
+import java.util.HashMap;
+
 import main.House;
-import main.Play;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class Player extends SuperMob {
+public class Player extends Mob {
 
 	public boolean stopPartnerDisabled = false;
 	
@@ -20,42 +21,62 @@ public class Player extends SuperMob {
 	private double relationship;
 	private double bravery;
 	private double nicety;
-	private float N, B, H, L;
+	private float N, B, L;
 	private String info;
+	private HashMap<DamageType, Integer> typeCounter;
 	
 	public Player(String name, String gender, String newID) {
-		super(name, gender + newID, 0, 0, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, Vars.BIT_LAYER2);
+		super(name, gender + newID, 0, 0, Vars.BIT_PLAYER_LAYER);
 		this.name = name;
 		this.gender = gender;
 		
 		money = goalMoney = 1500.00;
-//		myPartner = new Partner("Kira", "female", 1, x - width * 4, y + 30);
-//		myPartner.setScript("script2");
-//		myPartner = new Partner();
 		home = new House();
 		
-		H = 1; L = 1; B = 1; N = 1;
+		L = 1; B = 1; N = 1;
+		typeCounter = new HashMap<>();
 	}
-	
-	//following methods are getters and setters
 
 	public void update(float dt) {
 		super.update(dt);
 		updateMoney();
 	}
 	
-	public void heal(double healVal){
-		health += healVal * H;
-		if (health > MAX_HEALTH) health = MAX_HEALTH;
+	public void doRandomPower(Vector2 target){
+		int type = (int) Math.random()*(DamageType.values().length-1);
+		DamageType dT = DamageType.values()[type];
+		
+		powerType = dT;
+		typeCounter.put(dT, typeCounter.get(dT)+1);
+		
+		int max = 0, c;
+		for(DamageType d : typeCounter.keySet()){
+			c = typeCounter.get(d);
+			if(c>=max) {
+				max = c; 
+			}
+		}
+		
+		powerAttack(target);
+
+		if(max<3)
+			powerType = DamageType.PHYSICAL;
+		else
+			powerType = dT;
 	}
 	
-	public void damage(double damageVal){
-		if (!dead) {
-			if (!invulnerable) health -= H * damageVal;
-			setAnimation(FLINCHING, Vars.ACTION_ANIMATION_RATE);
-		}
-		if (health <= 0 && !dead) die();
+	public void follow(Entity focus) {
+//		this.focus = focus;
+//		controlled = true;
+//		controlledAction = Action.WALKING;
+		
 	}
+
+	public void stay() {
+		controlled = false;
+		controlledAction = null;
+	}
+	//following methods are getters and setters
 	
 	public void goOut(NPC newPartner, String info){
 		myPartner = newPartner;
@@ -63,12 +84,12 @@ public class Player extends SuperMob {
 		relationship = 0;
 		L = 0;
 		
-		gs.history.setFlag("hasPatner", true);
+		main.history.setFlag("hasPatner", true);
 	}
 	
 	public void breakUp(){
 		myPartner = new NPC();
-		gs.history.setFlag("hasPatner", false);
+		main.history.setFlag("hasPatner", false);
 //		relationship = 0;
 //		L = 0;
 	}
@@ -82,21 +103,12 @@ public class Player extends SuperMob {
 	public String getPartnerInfo(){ return info; }
 	public void resetPartnerInfo(String info){this.info=info;}
 	
-	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
-	public void removeFollower(Mob m){ followers.removeValue(m, true); }
-	public Array<Mob> getFollowers(){ return followers; }
-	public int getFollowerIndex(Mob m) {
-		Play.debugText = "" + followers; 
-		return followers.indexOf(m, true) + 1; 
-	}
-	
 	public void resetFollowers(Array <Mob> followers){
 		for(Mob m : followers)
 			this.followers.add(m);
 	}
 	
 	public void addFunds(double amount){ goalMoney += amount; }
-	
 	private void updateMoney(){
 		double dx = (goalMoney - money)/2;
 //		if(dx < 1d && dx != 0) dx = 1 * (dx/Math.abs(dx));
@@ -123,15 +135,13 @@ public class Player extends SuperMob {
 	public double getBravery() { return bravery; }
 	public float getBraveryScale() { return B; }
 	
-	public void setHealthScale(float val){ H = val; }
-	
 	public Player copy(){
 		Player p = new Player(name, gender, ID);
 		
 		//copy stats
 		p.resetMoney(money);
-		p.resetHealth(health, MAX_HEALTH);
-		p.setHealthScale(H);
+//		p.setResistance(resistance);
+		p.resetHealth(health, maxHealth);
 		p.resetBravery(bravery);
 		p.setBraveryScale(B);
 		p.resetNiceness(nicety);
@@ -142,10 +152,11 @@ public class Player extends SuperMob {
 		p.setLoveScale(L);
 		p.resetFollowers(followers);
 		p.moveHome(p.getHome());
+		p.setTypeCounter(typeCounter);
 		
-		p.setPowerType(type);
+		p.setPowerType(powerType);
 		p.resetLevel(level);
-		p.setPlayState(gs);
+		p.setGameState(main);
 		
 		return p;
 	}
@@ -155,4 +166,5 @@ public class Player extends SuperMob {
 	}
 
 	public void setGender(String gender) { this.gender = gender;}
+	public void setTypeCounter(HashMap<DamageType, Integer> tc){ typeCounter = tc; }
 }

@@ -13,7 +13,9 @@ public class Ground extends Entity{
 	private static final int TILE_SIZE = 16;
 
 	public Ground(World world, String ID, float x, float y){
-		super(x, y - 4 / PPM, TILE_SIZE, TILE_SIZE, ID);
+		width = height = TILE_SIZE;
+		this.x = x;
+		this.y = y;
 		this.world = world;
 		create();
 	}
@@ -35,7 +37,7 @@ public class Ground extends Entity{
 		fdef.friction = .25f;
 		fdef.shape = cs;
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_LAYER2 | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
 		fdef.isSensor = false;
 		body = world.createBody(bdef);
 		body.createFixture(fdef).setUserData("ground");

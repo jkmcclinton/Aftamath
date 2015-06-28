@@ -1,15 +1,15 @@
 Script Main
 lockplayer
 SetSpeaker(partner)
-value(set, love, 2)
+value(set, player.love, 2)
 
-if(love >= 2)
-text(flirty, {Hey bae!~/lI love you!})
-endIf
-if(love = 0)
-text(normal, {Hey /player.~ What's up?})
-endIf
-if(love < 0)
-text(mad, {Don't talk to me.})
-endIf
+if([player.love >= 2])
+ text(flirty, {Hey bae!~/lI love you!})
+end
+if([player.love = 0])
+ text(normal, {Hey /player.~ What's up?})
+end
+if([player.love < 0])
+ text(mad, {Don't talk to me.})
+end
 done

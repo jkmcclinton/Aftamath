@@ -1,0 +1,6 @@
+Known Event Names:
+FellFromNowhere-denotes the beginning of the game
+BrokeAnOldLadyCurse
+MetTheBadWitch
+RobbedTwoGangsters
+FoundTheNarrator

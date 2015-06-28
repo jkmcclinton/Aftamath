@@ -4,6 +4,8 @@ import handlers.Camera;
 import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.Vars;
+import main.Main.InputState;
+import scenes.Song;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -17,30 +19,30 @@ import com.badlogic.gdx.math.Vector2;
 public abstract class GameState {
 
 	public static String debugText = "";
+	public int choiceIndex, menuMaxY, menuMaxX;
+	public int[] menuIndex = new int[2];
+	public boolean tempSong, removingTemp;
+	public String[][] menuOptions;
 	
 	protected GameStateManager gsm;
 	protected Game game;
-	protected Music song, nextSong;
+	protected Song music, nextSong, prevSong, tmp;
 	protected static TextureRegion[] font;
-	
-	static { 
-		font = TextureRegion.split(new Texture(Gdx.files.internal("res/images/text3.png")), 7, 9 )[0];
-	}
 	
 	protected FadingSpriteBatch sb;
 	protected Camera cam;
 	protected Camera b2dCam;
 	protected OrthographicCamera hudCam;
-	
-	public int choiceIndex, menuMaxY, menuMaxX;
-	public int[] menuIndex = new int[2];
-	public String[][] menuOptions;
 	protected float buttonTime, buttonDelay = .2f;
 	protected boolean quitting = false, changingSong;
 	
 	protected static final float DELAY = .2f;
 	protected static final int PERIODX = 7;
 	protected static final int PERIODY = 9;
+	
+	static { 
+		font = TextureRegion.split(new Texture(Gdx.files.internal("res/images/text3.png")), 7, 9 )[0];
+	}
 	
 	protected GameState(GameStateManager gsm) {
 		this.gsm = gsm;
@@ -51,54 +53,93 @@ public abstract class GameState {
 		hudCam = game.getHudCamera();
 	}
 	
+	public void update(float dt){
+		music.update(dt);
+		if(tempSong) prevSong.update(dt);
+		if(removingTemp){
+			tmp.update(dt);
+			if(!prevSong.fading){
+				tmp=null;
+				removingTemp = false;
+			}
+		}
+	}
+	
 	public void pause() {
-		if (song != null) 
-			if (song.isPlaying()) 
-				song.pause();
+		if (music!=null)
+			music.fadeOut(false);
 	}
 
 	public void resume() {
-		if(this instanceof Play){
-			if (((Play)this).stateType != Play.PAUSED)
-				if (song != null)
-				song.play();
-		} else if (song != null)  
-			song.play();
+		if(this instanceof Main){
+			if (((Main)this).stateType != InputState.PAUSED)
+				if (music!=null)
+					music.fadeIn(music.prevVolume);
+		} else if (music!=null)  
+			music.fadeIn(music.prevVolume);
 	}
 	
 	public void setSong(String src){
-		setSong(Gdx.audio.newMusic(new FileHandle("res/music/"+src+".wav")));
+		setSong(new Song(src));
 	}
 	
-	public void setSong(Music song){
-		setSong(song, Game.musicVolume);
+	public void setSong(Song song){
+		setSong(song, false);
 	}
 	
-	public void setSong(Music song, float volume){
-		this.song = song;
-		game.setSong(song);
+	public void setSong(Song song, boolean fade){
+//		if(music!=null) this.music.stop();
+		music = song.copy();
 		
-		song.setLooping(true);
+		game.setSong(music);
 //		if(gsm.getStates().isEmpty())
-			playSong(song, volume);
-//		else if (gsm.getStates().peekFirst().equals(this))
-//			playSong(song, 0);
+			if(fade) {
+				this.music.setVolume(0f);
+				this.music.fadeIn();
+			} else this.music.play();
+//		else if (gsm.getStates().peekFirst().equals(this)){
+//			song.setVolume(0);
+//			song.play();
+//	    }
 	}
 	
-	private void playSong(Music song, float volume){
-		song.setVolume(volume);
-		song.play();
+	public void addTempSong(Song song){
+		music.fadeOut(false, Song.FAST);
+		
+		prevSong = music;
+		setSong(song);
+		tempSong = true;
+		
+		music.play();
+	}
+	
+	public void removeTempSong(){
+		tmp = music;
+		tmp.fadeOut();
+		tempSong = false;
+		removingTemp = true;
+		music = prevSong;
+		
+		music.fadeIn();
 	}
 	
 	//UI sound
 	public void playSound(String src){
-		Music sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
-		sound.play();
+		try{
+			Music sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
+			sound.play();
+		} catch (Exception e){
+			System.out.println("Sound file \""+src+"\" not found.");
+		}
 	}
 	
 	public void playSound(Vector2 position, String src){
-		Music sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
-		playSound(position, sound);
+		try{
+			Music sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
+			playSound(position, sound);
+		} catch (Exception e){
+			System.out.println("Sound file \""+src+"\" not found.");
+		}
 	}
 
 	public void playSound(float x, float y, Music s) {
@@ -125,41 +166,7 @@ public abstract class GameState {
 		else 
 			pan = 0;
 		
-//		System.out.println("pan "+pan+" : dx "+dx+" : volume "+volume+" : distance "+distance);
 		sound.setPan(pan, volume);
-	}
-	
-	public void fadeSong(float dt, boolean spritebatch){
-		float volume = song.getVolume();
-		volume += dt * sb.getFadeType();
-		if (volume > Game.musicVolume)
-			volume = Game.musicVolume;
-		if (volume < 0){
-			volume = 0;
-			if(song.isPlaying()) {
-				song.stop();
-				song.dispose();
-			}
-		}
-
-		if(song.isPlaying())
-			song.setVolume(volume);
-	}
-	
-	public boolean fadeOutSong(float dt){
-		float volume = song.getVolume();
-		volume -= dt;
-		if (volume > Game.musicVolume)
-			volume = Game.musicVolume;
-		if (volume < 0){
-			volume = 0;
-			if(song.isPlaying()) song.stop();
-			return true;
-		}
-		
-		if(song.isPlaying())
-			song.setVolume(volume);
-		return false;
 	}
 	
 	public void loadGame(){
@@ -205,11 +212,11 @@ public abstract class GameState {
 	}
 	
 	public abstract void handleInput();
-	public abstract void update(float dt);
 	public abstract void render();
 	public abstract void dispose();
 	public abstract void create();
-	public Music getSong() { return song; }
+	public Song getSong() { return music; }
+	public Song getPrevSong() {return prevSong;}
 	public FadingSpriteBatch getSpriteBatch() { return sb; }
 	public Camera getB2dCam(){ return b2dCam; }
 	public GameStateManager getGSM(){return gsm; }

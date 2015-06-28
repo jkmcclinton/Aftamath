@@ -2,99 +2,199 @@ package entities;
 
 import static handlers.Vars.PPM;
 import handlers.Vars;
+import scenes.Script;
+import scenes.Script.ScriptType;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
 public class NPC extends Mob {
-	
-	//these variables determine what the NPC is doing
-	protected int state, defaultState;
-	public static final int STATIONARY = 0; 
-	public static final int IDLEWALK = 1;
-	public static final int FOLLOWING = 2;
-	public static final int FACEPLAYER = 3;
-	public static final int FACEOBJECT = 4;
-	
-	protected Vector2 goalPosition;
-	protected float idleWait;
-	protected float idleTime;
-	protected float time;
-	protected boolean reached, locked;
+
+	public boolean returnToPrevLoc, prevDirection, triggered;
+
+	protected Vector2 goalPosition, prevLocation;
+	protected float idleWait, idleTime, doTime, doDelay, time;
+	protected boolean reached, locked, attacked;
 	protected Entity focus;
+	protected Script discoverScript;
+	protected AttackType attackType;
+	protected SightResponse responseType;
+	protected AIState state, defaultState;
 	
-	protected static final int RANGE = 500;
-	
-	public NPC(){
-		super(null, "", 0, 0, 10, 25, Vars.BIT_LAYER3);
-		gender = "n/a";
+	public static final Array<String> NPCTypes = new Array<>();
+	static{
+		FileHandle[] handles = Gdx.files.internal("res/images/enitities/mobs").list();
+		
+		for(FileHandle f:handles){
+			if(f.extension().equals("png") && !f.nameWithoutExtension().contains("base"))
+				NPCTypes.add(f.nameWithoutExtension());
+		}
 	}
-	
+
+	//determines when the NPC fights back
+	public static enum AttackType{
+		ON_SIGHT, ON_ATTACKED, ON_DEFEND, /*ON_EVENT,*/ RANDOM, NEVER
+	}
+
+	//determines what the NPC does when the character is spotted
+	public static enum SightResponse{
+		FOLLOW, ATTACK, TALK, EVADE, IGNORE
+	}
+
+	public static enum AIState{
+		STATIONARY, IDLEWALK, FOLLOWING, FACEPLAYER, FACEOBJECT, ATTACKING, FIGHTING, 
+		EVADING, EVADING_ALL, DANCING, BLOCKPATH, TIMEDFIGHT
+	}
+
+	protected static final int IDLE_LIMIT = 500;
+
+	public NPC(){
+		super(null, "", 0, 0, Vars.BIT_LAYER3);
+		gender = "n/a";
+		
+		state = AIState.STATIONARY;
+		defaultState = AIState.STATIONARY;
+		attackType = AttackType.NEVER;
+		responseType = SightResponse.IGNORE;
+
+	}
+
 	public NPC(String name, String ID, int sceneID, float x, float y, short layer){
-		super(name, ID, x, y, getWidth(ID), getHeight(ID), layer);
-		health = MAX_HEALTH = DEFAULT_MAX_HEALTH;
+		super(name, ID, x, y, layer);
+		health = maxHealth = DEFAULT_MAX_HEALTH;
 		determineGender();
 		
+		state = AIState.STATIONARY;
+		defaultState = AIState.STATIONARY;
+		attackType = AttackType.NEVER;
+		responseType = SightResponse.IGNORE;
+
 		this.sceneID = sceneID;
 		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);
-		idleWait = (float)(Math.random() *(RANGE)+100);
+		idleWait = (float)(Math.random() *(IDLE_LIMIT)+100);
 		time = 0;
 	}
-	
-	public void setState(int state){ 
-		if (state == FOLLOWING) follow(player);
+
+	public void setState(String state){
+		try{
+			AIState s = AIState.valueOf(state.toUpperCase());
+			setState(s);
+		} catch(Exception e ){}
+	}
+
+	public void setState(AIState state){ 
+		if (state == AIState.FOLLOWING) follow(character);
 		else this.state = state;
 	}
-	
-	public void setState(int state, Entity focus){ 
-		if (state == FOLLOWING) follow(focus);
+
+	public void setState(AIState state, Entity focus){ 
+		if (state == AIState.FOLLOWING) follow(focus);
 		else this.state = state;
-		
+
 		this.focus = focus;
 	}
-	
-	public void setDefaultState(int state){
-		this.state = defaultState = state;
+
+	public void setDefaultState(String state){
+		try{
+			AIState s = AIState.valueOf(state.toUpperCase());
+			setDefaultState(s);
+		} catch(Exception e){}
 	}
 	
+	public void facePlayer(){
+		setState(AIState.FACEPLAYER);
+	}
+	
+	public void faceObject(Entity e){
+		focus = e;
+		setState(AIState.FACEOBJECT);
+	}
+	
+	public void setDefaultState(AIState state){
+		if (state==this.state) return;
+		if(state==AIState.BLOCKPATH && this.state!=AIState.BLOCKPATH){
+			changeLayer(Vars.BIT_PLAYER_LAYER);
+				mdat.mass = 10;
+			if(body!=null){
+				body.setMassData(mdat);
+			}
+		} else if(this.state==AIState.BLOCKPATH && state!=AIState.BLOCKPATH){
+			mdat.mass = 1;
+			changeLayer(origLayer);
+			body.setMassData(mdat);
+		}
+		
+		if(state!=AIState.ATTACKING && state!=AIState.TIMEDFIGHT)
+			this.state = defaultState = state;
+		else defaultState = AIState.STATIONARY;
+	}
+
 	public void resetState(){ state = defaultState; }
-	public int getState(){ return state; }
-	
-	public void update(float dt){
-		time += dt;
-		if (state != STATIONARY && isOnGround() && !locked && !controlled) act();
-		if (controlled) doAction(controlledAction);
-		
-		if (action == IDLE) animation.removeAction();
-		if (!isOnGround()) {
-			setAnimation(FALLING);
+	public AIState getState(){ return state; }
+	public AttackType getAttackType(){ return attackType; }
+	public SightResponse getResponseType(){ return responseType; }
+	public void setResponseType(String type){ 
+		try {
+			responseType = SightResponse.valueOf(type.toUpperCase());
+		} catch(Exception e){
+			responseType = SightResponse.IGNORE;
 		}
-		
-		animation.update(dt);
-		
-		//stepping sound
-		if (time >= MOVE_DELAY && isOnGround() && Math.abs(body.getLinearVelocity().x) >= MAX_VELOCITY / 2){
-			gs.playSound(getPosition(), "step1");
-			time = 0;
-		}
-		
-		if (action == WALKING) action = IDLE;
 	}
-	
+
+	public void setAttackType(String type){ 
+		try {
+			attackType = AttackType.valueOf(type.toUpperCase());
+		} catch(Exception e){
+			attackType = AttackType.NEVER;
+		}
+	}
+
+	public void setDiscoverScript(String ID){ 
+		if(ID==null)return;
+		discoverScript = new Script(ID, ScriptType.DISCOVER, main, this);
+	}
+
+	//possibly crunch this down
 	public void act(){
-		float dx/*, dy*/;
-		switch (state){
-			case IDLEWALK:
+		float dx, dy;
+		if(state==null)
+			System.out.println(ID+":"+state);
+		
+		if(discovered.contains(main.character, true)&&!triggered){
+			if(discoverScript!=null){
+				triggered = true;
+				main.triggerScript(discoverScript);
+			} else {
+				switch(responseType){
+				case ATTACK:
+					fight(main.character);
+					break;
+				case EVADE:
+					evade(main.character);
+					break;
+				case FOLLOW:
+					follow(main.character);
+					break;
+				case TALK:
+					//only talk if talking is necessary?
+					break;
+				default:
+					break;
+				}
+			}
+		} else
+			doTime+=Vars.DT;
+			switch (state){
+			//walk to random locations within a radius, then wait a random amount of time
+			case IDLEWALK: 
 				if(reached) idleTime++;
 				if(idleTime >= idleWait && reached) reached = false;
 				else if (!reached){
 					if (!canMove()) {
 						goalPosition = new Vector2((float) (((Math.random() * 6)+x)/PPM), y);
-						idleWait = (float)(Math.random() *(RANGE) + 100);
+						idleWait = (float)(Math.random() *(IDLE_LIMIT) + 100);
 						idleTime = 0;
 						reached = true;
 					}
@@ -102,7 +202,7 @@ public class NPC extends Mob {
 						dx = (goalPosition.x - body.getPosition().x) * PPM ;
 						if(dx < 1 && dx > -1){
 							goalPosition = new Vector2((float) (((Math.random() * 6)+x)/PPM), y);
-							idleWait = (float)(Math.random() *(RANGE) + 100);
+							idleWait = (float)(Math.random() *(IDLE_LIMIT) + 100);
 							idleTime = 0;
 							reached = true;
 						} else {
@@ -118,100 +218,216 @@ public class NPC extends Mob {
 			case FACEOBJECT:
 				faceObject(focus);
 				break;
+				//stay close behind the target
 			case FOLLOWING:
 				facePlayer();
-				dx = player.getPosition().x - body.getPosition().x;
-				
-				float m = MAX_DISTANCE * player.getFollowerIndex(this);
-				
+				dx = character.getPosition().x - body.getPosition().x;
+
+				float m = MAX_DISTANCE * character.getFollowerIndex(this);
+
 				if(dx > m/PPM) right();
 				else if (dx < -1 * m/PPM) left();
 				break;
-		
-		}
+				//attack focus once, then return to previous action
+			case ATTACKING: 
+				if(!attacked){
+					if(attackFocus!=null){
+						dx = attackFocus.getPosition().x - getPosition().x;
+						dy = attackFocus.getPosition().x - getPosition().x;
+						float d = (float) Math.sqrt(dx*dx + dy+dy);
+
+						if(Math.abs(d)>attackRange){
+							if(dx > 1) right();
+							if(dx < -1) left();
+						} else{
+							attack();
+							attacked = true;
+						}
+					} else {
+						attack();
+						attacked = true;
+						state = defaultState;
+					}
+				}
+
+				break;
+			case FIGHTING:
+				fightAI();
+				break;
+
+				// evade target if target is spotted
+				// if target not spotted, search vicinity
+			case EVADING_ALL:
+			case EVADING:
+				if(!reached){
+					dx = (goalPosition.x - body.getPosition().x) * PPM ;
+					if(dx < 1 && dx > -1){
+						reached = true;
+					} else {
+						if(dx < 1) left();
+						if(dx > -1) right();
+					}
+				} else {
+					boolean found = false; dx =0;
+
+					if(state == AIState.EVADING_ALL){
+						if(discovered.size>0){
+							dx = (discovered.get(0).getPosition().x - getPosition().x) * PPM;
+							found = true;
+						}
+					} else if(state == AIState.EVADING)
+						if(discovered.contains(focus, true)){
+							dx = (focus.getPosition().x - getPosition().x) * PPM;
+						}
+
+					if(found)
+						if(Math.abs(dx) <= visionRange){
+							float gx = -1*(dx/Math.abs(dx))*(visionRange*3)/PPM + getPosition().x;
+							goalPosition = new Vector2(gx, y);
+							reached = false;
+						}
+						else {
+							//idle
+						}
+				}
+				break;
+				// stand around and look in random directions
+			case STATIONARY:
+				if(doTime >= doDelay){
+					doTime = 0;
+					doDelay = (float)(Math.random()*6) + 1;
+					
+					changeDirection();
+				}
+				break;
+			case BLOCKPATH:
+				facePlayer();
+				break;
+			case DANCING:
+				if(getAnimationAction()!=Action.DANCE)
+					setAnimation(Action.DANCE, true);
+				break;
+			case TIMEDFIGHT:
+				time-=Vars.DT;
+				if(time>=0)
+					fightAI();
+				else
+					state = defaultState;
+				break;
+			default:
+				break;
+			}
 	}
-	
-	public boolean mustJump(){
-		// determine if object is in way
-		return false;
-	}
-	
-	public void follow(Entity focus){
-		state = FOLLOWING;
-		focus.addFollower(this);
-	}
-	
-	public void stay(){
-		state = FACEPLAYER;
-		player.removeFollower(this);
-	}
-	
-	public void lock() { locked = true; }
-	public void unlock() { locked = false; }
-	
-	private void determineGender(){
-		Array<String> males = new Array<String>(new String[] {"narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
-				"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2",
-				"bballer","boss1","boss2","cashier","hero1","hero2", "villain1", "villain2","biker1","bot1","policeman1",
-				"policeman2","civilian1","civilian2","civilian3","civilian4"});
-		if (males.contains(ID, true))
-			gender = MALE;
-		else gender = FEMALE;
-	}
-	
-	public String getGender(){return gender;}
-	
-	private static int getWidth(String ID){
-		try{
-			Texture src = new Texture(Gdx.files.internal("res/images/entities/mobs/"+ID+"base.png"));
-			return src.getWidth();
-		} catch(Exception e) {
-			return DEFAULT_WIDTH;
+
+	// attack focus if in range
+	// if not in range, get close to object
+	// otherwise evade hostile mobs or projectiles
+	// if no hostile mobs or projectiles in sight, search vicinity
+	private void fightAI(){
+		float dx, dy;
+		if(!attacked){
+			if(attackFocus!=null && doTime>=doDelay){
+				dx = attackFocus.getPosition().x - getPosition().x;
+				dy = attackFocus.getPosition().x - getPosition().x;
+				float d = (float) Math.sqrt(dx*dx + dy+dy);
+
+				if(Math.abs(d)>attackRange){
+					if(dx-1>0) right();
+					if(dx+1<0) left();
+				} else {
+					attack();
+					attacked = true;
+					doDelay = (float) (Math.random()*3);
+					doTime = 0;
+				}
+			}
+		} else {
+			if(reached) idleWait++;
+			if(idleTime >= idleWait && reached) {
+				reached = false;
+				attacked = false;
+			}
+			if(!reached){
+				if (!canMove()) {
+					goalPosition = new Vector2((float) (((Math.random() * 6)+x)/PPM), y);
+					idleWait = (float)(Math.random() *(attackRange) + 100);
+					idleTime = 0;
+					reached = true;
+				}
+				else {
+					dx = (goalPosition.x - body.getPosition().x) * PPM ;
+					if(dx < 1 && dx > -1){
+						goalPosition = new Vector2((float) (((Math.random() * 6)+x)/PPM), y);
+						idleWait = (float)(Math.random() *(attackRange) + 100);
+						idleTime = 0;
+						reached = true;
+					} else {
+						if(dx < 1) left();
+						if(dx > -1) right();
+					}
+				}
+			}
 		}
 	}
 
-	private static int getHeight(String ID){
-		try{
-			Texture src = new Texture(Gdx.files.internal("res/images/entities/mobs/"+ID+"base.png"));
-			return src.getHeight();
-		} catch(Exception e) {
-			return DEFAULT_HEIGHT;
-		}
+	public void evade(){
+		state = AIState.EVADING_ALL;
+	}
+
+	public void evade(Entity focus){
+		state = AIState.EVADING;
+		this.focus = focus;
+	}
+
+	public void follow(Entity focus){
+		state = AIState.FOLLOWING;
+		focus.addFollower(this);
+	}
+
+	public void stay(){
+		state = AIState.FACEPLAYER;
+		character.removeFollower(this);
+	}
+
+	public void fight(Entity d){
+		attackFocus = d;
+		state = AIState.FIGHTING;
+		doTime= (float) (Math.random()*3);
+		attacked = false;
+		reached = false;
 	}
 	
+	public void timedFight(Entity d, float time){
+		attackFocus = d;
+		state = AIState.TIMEDFIGHT;
+		doTime= (float) (Math.random()*3);
+		attacked = false;
+		reached = false;
+		this.time = time;
+	}
+
+	public void lock() { locked = true; }
+	public void unlock() { locked = false; }
+
+	private void determineGender(){
+		if (Vars.MALES.contains(ID, false))
+			gender = MALE;
+		else gender = FEMALE;
+	}
+
 	public NPC copy(){
 		NPC n = new NPC(name, ID, sceneID, 0, 0, layer);
-		
-		n.resetHealth(health, MAX_HEALTH);
+
+		n.resetHealth(health, maxHealth);
 		n.setDefaultState(defaultState);
-		
+
+		if(script!=null)
+			n.setAttackScript(script.ID);
+		if(discoverScript!=null)
+			n.setAttackScript(discoverScript.ID);
+		if(attackScript!=null)
+			n.setAttackScript(attackScript.ID);
+
 		return n;
-	}
-	
-	public void spawn(Vector2 location){
-		setPosition(location);
-		create();
-		gs.addObject(this);
-	}
-	
-	public void create(){
-		//hitbox
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((rw-4)/Vars.PPM, (rh)/Vars.PPM);
-		
-		bdef.position.set(x/Vars.PPM, y/Vars.PPM);
-		bdef.type = BodyType.DynamicBody;
-		fdef.shape = shape;
-		
-		body = world.createBody(bdef);
-		body.setUserData(this);
-		fdef.filter.maskBits = (short) (Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
-		fdef.filter.categoryBits = layer;
-		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
-		body.setFixedRotation(true);
-		
-		createFootSensor();
-		createInteractSensor();
-		createCenter();
 	}
 }

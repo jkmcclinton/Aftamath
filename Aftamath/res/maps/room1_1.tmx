@@ -5,7 +5,7 @@
   <property name="bgm" value="6"/>
  </properties>
  <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16">
-  <image source="indoors.png" width="480" height="271"/>
+  <image source="tilesets/indoors.png" width="480" height="271"/>
  </tileset>
  <layer name="bg1" width="30" height="10">
   <data encoding="base64" compression="zlib">
@@ -27,7 +27,7 @@
    eJxjYBgFo2AUjIKhAQAEsAAB
   </data>
  </layer>
- <objectgroup name="objects">
+ <objectgroup name="entities">
   <properties>
    <property name="spawn" value=""/>
   </properties>
@@ -47,11 +47,11 @@
   <object id="28" x="224.5" y="79.75" width="16" height="16">
    <properties>
     <property name="ID" value="1"/>
-    <property name="Layer" value="front"/>
     <property name="NPC" value="gangster1"/>
-    <property name="Name" value="Darrius"/>
-    <property name="Script" value="generic_1"/>
-    <property name="State" value="IDLEWALK"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Darrius"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="IDLEWALK"/>
    </properties>
   </object>
  </objectgroup>

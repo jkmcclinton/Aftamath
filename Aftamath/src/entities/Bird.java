@@ -9,7 +9,7 @@ public class Bird extends NPC {
 	public Bird(String name, int ID, float x, float y, short layer) {
 		super(name, "bird" + ID,0, x, y, layer);
 
-		setState(NPC.IDLEWALK);
+		setState(AIState.IDLEWALK);
 	}
 
 	public void act() {
@@ -22,7 +22,7 @@ public class Bird extends NPC {
 			else if (!reached){
 				if (!canMove()) {
 					goalPosition = new Vector2((float) (((Math.random() * 6)+x)/PPM), y);
-					idleWait = (float)(Math.random() *(RANGE) + 100);
+					idleWait = (float)(Math.random() *(IDLE_LIMIT) + 100);
 					idleTime = 0;
 					reached = true;
 				}
@@ -30,7 +30,7 @@ public class Bird extends NPC {
 					dx = (goalPosition.x - body.getPosition().x) * PPM ;
 					if(dx < 1 && dx > -1){
 						goalPosition = new Vector2((float) (((Math.random() * 6)+x)/PPM), y);
-						idleWait = (float)(Math.random() *(RANGE) + 100);
+						idleWait = (float)(Math.random() *(IDLE_LIMIT) + 100);
 						idleTime = 0;
 						reached = true;
 					} else {
@@ -39,6 +39,8 @@ public class Bird extends NPC {
 					}
 				}
 			}
+			break;
+		default:
 			break;
 		}
 	}

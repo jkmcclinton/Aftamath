@@ -7,7 +7,8 @@ import java.text.NumberFormat;
 
 import main.Game;
 import main.GameState;
-import main.Play;
+import main.Main;
+import main.Main.InputState;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,9 +25,9 @@ public class HUD {
 	
 	private boolean top;
 	private OrthographicCamera cam;
+	private Mob character, face;
 	private Player player;
-	private Play play;
-	private Mob face;
+	private Main play;
 	private Texture textures;
 	private TextureRegion[] hearts, cubeFrames, btnHighFrames;
 	private TextureRegion cash, /*faceHud,*/ textHud, pauseHud;
@@ -47,8 +48,8 @@ public class HUD {
 	
 	public HUD(Player player, OrthographicCamera cam) {
 		this.cam = cam;
-		this.player = player;
-		play = player.getPlayState();
+		play = player.getGameState();
+		this.character = play.character;
 		
 		//font = TextureRegion.split(new Texture(Gdx.files.internal("res/images/text.png")), 8, 11)[0];
 		//font = TextureRegion.split(new Texture(Gdx.files.internal("res/images/text2.png")), 7, 12)[0];
@@ -87,14 +88,13 @@ public class HUD {
 		buttonHigh.update(dt);
 	}
 	
-	@SuppressWarnings("static-access")
 	public void render(SpriteBatch sb, int emotion) {
 		sb.begin();
 			sb.setProjectionMatrix(cam.combined);
 			drawDialog(sb, emotion);
 			if(showStats) drawStats(sb);
 			
-			if (play.paused && play.getStateType() == play.PAUSED)
+			if (play.paused && play.getStateType() == InputState.PAUSED)
 				drawPauseMenu(sb);
 		sb.end();
 	}
@@ -126,12 +126,12 @@ public class HUD {
 //			sb.draw(faceHud, x, y - 76);
 			sb.draw(face.getFace(emotion), x + 7, y - 69);
 		}
-		if (!busy())
+		if (canShowContinue())
 			sb.draw(cube.getFrame(), Game.width/2 - 10 - cubeFrames[0].getRegionWidth(), 2 + cubeFrames[0].getRegionHeight());
 	}
 	
 	public void drawStats(SpriteBatch sb) {
-		sb.draw(hearts[(int)(player.getHealth()/3)], Game.width/2 - 24, Game.height/2 - 24 * 2);
+		sb.draw(hearts[(int)(character.getHealth()/3)], Game.width/2 - 24, Game.height/2 - 24 * 2);
 		sb.draw(cash, Game.width/2 - 24, Game.height/2 - 24);
 		
 		String money = NumberFormat.getCurrencyInstance().format(player.getMoney());
@@ -246,36 +246,36 @@ public class HUD {
 	
 	public void clearSpeech() { speakText = null; }
 	
-	private boolean busy(){
+	private boolean canShowContinue(){
 		if (raised){
-			if (play.paused && play.getStateType() != Play.PAUSED){
+			if (play.paused && play.getStateType() == InputState.PAUSED){
 				//System.out.println("paused");
-				return true;}
+				return false;}
 			if (play.speaking){
 				//System.out.println("speaking");
-				return true;}
+				return false;}
 			if(play.choosing){
 				//System.out.println("choosing");
-				return true;}
-			if(play.currentScript != null)
-				if(play.currentScript.getActiveObject() != null)
-					if(play.currentScript.getActiveObject().controlled){
-						//System.out.println("controlled");
-						return true;}
+//			if(play.currentScript != null)
+				return false;}
+//				if(play.currentScript.getActiveObject() != null)
+//					if(play.currentScript.getActiveObject().controlled){
+//						//System.out.println("controlled");
+//						return false;}
 			if(play.getCam().moving){
-				//System.out.println("moving");
-				return true;}
+//				System.out.println("moving");
+				return false;}
 			if(play.currentScript != null)
 				if(play.currentScript.waitTime > 0){
 					//System.out.println("waiting");
-					return true;}
-			if(play.getStateType() == Play.LOCKED){
+					return false;}
+			if(play.getStateType() == InputState.LOCKED){
 				//System.out.println("locked");
-				return true;}
-			return false;
+				return false;}
+			return true;
 		}
 		
-		return true;
+		return false;
 	}
 	
 	public static Vector2 getCenter(TextureRegion t){

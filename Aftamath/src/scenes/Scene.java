@@ -1,25 +1,24 @@
 package scenes;
 
 import static handlers.Vars.PPM;
+import handlers.Camera;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import main.Play;
+import main.Game;
+import main.Main;
+import scenes.Script.ScriptType;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
@@ -36,139 +35,264 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 
 import entities.Entity;
 import entities.Ground;
 import entities.NPC;
-import entities.Player;
 import entities.Warp;
 
-public abstract class Scene {
+public class Scene {
 	
 	public Script script;
-	public int width;
-	public int height;
+	public int width, height;
 	public String title;
-	public Music DEFAULT_SONG;
+	public Song[] DEFAULT_SONG;
 	public boolean newSong; //tells us whether or not to fade music when loading scene from previous scene
+	public boolean outside; //controls whether or not to step weather time or to add the day/night cycle effect
 	
-	protected Color ambient;
-	protected Play play;
-	protected FadingSpriteBatch sb;
-	protected OrthogonalTiledMapRenderer tmr;
-	protected OrthogonalTiledMapRenderer tmr2;
-	protected Vector2 spawnpoint, localSpawnpoint;
-	protected ArrayList<Entity> entities;
-	protected ArrayList<PointLight> lights;
-	protected TiledMap tileMap;
-	protected Texture background;
-	protected Texture foreground;
-	protected World world;
-	protected RayHandler rayHandler;
-	protected static Vector2 gravity;
-	protected static BodyDef bdef = new BodyDef();
-	protected static FixtureDef fdef = new FixtureDef();
+	private Color ambient;
+	private Main main;
+	private FadingSpriteBatch sb;
+	private OrthogonalTiledMapRenderer tmr;
+	private Vector2 spawnpoint, localSpawnpoint;
+	private ArrayList<Entity> entities;
+	private ArrayList<PointLight> lights;
+	private TiledMap tileMap;
+	private Texture background, midground, foreground, clouds, sky, grad, sun, moon;
+	private World world;
+	private RayHandler rayHandler;
+//	private Mob character;
+	private boolean tileBG = true;
 	
-	public static final Array<String> BGM = new Array<String>();
-	static{
-		BGM.add("Silence");
-		BGM.add("Bright Days");			//1
-		BGM.add("Elevator Music");		//2
-		BGM.add("Excitement");			//3
-		BGM.add("Explosive");			//4
-		BGM.add("Grand");				//5
-		BGM.add("Incredible");			//6
-		BGM.add("Relax");				//7
-		BGM.add("Suspense");			//8
-		BGM.add("Title");				//9
-		BGM.add("Yesterday");
-		BGM.add("Jamming");
-		BGM.add("Incinerate");
-		BGM.add("Justice");
-		BGM.add("Midnight");
-		BGM.add("Helpful");
-	}
+	private static Vector2 gravity;
+	private static BodyDef bdef = new BodyDef();
+	private static FixtureDef fdef = new FixtureDef();
 	
-	protected Scene(){}
+	private static final int DAY = 0;
+	private static final int NOON = 1;
+	private static final int NIGHT =2;
 	
-	protected Scene(World world, String ID, Play p, Player player) {
+	public Scene(){}
+	
+	public Scene(World world, Main m, String ID) {
 		this.world = world;
-		this.play = p;
-		sb = p.getSpriteBatch();
-		
+		this.main = m;
+		sb = m.getSpriteBatch();
+//		character = m.character;
+		DEFAULT_SONG = new Song[3];
+		gravity = new Vector2(0, Vars.GRAVITY);
+
 		entities = new ArrayList<>();
 		lights = new ArrayList<>();
 		width = 1000;
 		height = 1000;
-		title = ID;
-		
-		tileMap = new TmxMapLoader().load("res/maps/" + title + ".tmx");
-		try {
-			MapProperties prop = tileMap.getProperties();
-			width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
-			height = prop.get("height", Integer.class)*Vars.TILE_SIZE;
+		title = ID.toLowerCase();
 
-			String bgm = "";
-			if((bgm = prop.get("bgm", String.class))!=null){
-				DEFAULT_SONG = Gdx.audio.newMusic(new FileHandle("res/music/"+
-						BGM.get(Integer.parseInt(bgm))+".wav"));
-				DEFAULT_SONG.setLooping(true);
-				newSong = true;
+		tileMap = new TmxMapLoader().load("res/maps/" + title + ".tmx");
+		MapProperties prop = tileMap.getProperties();
+		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
+		height = prop.get("height", Integer.class)*Vars.TILE_SIZE;
+		
+		String[] bgm = {"","",""};
+		bgm[DAY] = prop.get("bgm day", String.class);
+		bgm[NOON] = prop.get("bgm noon", String.class);
+		bgm[NIGHT] = prop.get("bgm night", String.class);
+
+		//all three must be clearly defined in .tmx file to have dynamic bgm
+		if(bgm[DAY]!=null&&bgm[NOON]!=null&&bgm[NIGHT]!=null){
+			DEFAULT_SONG[DAY] = new Song(bgm[DAY]);
+			DEFAULT_SONG[NOON] = new Song(bgm[NOON]);
+			DEFAULT_SONG[NIGHT] = new Song(bgm[NIGHT]);
+		} else {
+			if((bgm[0] = prop.get("bgm", String.class))!=null){
+				//sets all songs to the same song; no song changing
+				DEFAULT_SONG[DAY] = new Song(bgm[0]);
+				DEFAULT_SONG[NOON] = new Song(bgm[0]);
+				DEFAULT_SONG[NIGHT] = new Song(bgm[0]);
+			} else {
+				//sets all songs to silence by default
+				DEFAULT_SONG[DAY]=new Song(Game.SONG_LIST.get(0));
+				DEFAULT_SONG[NOON]=new Song(Game.SONG_LIST.get(0));
+				DEFAULT_SONG[NIGHT]=new Song(Game.SONG_LIST.get(0));
 			}
+		}
+
+		newSong = true;
+
+		background = Game.res.getTexture(title + "_bg");
+//		background = Game.res.getTexture("test_bg");
+		midground = Game.res.getTexture(title + "_mg");
+//		foreground = Game.res.getTexture(ID + "_fg");
+		clouds = Game.res.getTexture("clouds");
+		sky = Game.res.getTexture("sky");
+		grad = Game.res.getTexture("sky_grad");
+		sun = Game.res.getTexture("sun");
+		moon = Game.res.getTexture("moon");
+		
+		String zoom; float areaZoom;
+		if((zoom=prop.get("tileBG", String.class))!=null){
+			try{
+				Field f = Camera.class.getField(zoom);
+				areaZoom = f.getFloat(f);
+			} catch (Exception e){ areaZoom = Camera.ZOOM_NORMAL; }
+		} else
+			areaZoom = Camera.ZOOM_NORMAL;
+		main.getCam().setDefaultZoom(areaZoom);
+		main.getB2dCam().setDefaultZoom(areaZoom);
+		
+		String bool;
+		if((bool=prop.get("tileBG", String.class))!=null)
+			try{
+				tileBG = Boolean.parseBoolean(bool);
+			} catch(Exception e){ }
+		
+		try {
 			
+			// redo me
 			String light= "";
 			if((light=prop.get("ambient", String.class))!=null){
 				if(light.equals("daynight".toUpperCase())){
-//					outside = true;
-					ambient = p.getAmbient();
+					outside = true;
+					ambient = m.getColorOverlay();
 				}else{
 					Field f = Vars.class.getField(light);
 					ambient = (Color) f.get(f);
+					if(prop.get("outside", String.class)!=null)
+						outside=true;
 				}
 			}
-		} catch (Exception e ){
-			DEFAULT_SONG = Gdx.audio.newMusic(new FileHandle("res/music/"+
-					BGM.get(0)+".wav"));
-			ambient = Vars.DAY;
+		} catch (Exception e){
+			ambient = Vars.DAYLIGHT;
 			newSong = true;
 		} finally{
-			sb.setAmbient(ambient);
+			sb.setRHAmbient(ambient);
 		}
-		script = new Script(ID, p, player, null);
 		
-		tmr = new OrthogonalTiledMapRenderer(tileMap, p.getSpriteBatch());
-//		background = new Texture(Gdx.files.internal("res/images/scenes/" + ID + "bg.png"));
-		background = new Texture(Gdx.files.internal("res/images/scenes/BGtest.png"));
-		//foreground = new Texture(Gdx.files.internal(fg));
+		script = new Script(title, ScriptType.SCENE, m, null);
+		tmr = new OrthogonalTiledMapRenderer(tileMap, m.getSpriteBatch());
 	}
 	
-	public void renderBG(SpriteBatch sb){
-		sb.disableBlending();
+	public void renderBG(FadingSpriteBatch sb){
+		Camera cam = main.getCam();
+		float z = cam.zoom;
+		float w = cam.viewportWidth;
+		float h = cam.viewportHeight;
+		boolean overlay = sb.isDrawingOverlay();
+		
+		if(main.render){
+		if(overlay) sb.setOverlayDraw(false);
+		
+//		sb.disableBlending();
 		sb.begin();
-		if(background!=null)
-			sb.draw(background, 0, 0);
+		if(outside){
+			if(sky!=null){
+				float t = main.dayTime;
+				float x = cam.position.x-w*z/2f;
+				float y1 = cam.position.y-h*z/2f;
+				float s = sky.getHeight()*z;
+				float o = (sky.getHeight()*t*s)/Main.DAY_TIME;
+				float y = y1-s*sky.getHeight()+o+z*h;
+				
+				if(main.dayTime<=Main.NIGHT_TIME) 
+					sb.draw(sky, x, y-2*s*sky.getHeight(), w*z, s*sky.getHeight());
+				sb.draw(sky, x,	y, w*z, s*sky.getHeight());
+				sb.draw(grad, x, y1/2f, w*z, h*z+y1/2);
+				
+//				Main.debugText+="/l/l cam: ("+x+" , "+ y1+")"+
+//						"   ("+(cam.position.x)+" , "+ 	(cam.position.y)+")";
+//				Main.debugText+="/l sky: ("+x+" , "+ y+")";
+//				Main.debugText+="/l"+(y+sky.getHeight()*s);
+			} if(sun!=null){
+				Vector2 o = new Vector2(0, -10f);
+				float t = ((main.dayTime-Main.DAY_TIME/24f)%Main.DAY_TIME)*(w+sun.getWidth()/4f)*z/(2*Main.NIGHT_TIME);
+				float b = z*h/2f;
+				float d = 314*z/4f, rate = .94f;
+				float a = -(b-d) / (float) Math.pow((z*w/4f),2);
+				float x1 = 2*t - z*(w+sun.getWidth()/z)/2f + cam.position.x;
+				float x = x1 - cam.position.x*rate - z*o.x;
+				float y = a*x*x+ b + cam.position.y*rate + z*o.y - sun.getHeight()/2f;
+				
+//				float rot = (20*main.dayTime*(360/Main.DAY_TIME))%360;
+				sb.draw(sun, x1, y);
+			} if(moon!=null){
+				Vector2 o = new Vector2(0, -10f);
+				float u = Main.DAY_TIME/16.2222f;
+				float t = (main.dayTime-Main.NIGHT_TIME-u)%Main.DAY_TIME*
+						(w+moon.getWidth()/4f)*z/(2*Main.NOON_TIME);
+				float b = z*h/2f;
+				float d = 314*z/4f, rate = .94f;
+				float a = -(b-d) / (float) Math.pow((z*w/4f),2);
+				float x1 = 2*t - z*(w+moon.getWidth()/z)/2f + cam.position.x;
+				float x = x1 - cam.position.x*rate - z*o.x - moon.getWidth()/2f;
+				float y = a*x*x+ b + cam.position.y*rate + z*o.y - moon.getHeight()/2f;;
+				
+				sb.draw(moon, x1, y);
+			}
+		}
+
+		if(overlay) sb.setOverlayDraw(true);
+		
+			if(background!=null){
+				float rate = 1/2f;
+				int bgw = background.getWidth();
+				int bgh = background.getHeight();
+				if(tileBG){
+					int offset = (int) ((cam.position.x*rate+bgw/2f)/(float) bgw);
+					sb.draw(background, cam.position.x*rate+bgw*offset, height-bgh + cam.position.y*rate);
+					sb.draw(background, cam.position.x*rate+bgw*(offset-1), height-bgh + cam.position.y*rate);
+				} else 
+					sb.draw(background, cam.position.x*rate, height-bgh + cam.position.y*rate); 
+			} if(midground!=null){
+				float rate = 1/4f;
+				int mgw = midground.getWidth();
+				int mgh = midground.getHeight();
+				if(tileBG){
+					int offset = (int) ((cam.position.x*rate*3+mgw/2f)/(float) mgw);
+					sb.draw(midground, cam.position.x*rate+mgw*offset, height-mgh + cam.position.y*5/16f);
+					sb.draw(midground, cam.position.x*rate+mgw*(offset-1), height-mgh + cam.position.y*5/16f);
+					sb.draw(midground, cam.position.x*rate+mgw*(offset+1), height-mgh + cam.position.y*5/16f);
+				} else 
+					sb.draw(midground, cam.position.x*rate, height-mgh + cam.position.y*5/16f);
+			} if(outside){
+				if(clouds!=null)
+					sb.draw(clouds, 0, 0);		// horizontal mvmt and frequency according to weather 
+			}
 		sb.end();
-		sb.enableBlending();
+		}
 	}
 	
 	public void renderEnvironment(OrthographicCamera cam){
 		tmr.setView(cam);
-		tmr.render();
+		try{
+			for(MapLayer t : tileMap.getLayers()){
+				if(t.getName().equals("fg"))
+					t.setVisible(false);
+				else t.setVisible(true);
+			}
+			tmr.render();
+		}catch(Exception e){ 
+			e.printStackTrace();
+		}
 	}
 	
-	public void renderFG(SpriteBatch sb, OrthographicCamera cam){
+	public void renderFG(SpriteBatch sb){
 		sb.begin();
-			sb.draw(foreground, 0, 0);
+			if(foreground!=null)
+				sb.draw(foreground, 0, 0);
+//			sb.draw(weather,0,0);	//if raining or foggy
 		sb.end();
 		
-		tmr.setView(cam);
-		tmr.render();
-	}
-	
-	public void renderFG(OrthographicCamera cam){
-		tmr2.setView(cam);
-		tmr2.render();
+		try{
+			for(MapLayer t : tileMap.getLayers())
+				if(t.getName().equals("fg")){
+					t.setVisible(true);
+				}
+				else t.setVisible(false);
+			tmr.render();
+			
+		}catch(Exception e){ 
+			e.printStackTrace();
+		}
 	}
 	
 	public ArrayList<Entity> getInitEntities() { return entities; }
@@ -193,7 +317,7 @@ public abstract class Scene {
 				if (cell.getTile() == null) continue;
 
 				new Ground(world, "ground", (x * Vars.TILE_SIZE +7.1f) / PPM,
-						(y * Vars.TILE_SIZE+Vars.TILE_SIZE/1.8f) / PPM);
+						(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
 				
 //				cell = fg.getCell(x, y);
 //				if (cell != null) {
@@ -222,88 +346,103 @@ public abstract class Scene {
 		int distance = 10000;
 		Color color = Color.YELLOW;
 		lights.add(new PointLight(rayHandler, Vars.LIGHT_RAYS, color, distance, 0, 0 ));
-		
-		MapObjects objects = tileMap.getLayers().get("objects").getObjects();
-		for(MapObject object : objects) {
-		    if (object instanceof RectangleMapObject) {
-		        Rectangle rect = ((RectangleMapObject) object).getRectangle();
-		        	if(object.getProperties().get("warp")!=null)System.out.println(new Vector2(rect.x,rect.y));
-		        rect.set(rect.x+7.1f, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
-//		        System.out.println(new Vector2(rect.x, rect.y));
-		        
-		        entities.add(new Entity(rect.x,rect.y,(int)rect.width,(int)rect.height,"TiledObject"));
-				
-		        Object o = object.getProperties().get("NPC");
-		        if(o!=null) {
-		        	String l = object.getProperties().get("Layer", String.class);
-		        	String ID = object.getProperties().get("NPC", String.class);
-		        	String sceneID = object.getProperties().get("ID", String.class);
-		        	String name = object.getProperties().get("Name", String.class);
-		        	String state = object.getProperties().get("State", String.class);
-		        	String script = object.getProperties().get("Script", String.class);
-		        	
-		        	if (l.toLowerCase().equals("back")) l = "3";
-		        	else if(l.toLowerCase().equals("middle")) l = "2";
-		        	else l = "1";
-		        	
-		        	try {
-						Field f = NPC.class.getField(state);
-						int z = f.getInt(f);
-						f = Vars.class.getField("BIT_LAYER"+Integer.parseInt(l));
-						short lyr = f.getShort(f);
-						ID = ID.toLowerCase();
-						
-						if (sceneID==null)
-							System.out.println("NPC: "+ID+", name: "+name+" not given sceneID");
-						else{
-							NPC e = new NPC(name, ID, Integer.parseInt(sceneID), rect.x, rect.y, lyr);
-							e.setScript(script);
-							e.setDefaultState(z);
-							entities.add(e);
-						}
-		        	} catch (NoSuchFieldException | SecurityException e) {
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-		        }
-		        
-		        o = object.getProperties().get("warp");
-		        if(o!=null) {
-		        	String next = object.getProperties().get("next", String.class);
-		        	String nextWarp = object.getProperties().get("nextWarp", String.class);
-		        	String id = object.getProperties().get("ID", String.class);
-		        	int warpID = Integer.parseInt(id);
-		        	int nextID = Integer.parseInt(nextWarp);
-		        	entities.add(new Warp(this, next, warpID, nextID, rect.x, 
-		        			rect.y+rect.height/2, rect.width, rect.height));
-		        }
 
-		        o = object.getProperties().get("spawn");
-		        if(o!=null) {
-		        	spawnpoint = new Vector2(rect.x, rect.y);
-		        	localSpawnpoint = new Vector2(rect.x, rect.y);
-		        }
-		    }
+		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("fg");
+		if(layer!=null){
+			layer.hashCode();
+		}
+
+		if(tileMap.getLayers().get("entities")!=null){
+			MapObjects objects = tileMap.getLayers().get("entities").getObjects();
+			for(MapObject object : objects) {
+				if (object instanceof RectangleMapObject) {
+					Rectangle rect = ((RectangleMapObject) object).getRectangle();
+					if(object.getProperties().get("warp")!=null)
+						System.out.println(new Vector2(rect.x,rect.y));
+					rect.set(rect.x+7.1f, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
+
+					entities.add(new Entity(rect.x,rect.y,(int)rect.width,(int)rect.height,"TiledObject"));
+
+					Object o = object.getProperties().get("NPC");
+					if(o!=null) {
+						String l = object.getProperties().get("layer", String.class);
+						String ID = object.getProperties().get("NPC", String.class);
+						String sceneID = object.getProperties().get("ID", String.class);
+						String name = object.getProperties().get("name", String.class);
+						String state = object.getProperties().get("state", String.class);
+						String script = object.getProperties().get("script", String.class);
+						String aScript = object.getProperties().get("attack script", String.class);
+						String dScript = object.getProperties().get("discover script", String.class);
+						String dType = object.getProperties().get("on sight", String.class);
+						String aType = object.getProperties().get("on attacked", String.class);
+
+						if(l!=null)
+							if (l.toLowerCase().equals("back")) l = "3";
+							else l = "1";
+						else l = "1";
+
+						try {
+							Field f = Vars.class.getField("BIT_LAYER"+l);
+							short lyr = f.getShort(f);
+							ID = ID.toLowerCase();
+
+							if (sceneID==null)
+								System.out.println("NPC: "+ID+", name: "+name+" not given sceneID");
+							else{
+								NPC e = new NPC(name, ID, Integer.parseInt(sceneID), rect.x, rect.y, lyr);
+								e.setGameState(main);
+								e.setDefaultState(state);
+								e.setDialogueScript(script);
+								e.setAttackScript(aScript);
+								e.setDiscoverScript(dScript);
+								e.setResponseType(dType);
+								e.setAttackType(aType);
+								entities.add(e);
+							}
+						} catch (NoSuchFieldException | SecurityException e) {
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						}
+					}
+
+					o = object.getProperties().get("warp");
+					if(o!=null) {
+						String next = object.getProperties().get("next", String.class);
+						String nextWarp = object.getProperties().get("nextWarp", String.class);
+						String id = object.getProperties().get("ID", String.class);
+						int warpID = Integer.parseInt(id);
+						int nextID = Integer.parseInt(nextWarp);
+						entities.add(new Warp(this, next, warpID, nextID, rect.x, 
+								rect.y+rect.height/2, rect.width, rect.height));
+					}
+
+					o = object.getProperties().get("spawn");
+					if(o!=null) {
+						spawnpoint = new Vector2(rect.x, rect.y);
+						localSpawnpoint = new Vector2(rect.x, rect.y);
+					}
+				}
+			}
 		}
 		
 		//left wall
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(Vars.TILE_SIZE / PPM, height / PPM);
-		bdef.position.set(0, 0);
+		shape.setAsBox(Vars.TILE_SIZE / PPM, height/2 / PPM);
+		bdef.position.set(0, height/ 2 / PPM);
 		Body body = world.createBody(bdef);
 		fdef.shape = shape;
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_LAYER2 | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
 		body.createFixture(fdef).setUserData("wall");
 
 		//right wall
-		bdef.position.set((width) / PPM, 0);
+		bdef.position.set(width / PPM,  height/ 2 / PPM);
 		body = world.createBody(bdef);
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_LAYER2 | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
 		body.createFixture(fdef).setUserData("wall");
 		
 	}
@@ -318,59 +457,21 @@ public abstract class Scene {
 	}
 	
 	public Scene levelFromID(String ID, Warp warp, int warpID){
-		if (ID.startsWith("room")){
-			Scene s = new Room(world, play, ID, this);
-
-			if(warp!=null)
-				if(!warp.owner.newSong) s.newSong = false;
-			
-			Vector2 nextWarp = s.findWarpLoc(warpID);
-			s.setRayHandler(rayHandler);
-			if(nextWarp!=null) warp.setLink(nextWarp);
-			else warp.setLink(s.spawnpoint);
-			
-			return s;
-		} else {
-			//for places like: Street, Underground, Outskirts, House
-			Class<?> c;
-			try {
-				ID = ID.substring(0,1).toUpperCase() + ID.substring(1);
-				c = Class.forName("scenes."+ID);
-				Constructor<?> cr = c.getConstructor(World.class, Play.class, Player.class);
-				Object o = cr.newInstance(world, play, play.player);
-				if(warp!=null)
-					if(!warp.owner.newSong) ((Scene) o).newSong = false;
-				
-				Vector2 nextWarp = ((Scene)o).findWarpLoc(warpID);
-				((Scene)o).setRayHandler(rayHandler);
-				if(nextWarp!=null) warp.setLink(nextWarp);
-				else warp.setLink(((Scene)o).spawnpoint);
-					
-				return (Scene) o;
-
-			} catch (NoSuchMethodException | SecurityException e) {
-				System.out.println("no such constructor");
-			} catch (InstantiationException e) {
-				System.out.println("cannot instantiate object");
-			} catch (IllegalAccessException e) {
-				System.out.println("cannot access object");
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				System.out.println("illegal argument");
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				System.out.println("cannot invoke target");
-				e.printStackTrace();
-			} catch (ClassNotFoundException e1) {
-				System.out.println("Class \"" + ID + "\" not found.");
-			}
-
-			return null;
-		}
+		Scene s = new Scene(world, main, ID);
+		
+		if(warp!=null)
+			if(!warp.owner.newSong) s.newSong = false;
+		
+		Vector2 nextWarp = s.findWarpLoc(warpID);
+		s.setRayHandler(rayHandler);
+		if(nextWarp!=null) warp.setLink(nextWarp);
+		else warp.setLink(s.spawnpoint);
+		
+		return s;
 	}
 	
 	public Vector2 findWarpLoc(int warpID){
-		MapObjects objects = tileMap.getLayers().get("objects").getObjects();
+		MapObjects objects = tileMap.getLayers().get("entities").getObjects();
 		for(MapObject object : objects) {
 			if (object instanceof RectangleMapObject) {
 				Rectangle rect = ((RectangleMapObject) object).getRectangle();

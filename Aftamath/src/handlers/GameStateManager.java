@@ -2,9 +2,10 @@ package handlers;
 
 import java.util.ArrayDeque;
 
+import scenes.Song;
 import main.Game;
 import main.GameState;
-import main.Play;
+import main.Main;
 import main.Title;
 
 public class GameStateManager {
@@ -14,7 +15,7 @@ public class GameStateManager {
 	private boolean fading;
 	private int fadeType = 1;
 	
-	public static final int PLAY = 1;
+	public static final int MAIN = 1;
 	public static final int TITLE = 2;
 	
 	public float volume = Game.musicVolume;
@@ -23,7 +24,7 @@ public class GameStateManager {
 		this.game = game;
 		gameStates = new ArrayDeque<GameState>();
 //		pushState(TITLE);
-		pushState(PLAY);
+		pushState(MAIN);
 		gameStates.peek().create();
 	}
 
@@ -32,11 +33,12 @@ public class GameStateManager {
 		boolean faded = game.getSpriteBatch().update(dt);
 		
 		if(fading){
-			volume += dt/2 * fadeType;
-			if (volume > Game.musicVolume)
+			if(fadeType==1){
+				volume += dt * fadeType;
+				if (volume < 0)
+					volume = 0;
+			} else 
 				volume = Game.musicVolume;
-			if (volume < 0)
-				volume = 0;
 
 			g.getSong().setVolume(volume);
 
@@ -57,7 +59,7 @@ public class GameStateManager {
 	}
 	
 	public GameState getState(int state){
-		if(state == PLAY) return new Play(this);
+		if(state == MAIN) return new Main(this);
 		if(state == TITLE) return new Title(this);
 		return null;
 	}
@@ -67,11 +69,15 @@ public class GameStateManager {
 	}
 	
 	public void setState(int state, boolean fade){
+		GameState g = gameStates.peekFirst();
 		if (fade) {
 			pushState(state);
 			fading = true;
 			fadeType = -1;
-			gameStates.peekFirst().getSpriteBatch().fade();
+			g.getSpriteBatch().fade();
+			Song s = g.getSong();
+			if(s!=null);
+				s.fadeOut();
 		} else {
 			popState();
 			pushState(state);
@@ -100,7 +106,7 @@ public class GameStateManager {
 		String result = "";
 		
 		for(GameState gs : gameStates)
-			result += gs.getClass().getName();
+			result += gs.getClass().getName()+", ";
 		
 		System.out.println(result);
 	}

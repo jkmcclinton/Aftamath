@@ -1,22 +1,22 @@
 package scenes;
 
+import handlers.Camera;
 import handlers.GameStateManager;
 import handlers.Pair;
-import handlers.SuperMob;
 import handlers.Vars;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
 
-import main.Play;
+import main.Game;
+import main.Main;
+import main.Main.InputState;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -25,10 +25,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import entities.Entity;
+import entities.Entity.DamageType;
 import entities.Mob;
 import entities.NPC;
+import entities.NPC.AIState;
 import entities.Player;
 import entities.SpeechBubble;
+import entities.SpeechBubble.PositionType;
+import entities.TextBox;
 
 
 /* ----------------------------------------------------------------------
@@ -42,63 +46,88 @@ public class Script {
 
 	public String ID;
 	public Array<String> source;
-	public Stack<HashMap<String, Integer>> choiceIndices; 
-	public Array<Pair<String, Object>> localVars;
+	public Stack<Operation> operations;
+	public HashMap<String, Object> localVars;
 	public boolean paused, limitDistance, forcedPause, dialog;
-	public int[] choices;
-	public String[] messages;
-	public int current, index, waitTime, time;
-
+	public HashMap<Integer, int[]> choiceTypes;
+	public HashMap<Integer, String[]> messages;
+	public int current, index; 
+	public float waitTime, time;
+	
 	//outside references
-	private Entity activeObj, owner;
-	private Play play;
+	private Entity owner;
+	private Object activeObj;
+	private Main main;
 	private Player player;
-	private HashMap<String, Integer> subScripts, checkpoints;
+	
+	private ScriptType type;
+	private String currentName;
+	private HashMap<Integer, Pair<Integer, Integer>> conditions;
+	private HashMap<String, Pair<Integer, Integer>> subScripts;
+	private HashMap<String, Integer> checkpoints;
+	private HashMap<Integer, HashMap<String, Pair<Integer, Integer>>> choiceIndicies; 
+	//probably the most rediculous declaration evar
+	//format: <start <choiceName, <start, end>>>
+	
+	public static enum ScriptType{
+		ATTACKED, DISCOVER, EVENT, DIALOGUE, SCENE
+	}
 
-	//private int c;
-
-	public Script(String scriptID, Play p, Player player, Entity owner){
-		try {
-			ID = scriptID;
-			loadScript(scriptID);
-			getIndicies();
-			choiceIndices = new Stack<>();
-			checkpoints = new HashMap<>();
-			localVars = new Array<>();
-			getDistanceLimit();
-
-			activeObj = new Entity();
-
-			setIndex();
-
-			play = p;
-			this.player = player;
+	public Script(String scriptID, ScriptType type, Main m, Entity owner){
+			this.player = m.player;
 			this.owner = owner;
-		} catch (Exception e) {
-			System.out.println("!! Script init issue !!");
-			e.printStackTrace();
-		}
+			this.type = type;
+			ID = scriptID;
+			main = m;
+			
+			choiceIndicies = new HashMap<>();
+			conditions = new HashMap<>();
+			operations = new Stack<>();
+			checkpoints = new HashMap<>();
+			localVars = new HashMap<>();
+			messages = new HashMap<>();
+			choiceTypes = new HashMap<>();
+			
+			loadScript(scriptID);
+			if(source!=null){
+				getIndicies();
+				getDistanceLimit();
+
+//				int i=0;
+//				System.out.println();
+//				for(String s : source){
+//					System.out.println(i+": "+s);
+//					i++;
+//				}
+
+				activeObj = new Entity();
+				setIndex();
+			}
 	}
 
 	public void update(){
-//		System.out.println(paused+": "+source.get(index));
-		if (player == null) player = play.player;
+		if (player == null) player = main.player;
 
-		if(play.analyzing){
+		if(main.analyzing){
 			if(!paused){
-				if (!activeObj.controlled) 
-					analyze();
+				if(activeObj instanceof Entity)
+					if (!((Entity) activeObj).controlled){
+						analyze();
+					}
 			} else {
 				if (waitTime > 0){
-					time++;
-					if (time/50 >= waitTime){ 
+					time+=Vars.DT;
+					if (time >= waitTime){ 
 						waitTime = 0;
 						paused = false;
 					}
-				} else
-					if (play.getCam().reached && !play.getCam().moving && 
-							!forcedPause && !dialog)
-						paused = false;
+				} else{
+					if(activeObj instanceof Camera)
+						if (!main.getCam().moving && !forcedPause && !dialog){
+							paused = false;
+							activeObj = new Entity();
+						}
+				}
 			}
 		}
 	}
@@ -106,17 +135,14 @@ public class Script {
 	@SuppressWarnings("unused")
 	public void analyze(){
 //		System.out.println(source.get(index));
-
-		if(!play.analyzing && !paused) {
-			index = current;
-			play.analyzing = true;
-		}
-
+		Operation o;
 		String line = source.get(index);
 		String command;//, s;
 		String[] tmp;
 		Entity obj = null;
 		Entity target=null;
+		int c;
+		dialog = false;
 
 		if (!line.startsWith("#")){
 			line = line.trim(); //trim leading spaces
@@ -126,7 +152,7 @@ public class Script {
 				else command = line;
 			else command = line.substring(0, line.indexOf("("));
 
-//			System.out.println(command);
+			//			System.out.println(command);
 			switch(command.toLowerCase()){
 			case "addpartner":
 				obj = findObject(firstArg(line));
@@ -135,9 +161,31 @@ public class Script {
 						player.goOut((NPC) obj, lastArg(line));
 				break;
 			case "attack":
-				break;
-			case "action":
-				doAction(line);
+				obj = findObject(firstArg(line));
+				if(countArgs(line)==2)
+					target = findObject(lastArg(line));
+				
+				if(obj != null)
+					if(obj instanceof Mob){
+						if(target!=null)
+							if(obj instanceof Player)
+								if(((Mob) obj).getPowerType()==DamageType.PHYSICAL)
+									((Player) obj).doRandomPower(target.getPosition());
+								else
+									((Mob) obj).attack(target.getPosition());
+							else
+								((Mob) obj).attack(target.getPosition());
+						else 
+							if(obj instanceof Player){
+								if(((Mob) obj).getPowerType()==DamageType.PHYSICAL)
+									((Player) obj).doRandomPower(null);
+							} else
+								((Mob) obj).attack();
+					}
+					else
+						System.out.println("Cannot find \""+firstArg(line)+"\" to perform attack; "
+								+ "Line: "+(index+1)+"\tScript: "+ID);
+				
 				break;
 			case "value":
 			case "changeval":
@@ -160,45 +208,87 @@ public class Script {
 					switch(type.toLowerCase()){
 					case"integer":
 						if(scope.equalsIgnoreCase("local")) declareVariable(variableName, Integer.parseInt(value));
-						else if(scope.equalsIgnoreCase("global")) play.history.declareVariable(variableName, Integer.parseInt(value));
-						else System.out.println("Invalid scope \"" + scope +"\"");
+						else if(scope.equalsIgnoreCase("global")) main.history.declareVariable(variableName, Integer.parseInt(value));
+						else System.out.println("Invalid scope \"" + scope +"\"; Line: "+(index+1)+"\tScript: "+ID);
 						break;
 					case"float":
 						if(scope.equalsIgnoreCase("local")) declareVariable(variableName, Float.parseFloat(value));
-						else if(scope.equalsIgnoreCase("global")) play.history.declareVariable(variableName, Float.parseFloat(value));
-						else System.out.println("Invalid scope \"" + scope +"\"");
+						else if(scope.equalsIgnoreCase("global")) main.history.declareVariable(variableName, Float.parseFloat(value));
+						else System.out.println("Invalid scope \"" + scope +"\"; Line: "+(index+1)+"\tScript: "+ID);
 						break;
 					case "string":
 						if(scope.equalsIgnoreCase("local")) declareVariable(variableName, value);
-						else if(scope.equalsIgnoreCase("global")) play.history.declareVariable(variableName, value);
-						else System.out.println("Invalid scope \"" + scope +"\"");
+						else if(scope.equalsIgnoreCase("global")) main.history.declareVariable(variableName, value);
+						else System.out.println("Invalid scope \"" + scope +"\"; Line: "+(index+1)+"\tScript: "+ID);
 						break;
 					default:
 						System.out.println("Could not declare "+scope+" variable \"" + variableName + "\" of type \"" + type +
-								"\" with value \"" + value + "\"");
+								"\" with value \"" + value + "\"; Line: "+(index+1)+"\tScript: "+ID);
 					}
 				} catch(Exception e){
 					System.out.println("Could not declare "+scope+" variable \"" + variableName + "\" of type \"" + type +
-							"\" with value \"" + value + "\"");
+							"\" with value \"" + value + "\"; Line: "+(index+1)+"\tScript: "+ID);
 				}
-				//				System.out.println(localVars);
+//				System.out.println(localVars);
+				break;
+			case "doaction":
+				obj = findObject(firstArg(line));
+				if (obj != null){
+					if(obj instanceof Mob){
+						String[] args = args(line);
+						((Mob) obj).doAction(args[1]);
+						if(args.length<3)
+							if(obj.controlled)
+								activeObj = obj;
+					}else
+						obj.doAction(convertToNum(line));
+				}
+				break;
+			case "dotimedaction":
+				obj = findObject(firstArg(line));
+				if (obj != null) 
+					if(obj instanceof Mob){
+						float f = convertToNum(line);
+						String[] args = args(line);
+						((Mob) obj).doTimedAction(args[1], f);
+						if(args.length<4)
+							if(obj.controlled)
+								activeObj = obj;
+					}
 				break;
 			case "else":
-				while(!source.get(index).toLowerCase().trim().startsWith("endif"))
-					index++;
-				index--;
+				index = operations.peek().end;
+				operations.pop();
+				break;
+			case "end":
+				if(!operations.isEmpty())
+					if(index==operations.peek().end){
+						operations.pop();
+
+						if(!operations.isEmpty())
+							if(operations.peek().type=="setchoice"){
+								index = operations.peek().end;
+								operations.pop();
+							}
+					}
 				break;
 			case "endgame":
-				play.getGSM().setState(GameStateManager.TITLE, true);
+				main.getGSM().setState(GameStateManager.TITLE, true);
 				break;
-			case "endoption":
-				int count = 0;
-				while(count!=choiceIndices.size()&&index<source.size-1){
-					index++;
-					if(source.get(index).trim().toLowerCase().startsWith("endchoice"))
-						count++;
-				}
-				index--;
+//			case "endoption":
+//				int count = 0;
+//				while(count!=choiceIndices.size()&&index<source.size-1){
+//					index++;
+//					if(source.get(index).trim().toLowerCase().startsWith("endchoice"))
+//						count++;
+//				}
+//				//				index--;
+//				break;
+			case "eventmusic":
+				if(!Game.SONG_LIST.contains(firstArg(line), false))
+					System.out.println("\""+firstArg(line)+"\" is not a valid song name; Line: "+(index+1)+"\tScript: "+ID);
+				else
+					main.addTempSong(new Song(firstArg(line)));
 				break;
 			case "face":
 			case "faceobject":
@@ -206,8 +296,14 @@ public class Script {
 
 				if (obj != null && target != null)
 					if (obj instanceof NPC)
-						((NPC) obj).setState(NPC.FACEOBJECT, obj);
+						((NPC) obj).setState(AIState.FACEOBJECT, obj);
 					else obj.faceObject(target);
+				break;
+			case "fanfare":
+				if(!Game.SONG_LIST.contains(firstArg(line), false))
+					System.out.println("\""+firstArg(line)+"\" is not a valid fanfare name; Line: "+(index+1)+"\tScript: "+ID);
+				else
+					main.addTempSong(new Song(firstArg(line), false));
 				break;
 			case "forcefollow":
 				if (player.getPartner() != null){
@@ -221,7 +317,7 @@ public class Script {
 
 				if (obj != null && target != null)
 					if (obj instanceof NPC)
-						((NPC) obj).setState(NPC.FOLLOWING, obj);
+						((NPC) obj).setState(AIState.FOLLOWING, obj);
 					else obj.faceObject(target);
 				break;
 			case "giveitem":
@@ -234,47 +330,48 @@ public class Script {
 				break;
 			case "if":
 				if (!compare(removeCommand(line))){
-					while(!source.get(index).trim().toLowerCase().startsWith("endif") && 
-							!source.get(index).trim().toLowerCase().startsWith("else")){
-
-						if(source.get(index).toLowerCase().trim().startsWith("setchoice")){
-							while(!source.get(index).toLowerCase().trim().startsWith("endchoice"))
-								index++;
-						}
-						
-						index++;
+					if(conditions.get(index).getKey()==-1)
+						index = conditions.get(index).getValue();
+					else{
+						o = new Operation("else", conditions.get(index).getKey(), 
+								conditions.get(index).getValue());
+						operations.add(o);
+						index = conditions.get(index).getKey();
 					}
+				} else {
+					o = new Operation("if", conditions.get(index));
+					operations.add(o);
 				}
 				break;
 			case "lockplayer":
-				play.setStateType(Play.LISTEN);
+				main.setStateType(InputState.LISTEN);
 				break;
 			case "lock":
 				break;
 			case "lowerdialog":
-				play.hud.hide();
+				main.hud.hide();
 				break;
 			case "movecamera":
 				createFocus(line);
 				break;
 			case "focus":
 			case "focuscamera":
-				Vector2 focus = null;
 				obj = findObject(lastArg(line));
 
 				if (obj != null) {
-					focus = obj.getPosition();
 					paused = true;
-					play.getCam().setFocus(focus);
+					main.getCam().setFocus(obj);
+					activeObj = main.getCam();
 				}
 				break;
 			case "moveobject":
 				obj = findObject(middleArg(line));
-				if (obj != null) {
-					obj.setGoal(convertToNum(line) - obj.getPosition().x * Vars.PPM);
-					activeObj = obj;
+				if (obj != null) 
+					if(obj instanceof Mob){
+						((Mob) obj).setGoal(convertToNum(line) - obj.getPosition().x * Vars.PPM);
+						activeObj = obj;
 				} else
-					System.out.println("Cannot find \""+middleArg(line)+"\" to move");
+					System.out.println("Cannot find \""+middleArg(line)+"\" to move; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "moveplayer":
 				player.setGoal(convertToNum(line));
@@ -283,136 +380,186 @@ public class Script {
 			case "unfocus":
 			case "unfocuscamera":
 			case "removefocus":
-				play.getCam().removeFocus();
+				main.getCam().removeFocus();
 				break;
 			case "remove":
 			case "removeObject":
 				obj = findObject(firstArg(line));
 				if (obj!= null)
-					play.addBodyToRemove(obj.getBody());
+					main.addBodyToRemove(obj.getBody());
 				else
-					System.out.println("Cannot find \""+firstArg(line)+"\" to remove");
+					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "removepartner":
 				player.breakUp();
 				break;
 			case "resetstate":
 				obj = findObject(lastArg(line));
-				if (obj != null)
+				if (obj != null){
 					if(obj instanceof NPC)
 						((NPC) obj).resetState();
+				}
 				break;
 			case "return":
 				getCheckpoint(firstArg(line));
 				break;
-			case "setspeaker":
-				Entity speaker = null;
-
-				speaker = findObject(firstArg(line));
-
-				if(speaker != null) {
-					if(speaker instanceof Mob){
-						if( play.hud.getFace() != speaker) 
-							play.hud.changeFace((Mob) speaker);
-					}
-					else play.hud.changeFace(null);
-					if(countArgs(line) == 2){
-						Vector2 loc = speaker.getPosition();
-						play.getCam().setFocus(loc.x, loc.y + play.getCam().YOFFSET/Vars.PPM);
-					}
-				} else
-					System.out.println("Cannot find \""+firstArg(line)+"\" to set as speaker");
-
-				break;
-			case "setchoice":
-				if (lastArg(line).toLowerCase().equals("yesno")){
-					choices = new int[2]; messages = new String[2];
-					choices[0] = 6; messages[0] = "Yes";
-					choices[1] = 7; messages[1] = "No";
-				} else {
-					tmp = args(line);
-					choices = new int[tmp.length];
-					messages = new String[tmp.length];
-					String num, mes;
-
-					//syntax ---- typeNum:Message
-					for (int j = 0; j < tmp.length; j++){
-						num = tmp[j].split(":")[0];
-						mes = tmp[j].split(":")[1];
-						choices[j] = Integer.parseInt(num.replaceAll(" ", "")); 
-						messages[j] = new String(mes);
-					}
-				}
-
-				int i = index+1; int j = 0;
-				HashMap<String, Integer> tmp1 = new HashMap<>();
-				String s1;
-				while((j != choices.length+1 &&
-						!source.get(i).toLowerCase().trim().startsWith("endchoice")) && i < source.size &&
-						!source.get(i).toLowerCase().trim().startsWith("done")){
-					if(source.get(i).toLowerCase().trim().startsWith("setchoice")){
-						while(!source.get(i).toLowerCase().trim().startsWith("endchoice"))
-							i++;
+			case "say":
+				c = countArgs(line);
+				String msg = getDialogue(index);
+				boolean selfKill = true;
+				
+				if(c==1){
+					//text only
+					obj = main.character;
+				} else if (c==2) {
+					//text and unpause
+					if(Vars.isBoolean(lastArg(line)))
+						selfKill = Boolean.parseBoolean(lastArg(line));
+					 else {
+						 //text and object
+						 obj = findObject(firstArg(line));
+						 if(obj == null)
+							 obj = main.character;
 					}
 					
-					if (source.get(i).toLowerCase().trim().startsWith("[")) {
-						s1 = source.get(i).trim();
-						s1 = s1.substring(1, s1.indexOf("]"));
-						s1 = s1.split(" ")[1].toLowerCase();
-						tmp1.put(s1, i);
-						j++;
-					}
-					i++;
-				}
+				} else if (c==3) {
+					obj = findObject(firstArg(line));
+					 if(obj == null)
+						 obj = main.character;
 
-				choiceIndices.add(tmp1);
-				play.displayChoice(choices, messages);
-				play.setStateType(Play.CHOICE);
-				play.choosing = true;
-				paused = true;
+					if(Vars.isBoolean(lastArg(line)))
+						selfKill = Boolean.parseBoolean(lastArg(line));
+					else selfKill = false;
+				}
+				
+				TextBox t = new TextBox(obj, msg, selfKill);
+				if(obj instanceof Mob)
+					((Mob) obj).facePlayer();
+				
+				if(!selfKill){
+					paused = forcedPause = true;
+					activeObj = t;
+					main.prevState = main.stateType;
+					main.stateType = InputState.LISTEN;
+				}
+				
+				break;
+			case "setattacktype":
+				obj = findObject(firstArg(line));
+				
+				if(obj!=null)
+					if(obj instanceof NPC)
+						((NPC) obj).setAttackType(lastArg(line));
+				break;
+			case "setchoice":
+				if(subScripts.get(currentName)!=null)
+					if(choiceIndicies.get(index)!=null){
+						o = new Operation("setchoice", findBounds("setchoice", index, subScripts.get(currentName).getValue()));
+						operations.add(o);
+
+						main.displayChoice(choiceTypes.get(index), messages.get(index));
+						main.setStateType(InputState.CHOICE);
+						main.choosing = true;
+						paused = true;
+					} 
+//				else
+//					System.out.println("No choices found for this choice set; Line: "+(index+1)+"\tScript: "+ID);
+				break;
+			case "setdefaultstate":
+				obj = findObject(firstArg(line));
+				if(obj!=null){
+					if(obj instanceof NPC)
+						((NPC)obj).setDefaultState(lastArg(line));
+				}
 				break;
 			case "setflag":
 				try{
-					if(play.history.getFlag(firstArg(line))!=null)
-						play.history.setFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
+					if(main.history.getFlag(firstArg(line))!=null)
+						main.history.setFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
 					else
-						play.history.addFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
+						main.history.addFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
 				} catch (Exception e){
-					System.out.println("Could not set flag \"" +firstArg(line) + "\"");
+					System.out.println("Could not set flag \"" +firstArg(line) + "\"; Line: "+(index+1)+"\tScript: "+ID);
 				}
+				break;
+			case "setresponse":
+				obj = findObject(firstArg(line));
+				
+				if(obj!=null)
+					if(obj instanceof NPC)
+						((NPC) obj).setResponseType(lastArg(line));
 				break;
 			case "setscript":
 				setIndex(lastArg(line));
 				break;
-			case "song":
-			case "setsong":
-				if(Vars.isNumeric(lastArg(line))){
-					try{
-						int s = convertToNum(line);
-						Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+Scene.BGM.get(s)+".wav"));
-						play.addSong(song);
-					} catch(Exception e){
-						e.printStackTrace();
-					}
-				} else {
-					String title = line.substring(line.indexOf(" "));
+			case "setspeaker":
+				Entity speaker = null;
+				speaker = findObject(firstArg(line));
 
-					try{
-						Music song = Gdx.audio.newMusic(new FileHandle("res/music/"+title+".wav"));
-						play.addSong(song);
-					} catch (Exception e){
-						e.printStackTrace();
+				if(speaker != null) {
+					if(speaker instanceof Mob){
+						if( main.hud.getFace() != speaker) 
+							main.hud.changeFace((Mob) speaker);
 					}
+					else main.hud.changeFace(null);
+					if(countArgs(line) == 2)
+						main.getCam().setFocus(speaker);
+				} else {
+					System.out.println("Cannot find \""+firstArg(line)+"\" to set as speaker; Line: "+(index+1)+"\tScript: "+ID);
+					main.hud.changeFace(null);
 				}
+
+				break;
+			case "setstate":
+				obj = findObject(firstArg(line));
+				
+				if(obj!=null)
+					if(obj instanceof NPC)
+						((NPC) obj).setState(lastArg(line));
+				break;
+			case "showstats":
 				break;
 			case "spawn":
 				spawn(line);
+				break;
+			case "statupdate":
+				int nice, bravery, max;
+				boolean failed=false;
+				float niceScale, braveScale;
+				tmp = args(line);
+				
+				if(countArgs(line)==4) max = 4;
+				else {
+					if(tmp.length==1){
+						System.out.println("Invlaid number of arguments; Line: "+(index+1)+"\tScript: "+ID);
+						break;
+					} else max = 2;
+				}
+				
+					for(int i = 0;i<max;i++)
+						if(!Vars.isNumeric(tmp[i])){
+							failed = true;
+							System.out.println("All values must be numbers; Line: "+(index+1)+"\tScript: "+ID);
+						}
+					
+					if(!failed){
+						nice = Integer.parseInt(tmp[0]);
+						bravery = Integer.parseInt(tmp[1]);
+						niceScale = Float.parseFloat(tmp[2]);
+						braveScale = Float.parseFloat(tmp[3]);
+
+						player.setNicenessScale(niceScale);
+						player.setBraveryScale(braveScale);
+						player.setNiceness(nice);
+						player.setBravery(bravery);
+					}
+				
 				break;
 			case "text":
 				text(line);
 				break;
 			case "toggleStats":
-				play.hud.showStats = Boolean.parseBoolean(firstArg(line));
+				main.hud.showStats = Boolean.parseBoolean(firstArg(line));
 				break;
 			case "wait":
 				time = 0;
@@ -426,7 +573,7 @@ public class Script {
 				Music sound = null;
 				String src = firstArg(line);
 				Vector2 position = null;
-				
+
 				if(countArgs(line) == 1)
 					position = player.getPosition();
 				if(countArgs(line) == 2){
@@ -434,37 +581,24 @@ public class Script {
 					if(obj!=null)
 						position = obj.getPosition();
 					else
-						System.out.println("Could not find object \""+lastArg(line)+"\" to play sound + \""+src);
+						System.out.println("Could not find object \""+lastArg(line)+"\" to play sound + \""+src+"; Line: "+(index+1)+"\tScript: "+ID);
 				}if(countArgs(line) == 3){
 					try{
 						float x = Float.parseFloat(middleArg(line)),
 								y= Float.parseFloat(lastArg(line));
 						position = new Vector2(x, y);
 					} catch(Exception e){
-						System.out.println("Error coverting (\""+middleArg(line)+"\", \"" +lastArg(line)+"\") into a vector");
+						System.out.println("Error coverting (\""+middleArg(line)+"\", \"" +lastArg(line)+"\") into a vector; Line: "+(index+1)+"\tScript: "+ID);
 					}
 				}
-				
+
 				if(position!=null)
 					try{
 						Gdx.audio.newMusic(new FileHandle("/res/sounds/"+src+".wav"));
-						play.playSound(position, sound);
+						main.playSound(position, sound);
 					} catch(Exception e){
 						System.out.println("No such sound \""+ src +"\"");
 					}
-				break;
-//			case "end":
-//				while(!source.get(index + 1).toLowerCase().startsWith("endchoice"))
-//					index++;
-//				break;
-			case "endchoice":
-				try {
-					choiceIndices.pop();
-				} catch (EmptyStackException e){
-					System.out.println("Could not end choices because there are no more encapsulations.");
-					System.out.println("Make sure you have the right number of \"setChoice\" commands as well as \"endChoice\".");
-//					e.printStackTrace();
-				}
 				break;
 			case "zoom":
 				//(Float.parseFloat(lastArg(line)));
@@ -482,54 +616,115 @@ public class Script {
 	}
 
 	private void finish(){
-		localVars = new Array<>();
-		play.setStateType(Play.MOVE);
-		play.analyzing = false;
-		if(play.hud.raised)
-			play.hud.hide();
+		localVars = new HashMap<>();
+		checkpoints = new HashMap<>();
+		main.setStateType(InputState.MOVE);
+		main.analyzing = false;
+		index = current-1;
+		if(main.hud.raised)
+			main.hud.hide();
+		
+		if(main.tempSong && main.getSong().looping)
+			main.removeTempSong();
+		
+		main.getCam().removeFocus();
+		main.currentScript = null;
+		main.hud.changeFace(null);
 
-		play.getCam().removeFocus();
-		play.currentScript = null;
-
-		for (Entity d : play.getObjects()){
+		for (Entity d : main.getObjects()){
 			if (d instanceof NPC)
 				((NPC) d).resetState();
 		}
-
+		
+		switch(type){
+		case ATTACKED:
+			if(owner instanceof NPC){
+				NPC o = (NPC) owner;
+				switch(o.getAttackType()){
+				case ON_ATTACKED:
+					o.fight(main.character);
+					break;
+				case ON_DEFEND:
+					o.attack(main.character.getPosition());
+					break;
+				case RANDOM:
+					double chance = Math.random();
+					if(chance>.8d)
+						o.fight(main.character);
+					else if(chance>.5d)
+						o.attack(main.character.getPosition());
+					break;
+				default:
+					break;
+				}
+			}
+				
+			break;
+		case DIALOGUE:
+			break;
+		case DISCOVER:
+			if(owner instanceof NPC){
+				NPC o = (NPC) owner;
+				switch(o.getResponseType()){
+				case ATTACK:
+					o.setState(AIState.FIGHTING);
+					break;
+				case FOLLOW:
+					o.follow(main.character);
+					break;
+				case EVADE:
+					o.evade(main.character);
+					break;
+				default:
+					break;
+				}
+			}
+			break;
+		case EVENT:
+			break;
+		default:
+			break;
+		}
+		
 		//redisplay speechbubble
 		if (player.getInteractable() == owner)
 			new SpeechBubble(owner, owner.getPosition().x*Vars.PPM + 6, owner.rh + 5  +
-					owner.getPosition().y*Vars.PPM, 0, "...", SpeechBubble.LEFT_MARGIN);
+					owner.getPosition().y*Vars.PPM, 0, "...", PositionType.LEFT_MARGIN);
 	}
 
 	public void setIndex(String key){
 		try{
-			current = subScripts.get(key);
+			current = subScripts.get(key).getKey();
+			currentName = key;
 		} catch(Exception e){
-			System.out.println("Invalid subscript name \""+key+"\"");
+			System.out.println("Invalid subscript name \""+key+"\"; Line: "+(index+1)+"\tScript: "+ID);
 		}
 	}
 
 	public void setIndex(){
-		int i = source.size - 1;
 		for (String key : subScripts.keySet())
-			if(subScripts.get(key) < i)
-				i = subScripts.get(key);
+			if(subScripts.get(key).getKey() < source.size - 1){
+				index = subScripts.get(key).getKey();
+				currentName=key;
+				return;
+			}
 	}
 
-	private void loadScript(String path) throws IOException{
-		BufferedReader br = new BufferedReader(new FileReader("res/scripts/" + path + ".txt"));
-		try {
-			source = new Array<>();
-			String line = br.readLine();
+	private void loadScript(String path) {
+		try{
+			BufferedReader br = new BufferedReader(new FileReader("res/scripts/" + path + ".txt"));
+			try {
+				source = new Array<>();
+				String line = br.readLine();
 
-			while (line != null ) {;
-			source.add(line);
-			line = br.readLine();
+				while (line != null ) {;
+				source.add(line);
+				line = br.readLine();
+				}
+			} finally {
+				br.close();
 			}
-		} finally {
-			br.close();
-		}
+		} catch(Exception e){}
 	}
 
 	public void getDistanceLimit(){
@@ -539,20 +734,127 @@ public class Script {
 					limitDistance = Boolean.parseBoolean(lastArg(line));
 					return;
 				} catch(Exception e){
-					System.out.println("\""+lastArg(line)+"\" is not a boolean");
+					System.out.println("\""+lastArg(line)+"\" is not a boolean; Line: "+(index+1)+"\tScript: "+ID);
 				}
 			}
 		}
 	}
 
+	//retrieve all the indicies for every operation used in script
 	private void getIndicies(){
-		subScripts = new HashMap<String, Integer>();
+		subScripts = new HashMap<String, Pair<Integer, Integer>>();
 		String line;
+		Pair<Integer, Integer> bounds, b;
+		int end = source.size-1;
+
 		for (int i = 0; i< source.size; i++){
-			line = source.get(i);
+			line = source.get(i).trim();
 			if(line.toLowerCase().startsWith("script"))
-				subScripts.put(line.substring("script ".length()), i);
+				subScripts.put(line.substring("script ".length()), 
+						findBounds("script", i, end));
+			if(line.toLowerCase().startsWith("setchoice")){
+				bounds = findBounds("setchoice", i, end);
+				HashMap<String, Pair<Integer, Integer>> tmp = new HashMap<>();
+				String mes, num;
+				String[] messages, args = args(line);
+				int[] choices;
+				messages = new String[args.length];
+				choices = new int[args.length];
+
+				if (lastArg(line).toLowerCase().equals("yesno")){
+					choices = new int[2]; messages = new String[2];
+					choices[0] = 6; messages[0] = "Yes";
+					choices[1] = 7; messages[1] = "No";
+				} else 
+					for (int j = 0; j < args.length; j++){
+						num = args[j].split(":")[0];
+						mes = args[j].split(":")[1];
+						messages[j] = new String(mes);
+						choices[j] = Integer.parseInt(num.replaceAll(" ", "")); 
+				}
+				
+				this.messages.put(i, messages);
+				this.choiceTypes.put(i, choices);
+				
+				String s1;
+				//get choice handling indicies
+				for (int j = i+1;j<bounds.getValue();j++){
+					s1=source.get(j).trim();
+					if(s1.toLowerCase().startsWith("[choice")){
+						for(String m : messages)
+							if(s1.substring(s1.indexOf(" ")+1, s1.indexOf("]")).toLowerCase().equals(m.toLowerCase())){
+								b=findBounds("choice", j, bounds.getValue());
+								tmp.put(m.toLowerCase(), b);
+								break;
+							}
+					}
+				}
+//				System.out.println("\ttemp: "+tmp);
+				choiceIndicies.put(i, tmp);
+			} if(line.toLowerCase().startsWith("if"))
+				conditions.put(i, findBounds("if", i, end));
+			if(line.toLowerCase().startsWith("elseif"))
+				conditions.put(i, findBounds("elseif", i, end));
 		}
+		
+//		System.out.println("\nID: "+ID);
+//		System.out.println("scripts:    "+subScripts);
+//		System.out.println("choices:    "+choiceIndicies);
+//		System.out.println("conditions: "+conditions);
+	}
+
+	private Pair<Integer, Integer> findBounds(String type, int start, int end){
+		Pair<Integer, Integer> bounds = null;
+		String s;
+		int e=-1;
+
+		for(int i = start+1; i<end; i++){
+//			System.out.println(type+": ("+(start+1)+", "+i+", "+end+") "+source.size);
+			if(bounds!=null)break;
+			s=source.get(i).toLowerCase().trim();
+			if(s.startsWith("[choice")||s.startsWith("elseif")||
+					s.startsWith("if")||s.startsWith("setchoice"))
+				i=skip(i, end)+1;
+
+			switch(type.toLowerCase()){
+			case"if":
+			case"elseif":
+				if(s.startsWith("else"))
+				e = i;
+				if((s.startsWith("elseif")||s.startsWith("end"))&&!s.contains("endgame"))
+					bounds = new Pair<>(e, i);
+				break;
+			case"choice":
+			case"setchoice":
+				if(s.startsWith("end")&&!s.contains("endgame") )
+					bounds = new Pair<>(start, i);
+				break;
+			case "script":
+				if(s.startsWith("done")){
+					bounds = new Pair<>(start, i);}
+				break;
+			}
+		}
+
+		if(bounds!=null)
+			return bounds;
+		
+//		System.out.println("Missing a \"done\" statement in script \""+ID+"\"");
+		return new Pair<>(start, end);
+	}
+
+	private int skip(int i, int limit){
+		String s;
+		while(i<limit){
+			s = source.get(i).toLowerCase().trim();
+			if(s.startsWith("[choice")||s.startsWith("elseif")||s.startsWith("if")||
+					/*s.startsWith("else")||*/s.startsWith("setchoice"))
+				i=skip(i+1, limit);
+			else if(s.startsWith("end")&&!s.contains("endgame")) 
+				return i-1;
+			i++;
+		}
+		return i-1;
 	}
 
 	private int convertToNum(String s){
@@ -584,17 +886,9 @@ public class Script {
 		return args(line).length;
 	}
 
-	//	private String trim(String s){
-	//		for(int i =0; i<s.length()-1;i++){
-	//			if(!s.substring(i, i+1).equals(" "))
-	//				return s.substring(i);
-	//		}
-	//		return s;
-	//	}
-
-	private String remove(String s, String r){
-		String[] tmp = s.split(r);
-		s = "";
+	private String remove(String src, String r){
+		String[] tmp = src.split(r);
+		String s= "";
 		for (String i : tmp)
 			s += i;
 		return s;
@@ -636,7 +930,7 @@ public class Script {
 		Entity object = null;
 
 		if(Vars.isNumeric(objectName)){
-			for(Entity d : play.getObjects())
+			for(Entity d : main.getObjects())
 				if (d.getSceneID() == Integer.parseInt(objectName)) return d;
 		} else switch(objectName) {
 		case "player":
@@ -647,13 +941,13 @@ public class Script {
 				object = player.getPartner();
 			break;
 		case "narrator":
-			object = play.narrator;
+			object = main.narrator;
 			break;
 		case "this":
 			object = owner;
 			break;
 		default:
-			for(Entity d : play.getObjects()){
+			for(Entity d : main.getObjects()){
 				if(d instanceof Mob){
 					if (((Mob)d).getName().toLowerCase().equals(objectName.toLowerCase()))
 						return d;
@@ -665,21 +959,95 @@ public class Script {
 		return object;
 	}
 
-	public void getChoiceIndex(String choice){
-		try{
-			index = choiceIndices.peek().get(choice.toLowerCase());
-			play.setStateType(Play.LISTEN);
-		} catch(Exception e){
-			System.out.println("\n------------------------\nMost likely not all choices have cases."
-					+ "\nPlease recheck script: "+ ID);
-			e.printStackTrace();
-			System.out.println("------------------------");
+	private String findProperty(String prop, Object object){
+		String property = null;
+		switch(prop.toLowerCase()){
+		case "name":
+			if(object instanceof Mob)
+				property = ((Mob)object).getName();
+			break;
+		case "health":
+			if(object instanceof Mob) 
+				property = String.valueOf(((Mob)object).getHealth());
+			break;
+		case "money":
+			if(object instanceof Player) 
+				property = String.valueOf(((Player)object).getMoney());
+			break;
+		case "gender":
+			if(object instanceof Mob) 
+				property = ((Mob)object).getGender();
+			break;
+		case "love":
+		case "relationship":
+			if(object instanceof Player) 
+				property = String.valueOf(((Player)object).getRelationship());
+			break;
+		case "niceness":
+			if(object instanceof Player)
+				property = String.valueOf(((Player)object).getNiceness());
+			break;
+		case "bravery":
+			if(object instanceof Player) 
+				property = String.valueOf(((Player)object).getBravery());
+			break;
+		case "lovescale":
+			if(object instanceof Player) 
+				property = String.valueOf(((Player)object).getLoveScale());
+			break;
+		case "nicenessscale":
+			if(object instanceof Player)
+				property = String.valueOf(((Player)object).getNicenessScale());
+			break;
+		case "braveryscale":
+			if(object instanceof Player) 
+				property = String.valueOf(((Player)object).getBraveryScale());
+			break;
+		case "house":
+			if(object instanceof Player) 
+				property = ((Player)object).getHome().getType();
+			break;
+//		case "haspartner":
+//			if(object instanceof Player)
+//				if (player.getPartner()!=null){
+//					if(player.getPartner().getName()!=null)
+//						if(!player.getPartner().getName().equals(""))
+//							property = String.valueOf(true);
+//				} else
+//					property = String.valueOf(false);
+//			break;
+		case "location":
+			if(object instanceof Entity)
+				property = String.valueOf(((Entity)object).getPosition().x);
+			break;
+		case "power":
+		case "level":
+			if(object instanceof Mob)
+				property = String.valueOf(((Mob)object).getLevel());
+			break;
+		case "powertype":
+			if(object instanceof Mob)
+				property = String.valueOf(((Mob)object).getPowerType());
+			break;
 		}
+		return property;
 	}
 
-	private void doAction(String line){
-		Entity obj = findObject((middleArg(line)));
-		if (obj != null) obj.doAction(convertToNum(line));
+	public void getChoiceIndex(String choice){
+		if(choiceIndicies.get(operations.peek().start)!=null){
+			if(choiceIndicies.get(operations.peek().start).containsKey(choice.toLowerCase())){
+				Operation o = new Operation("choice", choiceIndicies.get(operations.peek().start).get(choice.toLowerCase()));
+				operations.add(o);
+				index = o.start;
+
+				main.setStateType(InputState.LISTEN);
+			} else{
+				System.out.println("No handling for choice \""+choice+"\" found for setChoice at Line: "+(index+1)+"\tScript: "+ID);
+				index = operations.peek().end;
+				operations.pop();
+			}
+		} else
+			System.out.println("No choice handling found for setChoice at Line: "+(index+1)+"\tScript: "+ID);
 	}
 
 	private void createFocus(String line){
@@ -691,7 +1059,7 @@ public class Script {
 
 		if (focus != null){
 			paused = true;;
-			play.getCam().setFocus(focus);
+			main.getCam().setFocus(focus);
 		}
 	}
 
@@ -699,32 +1067,9 @@ public class Script {
 		try{
 			ArrayDeque<Pair<String, Integer>> displayText = new ArrayDeque<>();
 			String txt;
-			
-			while(source.get(index).toLowerCase().trim().startsWith("text")&&index<source.size-1){
-				txt = source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
 
-				if(txt.contains("/player")){
-					txt = txt.substring(0, txt.indexOf("/player")) + player.getName() + 
-							txt.substring(txt.indexOf("/player") + "/player".length());
-				} if(txt.contains("/partner")){
-					txt = txt.substring(0, txt.indexOf("/partner")) + player.getPartner().getName() + 
-							txt.substring(txt.indexOf("/partner") + "/partner".length());
-				} if(txt.contains("/house")){
-					txt = txt.substring(0, txt.indexOf("/house")) + player.getHome().getType() + 
-							txt.substring(txt.indexOf("/house") + "/house".length());
-				} if(txt.contains("/address")){
-					txt = txt.substring(0, txt.indexOf("/address")) + player.getHome().getType() + 
-							txt.substring(txt.indexOf("/address") + "/address".length());
-				} if(txt.contains("/variable[")&& txt.indexOf("]")>=0){
-					String varName = txt.substring(txt.indexOf("/varialble[")+"/variable[".length(), txt.indexOf("]"));
-					Object var = getVariable(varName);
-					if (var==null) var = play.history.getVariable(varName);
-					if(var!= null) {
-						txt = txt.substring(0, txt.indexOf("/varialble[")+"/variable[".length()) + var +
-								txt.substring(txt.indexOf("/varialble[")+"/variable[".length()+ varName.length() + 1);
-					} else
-						System.out.println("No variable with name \""+ varName +"\" found");
-				}
+			while(source.get(index).toLowerCase().trim().startsWith("text")&&index<source.size-1){
+				txt = getDialogue(index);
 
 				Field f;
 				try {
@@ -732,34 +1077,120 @@ public class Script {
 					int emotion = f.getInt(f);
 					displayText.add(new Pair<>(txt, emotion));
 				} catch (NoSuchFieldException e) {
-					System.out.println("No such emotion \""+ firstArg(source.get(index)) +"\"");
+					System.out.println("No such emotion \""+ firstArg(source.get(index)) +"\"; Line: "+(index+1)+"\tScript: "+ID);
 					displayText.add(new Pair<>(txt, 0));
 				};
-				
+
 				index++;
 			}
 
-			if (countArgs(line) == 3);
-//				paused = dialog = true;
+			if (countArgs(line) == 3)
+				dialog = true;
 			else
-				paused = true;
+				paused = dialog = true;
 
 			index--;
-			play.setDispText(displayText);
-			play.speak();
+			main.setDispText(displayText);
+			main.speak();
 		} catch (SecurityException e) { e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 		} catch (IllegalAccessException e) { }
 	}
+	
+	private String getDialogue(int index){
+		String txt = source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
+
+		// filter out delimiters
+		if(txt.contains("/player")){
+			txt = txt.substring(0, txt.indexOf("/player")) + main.character.getName() + 
+					txt.substring(txt.indexOf("/player") + "/player".length());
+		}if(txt.contains("/playerg")){
+			String g = "guy";
+			if(main.character.getGender().equals("female")) g="girl";
+			txt = txt.substring(0, txt.indexOf("/playerg")) + g + 
+					txt.substring(txt.indexOf("/playerg") + "/playerg".length());
+		}if(txt.contains("/playergps")){
+			String g = "his";
+			if(main.character.getGender().equals("female")) g="her";
+			txt = txt.substring(0, txt.indexOf("/playergps")) +g + 
+					txt.substring(txt.indexOf("/playergps") + "/playergps".length());
+		}if(txt.contains("/playergp")){
+			String g = "his";
+			if(main.character.getGender().equals("female")) g="hers";
+			txt = txt.substring(0, txt.indexOf("/playergp")) + g + 
+					txt.substring(txt.indexOf("/playergp") + "/playergp".length());
+		}if(txt.contains("/playergo")){
+			String g = "he";
+			if(main.character.getGender().equals("female")) g="she";
+			txt = txt.substring(0, txt.indexOf("/playergo")) + g + 
+					txt.substring(txt.indexOf("/playergo") + "/playergo".length());
+		} if(txt.contains("/partner")){
+			String s = "";
+			if(player.getPartner()==null)
+				s=player.getPartner().getName();
+			txt = txt.substring(0, txt.indexOf("/partner")) + s + 
+					txt.substring(txt.indexOf("/partner") + "/partner".length());
+		}if(txt.contains("/partnerg")){
+			String g = "";
+			if(player.getPartner()!=null){
+				if(player.getPartner().getGender().equals("female")) g="girl";
+				else g = "guy"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnerg")) + g + 
+					txt.substring(txt.indexOf("/partnerg") + "/partnerg".length());
+		}if(txt.contains("/partnergps")){
+			String g = "";
+			if(player.getPartner()!=null){
+				if(player.getPartner().getGender().equals("female")) g="her";
+				else g = "his"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
+					txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
+		}if(txt.contains("/partnergp")){
+			String g = "";
+			if(player.getPartner()!=null){
+				if(player.getPartner().getGender().equals("female")) g="hers";
+				else g = "his"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnergp")) + g + 
+					txt.substring(txt.indexOf("/partnergp") + "/partnergp".length());
+		}if(txt.contains("/partnergo")){
+			String g = "";
+			if(player.getPartner()!=null){
+				if(player.getPartner().getGender().equals("female")) g="she";
+				else g = "he"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnergo")) + g + 
+					txt.substring(txt.indexOf("/partnergo") + "/partnergo".length());
+		} if(txt.contains("/house")){
+			txt = txt.substring(0, txt.indexOf("/house")) + player.getHome().getType() + 
+					txt.substring(txt.indexOf("/house") + "/house".length());
+		} if(txt.contains("/address")){
+			txt = txt.substring(0, txt.indexOf("/address")) + player.getHome().getType() + 
+					txt.substring(txt.indexOf("/address") + "/address".length());
+		} if(txt.contains("/variable[")&& txt.indexOf("]")>=0){
+			String varName = txt.substring(txt.indexOf("/variable[")+"/variable[".length(), txt.indexOf("]"));
+			Object var = getVariable(varName);
+			if (var==null) var = main.history.getVariable(varName);
+			if(var!= null) {
+				txt = txt.substring(0, txt.indexOf("/variable[")) + var +
+						txt.substring(txt.indexOf("/variable[")+"/variable[".length()+ varName.length() + 1);
+			} else
+				System.out.println("No variable with name \""+ varName +"\" found; Line: "+(index+1)+"\tScript: "+ID);
+		}
+		
+//		return txt;
+		return Vars.formatDialog(txt, true);
+	}
 
 	private void changeValue(String line){
-//		line = line.substring(line.indexOf(" ") + 1);
+		//		line = line.substring(line.indexOf(" ") + 1);
 		String function = firstArg(line);
 		String target = middleArg(line);
 		String value = lastArg(line);
 		boolean successful = false;
-		
-//		System.out.println(function +":"+target+":"+value);
+
+		//		System.out.println(function +":"+target+":"+value);
 
 		if(target.contains(".")){
 			String obj = target.substring(0, target.indexOf("."));
@@ -797,14 +1228,14 @@ public class Script {
 							break;
 						case "power":
 						case "level":
-							if(object instanceof SuperMob)
-								((SuperMob)object).levelUp();
+							if(object instanceof Mob)
+								((Mob)object).levelUp();
 							break;
 						default:
-							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object + "\"");
+							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object + "\"; Line: "+(index+1)+"\tScript: "+ID);
 						}
 					} catch (Exception e) {
-						System.out.println("Could not add \"" + value +"\" to \"" + target + "\"");
+						System.out.println("Could not add \"" + value +"\" to \"" + target + "\"; Line: "+(index+1)+"\tScript: "+ID);
 					}
 					break;
 				case "set":
@@ -826,7 +1257,7 @@ public class Script {
 									((Player)object).setGender("female");
 									successful = true; 	}
 								else
-									System.out.println("\""+value+"\" is not a valid gender");
+									System.out.println("\""+value+"\" is not a valid gender; Line: "+(index+1)+"\tScript: "+ID);
 							break;
 						case "money":
 							if(object instanceof Player){ 
@@ -865,41 +1296,40 @@ public class Script {
 								successful = true;}
 							break;
 						case "powertype":
-							if(object instanceof SuperMob){
-								if(Vars.isNumeric(value))
-									((SuperMob)object).setPowerType(Integer.parseInt(value));
-								else {
-									Field f = SuperMob.class.getField(value.toUpperCase());
-									((SuperMob)object).setPowerType(f.getInt(f));
+							if(object instanceof Mob){
+									DamageType type = DamageType.valueOf(value.toUpperCase());
+									if(type!=null)
+										((Mob)object).setPowerType(type);
+									else System.out.println("\""+value+"\" is not a valid power type; Line: "+(index+1)+"\tScript: "+ID);
 								}
-								successful = true;}
+								successful = true;
 							break;
 						default:
-							System.out.println("\"" + target +"\" is an invalid property to modify for \"" + object + "\"");
+							System.out.println("\"" + target +"\" is an invalid property to modify for \"" + object + "\"; Line: "+(index+1)+"\tScript: "+ID);
 							successful = true;
 						}
 					} catch (Exception e) {
-						System.out.println("Could not set \"" + value +"\" to \"" + target + "\"");
+						System.out.println("Could not set \"" + value +"\" to \"" + target + "\"; Line: "+(index+1)+"\tScript: "+ID);
 						successful = true;
 					}
 					break;
-					default:
-						System.out.println(1);
-						System.out.println("\""+function+"\" is not a valid operation for modifying values");
+				default:
+					System.out.println(1);
+					System.out.println("\""+function+"\" is not a valid operation for modifying values; Line: "+(index+1)+"\tScript: "+ID);
 				}
 
 				if (!successful)
 					System.out.println("\"" + target +"\" is an invalid property to modify for object type"
-							+ "\"" + object.getClass().getSimpleName() + "\"");
+							+ "\"" + object.getClass().getSimpleName() + "\"; Line: "+(index+1)+"\tScript: "+ID);
 			}
 		} else {
-//			System.out.println("finding var \""+target+"\"");
+			//			System.out.println("finding var \""+target+"\"");
 			try{
 				//find local variable
 				Object obj = getVariable(target);
-				
+
 				if(obj!=null){
-//					System.out.println(function);
+					//					System.out.println(function);
 					switch(function.toLowerCase()){
 					case "add":
 						switch(function.toLowerCase()){
@@ -928,52 +1358,52 @@ public class Script {
 								setVariable(target, value);
 							}
 						default:
-							System.out.println("\""+function+"\" is not a valid operation for modifying values");
+							System.out.println("\""+function+"\" is not a valid operation for modifying values; Line: "+(index+1)+"\tScript: "+ID);
 
 						}
 					}
 				} else {
-					obj = play.history.getVariable(target);
+					obj = main.history.getVariable(target);
 					System.out.println(value);
 					if(obj!=null){
 						switch(function.toLowerCase()){
 						case "add":
 							switch(obj.getClass().getSimpleName().toLowerCase()){
 							case "float":
-								play.history.setVariable(target, (float) obj + Float.parseFloat(value));
+								main.history.setVariable(target, (float) obj + Float.parseFloat(value));
 								break;
 							case "integer":
-								play.history.setVariable(target, (int) obj + Integer.parseInt(value));
+								main.history.setVariable(target, (int) obj + Integer.parseInt(value));
 								break;
 							case"string":
-								play.history.setVariable(target, ((String)obj).concat(value));
+								main.history.setVariable(target, ((String)obj).concat(value));
 								break;
 							}
 							break;
 						case "set":
 							switch(obj.getClass().getSimpleName().toLowerCase()){
 							case "float":
-								play.history.setVariable(target, Float.parseFloat(value));
+								main.history.setVariable(target, Float.parseFloat(value));
 								break;
 							case "integer":
-								play.history.setVariable(target, Integer.parseInt(value));
+								main.history.setVariable(target, Integer.parseInt(value));
 								break;
 							default:
-								play.history.setVariable(target, value);
+								main.history.setVariable(target, value);
 							}
 							break;
 						default:
 							System.out.println(2);
-							System.out.println("\""+function+"\" is not a valid operation for modifying values");
+							System.out.println("\""+function+"\" is not a valid operation for modifying values; Line: "+(index+1)+"\tScript: "+ID);
 
 						}
 					} else {
-						System.out.println("No variable  locally or globally called \""+target+"\"");
+						System.out.println("No variable  locally or globally called \""+target+"\"; Line: "+(index+1)+"\tScript: "+ID);
 					}
 				}
 			} catch (Exception e) {
 				System.out.println("Error casting \"" + value +"\" to the value of \"" + target + 
-						"\" for modification");
+						"\" for modification; Line: "+(index+1)+"\tScript: "+ID);
 				e.printStackTrace();
 			}
 		}
@@ -997,47 +1427,58 @@ public class Script {
 //		System.out.println(tmp);
 
 		//separate arguments and conditions
-		if(!tmp.contains(" ")&& !tmp.contains("[")&&!tmp.contains("(")){
-			for(int i = 0; i<tmp.length()-1; i++){				
-				if(tmp.substring(i, i+1).equals(" ")){
-					arguments.add(tmp.substring(0, i));
-					tmp = tmp.substring(i + 1);
-					i = -1;
-				} else if(tmp.substring(i, i+1).equals("[")){
-					arguments.add(tmp.substring(i+1, tmp.indexOf("]")));
-					int x;
-					if(tmp.length() - tmp.indexOf("]")>1)
-						x=2;
-					else x=1;
-					tmp = tmp.substring(tmp.indexOf("]")+x);
-					i = -1;
-				} else if(tmp.substring(i, i+1).equals("(")){
-					if(tmp.indexOf(")")==-1){
-						System.out.println("Error evaluating: \"" +statement +
-								"\"\nMissing a \")\"");
-						return false;
-					}
-					arguments.add(String.valueOf(compare(tmp.substring(i+1, tmp.indexOf(")")))));
-					int x;
-					if(tmp.length() - tmp.indexOf(")")>1)
-						x=2;
-					else x=1;
-					tmp = tmp.substring(tmp.indexOf(")")+x);
-					i = -1;
+		for(int i = 0; i<tmp.length()-1; i++){				
+			if(tmp.substring(i, i+1).equals(" ")){
+				arguments.add(tmp.substring(0, i));
+				tmp = tmp.substring(i + 1);
+				i = -1;
+			} else if(tmp.substring(i, i+1).equals("[")){
+				arguments.add(tmp.substring(i+1, tmp.indexOf("]")));
+				int x;
+				if(tmp.length() - tmp.indexOf("]")>1)
+					x=2;
+				else x=1;
+				tmp = tmp.substring(tmp.indexOf("]")+x);
+				i = -1;
+			} else if(tmp.substring(i, i+1).equals("(")){
+				if(tmp.lastIndexOf(")")==-1){
+					System.out.println("Error evaluating: \"" +statement +
+							"\"\nMissing a \")\"; Line: "+(index+1)+"\tScript: "+ID);
+					return false;
 				}
+
+				String not=""; 
+				if(i>0)
+					if(tmp.substring(i-1,i).equals("!")) not = "!";
+				arguments.add(not + String.valueOf(compare(tmp.substring(i+1, tmp.lastIndexOf(")")))));
+				int x;
+				if(tmp.length() - tmp.lastIndexOf(")")>1)
+					x=2;
+				else x=1;
+				tmp = tmp.substring(tmp.lastIndexOf(")")+x);
+				i = -1;
 			}
 		}
-		else arguments.add(tmp);
+
+		if(!tmp.isEmpty()) arguments.add(tmp);
+
+		if(arguments.size%2==0){
+			System.out.println("Invalid list of arguments in if statement. Removing last argument.");
+			System.out.println("Source: "+arguments+"; Line: "+(index+1)+"\tScript: "+ID);
+			arguments.removeIndex(arguments.size - 1);
+		}
 
 		for(int j = 0; j<arguments.size;j+=2){
 			arguments.set(j, String.valueOf(evaluate(arguments.get(j))));
-		}System.out.println(statement+":"+arguments);
+		}
+//		System.out.println(statement+":"+arguments);
 
 		while(arguments.size>=3)
 			arguments = combine(arguments);
 
+
 		if(arguments.size==0){
-			System.out.println("Statement \""+ statement +"\" is written incorrectly");
+			System.out.println("Statement \""+ statement +"\" is written incorrectly; Line: "+(index+1)+"\tScript: "+ID);
 			return false;
 		}
 		return Boolean.parseBoolean(arguments.get(0));
@@ -1050,11 +1491,6 @@ public class Script {
 		Array<String> result = new Array<>();
 		if(arguments.size<3)
 			return arguments;
-		if(arguments.size%2==0){
-			System.out.println("Invalid list of arguments in if statement. Removing last argument.");
-			System.out.println("Source: "+source.get(index));
-			arguments.removeIndex(arguments.size - 1);
-		}
 
 		boolean value1 = Boolean.parseBoolean(arguments.get(0));
 		boolean value2 = Boolean.parseBoolean(arguments.get(2));
@@ -1066,7 +1502,7 @@ public class Script {
 		if (condition.equalsIgnoreCase("or"))
 			combined = value1 || value2;
 		if(combined==null){
-			System.out.println("\""+condition+"\" is and invalid condition");
+			System.out.println("\""+condition+"\" is and invalid condition; Line: "+(index+1)+"\tScript: "+ID);
 			combined = false;
 		}
 
@@ -1076,13 +1512,122 @@ public class Script {
 		return result;
 	}
 
+	private String evaluateExpression(String obj){
+		Array<String> arguments;
+		String result, res, val;
+		String tmp=remove(obj," ");
+		tmp=tmp.replace("-", "&");
+
+		for(int i = 0; i<tmp.length()-1; i++){
+			if(tmp.substring(i, i+1).equals("(")){
+				if(tmp.lastIndexOf(")")==-1){
+					System.out.println("Error evaluating: \"" +tmp +
+							"\"\nMissing a \")\"; Line: "+(index+1)+"\tScript: "+ID);
+					return null;
+				}
+				String e =evaluateExpression(tmp.substring(i+1, tmp.lastIndexOf(")")));
+				tmp = tmp.substring(0,i)+e
+						+tmp.substring(tmp.lastIndexOf(")")+1);
+				i=tmp.lastIndexOf(")");
+			}
+		}
+
+		//sort expressions
+
+		//evaluate
+		arguments = new Array<>(tmp.split("(?<=[&+*/])|(?=[&+*/])"));
+		if(arguments.size<3||arguments.contains("", false)) return obj;
+
+		result = arguments.get(0);
+		if(!Vars.isNumeric(result)){
+			res = determineValue(result, false);
+			if (res != null)
+				result = new String(res);
+		}
+
+		while(arguments.size>=3){
+			val = arguments.get(2);
+			switch(arguments.get(1)){
+			case"+":
+				if(Vars.isNumeric(result)&& Vars.isNumeric(val)){
+					result = String.valueOf(Float.parseFloat(result)+Float.parseFloat(val));
+				}else{
+					res = determineValue(result, false);
+					if (res != null)
+						result = new String(res);
+
+					res = determineValue(val, false);
+					if (res != null)
+						val = new String(res);
+
+					if(Vars.isNumeric(result)&& Vars.isNumeric(val))
+						result = String.valueOf(Float.parseFloat(result)+Float.parseFloat(val));
+					else result += val;
+				}
+				break;
+			case"&":
+				if(Vars.isNumeric(result)&& Vars.isNumeric(val)){
+					result = String.valueOf(Float.parseFloat(result)-Float.parseFloat(val));
+				}else{
+					res = determineValue(result, false);
+					if (res != null)
+						result = new String(res);
+
+					res = determineValue(val, false);
+					if (res != null)
+						val = new String(res);
+
+					if(Vars.isNumeric(result)&& Vars.isNumeric(val))
+						result = String.valueOf(Float.parseFloat(result)-Float.parseFloat(val));
+					else System.out.println("Conversion error: res: \""+result+"\" op: - val: \""+val);
+				}break;
+			case"*":
+				if(Vars.isNumeric(result)&& Vars.isNumeric(val)){
+					result = String.valueOf(Float.parseFloat(result)*Float.parseFloat(val));
+				}else{
+					res = determineValue(result, false);
+					if (res != null)
+						result = new String(res);
+
+					res = determineValue(val, false);
+					if (res != null)
+						val = new String(res);
+
+					if(Vars.isNumeric(result)&& Vars.isNumeric(val))
+						result = String.valueOf(Float.parseFloat(result)*Float.parseFloat(val));
+					else System.out.println("Conversion error: res: \""+result+"\" op: - val: \""+val);
+				}break;
+			case"/":
+				if(Vars.isNumeric(result)&& Vars.isNumeric(val)){
+					result = String.valueOf(Float.parseFloat(result)/Float.parseFloat(val));
+				}else{
+					res = determineValue(result, false);
+					if (res != null)
+						result = new String(res);
+
+					res = determineValue(val, false);
+					if (res != null)
+						val = new String(res);
+
+					if(Vars.isNumeric(result)&& Vars.isNumeric(val))
+						result = String.valueOf(Float.parseFloat(result)/Float.parseFloat(val));
+					else System.out.println("Conversion error: res: \""+result+"\" op: - val: \""+val);
+				}break;
+			}
+
+			arguments.removeIndex(1);
+			arguments.removeIndex(1);
+		}
+
+		return result;
+	}
+
 	private boolean evaluate(String statement){
-		String obj, prop, property = null;
-		Object object = null;
+		String obj, property = null;
 		boolean not=false, result=false;
 
 		if(statement.contains(">") || statement.contains("<") || statement.contains("=")){
-			String value = "";
+			String value = "", val = "";
 
 			//separate value and condition from tmp
 			obj = "";
@@ -1102,135 +1647,23 @@ public class Script {
 			}
 
 			if(tmp.indexOf(condition)<1){
-				System.out.println("No object found to compare with in statement: "+statement);
+				System.out.println("No object found to compare with in statement: "+statement+"; Line: "+(this.index+1));
 				return false;
 			}
 
 			obj = tmp.substring(0, tmp.indexOf(condition));
-			value = tmp.substring(tmp.indexOf(condition)+condition.length());
+			val = tmp.substring(tmp.indexOf(condition)+condition.length());
 
-			if(obj.contains(".")){
-				prop = obj.substring(obj.indexOf(".")+1);
-				obj = obj.substring(0, obj.indexOf("."));
-				if(obj.startsWith("!")){
-					obj = obj.substring(1);
-					not = true;
-				}
+			if(obj.contains("+")||obj.contains("-")||obj.contains("*")||obj.contains("/"))
+				property = evaluateExpression(obj);
+			else
+				property = determineValue(obj, false);
 
-				switch(obj){
-				case "player": object = player; break;
-				case "narrator": object = play.narrator; break;
-				case "partner": object = player.getPartner(); 	break;
-				case "this": object = owner; break;
-				default: object = findObject(obj);	
-				}
+			if(val.contains("+")||val.contains("-")||val.contains("*")||val.contains("/"))
+				value = evaluateExpression(val);
+			else
+				value = determineValue(val, false);
 
-				if (object==null){
-					System.out.println("Could not find object with name \"" +obj+"\"");
-					return false;
-				}
-
-				switch(prop.toLowerCase()){
-				case "name":
-					if(object instanceof Mob)
-						property = ((Mob)object).getName();
-					break;
-				case "health":
-					if(object instanceof Mob) 
-						property = String.valueOf(((Mob)object).getHealth());
-					break;
-				case "money":
-					if(object instanceof Player) 
-						property = String.valueOf(((Player)object).getMoney());
-					break;
-				case "gender":
-					if(object instanceof Mob) 
-						property = ((Mob)object).getGender();
-					break;
-				case "love":
-				case "relationship":
-					if(object instanceof Player) 
-						property = String.valueOf(((Player)object).getRelationship());
-					break;
-				case "niceness":
-					if(object instanceof Player)
-						property = String.valueOf(((Player)object).getNiceness());
-					break;
-				case "bravery":
-					if(object instanceof Player) 
-						property = String.valueOf(((Player)object).getBravery());
-					break;
-				case "lovescale":
-					if(object instanceof Player) 
-						property = String.valueOf(((Player)object).getLoveScale());
-					break;
-				case "nicenessscale":
-					if(object instanceof Player)
-						property = String.valueOf(((Player)object).getNicenessScale());
-					break;
-				case "braveryscale":
-					if(object instanceof Player) 
-						property = String.valueOf(((Player)object).getBraveryScale());
-					break;
-				case "house":
-					if(object instanceof Player) 
-						property = ((Player)object).getHome().getType();
-					break;
-//				case "haspartner":
-//					if(object instanceof Player)
-//						if (player.getPartner()!=null){
-//							if(player.getPartner().getName()!=null)
-//								if(!player.getPartner().getName().equals(""))
-//									property = String.valueOf(true);
-//						} else
-//							property = String.valueOf(false);
-//					break;
-				case "location":
-					if(object instanceof Entity)
-						property = String.valueOf(((Entity)object).getPosition().x);
-					break;
-				case "power":
-				case "level":
-					if(object instanceof SuperMob)
-						property = String.valueOf(((SuperMob)object).getLevel());
-					break;
-				case "powertype":
-					if(object instanceof SuperMob)
-						property = String.valueOf(((SuperMob)object).getPowerType());
-					break;
-				default:
-					property = null;
-				}
-
-				if(property == null){
-					System.out.println("\""+prop+"\" is an invalid object property for object \""+ obj+"\"");
-					return false;
-				}
-			} else {
-				//find local variable
-				object = getVariable(obj);
-				if (object==null)
-					object = play.history.getVariable(obj);
-
-				if (object==null){
-					System.out.println("No variable locally or globally called \""+obj+"\"");
-					return false;
-				}
-
-				if(object instanceof String)
-					property = (String) object;
-				else if(object instanceof Float)
-					property = String.valueOf((Float) object);
-				else if(object instanceof Integer)
-					property = String.valueOf((Integer) object);
-				else
-					property = null;
-
-				if (property==null){
-					System.out.println("The type \""+object.getClass().getSimpleName()+"\" has not properly been handled for variable types.");
-					return false;
-				}
-			}
 
 //			System.out.println("p: " + property + "\nc: " + condition + "\nv: " + value);
 
@@ -1239,44 +1672,48 @@ public class Script {
 				switch (condition){
 				case "=":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						return Float.parseFloat(property) == Float.parseFloat(value);
+						result =( Float.parseFloat(property) == Float.parseFloat(value));
 					else
-						return property.equals(value);
+						result = property.equals(value);
+					break;
 				case ">":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						return Float.parseFloat(property) > Float.parseFloat(value);
+						result = (Float.parseFloat(property) > Float.parseFloat(value));
+					break;
 				case ">=":
 				case "=>":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						return Float.parseFloat(property) >= Float.parseFloat(value);
+						result = (Float.parseFloat(property) >= Float.parseFloat(value));
+					break;
 				case "<":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						return Float.parseFloat(property) < Float.parseFloat(value);
+						result = (Float.parseFloat(property) < Float.parseFloat(value));
+					break;
 				case "<=":
 				case "=<":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						return Float.parseFloat(property) <= Float.parseFloat(value);
+						result = (Float.parseFloat(property) <= Float.parseFloat(value));
+					break;
+				default:
+					System.out.println("\""+condition+"\" is not a vaild operator; Line: "+(this.index+1));
 				}
+
+				if(not) return !result;
+				else return result;
 			} catch(Exception e){
-				System.out.println("Could not compare \""+property+"\" with \""+value+"\" by condition \""+condition+"\"");
+				System.out.println("Could not compare \""+property+"\" with \""+value+"\" by condition \""+condition+"\"; Line: "+(this.index+1));
 				e.printStackTrace();
 				return false;
 			}
 		} else {
-			System.out.println("hello");
 			if(statement.startsWith("!")){
 				not = true;
 				statement = statement.substring(1);
 			}
 
-			if(statement.contains(".")) {
-				obj = statement.split(".")[0];
-				prop = statement.split(".")[1];
-
-				result = false;
-			} else if(play.history.getFlag(statement)!=null){
-				result = play.history.getFlag(statement);
-			} else if(play.history.findEvent(statement)){
+			else if(main.history.getFlag(statement)!=null){
+				result = main.history.getFlag(statement);
+			} else if(main.history.findEvent(statement)){
 				result = true;
 			} 
 		}
@@ -1285,58 +1722,122 @@ public class Script {
 		return result;
 	}
 
+	//determine wether argument is and object property, variable, flag, or event
+	//by default, if no object can be found it is automatically assumed to be an event
+	//should possibly change in the future;
+	private String determineValue(String obj, boolean boolPossible){
+		String prop = "", not = "", property = null;
+		Object object;
+
+		if(Vars.isNumeric(obj))
+			property = obj;
+		else if(obj.contains(".")){
+			prop = obj.substring(obj.indexOf(".")+1);
+			obj = obj.substring(0, obj.indexOf("."));
+			if(obj.startsWith("!")){
+				obj = obj.substring(1);
+				not = "!";
+			}
+
+			object = findObject(obj);
+			if (object==null){
+				System.out.println("Could not find object with name \"" +obj+"\"; Line: "+(this.index+1));
+				return null;
+			}
+
+			property = findProperty(prop, object);
+
+			if(property == null){
+				System.out.println("\""+prop+"\" is an invalid object property for object \""+ obj+"\"; Line: "+(this.index+1));
+				return null;
+			}
+
+			property = not + property;
+		} else {
+			//find variable
+			object = getVariable(obj);
+			if (object==null)
+				object = main.history.getVariable(obj);
+			
+			if (object!=null){
+				if(object instanceof String)
+					property = (String) object;
+				else if(object instanceof Float)
+					property = String.valueOf((Float) object);
+				else if(object instanceof Integer)
+					property = String.valueOf((Integer) object);
+				else
+					property = null;
+			} else if (boolPossible){ 
+				if(obj.startsWith("!")){
+					not = "!";
+					obj = obj.substring(1);
+				}
+
+				//find flag or event
+				if(main.history.getFlag(obj)!=null){
+					property = not+String.valueOf(main.history.getFlag(obj));
+				} else 
+					property = not + main.history.findEvent(obj);
+			} else
+				System.out.println("Could not determine value for \""+obj+"\"; Line: "+(index+1)+"\tScript: "+ID);
+		}
+
+		return property;
+	}
+
 	public boolean declareVariable(String variableName, Object value){
 		if (value instanceof Boolean) return false;
-		for(Pair<String, Object> p : localVars)
-			if (p.getKey().equals(variableName)){
-				System.out.println("Variable \""+variableName +"\" already exists locally");
+		for(String p : localVars.keySet())
+			if (p.equals(variableName)){
+				System.out.println("Variable \""+variableName +"\" already exists locally; Line: "+(index+1)+"\tScript: "+ID);
 				return false;
 			}
 		if (!(value instanceof String) && !(value instanceof Integer) && !(value instanceof Float))
 			return false;
 
-		localVars.add(new Pair<>(variableName, value));
+		localVars.put(variableName, value);
 		return true;
 	}
 
 	public Object getVariable(String variableName){
-		for(Pair<String, Object> p : localVars)
-			if (p.getKey().equals(variableName))
-				return p.getValue();
+		for(String p : localVars.keySet())
+			if (p.equals(variableName))
+				return localVars.get(p);
 		return null;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 	}
 
 	public void setVariable(String var, Object val){
-		for(Pair<String, Object> p : localVars)
-			if(p.getKey().equals(var)){
-				String type = p.getValue().getClass().getSimpleName();
+		for(String p : localVars.keySet())
+			if(p.equals(var)){
+				String type = localVars.get(p).getClass().getSimpleName();
 				if(!var.getClass().getSimpleName().equals(type)){
 					try{
 						if(type.toLowerCase().equals("float"))
-							p.setValue((float) val);
+							localVars.put(p, (float) val);
 						if(type.toLowerCase().equals("integer"))
-							p.setValue((int) val);
+							localVars.put(p,(int) val);
 						if(type.toLowerCase().equals("string"))
-							p.setValue((String) val);
+							localVars.put(p,(String) val);
 					} catch (Exception e){System.out.println();}
 				} else 
-					p.setValue(val);
+					localVars.put(p,val);
 			}
 	}
-	
+
 	private boolean addCheckpoint(String name, Integer index){
 		if(checkpoints.containsKey(name)){
-			System.out.println("\""+name+"\" is already a set checkpoint in script.");
+			System.out.println("\""+name+"\" is already a set checkpoint in script; Line: "+(this.index+1));
 			return false;
 		}
-		
+
 		checkpoints.put(name, index);
 		return true;
 	}
-	
+
 	private void getCheckpoint(String name){
 		if(!checkpoints.containsKey(name)){
-			System.out.println("The checkpoint \""+name+"\" has not been set in script.");
+			System.out.println("The checkpoint \""+name+"\" has not been set in script; Line: "+(index+1)+"\tScript: "+ID);
 		} else 
 			index = checkpoints.get(name);
 	}
@@ -1355,14 +1856,14 @@ public class Script {
 		int c = 0;
 		Entity obj = getObjectType(firstArg(line), location);
 
-		for(Entity e : play.getObjects())
+		for(Entity e : main.getObjects())
 			if (e.getSceneID() < c)
 				c = e.getSceneID();
 
 		if (obj != null){
 			if (obj instanceof Mob)
 				obj.setSceneID(c);
-			play.addObject(obj);
+			main.addObject(obj);
 		}
 	}
 
@@ -1407,7 +1908,30 @@ public class Script {
 		return null;
 	}
 
-	public void setPlayState(Play gs) { play = gs; }
+	public void setPlayState(Main gs) { main = gs; }
 	public Entity getOwner(){ return owner; }
-	public Entity getActiveObject(){ return activeObj; }
+	public Object getActiveObject(){ return activeObj; }
+	public void setActiveObj(Object obj){ activeObj = obj; }
+	public String getCurrentName() { return currentName; }
+
+	public class Operation{
+		public String type;
+		public int start, end;
+
+		public Operation(String type, int start, int end){
+			this.type = type;
+			this.start = start;
+			this.end = end;
+		}
+		
+		public Operation(String type, Pair<Integer, Integer> bounds){
+			this.type = type;
+			this.start = bounds.getKey();
+			this.end = bounds.getValue();
+		}
+		
+		public String toString(){
+			return "["+type+", "+"("+start+", "+end+") ]";
+		}
+	}
 }

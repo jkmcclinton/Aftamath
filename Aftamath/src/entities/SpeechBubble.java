@@ -1,13 +1,13 @@
 package entities;
 
 import static handlers.Vars.PPM;
+import handlers.FadingSpriteBatch;
 import handlers.Vars;
 import main.Game;
 import main.GameState;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -28,16 +28,18 @@ public class SpeechBubble extends Entity {
 	private boolean reached = true;
 	private int idleTime = 30;
 	private int time = idleTime;
-	private int maxWidth = 16, minWidth, innerWidth, positioningType;
+	private int maxWidth = 16, minWidth, innerWidth;
+	private PositionType positioningType;
 	private float px, py;
 	
 	public static final int DEFAULT_WIDTH = 14;
 	public static final int DEFAULT_HEIGHT = 12;
 	public static final int EXPANDING = 1;
 	public static final int COLLAPSING = -1;
-	public static final int LEFT_MARGIN = 0;
-	public static final int CENTERED = 1;
-	public static final int RIGHT_MARGIN = 2;
+	
+	public static enum PositionType{
+		LEFT_MARGIN, CENTERED, RIGHT_MARGIN,
+	}
 	
 	/**
 	 * Types:
@@ -52,15 +54,19 @@ public class SpeechBubble extends Entity {
 		
 	
 	//Standard interaction based bubble, e.g. speech
-	public SpeechBubble(Entity d, float x, float y, int ID, String message, int positioningType) {
-		super(x, y, 14, 12, "speechBubble");
-		setPlayState(d.getPlayState());
-		gs.addObject(this);
+	public SpeechBubble(Entity d, float x, float y, int ID, String message, PositionType positioningType) {
+		super(x, y, "speechBubble");
+		setGameState(d.getGameState());
+		
+		setDimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+		
+		main.addObject(this);
 		this.ID += ID;
 		this.message = message;
+		
 		this.positioningType = positioningType;
 		owner = d;
-		player = d.getPlayer();
+		character = d.getPlayer();
 		center = new Vector2(x/PPM, y/PPM);
 		v = new Vector2(center.x - owner.getPosition().x, center.y - owner.getPosition().y);
 
@@ -72,16 +78,19 @@ public class SpeechBubble extends Entity {
 		maxWidth = message.length() * font[0].getRegionWidth();
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("speechBubble"), width, height)[ID];
 		setDefaultAnimation(sprites[sprites.length - 1]);
-		animation.setAction(sprites, sprites.length, false, 1, Vars.ACTION_ANIMATION_RATE);
+		animation.setAction(sprites, sprites.length, false, 1, Vars.ACTION_ANIMATION_RATE, false);
 	}
 	
 	public SpeechBubble(Entity d, float x, float y, String ID){
-		super(x, y, getWidth(ID), getHeight(ID), ID);
-		setPlayState(d.getPlayState());
-		gs.addObject(this);
+		super(x, y, ID);
+		setGameState(d.getGameState());
+
+		setDimensions();
+		
+		main.addObject(this);
 		this.message = "";
 		owner = d;
-		player = d.getPlayer();
+		character = d.getPlayer();
 		center = new Vector2(x/PPM, y/PPM);
 		v = new Vector2(center.x - owner.getPosition().x, center.y - owner.getPosition().y);
 
@@ -89,7 +98,7 @@ public class SpeechBubble extends Entity {
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture(ID), width, height)[0];
 		setDefaultAnimation(sprites, Vars.ACTION_ANIMATION_RATE*2);
 		animation.setAction(TextureRegion.split(texture, width, height)[1], determineLength(ID), 
-				false, 1, Vars.ACTION_ANIMATION_RATE/2);
+				false, 1, Vars.ACTION_ANIMATION_RATE/2, false);
 	}
 
 	public void update(float dt){
@@ -121,43 +130,52 @@ public class SpeechBubble extends Entity {
 		}
 		
 		//destroy object if interaction has lost contact
-		if(body != null && player.getInteractable() != owner && ID.equals("speechBubble0")) 
-			gs.addBodyToRemove(body);
+		if(body != null && character.getInteractable() != owner && ID.equals("speechBubble0")) 
+			main.addBodyToRemove(getBody());
 	}
 	
-	public void render(SpriteBatch sb){
+	public void render(FadingSpriteBatch sb){
+		boolean bool=false;
+		if(sb.isDrawingOverlay()){
+			sb.setOverlayDraw(false);
+			bool = true;
+		}
+		
 		if(sizingState!=0||expanded){
+			if(getBody()==null)
+				create();
 			switch(positioningType){
 				case LEFT_MARGIN:
 					sb.draw(left, getPosition().x*Vars.PPM - rw, getPosition().y*Vars.PPM-rh);
-					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth +3, getPosition().y*Vars.PPM-rh);
-					for (int i = 0; i<innerWidth;i++)
-						sb.draw(middle, getPosition().x*Vars.PPM - rw + i+3, getPosition().y*Vars.PPM-rh);
+					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth + 3, getPosition().y*Vars.PPM-rh);
+					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
 					break;
 				case CENTERED:
 					sb.draw(left, getPosition().x*Vars.PPM - rw - innerWidth/2 + 1, getPosition().y*Vars.PPM-rh);
 					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth/2 +3, getPosition().y*Vars.PPM-rh);
-					for (int i = 0; i<innerWidth/2;i++){
-						sb.draw(middle, getPosition().x*Vars.PPM - rw + i+3, getPosition().y*Vars.PPM-rh);
-						sb.draw(middle, getPosition().x*Vars.PPM - rw - i+3, getPosition().y*Vars.PPM-rh);
-					}
+					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
+					sb.draw(middle, getPosition().x*Vars.PPM - rw - innerWidth/2 + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
 					break;
 				case RIGHT_MARGIN:
 					sb.draw(left, getPosition().x*Vars.PPM + rw - innerWidth - 5, getPosition().y*Vars.PPM-rh);
 					sb.draw(right, getPosition().x*Vars.PPM + rw - 3, getPosition().y*Vars.PPM-rh);
-					for (int i = 0; i<innerWidth;i++)
-						sb.draw(middle, getPosition().x*Vars.PPM + rw - i-3, getPosition().y*Vars.PPM-rh);
+					sb.draw(middle, getPosition().x*Vars.PPM + rw - innerWidth - 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
 					break;
 				}
 			if(expanded){
 				float x = 0;
-				if (positioningType==RIGHT_MARGIN) x = message.length()*font[0].getRegionWidth()- font[0].getRegionWidth()-2;
-				else if (positioningType==CENTERED) x = message.length()*font[0].getRegionWidth()/2f-1;
+				if (positioningType==PositionType.RIGHT_MARGIN) 
+					x = message.length()*font[0].getRegionWidth()- font[0].getRegionWidth()-2;
+				else if (positioningType==PositionType.CENTERED)
+					x = message.length()*font[0].getRegionWidth()/2f-1;
 				GameState.drawString(sb, font, font[0].getRegionWidth(), message, 
 						getPosition().x*Vars.PPM-rw-x+3, getPosition().y*Vars.PPM-rh+2f);
 			}
 		} else
 			super.render(sb);
+
+		if(bool)
+			sb.setOverlayDraw(true);
 	}
 	
 	public void expand(){ 
@@ -208,18 +226,29 @@ public class SpeechBubble extends Entity {
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 	}
 	
-	private static int getWidth(String ID){
+	protected void setDimensions(){
+		setDimensions(getWidth(ID), getHeight(ID));	
+	}
+	
+	protected void setDimensions(int width, int height){
+		this.width = width;
+		this.height = height;
+		rw = width/2;
+		rh = height/2;
+	}
+	
+	protected static int getWidth(String ID){
 		try{
-			Texture src = new Texture(Gdx.files.internal("res/images/entities/"+ID+"base.png"));
+			Texture src = Game.res.getTexture(ID+"base");
 			return src.getWidth();
 		} catch(Exception e) {
 			return DEFAULT_WIDTH;
 		}
 	}
 
-	private static int getHeight(String ID){
+	protected static int getHeight(String ID){
 		try{
-			Texture src = new Texture(Gdx.files.internal("res/images/entities/"+ID+"base.png"));
+			Texture src = Game.res.getTexture(ID+"base");
 			return src.getHeight();
 		} catch(Exception e) {
 			return DEFAULT_HEIGHT;
