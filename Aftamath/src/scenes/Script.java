@@ -49,8 +49,8 @@ public class Script {
 	public Stack<Operation> operations;
 	public HashMap<String, Object> localVars;
 	public boolean paused, limitDistance, forcedPause, dialog;
-	public HashMap<Integer, int[]> choiceTypes;
-	public HashMap<Integer, String[]> messages;
+//	public HashMap<Integer, int[]> choiceTypes;
+//	public HashMap<Integer, String[]> messages;
 	public int current, index; 
 	public float waitTime, time;
 	
@@ -64,10 +64,8 @@ public class Script {
 	private String currentName;
 	private HashMap<Integer, Pair<Integer, Integer>> conditions;
 	private HashMap<String, Pair<Integer, Integer>> subScripts;
-	private HashMap<String, Integer> checkpoints;
-	private HashMap<Integer, HashMap<String, Pair<Integer, Integer>>> choiceIndicies; 
-	//probably the most rediculous declaration evar
-	//format: <start <choiceName, <start, end>>>
+	private HashMap<String, Integer> checkpoints; 
+	private HashMap<Integer, Choice> choiceIndicies;
 	
 	public static enum ScriptType{
 		ATTACKED, DISCOVER, EVENT, DIALOGUE, SCENE
@@ -85,8 +83,6 @@ public class Script {
 			operations = new Stack<>();
 			checkpoints = new HashMap<>();
 			localVars = new HashMap<>();
-			messages = new HashMap<>();
-			choiceTypes = new HashMap<>();
 			
 			loadScript(scriptID);
 			if(source!=null){
@@ -242,11 +238,12 @@ public class Script {
 								activeObj = obj;
 					}else
 						obj.doAction(convertToNum(line));
-				}
+				} else
+					System.out.println("Cannot find \""+firstArg(line)+" to perform action; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "dotimedaction":
 				obj = findObject(firstArg(line));
-				if (obj != null) 
+				if (obj != null) { 
 					if(obj instanceof Mob){
 						float f = convertToNum(line);
 						String[] args = args(line);
@@ -255,13 +252,15 @@ public class Script {
 							if(obj.controlled)
 								activeObj = obj;
 					}
+				} else
+					System.out.println("Cannot find \""+firstArg(line)+" to perform action; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "else":
 				index = operations.peek().end;
 				operations.pop();
 				break;
 			case "end":
-				if(!operations.isEmpty())
+				if(!operations.isEmpty()){
 					if(index==operations.peek().end){
 						operations.pop();
 
@@ -271,6 +270,8 @@ public class Script {
 								operations.pop();
 							}
 					}
+				} else
+					System.out.println("Extra end statement found at Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "endgame":
 				main.getGSM().setState(GameStateManager.TITLE, true);
@@ -452,16 +453,23 @@ public class Script {
 						((NPC) obj).setAttackType(lastArg(line));
 				break;
 			case "setchoice":
-				if(subScripts.get(currentName)!=null)
-					if(choiceIndicies.get(index)!=null){
-						o = new Operation("setchoice", findBounds("setchoice", index, subScripts.get(currentName).getValue()));
+				if(subScripts.get(currentName)!=null){
+					Choice choice = choiceIndicies.get(index);
+					if(choice!=null){
+						o = new Operation("setchoice", choice.start, choice.end);
 						operations.add(o);
+						
+						Array<Option> temp = new Array<>();
+						for(Option o1 : choice.options)
+							if(o1.isAvailable())
+								temp.add(o1);
 
-						main.displayChoice(choiceTypes.get(index), messages.get(index));
+						main.displayChoice(temp);
 						main.setStateType(InputState.CHOICE);
 						main.choosing = true;
 						paused = true;
 					} 
+				}
 //				else
 //					System.out.println("No choices found for this choice set; Line: "+(index+1)+"\tScript: "+ID);
 				break;
@@ -754,27 +762,29 @@ public class Script {
 						findBounds("script", i, end));
 			if(line.toLowerCase().startsWith("setchoice")){
 				bounds = findBounds("setchoice", i, end);
-				HashMap<String, Pair<Integer, Integer>> tmp = new HashMap<>();
+				Array<Option> tmp = new Array<>();
 				String mes, num;
 				String[] messages, args = args(line);
-				int[] choices;
+				HashMap<String, Integer> choices = new HashMap<>();
 				messages = new String[args.length];
-				choices = new int[args.length];
 
 				if (lastArg(line).toLowerCase().equals("yesno")){
-					choices = new int[2]; messages = new String[2];
-					choices[0] = 6; messages[0] = "Yes";
-					choices[1] = 7; messages[1] = "No";
+					messages = new String[2];
+					choices.put("yes", 6); messages[0] = "Yes";
+					choices.put("no", 7); messages[1] = "No";
 				} else 
 					for (int j = 0; j < args.length; j++){
 						num = args[j].split(":")[0];
 						mes = args[j].split(":")[1];
 						messages[j] = new String(mes);
-						choices[j] = Integer.parseInt(num.replaceAll(" ", "")); 
+						choices.put(messages[j].toLowerCase(), Integer.parseInt(num.trim())); 
 				}
 				
-				this.messages.put(i, messages);
-				this.choiceTypes.put(i, choices);
+				for(String m : messages)
+					if(!tmp.contains(new Option(m), false))
+						tmp.add(new Option(m, choices.get(m.toLowerCase())));
+				b = findBounds("setChoice", i, end);
+				choiceIndicies.put(i, new Choice(b.getKey(), b.getKey(), tmp));
 				
 				String s1;
 				//get choice handling indicies
@@ -784,13 +794,17 @@ public class Script {
 						for(String m : messages)
 							if(s1.substring(s1.indexOf(" ")+1, s1.indexOf("]")).toLowerCase().equals(m.toLowerCase())){
 								b=findBounds("choice", j, bounds.getValue());
-								tmp.put(m.toLowerCase(), b);
+								Option o = choiceIndicies.get(i).get(m);
+								o.setBounds(b);
+								if(s1.replace(" ", "").contains("][")){
+									String s2 = s1.substring(0, s1.indexOf("]")+1);
+									String condition = s1.substring(s2.length());
+									o.setCondition(condition);
+								}
 								break;
 							}
 					}
 				}
-//				System.out.println("\ttemp: "+tmp);
-				choiceIndicies.put(i, tmp);
 			} if(line.toLowerCase().startsWith("if"))
 				conditions.put(i, findBounds("if", i, end));
 			if(line.toLowerCase().startsWith("elseif"))
@@ -799,8 +813,8 @@ public class Script {
 		
 //		System.out.println("\nID: "+ID);
 //		System.out.println("scripts:    "+subScripts);
-//		System.out.println("choices:    "+choiceIndicies);
 //		System.out.println("conditions: "+conditions);
+//		System.out.println("choices:    "+choiceIndicies);
 	}
 
 	private Pair<Integer, Integer> findBounds(String type, int start, int end){
@@ -821,7 +835,7 @@ public class Script {
 			case"elseif":
 				if(s.startsWith("else"))
 				e = i;
-				if((s.startsWith("elseif")||s.startsWith("end"))&&!s.contains("endgame"))
+				if((s.startsWith("elseif")||(s.startsWith("end"))&&!s.contains("endgame")))
 					bounds = new Pair<>(e, i);
 				break;
 			case"choice":
@@ -1035,13 +1049,14 @@ public class Script {
 
 	public void getChoiceIndex(String choice){
 		if(choiceIndicies.get(operations.peek().start)!=null){
-			if(choiceIndicies.get(operations.peek().start).containsKey(choice.toLowerCase())){
-				Operation o = new Operation("choice", choiceIndicies.get(operations.peek().start).get(choice.toLowerCase()));
+			Choice c = choiceIndicies.get(operations.peek().start);
+			if(c.get(choice.toLowerCase()).getBounds().getKey()!=-1){
+				Operation o = new Operation("choice", c.get(choice.toLowerCase()).getBounds());
 				operations.add(o);
 				index = o.start;
 
 				main.setStateType(InputState.LISTEN);
-			} else{
+			} else {
 				System.out.println("No handling for choice \""+choice+"\" found for setChoice at Line: "+(index+1)+"\tScript: "+ID);
 				index = operations.peek().end;
 				operations.pop();
@@ -1232,10 +1247,12 @@ public class Script {
 								((Mob)object).levelUp();
 							break;
 						default:
-							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object + "\"; Line: "+(index+1)+"\tScript: "+ID);
+							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object +
+									"\"; Line: "+(index+1)+"\tScript: "+ID);
 						}
 					} catch (Exception e) {
-						System.out.println("Could not add \"" + value +"\" to \"" + target + "\"; Line: "+(index+1)+"\tScript: "+ID);
+						System.out.println("Could not add \"" + value +"\" to \"" + target + 
+								"\"; Line: "+(index+1)+"\tScript: "+ID);
 					}
 					break;
 				case "set":
@@ -1932,6 +1949,75 @@ public class Script {
 		
 		public String toString(){
 			return "["+type+", "+"("+start+", "+end+") ]";
+		}
+	}
+	
+	public class Choice {
+		public int start, end;
+		private Array<Option> options;
+		
+		public Choice(int start, int end, Array<Option> options){
+			this.start = start;
+			this.end = end;
+			this.options = options;
+		}
+		
+		public String toString(){
+			return "["+start+", "+end+"]\n\t{"+options.toString()+"}";
+		}
+		
+		public boolean contains(String key){
+			return options.contains(new Option(key), false);
+		}
+		
+		public Option get(String key){
+			return options.get(options.indexOf(new Option(key), false));
+		}
+	}
+	
+	public class Option{
+		public String condition, message;
+		public int start, end, type;
+		
+		public Option(String name, int type){
+			this.start = -1;
+			this.end = -1;
+			this.message = name;
+			this.type = type;
+			condition ="";
+		}
+		
+		public Option(String name){
+			this(name, 0);
+		}
+		
+		public boolean isAvailable(){
+			if(!condition.isEmpty())
+				return compare(condition);
+			return true;
+		}
+		
+		public void setCondition(String s){ condition = s; }
+		
+		public Pair<Integer, Integer> getBounds(){
+			return new Pair<Integer, Integer>(start, end);
+		}
+		
+		public void setBounds(Pair<Integer, Integer> b){
+			start = b.getKey();
+			end = b.getValue();
+		}
+		
+		public String toString(){
+			if(condition.isEmpty())				
+				return message +"{"+type+"} ["+start+", "+end+"]";
+			return message +"{"+type+"} ["+start+", "+end+"] :: "+condition;
+		}
+		
+		public boolean equals(Object o){
+			if (o instanceof Option)
+				return ((Option) o).message.equals(message);
+			return false;
 		}
 	}
 }

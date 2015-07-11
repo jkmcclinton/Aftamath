@@ -769,15 +769,17 @@ public class Main extends GameState {
 	}
 	
 	//show choices in a circle around the player
-	public void displayChoice(int[] types, String[] messages){
+	public void displayChoice(Array<Script.Option> options){
 		final float h = 30 / PPM;
 		float x, y, theta;
-		int c = types.length;
+		int c = options.size;
 		choices = new SpeechBubble[c];
 		choiceIndex = 0;
 		
+		Script.Option o;
+		PositionType positioning;
 		for (int i = 0; i < c; i++){
-			PositionType positioning;
+			o = options.get(i);
 			theta = (float) (i * 2 * Math.PI / c);
 			x = (float) (h * Math.cos(theta) + character.getPosition().x) * PPM;
 			y = (float) (h * Math.sin(theta) + character.getPosition().y) * PPM + 15;
@@ -789,7 +791,7 @@ public class Main extends GameState {
 					(theta<=2*Math.PI && theta>3*Math.PI/2+Math.PI/20))
 				positioning = PositionType.LEFT_MARGIN;
 			else positioning = PositionType.RIGHT_MARGIN;
-			choices[i] = new SpeechBubble(character, x, y, types[i], messages[i], positioning);
+			choices[i] = new SpeechBubble(character, x, y, o.type, o.message, positioning);
 		}
 		choices[0].expand();
 	}

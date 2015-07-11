@@ -159,8 +159,8 @@ public class NPC extends Mob {
 	//possibly crunch this down
 	public void act(){
 		float dx, dy;
-		if(state==null)
-			System.out.println(ID+":"+state);
+//		if(sceneID==1)
+//			System.out.println(ID+":"+state);
 		
 		if(discovered.contains(main.character, true)&&!triggered){
 			if(discoverScript!=null){

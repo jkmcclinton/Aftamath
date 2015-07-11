@@ -207,7 +207,7 @@ public abstract class Mob extends Entity{
 					doAction();
 			} else if (this instanceof NPC){
 				NPC t = (NPC) this;
-				if (t.state != AIState.STATIONARY && isOnGround() && !t.locked && !controlled) 
+				if (isOnGround() && !t.locked && !controlled) 
 					t.act();
 			}
 
