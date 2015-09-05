@@ -1,0 +1,118 @@
+Script Main
+eventMusic(Leveler)
+lockplayer
+SetSpeaker(narrator)
+wait(1.5)
+text(normal, {Man, it's empty in here.})
+wait(.75)
+text(normal, {New game, huh? So you want to start yor life over?~/l/lOld life not good enough for you?})
+text(normal, {Well, I don't know exactly what it is you're thinking of finding in here...~/lBut I'm sure there's a whole bunch of stupid crap in this dumb game you'll find worthwile.})
+text(normal, {So let's start with the basics. The real slims./lName, gender, DOB, all that jazz.})
+text(normal, {You know the drill. ~How could you not?})
+text(sad, {Oh wait, I forgot you weren't the brightest.})
+text(happy, {Sorry, sorry. Get over it.})
+text(normal, {So, what's your name?})
+wait(.75)
+
+#Allow text input
+input(player.name)
+
+text(normal, {Okay /player, do you want to be a knocker or a talker?})
+#special choice input
+declare(counter, local, integer, 0)
+declare(playergender, local, string, {}) 
+checkpoint(GenderChoice)
+setChoice(6:Male, 6:Female, 6:Other)
+  [choice Male]
+    value(set, playergender, male)
+  end
+  
+  [choice Female]
+    value(set, playergender, female)
+  end
+  
+  [Choice Other]
+    value(add, counter, 1)
+    if([counter = 1])
+      text(normal, {Sorry mate, but "other" isn't actually a choice. ~At least not in this version./l/lChoose again.})
+      return(GenderChoice)
+    end
+    if([counter = 2])
+      text(sad, {What did I just finish saying? ~/l"Other" is NOT an option! ~/l/lChoose again!})
+      text(sad, {There just wasn't enough time to add another gender into the game, that's all.~/lSo let's keep it simple.})
+      return(GenderChoice)
+    end
+    if([counter = 3])
+      text(mad, {Seriously! Why do I even bother?})
+      return(GenderChoice)
+    end
+    if([counter = 4])
+      eventMusic(Silence)
+      text(mad, {Alright. ~Game over.})
+      #spawn(narrator1)
+      #doAction(narrator, special1)
+      text(mad, {I'm not putting up with you. I can't- ~I'm done. /l~I'm Just done.})
+      text(sad, {Even [reference here] is better at games than you!})
+      endGame()
+      stop
+    end
+  end
+end
+
+text(normal, {I suppose now you'd like to choose what you look like.})
+
+declare(playertype, local, integer, 1)
+introEvent
+
+declare(extra, local, Integer, 0)
+text(normal, {Okay, great. ~That's you. ~In the flesh.}) 
+if([player.gender = male])
+  if([playertype = 1])
+    text(sad, {You're not fooling anybody with that generic look. Sorry.})
+    value(set, extra, 1)
+  end
+
+  if([playertype = 3])
+    #value(set, player.strength, 5)
+    text(normal, {So, you went for the hunk look.})
+    text(sad, {I still wouldn't date you.})
+    value(set, extra, 1)
+  end
+else
+  if([playertype = 3])
+    text(sad, {Are you serious? ~That's not even in style.})
+    text(normal, {Whatever.})
+    value(set, extra, 1)
+  end
+
+  if([playertype = 2])
+    text(happy, {Good choice.})
+    setSpeaker(player)
+    text(normal, {Th-}, true)
+    setSpeaker(narrator)
+    text(sad, {Wait, ~nevermind. That's ugly. ~What was I thinking?})
+  end
+end
+
+text(normal, {...})
+if([extra = 0])
+  text(normal, {Right here. ~Where's here? ~~/lHold on to something and I'll show you.})
+else
+  text(happy, {Now that you're here, you might want to hold onto something!})
+end
+
+hidedialog
+#player falls into world
+eventMusic(Silence)
+remove(barrier1)
+playSound(explosion2)
+wait(2)
+stopEventMusic
+setEvent(FellFromNowhere)
+
+text(happy, {Right, so this is "Big City"!})
+text(sad, {The locals decided to give it that original name, not me.})
+text(sad, {If it were me I would have just gone with New York. It's a big city everybody knows.})
+text(normal, {Anyway... now you can do whatever you want.})
+showstats
+done

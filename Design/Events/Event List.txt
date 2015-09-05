@@ -1,6 +1,8 @@
-Known Event Names:
-FellFromNowhere-denotes the beginning of the game
-BrokeAnOldLadyCurse
-MetTheBadWitch
-RobbedTwoGangsters
-FoundTheNarrator
+Event Flags
+"FellFromNowhere" - the game has started!
+"BrokeAnOldLadyCurse" - the player was a guy and decided to use their powers to save the old lady
+"MetTheWitch" - the player encountered the witch somewhere
+"WitchCurse" - the player was a girl and tried to save the old lady
+"RobbedTwoGangsters" - the player successfuly robbed the robbers
+"FoundTheNarrator" - the player went to the future to find the narrator
+"OtherNarrator" - the player met the narrator's rival

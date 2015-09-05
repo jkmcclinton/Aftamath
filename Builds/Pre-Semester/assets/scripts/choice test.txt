@@ -1,0 +1,77 @@
+Script choice
+lockplayer
+faceObject(player)
+SetSpeaker(this)
+text(happy, {What kind of house do you live in?})
+setChoice(1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion, 1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion, 1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion)
+end
+done
+
+Script multiple
+if([1+(2-3*(6+5))-2>=-12])
+ text(0, {IT WORKED!})
+ remove(Naja)
+end
+done
+
+Script intro
+#setSpeaker(narrator)
+setSpeaker(this)
+declare(counter, local, Integer, 0)
+declare(test, local, Integer, -1)
+text(normal, {Tell me your gender.}, false)
+checkpoint(GenderChoice)
+#setChoice(6:Male, 6:Female, 1:Other)
+
+setChoice(1:Male, 1:Female, 1:Other)
+  [choice Male]
+    value(set, player.gender, male)
+    text(normal, {Congradulations, you're now a guy. ~W00t.})
+  end
+  
+  [choice Female]
+    value(set, player.gender, female)
+    text(normal, {Congradulations, you're now a girl. Horray.})
+    text(normal, {Have you played this before?})
+    setChoice(yesno)
+      [choice yes]
+        text(normal, {Then welcome back. ~Try to go somewhere new.}
+      end
+      [choice no]
+        text(happy, {Well your in for a treat! This game is great!})
+      end
+    end
+  end
+  
+  [Choice Other]
+    value(add, counter, 1)
+    if([counter + test * test = 1])
+      text(special, {Sorry mate, but "other" isn't actually a choice. /l/lChoose again.})
+      return(GenderChoice)
+    end
+    if([counter = 2])
+      text(annoyed, {What did I just finish saying? ~/l"Other" is NOT an option! ~/l/lChoose again!})
+      return(GenderChoice)
+    end
+    if([counter = 3])
+      text(mad, {Seriously! Why do I even bother?})
+      return(GenderChoice)
+    end
+    if([counter = 4])
+      text(mad, {Alright. ~Game over.})
+      text(mad, {I'm not putting up with you. I can't-~I'm done. /l~I'm Just done.})
+      endGame()
+    end
+  end
+end
+done
+
+Script if
+lockplayer
+faceObject(player)
+setSpeaker(this)
+setFlag(GaveSoul, true)
+if(!MetTheBadWitch or (GaveSoul and [player.love <= 1]))
+text(normal, {hello})
+endIf
+done

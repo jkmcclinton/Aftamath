@@ -1,0 +1,42 @@
+Narrator: New game, ~huh? So you want to start yor life over?
+	Old life not good enough for you?
+	Well, I don't knoe exactly what it is you're thinking of finding in here...
+	But I'm sre there's a whole bunch of stupid stuff in this dumb game yo may find worthwile.
+	So let's start with the basics. ~The real slims./pName, gender, DOB, all that jazz.
+	You know the drill. ~How could you not? Oh wait, I forgot you weren't the brightest.
+	Sorry, sorry. Get over it. We're starting for real now.
+	Right-~/cRight after you tell me your name.
+
+	And your gender.
+
+	1)
+
+	2)
+
+
+	3) Sorry, but we don't do that in this game.
+	There's just not enough spa- I mean memory for this game for 'other' genders.
+	3) Seroiusly! Do you even know how hard it is to make games like this?
+	You have to make some sacrifices in order to get the ball rolling, you know, so you can actually finish the thing.
+	'Other' genders happened to be one of them.
+	3) Alright. ~Game over. /pI'm not putting up with you. I can't I'm done.
+	Didn't I just tell you...
+
+
+	[show stats]
+
+	Okay. Now we can start.
+	Here we are. That's you. Hi /player!
+	Where's here, you ask? Oh I forgot about that bit.
+	You might want to hold on to something...
+
+	[player falls into world]
+
+Gangster: Hey you! dis a robry! 
+	put yo hands up ~STICK 'EM UP!
+Narrator: So this is where things get interesting.
+	[reference thought bubbles; tell player to make a choice]
+
+
+
+

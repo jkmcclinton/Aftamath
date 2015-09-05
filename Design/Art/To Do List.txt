@@ -66,6 +66,21 @@ kid4
 kid5
 kid6
 
+Animals:
+dog1
+dog2
+dog3
+dog4
+cat1
+cat2
+cat3
+cat4
+bird1
+bird2
+bird3		---------------RECOLORS-------------
+bird4           ====================================
+
+
 Particles To Do:
 
 General

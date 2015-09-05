@@ -1,0 +1,6 @@
+Script Main
+lockplayer
+facePlayer
+setSpeaker(this)
+text(mad, {UGH!/l/lRude!})
+done

@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="33">
+ <properties>
+  <property name="ambient" value="DAYNIGHT"/>
+  <property name="bgm day" value="Misdirection"/>
+  <property name="bgm night" value="Midnight Waves"/>
+  <property name="bgm noon" value="Misdirection"/>
+  <property name="previous" value=""/>
+ </properties>
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
+  <image source="tilesets/street.png" width="1152" height="1608"/>
+  <tile id="0">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="72">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="73">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="74">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="75">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="76">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="77">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="144">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="145">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="146">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="147">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="148">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="149">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="150">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="151">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="152">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   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
+  </data>
+ </layer>
+ <layer name="bg2" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJzt0Tdo1VEcxfF/1Bhf8l5ebIhtcMjgIBIVxIY4ODgEiQWxIbbBIYODSFQQG+Lg4BAkFsSG2AaHDA4isSA2xMHBIUgsiA2xDQ4Bz3KHt/zPG+7wbvx+4EyH+xvuyTIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/Wjwyv28zfbvp3X1UOmr+q8v03aZ391HphfmvPtP3m97dR6UJDfl9wfStpnf3g4nFLJukTFamFKt7MxRtMv/VYfpO07v7wWZtsEXZqmxLbI+HdfFuXTH/1WP6XtO7+8FVbXBNua7cSGyP0rB4t76b/xow/aDp3f3ghzb4qfxSfie2x+qIe8wdld9PN/1S07v7wbxSls1XFigLS9W9qRVnI+6x3/zXTtMfN727HxzQBgeVQ8rhxPb4EHGPR+a/bpv+lend/eCxNniiPFWeJbbHjOHxbpUL+X2d6aea3t0PRjdn2RhlrDKuubo3tWJXxD3WmP9aZvrtpnf3g7XaYJ2yXtmQ2B53Iu5xzvzXCdPfNL27H5zXBheUi8qlxPaoHxHv1kfzX69N/8f07n7wSRt8Vr4oXxPboz3iHjMb8/tppl9kenc/aCtn2SxltjKnXN2bWtEdcY/d5r92mP6I6d39oEsb7FH2KvsS26M/4h53zX/dMv1z07v7QZ82uKfcVx4ktkdrfbxbDU35/V/zn+PNe3c/KLRkWaPSpBRbqntTKzoj7rHc/NcS0280vbsfdGiDFcpKZVVie/RG3OOk+a9jpr9senc/6NEGp5TTypnE9hiMuMcb818vTf/N9O5+MKAN3irvlPeJ7QEAAAAAAAAAAAAAAICh5x/lh1yG
+  </data>
+ </layer>
+ <layer name="ground" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJzt1NlJQ1EYhVHjFC3DWUtx1jKctRRnLcNZS3HWTtwPEXzKg4HLgbMWfHDRzSWEX/v6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIDatFJ/GkiDaSgN/3ke6bJpd34+2uN7fp97fU+78/tu72ly85/vcD4tpMW0lJbTSlpNa2ndptHNYTpKx+kknaazdJ4u0qVNo5vn9JJe01t6Tx/pM32lb5tGN2P5pzWeJtJkmkrTaSbNprmWTZObjbSZttJ22km7aS/tpwObRjdX6TrdpNt0l+7TQ3pMTzaNbkq8kZo3Jd5IzZsSP1PNmxL/ZmvelHgjNW9KvJGaNyXeSM2bEm+k5k2JN1LzpsQbqXlT4o3UvCnxRmrelHgjNW9KvJGaNyXeSM2bH8Ywlrc=
+  </data>
+ </layer>
+ <layer name="objects" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJzt0MEJgDAMBdC4jjie4zmNk0hREHoIrT0I+h7klPwEEgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC8aZn6Z7LMk33c1obf1DNZpvT2OGvk5l9tDb+pZ7JM6c1XjdwEAAAAAAAAAICvOwC61Aj2
+  </data>
+ </layer>
+ <layer name="fg" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJztz8EJw0AMRFHnnFLSjVNKurFLSTluJB3sGjQsRLx3/TBI2wYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQMWz2BMbiRu6eBd7YiNxQxdnsSc2Ejd0cRV7YiNxQxevR60nNhI3dPEZ/LpP+p2NFb2T7+DXY9LvbKzoAAAAAAAAAADw737RNxQ9
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="1" name="room1_1" x="469.5" y="1494.5" width="37" height="73">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="room1_1"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="11" name="1" x="400" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="NPC" value="hippie"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Sasha"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="IDLEWALK"/>
+   </properties>
+  </object>
+  <object id="14" name="2" x="336" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="NPC" value="burly1"/>
+    <property name="attackScript" value="onAttacked1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Tough Guy"/>
+    <property name="onAttacked" value="on_attacked"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="15" name="3" x="640" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="3"/>
+    <property name="NPC" value="cashier"/>
+    <property name="layer" value="middle"/>
+    <property name="name" value="Rajid"/>
+    <property name="script" value="toggle blocking"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="16" name="4" x="1008" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="4"/>
+    <property name="NPC" value="girlfriend2"/>
+    <property name="attackScript" value="onAttacked2"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Naja"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="IDLEWALK"/>
+   </properties>
+  </object>
+  <object id="17" name="5" x="1072" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="5"/>
+    <property name="NPC" value="girlfriend1"/>
+    <property name="attckScript" value="onAttacked2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Sam"/>
+    <property name="script" value="ask out"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="18" name="6" x="448" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="6"/>
+    <property name="NPC" value="logger"/>
+    <property name="attackScript" value="onAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="John"/>
+    <property name="script" value="choice test"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="20" name="7" x="528" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="7"/>
+    <property name="NPC" value="richGuy"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Olivierre"/>
+    <property name="script" value="script1"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="21" name="8" x="720" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="8"/>
+    <property name="NPC" value="bballer"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Jordan"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="22" name="9" x="760" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="9"/>
+    <property name="NPC" value="oldlady1"/>
+    <property name="attackScript" value="onAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Ms. Pancakes"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="24" x="208" y="256" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="26" name="10" x="256" y="256" width="16" height="16">
+   <properties>
+    <property name="ID" value="10"/>
+    <property name="NPC" value="narrator1"/>
+    <property name="cambot spawn" value=""/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Narrator"/>
+    <property name="script" value="intro"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="27" x="192" y="272" width="48" height="16">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="barrier" value="   "/>
+   </properties>
+  </object>
+  <object id="28" x="256" y="272" width="32" height="16">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="barrier" value="   "/>
+   </properties>
+  </object>
+  <object id="29" x="240" y="1392" width="16" height="176">
+   <properties>
+    <property name="event" value=""/>
+    <property name="robbers1" value="[!RobberIntro]"/>
+   </properties>
+  </object>
+  <object id="31" name="10" x="96" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="4"/>
+    <property name="NPC" value="boss2"/>
+    <property name="attackScript" value="onAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Mr. Bidd"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="IDLEWALK"/>
+   </properties>
+  </object>
+  <object id="32" x="944" y="1392" width="16" height="176">
+   <properties>
+    <property name="dank" value=""/>
+    <property name="event" value=""/>
+    <property name="retriggerable" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

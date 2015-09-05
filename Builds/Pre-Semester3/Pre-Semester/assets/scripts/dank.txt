@@ -1,0 +1,8 @@
+Script Main
+eventMusic(Hawthorne)
+lockplayer
+setSpeaker(Naja)
+faceobject(Naja, Sam)
+faceobject(Sam, Naja)
+text(mad, {You HO! I can't BELIEVE you did that!})
+done

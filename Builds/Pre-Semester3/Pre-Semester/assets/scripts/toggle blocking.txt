@@ -1,0 +1,6 @@
+Script Main
+lockplayer
+setDefaultState(this, faceplayer)
+#text(normal, {1234567890123456789012345678901234567890234567890123456789012345678901234567890})
+say(this, {Hey man./lLet me get out of your way.})
+done

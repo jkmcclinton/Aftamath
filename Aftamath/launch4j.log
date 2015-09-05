@@ -1,0 +1,66 @@
+
+
+Version:	3.8
+CmdLine:	C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\Pre-Semester.exe --l4j-debug
+WOW64:		yes
+Working dir:	C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\.
+64-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+Check:		SOFTWARE\JavaSoft\Java Runtime Environment\1.7
+Ignore:		1.7
+Check:		SOFTWARE\JavaSoft\Java Runtime Environment\1.7.0_71
+Check launcher:	C:\Program Files\Java\jre7\bin\javaw.exe (OK)
+Match:		1.7.0_71
+64-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.7
+Ignore:		1.7
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.7.0_45
+Ignore:		1.7.0_45
+Runtime used:	1.7.0_71 (64-bit)
+Launcher:	C:\Program Files\Java\jre7\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\Pre-Semester.exe"
+Args length:	82/32768 chars
+Exit code:	0
+
+
+Version:	3.8
+CmdLine:	C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\Pre-Semester.exe --l4j-debug
+WOW64:		yes
+Working dir:	C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\.
+64-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+Check:		SOFTWARE\JavaSoft\Java Runtime Environment\1.7
+Ignore:		1.7
+Check:		SOFTWARE\JavaSoft\Java Runtime Environment\1.7.0_71
+Check launcher:	C:\Program Files\Java\jre7\bin\javaw.exe (OK)
+Match:		1.7.0_71
+64-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.7
+Ignore:		1.7
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.7.0_45
+Ignore:		1.7.0_45
+Runtime used:	1.7.0_71 (64-bit)
+Launcher:	C:\Program Files\Java\jre7\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\Pre-Semester.exe"
+Args length:	82/32768 chars
+Exit code:	0
+
+
+Version:	3.8
+CmdLine:	C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\Pre-Semester.exe --l4j-debug
+WOW64:		yes
+Working dir:	C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\.
+64-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+Check:		SOFTWARE\JavaSoft\Java Runtime Environment\1.7
+Ignore:		1.7
+Check:		SOFTWARE\JavaSoft\Java Runtime Environment\1.7.0_71
+Check launcher:	C:\Program Files\Java\jre7\bin\javaw.exe (OK)
+Match:		1.7.0_71
+64-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.7
+Ignore:		1.7
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.7.0_45
+Ignore:		1.7.0_45
+Runtime used:	1.7.0_71 (64-bit)
+Launcher:	C:\Program Files\Java\jre7\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Jay\Documents\GitHub\Aftamath\Builds\Pre-Semester\Pre-Semester.exe"
+Args length:	82/32768 chars
+Exit code:	0
