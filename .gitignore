@@ -1,0 +1,15 @@
+#barebones gitignore
+
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+
+#libgdx local files
+bin/
+.metadata/
+
+# Office Temp Files
+~$*
+
+#Unix temporary files
+*~
