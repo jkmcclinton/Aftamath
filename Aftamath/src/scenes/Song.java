@@ -49,15 +49,15 @@ public class Song {
 		
 		try{
 			state=INTRO;
-			intro = Gdx.audio.newMusic(new FileHandle("assets/music/"+src+" Intro.wav"));
+			intro = Gdx.audio.newMusic(new FileHandle("assets/music/"+src+" Intro.mp3"));
 		} catch( Exception e){state=MAIN;}
 		
 		try{
-			this.main = Gdx.audio.newMusic(new FileHandle("assets/music/"+src+".wav"));
+			this.main = Gdx.audio.newMusic(new FileHandle("assets/music/"+src+".mp3"));
 		} catch(Exception e){
 			System.out.println("\""+src+"\" is not a valid song title. See /Aftamath/assets/music for list of songs.");
 //			e.printStackTrace();
-			this.main = Gdx.audio.newMusic(new FileHandle("assets/music/Silence.wav"));
+			this.main = Gdx.audio.newMusic(new FileHandle("assets/music/Silence.mp3"));
 		} finally {
 			if(looping) this.main.setLooping(true);
 		}

@@ -85,7 +85,7 @@ public class Game implements ApplicationListener {
 	}
 
 	public static String getInput(){ return input; }
-	public static void resetInput(){ input = ""; }
+	public static void resetInput(){ input = ""; inputIndex = 0; }
 	public static void addInputChar(String s){
 		if(input.length()<MAX_INPUT_LENGTH){
 			if(inputIndex>0)
@@ -138,7 +138,7 @@ public class Game implements ApplicationListener {
 			SONG_LIST.add("Silence");
 			FileHandle [] songs = Gdx.files.internal("assets/music").list();
 			for(FileHandle f:songs)
-				if(f.extension().equals("wav")&&!f.name().contains("Intro"))
+				if(f.extension().equals("mp3")&&!f.name().contains("Intro"))
 					SONG_LIST.add(f.nameWithoutExtension());
 		}
 

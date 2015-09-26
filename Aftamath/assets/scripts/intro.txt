@@ -5,8 +5,8 @@ SetSpeaker(narrator)
 wait(1.5)
 text(normal, {Man, it's empty in here.})
 wait(.75)
-text(normal, {New game, huh? So you want to start yor life over?~/l/lOld life not good enough for you?})
-text(normal, {Well, I don't know exactly what it is you're thinking of finding in here...~/lBut I'm sure there's a whole bunch of stupid crap in this dumb game you'll find worthwile.})
+text(normal, {New game, huh? So you want to start your life over?~/l/lOld life not good enough for you?})
+text(normal, {Well, I don't know exactly what it is you're thinking of finding in here...~/lBut I'm sure there's a whole bunch of stupid crap in this dumb game you'll find worthwhile.})
 text(normal, {So let's start with the basics. The real slims./lName, gender, DOB, all that jazz.})
 text(normal, {You know the drill. ~How could you not?})
 text(sad, {Oh wait, I forgot you weren't the brightest.})
@@ -116,3 +116,4 @@ text(sad, {If it were me I would have just gone with New York. It's a big city e
 text(normal, {Anyway... now you can do whatever you want.})
 showstats
 done
+
