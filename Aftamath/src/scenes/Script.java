@@ -198,11 +198,14 @@ public class Script {
 				String variableName = firstArg(line);
 				String scope = firstArg(middleArg(line));
 				String type = lastArg(middleArg(line));
-				String value ="";
-				if(lastArg(line).contains("{"))
-					source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
-				else value = lastArg(line);
+				String value = lastArg(line);
+				if(value.contains("{")) {
+					value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
+					value = getDelimiter(value);
+				}
 				//				System.out.println("\nn: "+ variableName +"\ns: "+scope+"\nt: "+type+"\nv: "+value);
+				System.out.println("declare: " + variableName +"|"+ scope +"|"+ type +"|"+ value);  //////// Temporary
+				System.out.println("lastarg: "+lastArg(line));
 
 				try{
 					switch(type.toLowerCase()){
@@ -958,14 +961,12 @@ public class Script {
 		String str="";
 		if(tmp.contains("{") && tmp.contains("}")){
 			str = tmp.substring(tmp.indexOf("{"), tmp.indexOf("}") +1);
-			if(tmp.length() - tmp.indexOf("}")>1)
-				tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&" + tmp.substring(tmp.indexOf("}"));
-			else tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&";
+			tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&" + tmp.substring(tmp.indexOf("}")+1);
 		}
 
 		String[] a = tmp.split(",");
 		for(int i =0;i<a.length;i++)
-			if(a[i].equals("&str&"))
+			if(a[i].trim().equals("&str&"))
 				a[i]=str;
 		return a;
 	}
@@ -1177,6 +1178,7 @@ public class Script {
 		String function = firstArg(line);
 		String target = middleArg(line);
 		String value = lastArg(line);
+		System.out.println("changeValue: " + function +"|"+ target +"|"+ value);  //////// Temporary
 		boolean successful = false;
 
 		//		System.out.println(function +":"+target+":"+value);

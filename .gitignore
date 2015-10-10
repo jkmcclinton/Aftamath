@@ -13,3 +13,6 @@ bin/
 
 #Unix temporary files
 *~
+
+#Java class files
+*.class
