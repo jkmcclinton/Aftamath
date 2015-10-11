@@ -201,11 +201,9 @@ public class Script {
 				String value = lastArg(line);
 				if(value.contains("{")) {
 					value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
-					value = getDelimiter(value);
+					value = getSubstitutions(value);
 				}
 				//				System.out.println("\nn: "+ variableName +"\ns: "+scope+"\nt: "+type+"\nv: "+value);
-				System.out.println("declare: " + variableName +"|"+ scope +"|"+ type +"|"+ value);  //////// Temporary
-				System.out.println("lastarg: "+lastArg(line));
 
 				try{
 					switch(type.toLowerCase()){
@@ -1073,87 +1071,84 @@ public class Script {
 		} catch (IllegalAccessException e) { }
 	}
 	
-//	filter out delimiters
-	private String getDelimiter(String txt){
-		
-		while(txt.contains("/")){
-			if(txt.contains("/player")){
-				txt = txt.substring(0, txt.indexOf("/player")) + main.character.getName() + 
-						txt.substring(txt.indexOf("/player") + "/player".length());
-			}if(txt.contains("/playerg")){
-				String g = "guy";
-				if(main.character.getGender().equals("female")) g="girl";
-				txt = txt.substring(0, txt.indexOf("/playerg")) + g + 
-						txt.substring(txt.indexOf("/playerg") + "/playerg".length());
-			}if(txt.contains("/playergps")){
-				String g = "his";
-				if(main.character.getGender().equals("female")) g="her";
-				txt = txt.substring(0, txt.indexOf("/playergps")) +g + 
-						txt.substring(txt.indexOf("/playergps") + "/playergps".length());
-			}if(txt.contains("/playergp")){
-				String g = "his";
-				if(main.character.getGender().equals("female")) g="hers";
-				txt = txt.substring(0, txt.indexOf("/playergp")) + g + 
-						txt.substring(txt.indexOf("/playergp") + "/playergp".length());
-			}if(txt.contains("/playergo")){
-				String g = "he";
-				if(main.character.getGender().equals("female")) g="she";
-				txt = txt.substring(0, txt.indexOf("/playergo")) + g + 
-						txt.substring(txt.indexOf("/playergo") + "/playergo".length());
-			} if(txt.contains("/partner")){
-				String s = "";
-				if(main.player.getPartner()==null)
-					s=main.player.getPartner().getName();
-				txt = txt.substring(0, txt.indexOf("/partner")) + s + 
-						txt.substring(txt.indexOf("/partner") + "/partner".length());
-			}if(txt.contains("/partnerg")){
-				String g = "";
-				if(main.player.getPartner()!=null){
-					if(main.player.getPartner().getGender().equals("female")) g="girl";
-					else g = "guy"; 
-				}
-				txt = txt.substring(0, txt.indexOf("/partnerg")) + g + 
-						txt.substring(txt.indexOf("/partnerg") + "/partnerg".length());
-			}if(txt.contains("/partnergps")){
-				String g = "";
-				if(main.player.getPartner()!=null){
-					if(main.player.getPartner().getGender().equals("female")) g="her";
-					else g = "his"; 
-				}
-				txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
-						txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
-			}if(txt.contains("/partnergp")){
-				String g = "";
-				if(main.player.getPartner()!=null){
-					if(main.player.getPartner().getGender().equals("female")) g="hers";
-					else g = "his"; 
-				}
-				txt = txt.substring(0, txt.indexOf("/partnergp")) + g + 
-						txt.substring(txt.indexOf("/partnergp") + "/partnergp".length());
-			}if(txt.contains("/partnergo")){
-				String g = "";
-				if(main.player.getPartner()!=null){
-					if(main.player.getPartner().getGender().equals("female")) g="she";
-					else g = "he"; 
-				}
-				txt = txt.substring(0, txt.indexOf("/partnergo")) + g + 
-						txt.substring(txt.indexOf("/partnergo") + "/partnergo".length());
-			} if(txt.contains("/house")){
-				txt = txt.substring(0, txt.indexOf("/house")) + main.player.getHome().getType() + 
-						txt.substring(txt.indexOf("/house") + "/house".length());
-			} if(txt.contains("/address")){
-				txt = txt.substring(0, txt.indexOf("/address")) + main.player.getHome().getType() + 
-						txt.substring(txt.indexOf("/address") + "/address".length());
-			} if(txt.contains("/variable[")&& txt.indexOf("]")>=0){
-				String varName = txt.substring(txt.indexOf("/variable[")+"/variable[".length(), txt.indexOf("]"));
-				Object var = getVariable(varName);
-				if (var==null) var = main.history.getVariable(varName);
-				if(var!= null) {
-					txt = txt.substring(0, txt.indexOf("/variable[")) + var +
-							txt.substring(txt.indexOf("/variable[")+"/variable[".length()+ varName.length() + 1);
-				} else
-					System.out.println("No variable with name \""+ varName +"\" found; Line: "+(index+1)+"\tScript: "+ID);
+//	string substitutions
+	private String getSubstitutions(String txt){
+		if(txt.contains("/player")){
+			txt = txt.substring(0, txt.indexOf("/player")) + main.character.getName() + 
+					txt.substring(txt.indexOf("/player") + "/player".length());
+		}if(txt.contains("/playerg")){
+			String g = "guy";
+			if(main.character.getGender().equals("female")) g="girl";
+			txt = txt.substring(0, txt.indexOf("/playerg")) + g + 
+					txt.substring(txt.indexOf("/playerg") + "/playerg".length());
+		}if(txt.contains("/playergps")){
+			String g = "his";
+			if(main.character.getGender().equals("female")) g="her";
+			txt = txt.substring(0, txt.indexOf("/playergps")) +g + 
+					txt.substring(txt.indexOf("/playergps") + "/playergps".length());
+		}if(txt.contains("/playergp")){
+			String g = "his";
+			if(main.character.getGender().equals("female")) g="hers";
+			txt = txt.substring(0, txt.indexOf("/playergp")) + g + 
+					txt.substring(txt.indexOf("/playergp") + "/playergp".length());
+		}if(txt.contains("/playergo")){
+			String g = "he";
+			if(main.character.getGender().equals("female")) g="she";
+			txt = txt.substring(0, txt.indexOf("/playergo")) + g + 
+					txt.substring(txt.indexOf("/playergo") + "/playergo".length());
+		} if(txt.contains("/partner")){
+			String s = "";
+			if(main.player.getPartner()==null)
+				s=main.player.getPartner().getName();
+			txt = txt.substring(0, txt.indexOf("/partner")) + s + 
+					txt.substring(txt.indexOf("/partner") + "/partner".length());
+		}if(txt.contains("/partnerg")){
+			String g = "";
+			if(main.player.getPartner()!=null){
+				if(main.player.getPartner().getGender().equals("female")) g="girl";
+				else g = "guy"; 
 			}
+			txt = txt.substring(0, txt.indexOf("/partnerg")) + g + 
+					txt.substring(txt.indexOf("/partnerg") + "/partnerg".length());
+		}if(txt.contains("/partnergps")){
+			String g = "";
+			if(main.player.getPartner()!=null){
+				if(main.player.getPartner().getGender().equals("female")) g="her";
+				else g = "his"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
+					txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
+		}if(txt.contains("/partnergp")){
+			String g = "";
+			if(main.player.getPartner()!=null){
+				if(main.player.getPartner().getGender().equals("female")) g="hers";
+				else g = "his"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnergp")) + g + 
+					txt.substring(txt.indexOf("/partnergp") + "/partnergp".length());
+		}if(txt.contains("/partnergo")){
+			String g = "";
+			if(main.player.getPartner()!=null){
+				if(main.player.getPartner().getGender().equals("female")) g="she";
+				else g = "he"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnergo")) + g + 
+					txt.substring(txt.indexOf("/partnergo") + "/partnergo".length());
+		} if(txt.contains("/house")){
+			txt = txt.substring(0, txt.indexOf("/house")) + main.player.getHome().getType() + 
+					txt.substring(txt.indexOf("/house") + "/house".length());
+		} if(txt.contains("/address")){
+			txt = txt.substring(0, txt.indexOf("/address")) + main.player.getHome().getType() + 
+					txt.substring(txt.indexOf("/address") + "/address".length());
+		} if(txt.contains("/variable[")&& txt.indexOf("]")>=0){
+			String varName = txt.substring(txt.indexOf("/variable[")+"/variable[".length(), txt.indexOf("]"));
+			Object var = getVariable(varName);
+			if (var==null) var = main.history.getVariable(varName);
+			if(var!= null) {
+				txt = txt.substring(0, txt.indexOf("/variable[")) + var +
+						txt.substring(txt.indexOf("/variable[")+"/variable[".length()+ varName.length() + 1);
+			} else
+				System.out.println("No variable with name \""+ varName +"\" found; Line: "+(index+1)+"\tScript: "+ID);
 		}
 		
 		return txt;
@@ -1161,13 +1156,13 @@ public class Script {
 
 	private String getDialogue(int index){
 		String txt = source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
-		txt = getDelimiter(txt);
+		txt = getSubstitutions(txt);
 
 		return Vars.formatDialog(txt, true);
 	}
 
 	public void applyInput(){
-		changeValue("value(set, "+inputVariable+", " + Game.getInput()+")");
+		changeValue("value(set, "+inputVariable+", {" + Game.getInput()+"})");
 		paused = false;
 		Game.resetInput();
 		main.setStateType(main.prevStateType);
@@ -1178,16 +1173,21 @@ public class Script {
 		String function = firstArg(line);
 		String target = middleArg(line);
 		String value = lastArg(line);
-		System.out.println("changeValue: " + function +"|"+ target +"|"+ value);  //////// Temporary
+		// System.out.println("changeValue: " + function +"|"+ target +"|"+ value);
 		boolean successful = false;
 
 		//		System.out.println(function +":"+target+":"+value);
 
-		Object var = getVariable(value);
-		if(var==null)
-			var = main.history.getVariable(value);
-		if(var!=null)
-			value = String.valueOf(var);
+		if (value.contains("{") && value.contains("}")) {
+			value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
+			value = getSubstitutions(value);
+		} else {
+			Object var = getVariable(value);
+			if(var==null)
+				var = main.history.getVariable(value);
+			if(var!=null)
+				value = String.valueOf(var);
+		}
 
 		if(target.contains(".")){
 			String obj = target.substring(0, target.indexOf("."));
@@ -1342,6 +1342,7 @@ public class Script {
 							setVariable(target, Integer.parseInt(value));
 							break;
 						default:
+							System.out.println("setting: " + value);
 							setVariable(target, value);
 						}
 						break;
@@ -1534,7 +1535,7 @@ public class Script {
 							localVars.put(p,(int) val);
 						if(type.toLowerCase().equals("string"))
 							localVars.put(p,(String) val);
-					} catch (Exception e){System.out.println();}
+					} catch (Exception e){System.out.println("Wrong type");}
 				} else 
 					localVars.put(p,val);
 			}

@@ -3,14 +3,6 @@ eventMusic(Leveler)
 lockplayer
 SetSpeaker(narrator)
 
-declare(var, local, integer, 1)
-declare(var1, local, string, 3)
-value(add, var, var1)
-text(normal, {/variable[var]})
-
-
-
-
 wait(1.5)
 text(normal, {Man, it's empty in here.})
 wait(.75)
