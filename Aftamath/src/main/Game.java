@@ -1,16 +1,9 @@
 package main;
 
 import static handlers.Vars.PPM;
-import handlers.Camera;
-import handlers.FadingSpriteBatch;
-import handlers.GameStateManager;
-import handlers.MyInput;
-import handlers.MyInputProcessor;
 
 import java.util.HashMap;
 import java.util.Stack;
-
-import scenes.Song;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -19,6 +12,19 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
+import handlers.Camera;
+import handlers.FadingSpriteBatch;
+import handlers.GameStateManager;
+import handlers.MyInput;
+import handlers.MyInputProcessor;
+import scenes.Song;
+
+
+/*
+ * Name: Game.java
+ * Imports: handlers, Song
+ * Use: 
+ */
 public class Game implements ApplicationListener {
 
 	public static int inputIndex = 0;
