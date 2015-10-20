@@ -1,23 +1,12 @@
 package scenes;
 
-import handlers.Camera;
-import handlers.GameStateManager;
-import handlers.Pair;
-import handlers.Vars;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Stack;
-
-import main.Game;
-import main.Main;
-import main.Main.InputState;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -30,9 +19,17 @@ import entities.Entity;
 import entities.Entity.DamageType;
 import entities.Mob;
 import entities.Mob.AIState;
+import entities.Path;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
+import handlers.Camera;
+import handlers.GameStateManager;
+import handlers.Pair;
+import handlers.Vars;
+import main.Game;
+import main.Main;
+import main.Main.InputState;
 
 
 /* ----------------------------------------------------------------------
@@ -87,12 +84,12 @@ public class Script {
 			getIndicies();
 			getDistanceLimit();
 
-			//				int i=0;
-			//				System.out.println();
-			//				for(String s : source){
-			//					System.out.println(i+": "+s);
-			//					i++;
-			//				}
+//			int i=0;
+//			System.out.println();
+//			for(String s : source){
+//				System.out.println(i+": "+s);
+//				i++;
+//			}
 
 			activeObj = new Entity();
 			setIndex();
@@ -129,11 +126,17 @@ public class Script {
 		//		System.out.println("---"+(index+1)+"---- "+source.get(index));
 
 		Operation o;
+		dialog = false;
+		
+		if(index>=source.size)
+			index = current;
+		
 		String line = source.get(index);
 		String command;//, s;
-		String[] tmp;
+		String[] tmp, args;
 		Entity obj = null;
 		Entity target=null;
+		Vector2 loc = null;
 		int c;
 		dialog = false;
 
@@ -235,7 +238,7 @@ public class Script {
 				obj = findObject(firstArg(line));
 				if (obj != null){
 					if(obj instanceof Mob){
-						String[] args = args(line);
+						args = args(line);
 						((Mob) obj).doAction(args[1]);
 						if(args.length<3)
 							if(obj.controlled)
@@ -243,14 +246,14 @@ public class Script {
 					}else
 						obj.doAction(convertToNum(line));
 				} else
-					System.out.println("Cannot find \""+firstArg(line)+" to perform action; Line: "+(index+1)+"\tScript: "+ID);
+					System.out.println("Cannot find \""+firstArg(line)+"\" to perform action; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "dotimedaction":
 				obj = findObject(firstArg(line));
 				if (obj != null) { 
 					if(obj instanceof Mob){
 						float f = convertToNum(line);
-						String[] args = args(line);
+						args = args(line);
 						((Mob) obj).doTimedAction(args[1], f);
 						if(args.length<4)
 							if(obj.controlled)
@@ -386,18 +389,57 @@ public class Script {
 					activeObj = main.getCam();
 				}
 				break;
+			case "move":
 			case "moveobject":
-				obj = findObject(middleArg(line));
-				if (obj != null) 
-					if(obj instanceof Mob){
-						((Mob) obj).setGoal(convertToNum(line) - obj.getPixelPosition().x);
-						activeObj = obj;
-					} else
-						System.out.println("Cannot find \""+middleArg(line)+"\" to move; Line: "+(index+1)+"\tScript: "+ID);
-				break;
-			case "moveplayer":
-				main.character.setGoal(convertToNum(line));
-				activeObj = main.player;
+//				move(objectName, x, y, [run]) //accepts Tile Location
+//				move(objectName, pathName, [run]) //accepts a path
+//				move(objectName, targetName, [run]) //accepts a mob
+				args = args(line);
+				loc = null;
+				boolean run = false;
+				
+				if(lastArg(line).contains("true") || lastArg(line).contains(lastArg("false")))
+					run = Boolean.parseBoolean(lastArg(line));
+				
+				try{
+					//is object a mob or entity in the map?
+					obj = findObject(args[0]);
+					if(obj==null)
+						return;
+
+					//is argument a pathing object?
+					target = findPath(args[1]);
+					if(target != null)
+						if(target instanceof Mob){
+						Path path = (Path) target;
+						// make object move to path
+						((Mob) obj).moveToPath(path);
+						return;
+					}
+
+					//is target a mob?
+					target = findObject(args[1].trim());
+					if(target != null){
+						float dx = target.getPosition().x - obj.getPosition().x;
+						int x = (int) (Math.abs(dx)/dx) * 10;
+						loc = new Vector2(target.getPosition().x*Vars.PPM + x, target.getPosition().y*Vars.PPM);
+					}
+
+					// is target a tile vector?
+					loc = parseTiledVector(args, 1);
+
+					if(loc != null)
+						if(obj instanceof Mob){
+							if(run);
+								//make mob run to target location
+							((Mob) obj).setGoal(loc.x);
+							activeObj = obj;
+						} else
+							System.out.println("Cannot find \""+middleArg(line)+"\" to move; Line: "+(index+1)+"\tScript: "+ID);
+				}
+				catch (Exception ArrayIndexOutofBoundsException){
+					System.out.println("Insufficient arguments provided; Line: "+(index+1)+"\tScript: "+ID);
+				}
 				break;
 			case"playsound":
 				if(countArgs(line)>1){
@@ -510,13 +552,39 @@ public class Script {
 				break;
 			case "setflag":
 				try{
+					boolean bool = true;
+					if(args(line).length==2) 
+						bool = Boolean.parseBoolean(lastArg(line));
+					
 					if(main.history.getFlag(firstArg(line))!=null)
-						main.history.setFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
+						main.history.setFlag(firstArg(line), bool);
 					else
-						main.history.addFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
+						main.history.addFlag(firstArg(line), bool);
 				} catch (Exception e){
-					System.out.println("Could not set flag \"" +firstArg(line) + "\"; Line: "+(index+1)+"\tScript: "+ID);
+					System.out.println("Could not set flag \"" +firstArg(line) + "\" to value \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
 				}
+				break;
+			case "setevent":
+				String description = lastArg(line);
+				
+				if(description.contains("{") && description.contains("}")){
+					description = getSubstitutions(description);
+					description = description.substring(description.indexOf("{"), description.indexOf("{"));
+				} else {
+					Object var = getVariable(description); // get local var
+					if(var==null)
+						var = main.history.getVariable(description);
+					if(var!=null){
+						if(var.getClass().getSimpleName().toLowerCase().equals("string"))
+							description = (String) var;
+						else description = "none";
+					} else {
+						description = "none";
+						System.out.println("Invalid description for event \""+firstArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
+					}
+				}
+				
+				main.history.setEvent(firstArg(line), description);
 				break;
 			case "setresponse":
 				obj = findObject(firstArg(line));
@@ -557,7 +625,29 @@ public class Script {
 				main.getHud().showStats = true;
 				break;
 			case "spawn":
-				spawn(line);
+				//spawn(NPC, image, name, x, y, layer)
+				args = args(line);
+				if(args[0].equals("NPC") && args.length>=5){
+					loc = parseTiledVector(args, 3);
+					if(loc!=null){
+						short layer = Vars.BIT_LAYER3;
+						if(args.length==6)
+							if(args[5].equals(1)) layer = Vars.BIT_LAYER1;
+						
+						//find mob from save data
+						//main.findFromSave(args[2].trim());
+						
+						//create new mob if not found
+						int sceneID = main.createSceneID();
+						
+						Mob e = new Mob(args[2].trim(), args[1].trim(), sceneID, loc.x, loc.y, layer);
+						e.setDefaultState(AIState.FACEPLAYER);
+						e.setDialogueScript("generic_1");
+						spawn(e);
+					} else
+						System.out.println("Cannot spawn \""+args[2]+"\" at given location; Line: "+(index+1)+"\tScript: "+ID);
+				} else
+					System.out.println("Error spawning \""+args[2]+"\" into level; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "splash":
 				main.getHud().setSplash(firstArg(line));
@@ -776,7 +866,8 @@ public class Script {
 			} finally {
 				br.close();
 			}
-		} catch(Exception e){}
+		} catch(Exception e){
+		}
 	}
 
 	public void getDistanceLimit(){
@@ -1006,6 +1097,26 @@ public class Script {
 		}
 		return object;
 	}
+	
+	private Path findPath(String pathName){
+		System.out.println(pathName);
+		return main.getPath(pathName);
+	}
+	
+	// create a vector from an array of arguments starting from given index
+	private Vector2 parseTiledVector(String[] args, int index){
+		if(index+1>=args.length)
+			return null;
+		
+		try{
+			int x = Integer.parseInt(args[index].trim()) * Vars.TILE_SIZE;
+			int y =	main.getScene().height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
+			Vector2 v = new Vector2(x, y);
+			return v;
+		} catch(Exception e){ }
+		
+		return null;
+	}
 
 	public void getChoiceIndex(String choice){
 		if(choiceIndicies.get(operations.peek().start)!=null){
@@ -1134,6 +1245,9 @@ public class Script {
 			}
 			txt = txt.substring(0, txt.indexOf("/partnergo")) + g + 
 					txt.substring(txt.indexOf("/partnergo") + "/partnergo".length());
+		} if (txt.contains("/partnert")) {
+			txt = txt.substring(0, txt.indexOf("/partnert")) + main.player.getPartnerTitle() + 
+					txt.substring(txt.indexOf("/partnergt") + "/partnergt".length());
 		} if(txt.contains("/house")){
 			txt = txt.substring(0, txt.indexOf("/house")) + main.player.getHome().getType() + 
 					txt.substring(txt.indexOf("/house") + "/house".length());
@@ -1207,7 +1321,6 @@ public class Script {
 							}
 							break;
 						case "money": 
-							System.out.println("HI!");
 							main.player.addFunds(Float.parseFloat(value));
 							break;
 						case "love":
@@ -1228,7 +1341,6 @@ public class Script {
 						default:
 							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object +
 									"\"; Line: "+(index+1)+"\tScript: "+ID);
-							break;
 						}
 					} catch (Exception e) {
 						System.out.println("Could not add \"" + value +"\" to \"" + target + 
@@ -1342,7 +1454,6 @@ public class Script {
 							setVariable(target, Integer.parseInt(value));
 							break;
 						default:
-							System.out.println("setting: " + value);
 							setVariable(target, value);
 						}
 						break;
@@ -1559,70 +1670,8 @@ public class Script {
 			index = checkpoints.get(name);
 	}
 
-	public void spawn(int obj, Vector2 location){
-		spawn("spawn " + obj, location);
-	}
-
-	private void spawn(String line){
-		Vector2 location = new Vector2(Float.parseFloat(lastArg(middleArg(line))),
-				Float.parseFloat(lastArg(line)));
-		spawn(line, location);
-	}
-
-	private void spawn(String line, Vector2 location){
-		int c = 0;
-		Entity obj = getObjectType(firstArg(line), location);
-
-		for(Entity e : main.getObjects())
-			if (e.getSceneID() < c)
-				c = e.getSceneID();
-
-		if (obj != null){
-			if (obj instanceof Mob)
-				obj.setSceneID(c);
-			main.addObject(obj);
-		}
-	}
-
-	private Entity getObjectType(String indicator, Vector2 location) {
-		return getObjectType(indicator, location, Vars.BIT_LAYER1);
-	}
-
-	//must be rewritten
-	private Entity getObjectType(String indicator, Vector2 location, Short layer){
-		Class<?> c;
-		try {
-			c = Class.forName(indicator);
-			Class<?> C = c.getSuperclass();
-
-			while(C != null) {
-				if (C.getSimpleName().toLowerCase().equals("scene"))
-					break;
-				C = C.getSuperclass();
-			}
-
-			Constructor<?> cr = c.getConstructor(Float.class, Float.class, Short.class);
-			Object o = cr.newInstance(location.x, location.y, layer);
-			return (Entity) o;
-
-		} catch (NoSuchMethodException | SecurityException e) {
-			System.out.println("no such constructor");
-		} catch (InstantiationException e) {
-			System.out.println("cannot instantiate object");
-		} catch (IllegalAccessException e) {
-			System.out.println("cannot access object");
-			//e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			System.out.println("illegal argument");
-			//e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			System.out.println("cannot invoke target");
-			//e.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			System.out.println("Class \"" + indicator + "\" not found.");
-		}
-
-		return null;
+	public void spawn(Entity e){
+		main.addObject(e);
 	}
 
 	public void setPlayState(Main gs) { main = gs; }

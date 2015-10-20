@@ -20,7 +20,7 @@ import entities.Warp;
 
 public class MyContactListener implements ContactListener {
 
-//	public Array<Body> bodiesToRemove;
+	//	public Array<Body> bodiesToRemove;
 	public static Array<String> unstandable = new Array<>();
 
 	private Main main;
@@ -33,7 +33,7 @@ public class MyContactListener implements ContactListener {
 
 	public MyContactListener(Main p){
 		super();
-//		bodiesToRemove = new Array<>();
+		//		bodiesToRemove = new Array<>();
 		main = p;
 	}
 
@@ -56,7 +56,7 @@ public class MyContactListener implements ContactListener {
 			((Mob) entB).contacts.add(entA);
 		} if(typeA.equals("foot") && !unstandable.contains(typeB, true) && 
 				!fa.getBody().getUserData().equals(typeB) && !(entB instanceof EventTrigger)) {
-//			play.playSound(entA.getPosition(), "step1");
+			//			play.playSound(entA.getPosition(), "step1");
 			((Mob) entA).contacts.add(entB);
 		} if(typeB.equals("projectile")) {
 			((Projectile) entB).impact(entA);
@@ -66,14 +66,21 @@ public class MyContactListener implements ContactListener {
 			((Mob) entA).damage(.1d);
 		} if(typeA.equals("projectile")) {
 			((Projectile) entA).impact(entB);
-		} if(typeB.equals("interact") && !fa.isSensor() && entA.isInteractable && !main.analyzing){
-			//			if(entB.getScript()!=null){
-			((Mob) entB).setInteractable(entA);
-			if(entB.equals(main.character)) 
-				new SpeechBubble(entA, entA.getPixelPosition().x + 6, entA.rh +
-						entA.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
-			//			}
-		}if(typeA.equals("attack") && !fb.isSensor() && entB.isAttackable){ 
+		} if(typeB.equals("interact") && !fa.isSensor())
+			if(entA.isInteractable && !main.analyzing){
+				((Mob) entB).setInteractable(entA);
+				if(entB.equals(main.character)) 
+					new SpeechBubble(entA, entA.getPixelPosition().x + 6, entA.rh +
+							entA.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
+			}
+		 if(typeA.equals("interact") && !fb.isSensor())
+				if(entB.isInteractable && !main.analyzing){
+					((Mob) entA).setInteractable(entB);
+					if(entA.equals(main.character)) 
+						new SpeechBubble(entB, entB.getPixelPosition().x + 6, entB.rh +
+								entB.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
+				}
+		if(typeA.equals("attack") && !fb.isSensor() && entB.isAttackable){ 
 			((Mob) entA).addAttackable(entB);
 		}if(typeB.equals("attack") && !fa.isSensor() && entA.isAttackable){ 
 			((Mob) entB).addAttackable(entA);
@@ -103,11 +110,11 @@ public class MyContactListener implements ContactListener {
 			}
 		} if(typeA.equals("refocusTrigger") && entB instanceof Mob && !unstandable.contains(typeB, false)){
 			Camera cam = main.getCam();
-				if (main.character.equals((Mob) entB))
-					if(cam.getTrigger()!=null){
-						if (!cam.getTrigger().equals(entA))
-							((RefocusTrigger) entA).trigger();
-					}else ((RefocusTrigger) entA).trigger();
+			if (main.character.equals((Mob) entB))
+				if(cam.getTrigger()!=null){
+					if (!cam.getTrigger().equals(entA))
+						((RefocusTrigger) entA).trigger();
+				}else ((RefocusTrigger) entA).trigger();
 		} if(typeB.equals("refocusTrigger") && entA instanceof Mob && !unstandable.contains(typeA, false)){
 			Camera cam = main.getCam();
 			if (main.character.equals((Mob) entA))
@@ -152,6 +159,10 @@ public class MyContactListener implements ContactListener {
 		} if(typeB.equals("interact")){
 			if(entA == ((Mob) entB).getInteractable()){
 				((Mob) entB).setInteractable(null);
+			}
+		} if(typeA.equals("interact")){
+			if(entB == ((Mob) entA).getInteractable()){
+				((Mob) entA).setInteractable(null);
 			}
 		} if(typeA.equalsIgnoreCase("attack")){ 
 			((Mob) entA).removeAttackable(entB);

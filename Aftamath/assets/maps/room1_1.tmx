@@ -4,7 +4,7 @@
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="6"/>
  </properties>
- <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="480">
   <image source="tilesets/indoors.png" width="480" height="271"/>
  </tileset>
  <layer name="bg1" width="30" height="10">
@@ -50,8 +50,8 @@
     <property name="NPC" value="gangster1"/>
     <property name="layer" value="front"/>
     <property name="name" value="Darrius"/>
-    <property name="script" value="generic_1"/>
-    <property name="state" value="IDLEWALK"/>
+    <property name="script" value="realGangsta"/>
+    <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
  </objectgroup>

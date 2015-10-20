@@ -59,6 +59,7 @@ public class Warp extends Entity {
 
 	@Override
 	public void create() {
+		init = true;
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw)/Vars.PPM, (rh)/Vars.PPM);
 

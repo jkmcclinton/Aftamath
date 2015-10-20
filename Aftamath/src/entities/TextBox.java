@@ -204,6 +204,7 @@ public class TextBox extends Entity {
 	}
 	
 	public void create(){
+		init = true;
 		//hitbox
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw-2)/PPM, (rh)/PPM);

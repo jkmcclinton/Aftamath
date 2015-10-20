@@ -33,7 +33,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.NUMPAD_6) MyInput.setKey(Input.DEBUG_RIGHT, true);
 			if(k == Keys.NUMPAD_7) MyInput.setKey(Input.DEBUG_LEFT2, true);
 			if(k == Keys.NUMPAD_9) MyInput.setKey(Input.DEBUG_RIGHT2, true);
-			if(k == Keys.NUMPAD_5) MyInput.setKey(Input.DEBUG_CENTER, true);
+			if(k == Keys.M) MyInput.setKey(Input.DEBUG_CENTER, true);
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, true);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, true);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, true);
@@ -112,7 +112,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.NUMPAD_6) MyInput.setKey(Input.DEBUG_RIGHT, false);
 			if(k == Keys.NUMPAD_7) MyInput.setKey(Input.DEBUG_LEFT2, false);
 			if(k == Keys.NUMPAD_9) MyInput.setKey(Input.DEBUG_RIGHT2, false);
-			if(k == Keys.NUMPAD_5) MyInput.setKey(Input.DEBUG_CENTER, false);
+			if(k == Keys.M) MyInput.setKey(Input.DEBUG_CENTER, false);
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, false);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, false);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, false);

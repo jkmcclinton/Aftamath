@@ -1,0 +1,15 @@
+Script Main
+lockplayer
+
+facePlayer(partner)
+setSpeaker(partner)
+if([player.love < -2])
+	text(mad, {No way. I'm staying here.})
+else
+	if([partner.gender = male])
+		text(normal, {On my way.}
+	else
+		text(happy, {Coming!})
+	end
+end
+done

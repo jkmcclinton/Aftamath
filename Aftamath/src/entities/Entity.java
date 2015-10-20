@@ -27,7 +27,7 @@ public class Entity{
 	public String ID;
 	public Animation animation;
 	public boolean isInteractable, isAttackable, dead, controlled;
-	public boolean burning, flamable, frozen;
+	public boolean burning, flamable, frozen, init;
 	public float x, y;
 	public int height, width, rw, rh;
 
@@ -363,7 +363,13 @@ public class Entity{
 		return false;
 	}
 	
+	public void killVelocity(){
+		Vector2 vel = body.getLinearVelocity();
+		body.setLinearVelocity(0, vel.y);
+	}
+	
 	public void create(){
+		init = true;
 		//hitbox
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw)/PPM, (rh)/PPM);

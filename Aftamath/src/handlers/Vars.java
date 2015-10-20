@@ -20,7 +20,7 @@ public class Vars {
 	public static final float DT = .016666668f;
 	public static final float PPM = 100f;
 	public static final float GRAVITY = -9.81f;
-	public static final float ANIMATION_RATE = .18f;
+	public static final float ANIMATION_RATE = .21f;
 	public static final float ACTION_ANIMATION_RATE = .07f;
 	public static final float ALPHA = .99607843f;
 	public static final int FONT_OFFSET = -33;
