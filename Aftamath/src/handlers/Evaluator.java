@@ -112,12 +112,15 @@ public class Evaluator {
 				return false;
 			}
 		} else {
+			//remove brackes
+			if(!statement.isEmpty())
+				statement = statement.substring(1, statement.length()-1);
 			if(statement.startsWith("!")){
 				not = true;
 				statement = statement.substring(1);
 			}
 
-			else if(main.history.getFlag(statement)!=null){
+			if(main.history.getFlag(statement)!=null){
 				result = main.history.getFlag(statement);
 			} else if(main.history.findEvent(statement)){
 				result = true;
@@ -126,7 +129,9 @@ public class Evaluator {
 
 		if(not) return !result;
 		return result;
-	}private String evaluateExpression(String obj){
+	}
+	
+	private String evaluateExpression(String obj){
 		Array<String> arguments;
 		String result, res, val;
 		String tmp=Vars.remove(obj," ");

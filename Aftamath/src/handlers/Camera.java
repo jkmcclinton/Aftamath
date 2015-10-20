@@ -82,6 +82,8 @@ public class Camera extends OrthographicCamera{
 
 			if(Math.abs(dx) < .5f && Math.abs(dy) < .5f) {
 				moving = false;
+				if(character.getGameState().currentScript.getActiveObject().equals(this))
+					character.getGameState().currentScript.setActiveObj(new Entity());
 			} else { 
 				float x1 = position.x + (dx * 5 / Vars.PPM);
 				float y1 = position.y + (dy * 5 / Vars.PPM);

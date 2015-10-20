@@ -21,6 +21,7 @@ public class Barrier extends Entity {
 	}
 	
 	public void create(){
+		init = true;
 		//hitbox
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw)/PPM, (rh)/PPM);

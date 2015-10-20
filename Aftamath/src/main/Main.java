@@ -1,17 +1,6 @@
 package main;
 
 import static handlers.Vars.PPM;
-import handlers.Camera;
-import handlers.Evaluator;
-import handlers.FadingSpriteBatch;
-import handlers.GameStateManager;
-import handlers.MyContactListener;
-import handlers.MyInput;
-import handlers.MyInput.Input;
-import handlers.MyInputProcessor;
-import handlers.Pair;
-import handlers.PositionalAudio;
-import handlers.Vars;
 
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
@@ -20,12 +9,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import scenes.Scene;
-import scenes.Script;
-import scenes.Script.ScriptType;
-import scenes.Song;
-import box2dLight.RayHandler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -38,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
+import box2dLight.RayHandler;
 import entities.CamBot;
 import entities.Entity;
 import entities.Entity.DamageType;
@@ -45,10 +29,26 @@ import entities.Ground;
 import entities.HUD;
 import entities.Mob;
 import entities.Mob.AIState;
+import entities.Path;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
 import entities.Warp;
+import handlers.Camera;
+import handlers.Evaluator;
+import handlers.FadingSpriteBatch;
+import handlers.GameStateManager;
+import handlers.MyContactListener;
+import handlers.MyInput;
+import handlers.MyInput.Input;
+import handlers.MyInputProcessor;
+import handlers.Pair;
+import handlers.PositionalAudio;
+import handlers.Vars;
+import scenes.Scene;
+import scenes.Script;
+import scenes.Script.ScriptType;
+import scenes.Song;
 
 public class Main extends GameState {
 	
@@ -77,6 +77,7 @@ public class Main extends GameState {
 	private Color drawOverlay;
 	private Array<Body> bodiesToRemove;
 	private ArrayList<Entity> objects/*, UIobjects, UItoRemove*/;
+	private ArrayList<Path> paths;
 	private ArrayList<PositionalAudio> sounds;
 	private Box2DDebugRenderer b2dr;
 	private InputState beforePause;
@@ -89,7 +90,7 @@ public class Main extends GameState {
 		MOVELISTEN, //listening to text and can move
 		LISTEN, //listening to text only
 		CHOICE, //choosing an option
-		LOCKED, //lock all input; it's up to the script to unlock
+		//LOCKED, //lock all input; it's up to the script to unlock
 		PAUSED, //in pause menu
 		KEYBOARD, //input text
 		GENDERCHOICE, //temporary; used to allow the player to chose their appearance
@@ -104,7 +105,7 @@ public class Main extends GameState {
 	private static final int NOON = 1;
 	private static final int NIGHT =2;
 	private static final int TRANSITION_INTERVAL = /*60*/ 5;
-	public static final float DAY_TIME = 24f*60f /*3*(TRANSITION_INTERVAL+5)*/;
+	public static final float DAY_TIME = 10f*60f; //24min
 	public static final float NOON_TIME = DAY_TIME/3f;
 	public static final float NIGHT_TIME = 2*DAY_TIME/3f;
 	
@@ -151,6 +152,7 @@ public class Main extends GameState {
 //		dayTime = 3*NOON_TIME/2f;
 		
 		objects = new ArrayList<Entity>();
+		paths = new ArrayList<Path>();
 		sounds = new ArrayList<PositionalAudio>();
 		world = new World(new Vector2 (0, Vars.GRAVITY), true);
 		world.setContactListener(cl);
@@ -228,6 +230,8 @@ public class Main extends GameState {
  
 			for (Entity e : objects){
 				if (!(e instanceof Ground)) {
+					if(!e.init && e.getBody()==null)
+						e.create();
 					e.update(dt);
 
 					//kill object
@@ -286,31 +290,6 @@ public class Main extends GameState {
 			if (!quitting)
 				handleInput();
 		}
-		
-		
-//		debugText= "Volume: "+music.getVolume();
-//		debugText= "next: "+nextSong+"     "+music;
-		debugText= Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
-//		debugText+= "/l/l"+drawOverlay.r+"/l"+drawOverlay.g+"/l"+drawOverlay.b;
-		debugText+= "/lState: "+(stateType);
-		debugText+="/linput: "+Game.getInput()+"   inputIndex: "+Game.inputIndex;
-//		for(Entity e: objects) if(!e.ID.toLowerCase().equals("tiledobject"))debugText+="/l"+e;
-		debugText+="/lATTACKABLES: "+character.getAttackables();
-		
-		if(currentScript!=null){
-			debugText+= "/lplayerType: "+(currentScript.getVariable("playertype"))+"/l";
-			debugText+= "/lfocedPause: "+(currentScript.forcedPause);
-//			debugText+= "/lmoving: "+(cam.moving);
-			debugText+= "/ldialog: "+(currentScript.dialog);
-			debugText+= "/lspeaking: "+(speaking);
-//			debugText+= "/lActObj: "+(currentScript.getActiveObject());
-		}
-		
-//		debugText+= "/l/lcontrolled: "+character.controlled;
-//		debugText+= "/lIdle Time: "+ Vars.formatTime(character.getIdleTime()) + "    Idled: "+character.getTimesIdled();
-		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + 
-				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
-//		debugText +="/l"+cam.getCharacter().getName() + " x: " + (int) (cam.position.x) + "    y: " + ((int) (cam.position.y));
 
 		cam.locate(dt);
 		if(quitting)
@@ -459,7 +438,36 @@ public class Main extends GameState {
 		if(o) sb.setOverlayDraw(true);
 	}
 	
+	//everything that needs to be displayed constantly for debug tracking is
+	//right here
 	public void updateDebugText() {
+//		debugText= "Volume: "+music.getVolume();
+//		debugText= "next: "+nextSong+"     "+music;
+		debugText= Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
+		debugText += "/lSong: " + music;
+		debugText+= "/lState: "+(stateType);
+//		debugText+="/lATTACKABLES: "+character.getAttackables();
+		
+		if(currentScript!=null){
+//			debugText+= "/lplayerType: "+(currentScript.getVariable("playertype"))+"/l";
+			debugText+= "/lfocedPause: "+(currentScript.forcedPause);
+//			debugText+= "/lmoving: "+(cam.moving);
+			debugText+= "/ldialog: "+(currentScript.dialog);
+//			debugText+= "/lspeaking: "+(speaking);
+			debugText+= "/lActObj: "+(currentScript.getActiveObject());
+		}
+		
+//		debugText+= "/lIdle Time: "+ Vars.formatTime(character.getIdleTime()) + "    Idled: "+character.getTimesIdled();
+		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + 
+				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
+//		debugText +="/l"+cam.getCharacter().getName() + " x: " + (int) (cam.position.x) + "    y: " + ((int) (cam.position.y));
+		
+		Entity e = findObject("Jose");
+		if(e!=null){
+			if(!cam.getFocus().equals(e))
+				cam.setFocus(e);
+		debugText+="/l("+e.getPosition().x*Vars.PPM + ", " + e.getPosition().y*Vars.PPM+")";
+		}
 		sb.begin();
 			drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
 		sb.end();
@@ -504,6 +512,8 @@ public class Main extends GameState {
 		if(MyInput.isPressed(Input.DEBUG_CENTER)) {
 			random=true;
 			changeSong(new Song(Game.SONG_LIST.get((int) (Math.random()*(Game.SONG_LIST.size)))));
+			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
+			changeSong(new Song(Game.SONG_LIST.get(current)));
 //			dayTime+=1.5f;
 		}
 		
@@ -638,9 +648,9 @@ public class Main extends GameState {
 				}
 				
 				break;
-			case LOCKED:
-				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
-				break;
+//			case LOCKED:
+//				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
+//				break;
 			case MOVE:
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 				if(cam.focusing||warping||quitting||character.dead||waiting||character.frozen) return;
@@ -649,6 +659,7 @@ public class Main extends GameState {
 					if(character.canWarp && character.isOnGround() && !character.snoozing && 
 							!character.getWarp().instant) {
 						initWarp(character.getWarp());
+						character.killVelocity();
 					}
 					else if(character.canClimb) character.climb();
 					else character.lookUp();
@@ -658,8 +669,9 @@ public class Main extends GameState {
 						character.descend();
 					else character.lookDown();
 				if(MyInput.isPressed(Input.USE)) partnerFollow();
-				if(MyInput.isPressed(Input.INTERACT)) 
+				if(MyInput.isPressed(Input.INTERACT)) {
 					triggerScript(character.interact());
+				}
 
 				if(MyInput.isDown(Input.LEFT)) character.left();
 				if(MyInput.isDown(Input.RIGHT)) character.right();
@@ -670,7 +682,7 @@ public class Main extends GameState {
 				break;
 			case MOVELISTEN:
 				if(MyInput.isPressed(Input.PAUSE)) pause();
-				if(cam.moving||cam.focusing||warping||quitting||character.dead||waiting||character.frozen) return;
+				if(cam.moving/*||cam.focusing*/||warping||quitting||character.dead/*||waiting*/||character.frozen) return;
 				if(MyInput.isDown(Input.UP)) character.climb();
 				if(MyInput.isDown(Input.DOWN)) character.descend();
 				if(MyInput.isDown(Input.LEFT)) character.left();
@@ -680,8 +692,7 @@ public class Main extends GameState {
 
 					if(displayText.isEmpty()) {
 						if (currentScript != null)
-							currentScript.paused = currentScript.forcedPause = 
-							currentScript.dialog = false;
+							currentScript.paused = currentScript.forcedPause = false;
 					} else {
 						speakDelay = .2f;
 						speakTime = 0;
@@ -696,7 +707,7 @@ public class Main extends GameState {
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 				
 				if(currentScript!=null)
-					if(currentScript.dialog && MyInput.isPressed(Input.JUMP)){
+					if(/*currentScript.dialog &&*/ MyInput.isPressed(Input.JUMP)){
 						if(!speaking && buttonTime >= DELAY){
 							playSound(character.getPosition(), "ok1");
 							if(currentScript.getActiveObject() instanceof TextBox){
@@ -712,11 +723,9 @@ public class Main extends GameState {
 								// so that the script doesn't skip more than once to the end
 								int x12 = 1; if (x12==1) x12=2;
 									
-									
 								if(displayText.isEmpty()) {
 									if (currentScript != null) {
-										currentScript.paused = currentScript.forcedPause =
-												currentScript.dialog = false;
+										currentScript.paused = currentScript.forcedPause = false;
 									} else {
 										hud.hide();
 										setStateType(InputState.MOVE);
@@ -781,44 +790,22 @@ public class Main extends GameState {
 			if(player.getPartner().getName() != null){
 				if(getMob(player.getPartner().getName())!=null){
 					setStateType(InputState.LISTEN);
-
+					
 					if (player.stopPartnerDisabled) {
-						displayText.add(new Pair<>("No, I'm coming with you.", Mob.NORMAL));
-						hud.changeFace(player.getPartner());
-						character.faceObject(player.getPartner());
-						speak();
+						triggerScript("toggleFollowDisabled");
 					} else if(player.getPartner().getState() == AIState.FOLLOWING) {
-						displayText.add(new Pair<>("I'll just stay here.", Mob.NORMAL));
-						hud.changeFace(player.getPartner());
-						speak();
+						triggerScript("stopFollower");
 						player.getPartner().stay();
-					}
-					else {
-						if(player.getRelationship()<-2){ 
-							displayText.add(new Pair<>("No way. I'm staying here.", Mob.MAD));
-							character.faceObject(player.getPartner());
-						} else if(player.getPartner().getGender().equals("female")) displayText.add(new Pair<>("Coming!", Mob.HAPPY));
-						else displayText.add(new Pair<>("On my way.", Mob.NORMAL));
-
-						hud.changeFace(player.getPartner());
-						speak();
+					} else {
+						triggerScript("suggestFollow");
 						player.getPartner().follow(character);
 					}
 				}else{
-					String partner;
-					if (player.getPartner().getGender().equals(Mob.MALE)) partner = "boyfriend";
-					else partner = "girlfriend";
-					displayText.add(new Pair<>("Your "+partner+" isn't here at the moment.", Mob.NORMAL));
-					hud.changeFace(narrator);
-					speak();
-					setStateType(InputState.LISTEN);
+					triggerScript("noPartnerPresent");
 				}
 			}
 		} else {
-			displayText.add(new Pair<>("You ain't got nobody to follow you!", Mob.NORMAL));
-			hud.changeFace(narrator);
-			speak();
-			setStateType(InputState.LISTEN);
+			triggerScript("noPartner");
 		}
 	}
 	
@@ -838,7 +825,7 @@ public class Main extends GameState {
 		float gx = min * dx / Math.abs(dx) - dx ;
 		
 		if (Math.abs(dx) < min - 2){
-			setStateType(InputState.LOCKED);
+//			setStateType(InputState.LOCKED);
 			character.positioning = true;
 			character.setPositioningFocus(character.getInteractable());
 			character.setGoal(gx);
@@ -1047,16 +1034,56 @@ public class Main extends GameState {
 	public void addObject(Entity e){ 
 		if(!exists(e)){
 			objects.add(e); 
+			e.setGameState(this);
 			sortObjects();
 		}
 	}
+	
+	private Entity findObject(String objectName){
+		Entity object = null;
+
+		if(Vars.isNumeric(objectName)){
+			for(Entity d : getObjects())
+				if (d.getSceneID() == Integer.parseInt(objectName)) return d;
+		} else switch(objectName) {
+		case "player":
+			object = character;
+			break;
+		case "partner":
+			if(player.getPartner().getName() != null)
+				object = player.getPartner();
+			break;
+		case "narrator":
+			object = narrator;
+			break;
+		default:
+			for(Entity d : getObjects()){
+				if(d instanceof Mob){
+					if (((Mob)d).getName().toLowerCase().equals(objectName.toLowerCase()))
+						return d;
+				} else
+					if (d.ID.toLowerCase().equals(objectName.toLowerCase()))
+						return d;
+			}
+		}
+		return object;
+	}
+	
 	public void addBodyToRemove(Body b){ bodiesToRemove.add(b); }
+	public ArrayList<Path> getPaths() {return paths; }
+	public Path getPath(String pathName){
+		for(Path p : paths){
+			if(p.ID.toLowerCase().equals(pathName.toLowerCase()))
+				return p;
+		}
+		return null;
+	}
 	
 	public void load(){
 		narrator = new Mob("Narrator", "narrator1", 0, 0, 0, Vars.BIT_LAYER1);
 		player = new Player(this);
-		if(gameFile==null){
-//		if(gameFile!=null){
+//		if(gameFile==null){
+		if(gameFile!=null){
 			scene= new Scene(world,this,"Street");
 //			scene = new Scene(world, this, "room1_1");
 			scene.setRayHandler(rayHandler);
@@ -1087,6 +1114,26 @@ public class Main extends GameState {
 		cam.bind(scene, false);
 		b2dCam.bind(scene, true);
 		world.setGravity(scene.getGravity());
+	}
+	
+	//basically a numerical representation of an entity
+	//sceneIDs should NOT be used to directly access the entity from scripts, 
+	//as the number represents chronologically how many mobs have been created 
+	//since the game started
+	public int createSceneID(){
+		//get highest value of sceneID from file
+		if(gameFile!=null){
+			return 0;
+		} else {
+			//get Highest Value from entities in the scene currently 
+			int max = 0;
+			for(Entity e: objects){
+				if(max<e.getSceneID())
+					max = e.getSceneID();
+			}
+			
+			return max++;
+		}
 	}
 	
 	public void createPlayer(Vector2 location){
@@ -1133,7 +1180,7 @@ public class Main extends GameState {
 	
 	public void triggerScript(String src){
 		Script s = new Script(src, ScriptType.DIALOGUE, this, character);
-		if (s.ID!=null)
+		if (s.ID!=null && s.source!=null)
 			triggerScript(s);
 	}
 	
@@ -1161,6 +1208,8 @@ public class Main extends GameState {
 		removeAllObjects();
 		objects.addAll(scene.getInitEntities());
 		objects.add(character);
+		paths.addAll(scene.getInitPaths());
+		scene.applyPaths();
 		
 		//this should be changed to happen when the game checks if the player's
 		//partner was last saved on the same level (part of global mobs)
@@ -1199,20 +1248,13 @@ public class Main extends GameState {
 			s.sound.stop();
 		sounds = new ArrayList<PositionalAudio>();
 		objects = new ArrayList<Entity>();
+		paths = new ArrayList<Path>();
 	}
 	
 	public Scene getScene(){ return scene; }
 	public World getWorld(){ return world; }
 	public HUD getHud() { return hud; }
 	public Camera getCam(){ return cam; }
-
-	public int count(Entity c){
-		int i = 0;
-		for (Entity e : objects) 
-			if (e.getClass().equals(c.getClass())) 
-				i++;
-		return i;
-	}
 
 	//sort by objects' layer
 	public void sortObjects(){
@@ -1269,7 +1311,7 @@ public class Main extends GameState {
 		private double bravery;
 		private double nicety;
 		private float N, B, L;
-		private String info;
+		private String info, partnerTitle;
 		
 		private HashMap<DamageType, Integer> typeCounter;
 		
@@ -1315,7 +1357,6 @@ public class Main extends GameState {
 			
 		}
 		
-		
 		//following methods are getters and setters
 		
 		public void goOut(Mob newPartner, String info){
@@ -1342,13 +1383,15 @@ public class Main extends GameState {
 		public double getRelationship(){ return relationship; }
 		public String getPartnerInfo(){ return info; }
 		public void resetPartnerInfo(String info){this.info=info;}
+		public String getPartnerTitle(){ return partnerTitle; }
+		public void setPartnerTitle(String title){ partnerTitle = title; }
 		
 		public void resetFollowers(Array <Mob> followers){
 			for(Mob m : followers)
 				main.character.getFollowers().add(m);
 		}
 		
-		public void addFunds(double amount){ goalMoney += amount; System.out.println(goalMoney); }
+		public void addFunds(double amount){ goalMoney += amount; }
 		public void updateMoney(){
 			double dx = (goalMoney - money)/2;
 //			if(dx < 1d && dx != 0) dx = 1 * (dx/Math.abs(dx));
@@ -1396,12 +1439,12 @@ public class Main extends GameState {
 			
 			flagList.put("true",true);
 			flagList.put("false",false);
-			variableList.put("male", (Object)"male");
-			variableList.put("female", (Object)"female");
+			variableList.put("male", "male");
+			variableList.put("female", "female");
 		}
 		
 		public History(String loadedData){
-			
+			// put shit into eventList, flagList, variableList
 		}
 		
 		public Boolean getFlag(String flag){ 
@@ -1421,7 +1464,7 @@ public class Main extends GameState {
 			addFlag(flag, val);
 		}
 		
-		public boolean addFlag(String flag, boolean val){ return flagList.put(flag, val); 	}
+		public void addFlag(String flag, boolean val){ 	flagList.put(flag, val); 	}
 		
 		public boolean setEvent(String event, String description){ 
 			for(Pair<String, String> p : eventList)
@@ -1446,7 +1489,11 @@ public class Main extends GameState {
 		}
 		
 		public boolean declareVariable(String variableName, Object value){
-			if (value instanceof Boolean) return addFlag(variableName, (Boolean)value);
+			if (value instanceof Boolean){ 
+				addFlag(variableName, (Boolean)value);
+				return true;
+			}
+			
 			for(String p : variableList.keySet())
 				if (p.equals(variableName))
 					return false;

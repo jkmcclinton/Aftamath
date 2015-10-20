@@ -27,6 +27,7 @@ public class Ground extends Entity{
 	public String getType(){ return type; }
 	
 	public void create(){
+		init = true;
 		bdef.type = BodyType.StaticBody;
 		bdef.position.set(x, y);
 		

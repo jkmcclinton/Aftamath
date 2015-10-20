@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="33">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="44">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bgm day" value="Misdirection"/>
@@ -7,7 +7,7 @@
   <property name="bgm noon" value="Misdirection"/>
   <property name="previous" value=""/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
   <image source="tilesets/street.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -162,19 +162,19 @@
  </layer>
  <layer name="objects" width="100" height="120">
   <data encoding="base64" compression="zlib">
-   eJzt0MEJgDAMBdC4jjie4zmNk0hREHoIrT0I+h7klPwEEgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC8aZn6Z7LMk33c1obf1DNZpvT2OGvk5l9tDb+pZ7JM6c1XjdwEAAAAAAAAAICvOwC61Aj2
+   eJzt1lEKgkAQAFAtu0h/RR2uqIt0nKiL9FfUPWJJIUoWU8ON3oOBhd1hBmRwsgwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA2dkWWXUaPYHinYugOeFbNxtl8JGU2HroDgmo+Vr4HvKnmw36VBt8hLWGvmk6G7oLKN/aqa4s3sZxwdyujS81fEPaqvv8fi/zzN7GccLcso0vNvs3z+nNqNg16e30Tywl32zK61OzbOq8/p+bQoLfXN7GccHcso0vNvu3z+jMAAAAAAAAAwD+5AxpdIeE=
   </data>
  </layer>
  <layer name="fg" width="100" height="120">
   <data encoding="base64" compression="zlib">
-   eJztz8EJw0AMRFHnnFLSjVNKurFLSTluJB3sGjQsRLx3/TBI2wYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQMWz2BMbiRu6eBd7YiNxQxdnsSc2Ejd0cRV7YiNxQxevR60nNhI3dPEZ/LpP+p2NFb2T7+DXY9LvbKzoAAAAAAAAAADw737RNxQ9
+   eJzt08ERwjAMRcHkCqWkGyiFbqCUlJNG6MDyjAYByu71yfNPXhYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4NdcP9wrNjr1e3Cb7RUbnforuM32io1O/Qhus71io1Pf1vFttldsdOrRrf/xP//jMvE+u3G2/ghuR/028T67cba+B7ej/px4n93QAQAAAAAAAAC+4w0sLDfb
   </data>
  </layer>
  <objectgroup name="entities">
   <properties>
    <property name="spawn" value=""/>
   </properties>
-  <object id="1" name="room1_1" x="469.5" y="1494.5" width="37" height="73">
+  <object id="1" name="room1_1" x="460" y="1496" width="37" height="73">
    <properties>
     <property name="ID" value="1"/>
     <property name="next" value="room1_1"/>
@@ -312,15 +312,16 @@
     <property name="robbers1" value="[!RobberIntro]"/>
    </properties>
   </object>
-  <object id="31" name="10" x="96" y="1552" width="16" height="16">
+  <object id="31" name="10" x="800" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="4"/>
     <property name="NPC" value="boss2"/>
     <property name="attackScript" value="onAttacked"/>
     <property name="layer" value="back"/>
     <property name="name" value="Mr. Bidd"/>
+    <property name="path" value="TestPath"/>
     <property name="script" value="generic_1"/>
-    <property name="state" value="IDLEWALK"/>
+    <property name="state" value="PATH"/>
    </properties>
   </object>
   <object id="32" x="944" y="1392" width="16" height="176">
@@ -328,6 +329,41 @@
     <property name="dank" value=""/>
     <property name="event" value=""/>
     <property name="retriggerable" value=""/>
+   </properties>
+  </object>
+  <object id="34" name="TestPath" x="800" y="1552">
+   <properties>
+    <property name="behavior" value="CONTINUOUS"/>
+    <property name="name" value="TestPath"/>
+   </properties>
+   <polyline points="0,-32 112,-32 80,-16 192,-16"/>
+  </object>
+  <object id="36" x="232" y="1544">
+   <properties>
+    <property name="name" value="fleeFromRobbers"/>
+   </properties>
+   <polyline points="0,0 208,0"/>
+  </object>
+  <object id="38" x="208" y="1544">
+   <properties>
+    <property name="name" value="moveRobberLeft"/>
+   </properties>
+   <polyline points="0,0 -176,0"/>
+  </object>
+  <object id="41" x="288" y="1504">
+   <properties>
+    <property name="name" value="moveRobberLeft1"/>
+   </properties>
+   <polyline points="0,0 -256,0"/>
+  </object>
+  <object id="43" name="10" x="1488" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="12"/>
+    <property name="NPC" value="narrator1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Narrator"/>
+    <property name="script" value="endOfDemo"/>
+    <property name="state" value="BLOCKPATH"/>
    </properties>
   </object>
  </objectgroup>

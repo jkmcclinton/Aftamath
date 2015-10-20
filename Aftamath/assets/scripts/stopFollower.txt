@@ -1,0 +1,8 @@
+Script Main
+lockplayer
+
+facePlayer(partner)
+setSpeaker(partner)
+text(normal, {I'll just stay here.})
+
+done

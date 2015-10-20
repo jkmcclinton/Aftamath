@@ -108,7 +108,7 @@ public class HUD {
 				sb.draw(splashOverlay, 0, 0, Game.width, Game.height);
 			sb.setProjectionMatrix(cam.combined);
 			drawDialog(sb, emotion);
-			if(showStats) drawStats(sb);
+			if(!showStats) drawStats(sb);
 			
 			if (splashTime>0 && splash!=null)
 				drawSplash(sb);
@@ -294,29 +294,29 @@ public class HUD {
 	private boolean canShowContinue(){
 		if (raised){
 			if (main.paused && main.getStateType() == InputState.PAUSED){
-				//System.out.println("paused");
+//				System.out.println("paused");
 				return false;}
 			if (main.speaking){
-				//System.out.println("speaking");
+//				System.out.println("speaking");
 				return false;}
 			if(main.choosing){
-				//System.out.println("choosing");
+//				System.out.println("choosing");
 //			if(play.currentScript != null)
 				return false;}
-//				if(play.currentScript.getActiveObject() != null)
-//					if(play.currentScript.getActiveObject().controlled){
-//						//System.out.println("controlled");
-//						return false;}
+//			if(main.currentScript.getActiveObject() != null)
+//				if(main.currentScript.getActiveObject().controlled){
+//					System.out.println("controlled");
+//					return false;}
 			if(main.getCam().moving){
 //				System.out.println("moving");
 				return false;}
 			if(main.currentScript != null)
 				if(main.currentScript.waitTime > 0){
-					//System.out.println("waiting");
+//					System.out.println("waiting");
 					return false;}
-			if(main.getStateType() == InputState.LOCKED){
-				//System.out.println("locked");
-				return false;}
+//			if(main.getStateType() == InputState.LOCKED){
+//				System.out.println("locked");
+//				return false;}
 			return true;
 		}
 		

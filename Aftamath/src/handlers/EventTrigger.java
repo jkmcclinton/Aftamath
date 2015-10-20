@@ -47,8 +47,7 @@ public class EventTrigger extends Entity{
 			if(!retriggerable)
 				triggered = true;
 			main.triggerScript(script);
-			Vector2 vel = main.character.getBody().getLinearVelocity();
-			main.character.getBody().setLinearVelocity(0, vel.y);
+			main.character.killVelocity();
 		}
 	}
 		

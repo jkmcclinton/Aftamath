@@ -1,0 +1,45 @@
+Script Main
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+text(mad, {Who the f&@# are you?! ~/lHow tha HELL did you get in heer?!})
+
+setSpeaker(player)
+text(normal, {Um, your door was unlocked.})
+
+hideDialog
+wait(3)
+
+setSpeaker(this)
+text(normal, {Oh... that right?})
+text(normal, {Well, then...})
+text(normal, {...})
+text(flirty, {...since you heer, wunt sum crack? ~/l/lI gots loads.})
+setChoice(6:Sure, 6:Maybe, 3:For real?)
+	[Choice Sure]
+		
+	end
+	
+	[Choice Maybe]
+		text(sad, {Tch, I'm just messn' witchyu. I ain't got shit.})
+	end
+	
+	[Choice For real?]
+		text(mad, {Shit, is you a cop?})
+	end
+end
+
+setScript(Crack)
+done
+
+Script Crack
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+text(normal, {...Wunt sum crack?})
+text(normal, {~~~shit... you take too long.})
+doAction(this, aim)
+text(mad, {Now get the f&!#@ out my house befo I bust a cap.})
+done
