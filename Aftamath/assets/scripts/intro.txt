@@ -2,6 +2,7 @@ Script Main
 eventMusic(Leveler)
 lockplayer
 SetSpeaker(narrator)
+
 wait(1.5)
 text(normal, {Man, it's empty in here.})
 wait(.75)

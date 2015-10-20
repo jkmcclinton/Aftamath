@@ -24,7 +24,8 @@ public class CamBot extends Mob {
 		speed = 1;
 	}
 	
-	public void create(){;
+	public void create(){
+		init = true;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		//hitbox

@@ -1,20 +1,11 @@
 package scenes;
 
 import static handlers.Vars.PPM;
-import handlers.Camera;
-import handlers.EventTrigger;
-import handlers.FadingSpriteBatch;
-import handlers.Vars;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-
-import main.Game;
-import main.Main;
-import scenes.Script.ScriptType;
-import box2dLight.PointLight;
-import box2dLight.RayHandler;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,12 +15,14 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -37,12 +30,23 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import entities.Barrier;
 import entities.Entity;
 import entities.Ground;
 import entities.Mob;
+import entities.Path;
 import entities.Warp;
+import handlers.Camera;
+import handlers.EventTrigger;
+import handlers.FadingSpriteBatch;
+import handlers.Vars;
+import main.Game;
+import main.Main;
+import scenes.Script.ScriptType;
 
 public class Scene {
 	
@@ -61,6 +65,8 @@ public class Scene {
 	private Vector2 spawnpoint, localSpawnpoint, camBotSpawnpoint;
 	private ArrayList<Entity> entities;
 	private ArrayList<PointLight> lights;
+	private ArrayList<Path> paths;
+	private HashMap<Mob, String> pathsToAdd;
 	private TiledMap tileMap;
 	private Texture background, midground, foreground, clouds, sky, grad, sun, moon;
 	private World world;
@@ -88,6 +94,8 @@ public class Scene {
 
 		entities = new ArrayList<>();
 		lights = new ArrayList<>();
+		paths = new ArrayList<>();
+		pathsToAdd = new HashMap<>();
 		width = 1000;
 		height = 1000;
 		title = ID.toLowerCase();
@@ -300,6 +308,12 @@ public class Scene {
 		}
 	}
 	
+	public ArrayList<Path> getInitPaths() { return paths;  }
+	public void applyPaths(){
+		for(Mob m :pathsToAdd.keySet())
+			m.moveToPath(pathsToAdd.get(m));
+	}
+	
 	public ArrayList<Entity> getInitEntities() { return entities; }
 	public Vector2 getGravity() { return gravity; }
 	public TiledMap getTileMap(){ return tileMap; }
@@ -385,6 +399,7 @@ public class Scene {
 						String dScript = object.getProperties().get("discoverScript", String.class);
 						String dType = object.getProperties().get("onSight", String.class);
 						String aType = object.getProperties().get("onAttacked", String.class);
+						String pathName = object.getProperties().get("path", String.class);
 
 						if(l!=null)
 							if (l.toLowerCase().equals("back")) l = "3";
@@ -408,6 +423,9 @@ public class Scene {
 								e.setResponseType(dType);
 								e.setAttackType(aType);
 								entities.add(e);
+								
+								if(pathName!=null)
+									pathsToAdd.put(e, pathName);
 							}
 						} catch (NoSuchFieldException | SecurityException e) {
 							e.printStackTrace();
@@ -467,11 +485,22 @@ public class Scene {
 								continue;
 //							et.addEvent("", script);
 							et.setScript(script);
-							condition = object.getProperties().get("condition", String.class);
+							condition = object.getProperties().get(script, String.class);
 //							et.addCondition(script, condition);
 							et.setCondition(condition);
 						}
 					}
+				} else if(object instanceof PolylineMapObject){
+					String name = object.getProperties().get("name", String.class);
+					String behavior = object.getProperties().get("behavior", String.class);
+					Polyline pl =((PolylineMapObject) object).getPolyline();
+					
+					Array<Vector2> vertices = new Array<Vector2>();
+					for(int i = 0; i<pl.getVertices().length-1; i+=2)
+								vertices.add(new Vector2(pl.getVertices()[i]+pl.getX(), 
+										pl.getVertices()[i+1]+pl.getY()));
+					
+					paths.add(new Path(name, behavior, vertices));
 				}
 			}
 		}

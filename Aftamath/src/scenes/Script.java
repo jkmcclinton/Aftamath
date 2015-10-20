@@ -1,23 +1,12 @@
 package scenes;
 
-import handlers.Camera;
-import handlers.GameStateManager;
-import handlers.Pair;
-import handlers.Vars;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Stack;
-
-import main.Game;
-import main.Main;
-import main.Main.InputState;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -30,9 +19,17 @@ import entities.Entity;
 import entities.Entity.DamageType;
 import entities.Mob;
 import entities.Mob.AIState;
+import entities.Path;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
+import handlers.Camera;
+import handlers.GameStateManager;
+import handlers.Pair;
+import handlers.Vars;
+import main.Game;
+import main.Main;
+import main.Main.InputState;
 
 
 /* ----------------------------------------------------------------------
@@ -49,54 +46,54 @@ public class Script {
 	public Stack<Operation> operations;
 	public HashMap<String, Object> localVars;
 	public boolean paused, limitDistance, forcedPause, dialog;
-//	public HashMap<Integer, int[]> choiceTypes;
-//	public HashMap<Integer, String[]> messages;
+	//	public HashMap<Integer, int[]> choiceTypes;
+	//	public HashMap<Integer, String[]> messages;
 	public int current, index; 
 	public float waitTime, time;
-	
+
 	//outside references
 	private Entity owner;
 	private Object activeObj;
 	private Main main;
-	
+
 	private ScriptType type;
 	private String currentName, inputVariable;
 	private LinkedHashMap<Integer, Pair<Integer, Integer>> conditions;
 	private LinkedHashMap<String, Pair<Integer, Integer>> subScripts;
 	private HashMap<String, Integer> checkpoints; 
 	private HashMap<Integer, Choice> choiceIndicies;
-	
+
 	public static enum ScriptType{
 		ATTACKED, DISCOVER, EVENT, DIALOGUE, SCENE
 	}
 
 	public Script(String scriptID, ScriptType type, Main m, Entity owner){
-			this.owner = owner;
-			this.type = type;
-			ID = scriptID;
-			main = m;
-			
-			choiceIndicies = new HashMap<>();
-			conditions = new LinkedHashMap<>();
-			operations = new Stack<>();
-			checkpoints = new HashMap<>();
-			localVars = new HashMap<>();
-			
-			loadScript(scriptID);
-			if(source!=null){
-				getIndicies();
-				getDistanceLimit();
+		this.owner = owner;
+		this.type = type;
+		ID = scriptID;
+		main = m;
 
-//				int i=0;
-//				System.out.println();
-//				for(String s : source){
-//					System.out.println(i+": "+s);
-//					i++;
-//				}
+		choiceIndicies = new HashMap<>();
+		conditions = new LinkedHashMap<>();
+		operations = new Stack<>();
+		checkpoints = new HashMap<>();
+		localVars = new HashMap<>();
 
-				activeObj = new Entity();
-				setIndex();
-			}
+		loadScript(scriptID);
+		if(source!=null){
+			getIndicies();
+			getDistanceLimit();
+
+//			int i=0;
+//			System.out.println();
+//			for(String s : source){
+//				System.out.println(i+": "+s);
+//				i++;
+//			}
+
+			activeObj = new Entity();
+			setIndex();
+		}
 	}
 
 	public void update(){
@@ -126,14 +123,20 @@ public class Script {
 
 	@SuppressWarnings("unused")
 	public void analyze(){
-//		System.out.println("---"+(index+1)+"---- "+source.get(index));
-		
+		//		System.out.println("---"+(index+1)+"---- "+source.get(index));
+
 		Operation o;
+		dialog = false;
+		
+		if(index>=source.size)
+			index = current;
+		
 		String line = source.get(index);
 		String command;//, s;
-		String[] tmp;
+		String[] tmp, args;
 		Entity obj = null;
 		Entity target=null;
+		Vector2 loc = null;
 		int c;
 		dialog = false;
 
@@ -146,7 +149,7 @@ public class Script {
 			else command = line.substring(0, line.indexOf("("));
 
 			switch(command.toLowerCase()){
-			
+
 			case "addpartner":
 				obj = findObject(firstArg(line));
 				if(obj!=null)
@@ -157,7 +160,7 @@ public class Script {
 				obj = findObject(firstArg(line));
 				if(countArgs(line)==2)
 					target = findObject(lastArg(line));
-				
+
 				if(obj != null)
 					if(obj instanceof Mob){
 						if(target!=null)
@@ -178,14 +181,14 @@ public class Script {
 					else
 						System.out.println("Cannot find \""+firstArg(line)+"\" to perform attack; "
 								+ "Line: "+(index+1)+"\tScript: "+ID);
-				
+
 				break;
 			case "burn":
 				obj = findObject(firstArg(line));
-				
+
 				if(obj!=null)
 					obj.ignite();
-				
+
 				break;
 			case "value":
 			case "changeval":
@@ -198,11 +201,12 @@ public class Script {
 				String variableName = firstArg(line);
 				String scope = firstArg(middleArg(line));
 				String type = lastArg(middleArg(line));
-				String value ="";
-				if(lastArg(line).contains("{"))
-					source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
-				else value = lastArg(line);
-//				System.out.println("\nn: "+ variableName +"\ns: "+scope+"\nt: "+type+"\nv: "+value);
+				String value = lastArg(line);
+				if(value.contains("{")) {
+					value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
+					value = getSubstitutions(value);
+				}
+				//				System.out.println("\nn: "+ variableName +"\ns: "+scope+"\nt: "+type+"\nv: "+value);
 
 				try{
 					switch(type.toLowerCase()){
@@ -234,7 +238,7 @@ public class Script {
 				obj = findObject(firstArg(line));
 				if (obj != null){
 					if(obj instanceof Mob){
-						String[] args = args(line);
+						args = args(line);
 						((Mob) obj).doAction(args[1]);
 						if(args.length<3)
 							if(obj.controlled)
@@ -242,14 +246,14 @@ public class Script {
 					}else
 						obj.doAction(convertToNum(line));
 				} else
-					System.out.println("Cannot find \""+firstArg(line)+" to perform action; Line: "+(index+1)+"\tScript: "+ID);
+					System.out.println("Cannot find \""+firstArg(line)+"\" to perform action; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "dotimedaction":
 				obj = findObject(firstArg(line));
 				if (obj != null) { 
 					if(obj instanceof Mob){
 						float f = convertToNum(line);
-						String[] args = args(line);
+						args = args(line);
 						((Mob) obj).doTimedAction(args[1], f);
 						if(args.length<4)
 							if(obj.controlled)
@@ -317,7 +321,7 @@ public class Script {
 				break;
 			case "freeze":
 				obj = findObject(firstArg(line));
-				
+
 				if(obj!=null)
 					obj.freeze();
 				break;
@@ -352,19 +356,19 @@ public class Script {
 				main.setStateType(InputState.KEYBOARD);
 				inputVariable = lastArg(line);
 				Game.resetInput();
-				
+
 				break;
 			case "introevent":
 				paused = true;
 				main.hud.hide();
-				
+
 				main.addBodyToRemove(main.character.getBody());
 				main.character = new Mob(main.character.getName(), 
 						String.valueOf(getVariable("playergender")) + "player" + getVariable("playertype"),
 						main.getScene().getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
 				main.createPlayer(main.getScene().getSpawnPoint());
 				main.addObject(main.character);
-				
+
 				main.setStateType(InputState.GENDERCHOICE);
 				break;
 			case "lockplayer":
@@ -385,18 +389,57 @@ public class Script {
 					activeObj = main.getCam();
 				}
 				break;
+			case "move":
 			case "moveobject":
-				obj = findObject(middleArg(line));
-				if (obj != null) 
-					if(obj instanceof Mob){
-						((Mob) obj).setGoal(convertToNum(line) - obj.getPixelPosition().x);
-						activeObj = obj;
-				} else
-					System.out.println("Cannot find \""+middleArg(line)+"\" to move; Line: "+(index+1)+"\tScript: "+ID);
-				break;
-			case "moveplayer":
-				main.character.setGoal(convertToNum(line));
-				activeObj = main.player;
+//				move(objectName, x, y, [run]) //accepts Tile Location
+//				move(objectName, pathName, [run]) //accepts a path
+//				move(objectName, targetName, [run]) //accepts a mob
+				args = args(line);
+				loc = null;
+				boolean run = false;
+				
+				if(lastArg(line).contains("true") || lastArg(line).contains(lastArg("false")))
+					run = Boolean.parseBoolean(lastArg(line));
+				
+				try{
+					//is object a mob or entity in the map?
+					obj = findObject(args[0]);
+					if(obj==null)
+						return;
+
+					//is argument a pathing object?
+					target = findPath(args[1]);
+					if(target != null)
+						if(target instanceof Mob){
+						Path path = (Path) target;
+						// make object move to path
+						((Mob) obj).moveToPath(path);
+						return;
+					}
+
+					//is target a mob?
+					target = findObject(args[1].trim());
+					if(target != null){
+						float dx = target.getPosition().x - obj.getPosition().x;
+						int x = (int) (Math.abs(dx)/dx) * 10;
+						loc = new Vector2(target.getPosition().x*Vars.PPM + x, target.getPosition().y*Vars.PPM);
+					}
+
+					// is target a tile vector?
+					loc = parseTiledVector(args, 1);
+
+					if(loc != null)
+						if(obj instanceof Mob){
+							if(run);
+								//make mob run to target location
+							((Mob) obj).setGoal(loc.x);
+							activeObj = obj;
+						} else
+							System.out.println("Cannot find \""+middleArg(line)+"\" to move; Line: "+(index+1)+"\tScript: "+ID);
+				}
+				catch (Exception ArrayIndexOutofBoundsException){
+					System.out.println("Insufficient arguments provided; Line: "+(index+1)+"\tScript: "+ID);
+				}
 				break;
 			case"playsound":
 				if(countArgs(line)>1){
@@ -436,7 +479,7 @@ public class Script {
 				c = countArgs(line);
 				String msg = getDialogue(index);
 				boolean selfKill = true;
-				
+
 				if(c==1){
 					//text only
 					obj = main.character;
@@ -444,37 +487,37 @@ public class Script {
 					//text and unpause
 					if(Vars.isBoolean(lastArg(line)))
 						selfKill = Boolean.parseBoolean(lastArg(line));
-					 else {
-						 //text and object
-						 obj = findObject(firstArg(line));
-						 if(obj == null)
-							 obj = main.character;
+					else {
+						//text and object
+						obj = findObject(firstArg(line));
+						if(obj == null)
+							obj = main.character;
 					}
-					
+
 				} else if (c==3) {
 					obj = findObject(firstArg(line));
-					 if(obj == null)
-						 obj = main.character;
+					if(obj == null)
+						obj = main.character;
 
 					if(Vars.isBoolean(lastArg(line)))
 						selfKill = Boolean.parseBoolean(lastArg(line));
 					else selfKill = false;
 				}
-				
+
 				TextBox t = new TextBox(obj, msg, selfKill);
 				if(obj instanceof Mob)
 					((Mob) obj).facePlayer();
-				
+
 				if(!selfKill){
 					paused = forcedPause = dialog = true;
 					activeObj = t;
 					main.setStateType(InputState.LISTEN);
 				}
-				
+
 				break;
 			case "setattacktype":
 				obj = findObject(firstArg(line));
-				
+
 				if(obj!=null)
 					if(obj instanceof Mob)
 						((Mob) obj).setAttackType(lastArg(line));
@@ -485,7 +528,7 @@ public class Script {
 					if(choice!=null){
 						o = new Operation("setchoice", choice.start, choice.end);
 						operations.add(o);
-						
+
 						Array<Option> temp = new Array<>();
 						for(Option o1 : choice.options)
 							if(o1.isAvailable())
@@ -497,8 +540,8 @@ public class Script {
 						paused = true;
 					} 
 				}
-//				else
-//					System.out.println("No choices found for this choice set; Line: "+(index+1)+"\tScript: "+ID);
+				//				else
+				//					System.out.println("No choices found for this choice set; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "setdefaultstate":
 				obj = findObject(firstArg(line));
@@ -509,17 +552,43 @@ public class Script {
 				break;
 			case "setflag":
 				try{
+					boolean bool = true;
+					if(args(line).length==2) 
+						bool = Boolean.parseBoolean(lastArg(line));
+					
 					if(main.history.getFlag(firstArg(line))!=null)
-						main.history.setFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
+						main.history.setFlag(firstArg(line), bool);
 					else
-						main.history.addFlag(firstArg(line), Boolean.parseBoolean(lastArg(line)));
+						main.history.addFlag(firstArg(line), bool);
 				} catch (Exception e){
-					System.out.println("Could not set flag \"" +firstArg(line) + "\"; Line: "+(index+1)+"\tScript: "+ID);
+					System.out.println("Could not set flag \"" +firstArg(line) + "\" to value \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
 				}
+				break;
+			case "setevent":
+				String description = lastArg(line);
+				
+				if(description.contains("{") && description.contains("}")){
+					description = getSubstitutions(description);
+					description = description.substring(description.indexOf("{"), description.indexOf("{"));
+				} else {
+					Object var = getVariable(description); // get local var
+					if(var==null)
+						var = main.history.getVariable(description);
+					if(var!=null){
+						if(var.getClass().getSimpleName().toLowerCase().equals("string"))
+							description = (String) var;
+						else description = "none";
+					} else {
+						description = "none";
+						System.out.println("Invalid description for event \""+firstArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
+					}
+				}
+				
+				main.history.setEvent(firstArg(line), description);
 				break;
 			case "setresponse":
 				obj = findObject(firstArg(line));
-				
+
 				if(obj!=null)
 					if(obj instanceof Mob)
 						((Mob) obj).setResponseType(lastArg(line));
@@ -547,7 +616,7 @@ public class Script {
 				break;
 			case "setstate":
 				obj = findObject(firstArg(line));
-				
+
 				if(obj!=null)
 					if(obj instanceof Mob)
 						((Mob) obj).setState(lastArg(line));
@@ -556,7 +625,29 @@ public class Script {
 				main.getHud().showStats = true;
 				break;
 			case "spawn":
-				spawn(line);
+				//spawn(NPC, image, name, x, y, layer)
+				args = args(line);
+				if(args[0].equals("NPC") && args.length>=5){
+					loc = parseTiledVector(args, 3);
+					if(loc!=null){
+						short layer = Vars.BIT_LAYER3;
+						if(args.length==6)
+							if(args[5].equals(1)) layer = Vars.BIT_LAYER1;
+						
+						//find mob from save data
+						//main.findFromSave(args[2].trim());
+						
+						//create new mob if not found
+						int sceneID = main.createSceneID();
+						
+						Mob e = new Mob(args[2].trim(), args[1].trim(), sceneID, loc.x, loc.y, layer);
+						e.setDefaultState(AIState.FACEPLAYER);
+						e.setDialogueScript("generic_1");
+						spawn(e);
+					} else
+						System.out.println("Cannot spawn \""+args[2]+"\" at given location; Line: "+(index+1)+"\tScript: "+ID);
+				} else
+					System.out.println("Error spawning \""+args[2]+"\" into level; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "splash":
 				main.getHud().setSplash(firstArg(line));
@@ -566,7 +657,7 @@ public class Script {
 				boolean failed=false;
 				float niceScale, braveScale;
 				tmp = args(line);
-				
+
 				if(countArgs(line)==4) max = 4;
 				else {
 					if(tmp.length==1){
@@ -574,25 +665,25 @@ public class Script {
 						break;
 					} else max = 2;
 				}
-				
-					for(int i = 0;i<max;i++)
-						if(!Vars.isNumeric(tmp[i])){
-							failed = true;
-							System.out.println("All values must be numbers; Line: "+(index+1)+"\tScript: "+ID);
-						}
-					
-					if(!failed){
-						nice = Integer.parseInt(tmp[0]);
-						bravery = Integer.parseInt(tmp[1]);
-						niceScale = Float.parseFloat(tmp[2]);
-						braveScale = Float.parseFloat(tmp[3]);
 
-						main.player.setNicenessScale(niceScale);
-						main.player.setBraveryScale(braveScale);
-						main.player.setNiceness(nice);
-						main.player.setBravery(bravery);
+				for(int i = 0;i<max;i++)
+					if(!Vars.isNumeric(tmp[i])){
+						failed = true;
+						System.out.println("All values must be numbers; Line: "+(index+1)+"\tScript: "+ID);
 					}
-				
+
+				if(!failed){
+					nice = Integer.parseInt(tmp[0]);
+					bravery = Integer.parseInt(tmp[1]);
+					niceScale = Float.parseFloat(tmp[2]);
+					braveScale = Float.parseFloat(tmp[3]);
+
+					main.player.setNicenessScale(niceScale);
+					main.player.setBraveryScale(braveScale);
+					main.player.setNiceness(nice);
+					main.player.setBravery(bravery);
+				}
+
 				break;
 			case "stop":
 				finish();
@@ -668,10 +759,10 @@ public class Script {
 		index = current;
 		if(main.hud.raised)
 			main.hud.hide();
-		
+
 		if(main.tempSong && main.getSong().looping)
 			main.removeTempSong();
-		
+
 		main.getCam().removeFocus();
 		main.currentScript = null;
 		main.hud.changeFace(null);
@@ -680,7 +771,7 @@ public class Script {
 			if (d instanceof Mob)
 				((Mob) d).resetState();
 		}
-		
+
 		switch(type){
 		case ATTACKED:
 			if(owner instanceof Mob){
@@ -703,7 +794,7 @@ public class Script {
 					break;
 				}
 			}
-				
+
 			break;
 		case DIALOGUE:
 			break;
@@ -730,13 +821,13 @@ public class Script {
 		default:
 			break;
 		}
-		
+
 		//redisplay speechbubble
 		if (main.character.getInteractable() == owner)
 			new SpeechBubble(owner, owner.getPixelPosition().x + 6, owner.rh + 5  +
 					owner.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
 	}
-	
+
 	public void stopEventBGM(){
 		if(main.tempSong)
 			main.removeTempSong();
@@ -756,7 +847,7 @@ public class Script {
 			if(subScripts.get(key).getKey() < source.size - 1){
 				index = subScripts.get(key).getKey();
 				currentName=key;
-//				System.out.println(currentName +":"+subScripts.get(currentName).getKey());
+				//				System.out.println(currentName +":"+subScripts.get(currentName).getKey());
 				return;
 			}
 	}
@@ -775,7 +866,8 @@ public class Script {
 			} finally {
 				br.close();
 			}
-		} catch(Exception e){}
+		} catch(Exception e){
+		}
 	}
 
 	public void getDistanceLimit(){
@@ -821,32 +913,32 @@ public class Script {
 						mes = args[j].split(":")[1];
 						messages[j] = new String(mes);
 						choices.put(messages[j].toLowerCase(), Integer.parseInt(num.trim())); 
-				}
-				
+					}
+
 				for(String m : messages){
 					if(!tmp.contains(new Option(m), false))
 						tmp.add(new Option(m, choices.get(m.toLowerCase())));
 				}
 				choiceIndicies.put(i, new Choice(bounds.getKey(), bounds.getValue(), tmp));
-				
+
 				String s1;
 				//get choice handling indicies
 				for (int j = i+1;j<bounds.getValue();j++){
 					s1=source.get(j).trim();
 					if(s1.toLowerCase().startsWith("[choice")){;
-						for(String m : messages)
-							if(s1.substring(s1.toLowerCase().indexOf("[choice")+"[choice".length()+1,
-									s1.indexOf("]")).toLowerCase().equals(m.toLowerCase())){
-								b=findBounds("choice", j, bounds.getValue());
-								Option o = choiceIndicies.get(i).get(m);
-								o.setBounds(b);
-								if(s1.replace(" ", "").contains("][")){
-									String s2 = s1.substring(0, s1.indexOf("]")+1);
-									String condition = s1.substring(s2.length());
-									o.setCondition(condition);
-								}
-								break;
+					for(String m : messages)
+						if(s1.substring(s1.toLowerCase().indexOf("[choice")+"[choice".length()+1,
+								s1.indexOf("]")).toLowerCase().equals(m.toLowerCase())){
+							b=findBounds("choice", j, bounds.getValue());
+							Option o = choiceIndicies.get(i).get(m);
+							o.setBounds(b);
+							if(s1.replace(" ", "").contains("][")){
+								String s2 = s1.substring(0, s1.indexOf("]")+1);
+								String condition = s1.substring(s2.length());
+								o.setCondition(condition);
 							}
+							break;
+						}
 					}
 				}
 			} if(line.toLowerCase().startsWith("if"))
@@ -854,18 +946,18 @@ public class Script {
 			if(line.toLowerCase().startsWith("elseif"))
 				conditions.put(i, findBounds("elseif", i, end));
 		}
-		
-//		System.out.println("\nID: "+ID);
-//		System.out.println("scripts:    "+subScripts);
-//		System.out.println("conditions: "+conditions);
-//		System.out.println("choices:    "+choiceIndicies);
+
+		//		System.out.println("\nID: "+ID);
+		//		System.out.println("scripts:    "+subScripts);
+		//		System.out.println("conditions: "+conditions);
+		//		System.out.println("choices:    "+choiceIndicies);
 	}
 
 	private Pair<Integer, Integer> findBounds(String type, int start, int end){
 		Pair<Integer, Integer> bounds = null;
 		String s;
 		int e=-1;
-		
+
 		for(int i = start+1; i<end; i++){
 			if(bounds!=null) break;
 			s=source.get(i).toLowerCase().trim();
@@ -878,7 +970,7 @@ public class Script {
 			case"if":
 			case"elseif":
 				if(s.startsWith("else"))
-				e = i;
+					e = i;
 				if((s.startsWith("elseif")||(s.startsWith("end"))&&!s.contains("endgame")))
 					bounds = new Pair<>(e, i);
 				break;
@@ -895,8 +987,8 @@ public class Script {
 		}
 		if(bounds!=null)
 			return bounds;
-		
-//		System.out.println("Missing a \"done\" statement in script \""+ID+"\"");
+
+		//		System.out.println("Missing a \"done\" statement in script \""+ID+"\"");
 		return new Pair<>(start, end);
 	}
 
@@ -958,14 +1050,12 @@ public class Script {
 		String str="";
 		if(tmp.contains("{") && tmp.contains("}")){
 			str = tmp.substring(tmp.indexOf("{"), tmp.indexOf("}") +1);
-			if(tmp.length() - tmp.indexOf("}")>1)
-				tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&" + tmp.substring(tmp.indexOf("}"));
-			else tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&";
+			tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&" + tmp.substring(tmp.indexOf("}")+1);
 		}
 
 		String[] a = tmp.split(",");
 		for(int i =0;i<a.length;i++)
-			if(a[i].equals("&str&"))
+			if(a[i].trim().equals("&str&"))
 				a[i]=str;
 		return a;
 	}
@@ -1007,16 +1097,36 @@ public class Script {
 		}
 		return object;
 	}
+	
+	private Path findPath(String pathName){
+		System.out.println(pathName);
+		return main.getPath(pathName);
+	}
+	
+	// create a vector from an array of arguments starting from given index
+	private Vector2 parseTiledVector(String[] args, int index){
+		if(index+1>=args.length)
+			return null;
+		
+		try{
+			int x = Integer.parseInt(args[index].trim()) * Vars.TILE_SIZE;
+			int y =	main.getScene().height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
+			Vector2 v = new Vector2(x, y);
+			return v;
+		} catch(Exception e){ }
+		
+		return null;
+	}
 
 	public void getChoiceIndex(String choice){
 		if(choiceIndicies.get(operations.peek().start)!=null){
 			Choice c = choiceIndicies.get(operations.peek().start);
 			Option op = c.get(choice.toLowerCase());
 			if(op!=null){
-					Operation o = new Operation("choice", op.getBounds());
-					operations.add(o);
-					index = o.start;
-					main.setStateType(InputState.LISTEN);
+				Operation o = new Operation("choice", op.getBounds());
+				operations.add(o);
+				index = o.start;
+				main.setStateType(InputState.LISTEN);
 			} else {
 				System.out.println("No handling for choice \""+choice+"\" found for setChoice at Line: "+(index+1)+"\tScript: "+ID);
 				index = operations.peek().end + 1;
@@ -1072,10 +1182,8 @@ public class Script {
 		} catch (IllegalAccessException e) { }
 	}
 	
-	private String getDialogue(int index){
-		String txt = source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
-
-		// filter out delimiters
+//	string substitutions
+	private String getSubstitutions(String txt){
 		if(txt.contains("/player")){
 			txt = txt.substring(0, txt.indexOf("/player")) + main.character.getName() + 
 					txt.substring(txt.indexOf("/player") + "/player".length());
@@ -1137,6 +1245,9 @@ public class Script {
 			}
 			txt = txt.substring(0, txt.indexOf("/partnergo")) + g + 
 					txt.substring(txt.indexOf("/partnergo") + "/partnergo".length());
+		} if (txt.contains("/partnert")) {
+			txt = txt.substring(0, txt.indexOf("/partnert")) + main.player.getPartnerTitle() + 
+					txt.substring(txt.indexOf("/partnergt") + "/partnergt".length());
 		} if(txt.contains("/house")){
 			txt = txt.substring(0, txt.indexOf("/house")) + main.player.getHome().getType() + 
 					txt.substring(txt.indexOf("/house") + "/house".length());
@@ -1154,12 +1265,18 @@ public class Script {
 				System.out.println("No variable with name \""+ varName +"\" found; Line: "+(index+1)+"\tScript: "+ID);
 		}
 		
-//		return txt;
+		return txt;
+	}
+
+	private String getDialogue(int index){
+		String txt = source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
+		txt = getSubstitutions(txt);
+
 		return Vars.formatDialog(txt, true);
 	}
-	
+
 	public void applyInput(){
-		changeValue("value(set, "+inputVariable+", " + Game.getInput()+")");
+		changeValue("value(set, "+inputVariable+", {" + Game.getInput()+"})");
 		paused = false;
 		Game.resetInput();
 		main.setStateType(main.prevStateType);
@@ -1170,16 +1287,22 @@ public class Script {
 		String function = firstArg(line);
 		String target = middleArg(line);
 		String value = lastArg(line);
+		// System.out.println("changeValue: " + function +"|"+ target +"|"+ value);
 		boolean successful = false;
 
 		//		System.out.println(function +":"+target+":"+value);
 
-		Object var = getVariable(value);
-		if(var==null)
-			var = main.history.getVariable(value);
-		if(var!=null)
-			value = String.valueOf(var);
-			
+		if (value.contains("{") && value.contains("}")) {
+			value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
+			value = getSubstitutions(value);
+		} else {
+			Object var = getVariable(value);
+			if(var==null)
+				var = main.history.getVariable(value);
+			if(var!=null)
+				value = String.valueOf(var);
+		}
+
 		if(target.contains(".")){
 			String obj = target.substring(0, target.indexOf("."));
 			target = target.substring(target.indexOf(".")+1);
@@ -1198,7 +1321,6 @@ public class Script {
 							}
 							break;
 						case "money": 
-							System.out.println("HI!");
 							main.player.addFunds(Float.parseFloat(value));
 							break;
 						case "love":
@@ -1219,7 +1341,6 @@ public class Script {
 						default:
 							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object +
 									"\"; Line: "+(index+1)+"\tScript: "+ID);
-							break;
 						}
 					} catch (Exception e) {
 						System.out.println("Could not add \"" + value +"\" to \"" + target + 
@@ -1280,10 +1401,10 @@ public class Script {
 							if(object instanceof Mob){
 								DamageType type = DamageType.valueOf(value.toUpperCase());
 								if(type!=null)
-										((Mob)object).setPowerType(type);
-									else System.out.println("\""+value+"\" is not a valid power type; Line: "+(index+1)+"\tScript: "+ID);
-								}
-								successful = true;
+									((Mob)object).setPowerType(type);
+								else System.out.println("\""+value+"\" is not a valid power type; Line: "+(index+1)+"\tScript: "+ID);
+							}
+							successful = true;
 							break;
 						default:
 							System.out.println("\"" + target +"\" is an invalid property to modify for \"" + object + "\"; Line: "+(index+1)+"\tScript: "+ID);
@@ -1304,7 +1425,7 @@ public class Script {
 							+ "\"" + object.getClass().getSimpleName() + "\"; Line: "+(index+1)+"\tScript: "+ID);
 			}
 		} else {
-//			System.out.println("finding var \""+target+"\"");
+			//			System.out.println("finding var \""+target+"\"");
 			try{
 				//find local variable
 				Object obj = getVariable(target);
@@ -1403,7 +1524,7 @@ public class Script {
 	private boolean compare(String statement){
 		Array<String> arguments = new Array<>();
 		String tmp = new String(statement);
-//		System.out.println(tmp);
+		//		System.out.println(tmp);
 
 		//separate arguments and conditions
 		for(int i = 0; i<tmp.length()-1; i++){				
@@ -1450,7 +1571,7 @@ public class Script {
 		for(int j = 0; j<arguments.size;j+=2){
 			arguments.set(j, String.valueOf(main.evaluator.evaluate(arguments.get(j), this)));
 		}
-//		System.out.println(statement+":"+arguments);
+		//		System.out.println(statement+":"+arguments);
 
 		while(arguments.size>=3)
 			arguments = combine(arguments);
@@ -1525,7 +1646,7 @@ public class Script {
 							localVars.put(p,(int) val);
 						if(type.toLowerCase().equals("string"))
 							localVars.put(p,(String) val);
-					} catch (Exception e){System.out.println();}
+					} catch (Exception e){System.out.println("Wrong type");}
 				} else 
 					localVars.put(p,val);
 			}
@@ -1549,70 +1670,8 @@ public class Script {
 			index = checkpoints.get(name);
 	}
 
-	public void spawn(int obj, Vector2 location){
-		spawn("spawn " + obj, location);
-	}
-
-	private void spawn(String line){
-		Vector2 location = new Vector2(Float.parseFloat(lastArg(middleArg(line))),
-				Float.parseFloat(lastArg(line)));
-		spawn(line, location);
-	}
-
-	private void spawn(String line, Vector2 location){
-		int c = 0;
-		Entity obj = getObjectType(firstArg(line), location);
-
-		for(Entity e : main.getObjects())
-			if (e.getSceneID() < c)
-				c = e.getSceneID();
-
-		if (obj != null){
-			if (obj instanceof Mob)
-				obj.setSceneID(c);
-			main.addObject(obj);
-		}
-	}
-
-	private Entity getObjectType(String indicator, Vector2 location) {
-		return getObjectType(indicator, location, Vars.BIT_LAYER1);
-	}
-
-	//must be rewritten
-	private Entity getObjectType(String indicator, Vector2 location, Short layer){
-		Class<?> c;
-		try {
-			c = Class.forName(indicator);
-			Class<?> C = c.getSuperclass();
-
-			while(C != null) {
-				if (C.getSimpleName().toLowerCase().equals("scene"))
-					break;
-				C = C.getSuperclass();
-			}
-
-			Constructor<?> cr = c.getConstructor(Float.class, Float.class, Short.class);
-			Object o = cr.newInstance(location.x, location.y, layer);
-			return (Entity) o;
-
-		} catch (NoSuchMethodException | SecurityException e) {
-			System.out.println("no such constructor");
-		} catch (InstantiationException e) {
-			System.out.println("cannot instantiate object");
-		} catch (IllegalAccessException e) {
-			System.out.println("cannot access object");
-			//e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			System.out.println("illegal argument");
-			//e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			System.out.println("cannot invoke target");
-			//e.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			System.out.println("Class \"" + indicator + "\" not found.");
-		}
-
-		return null;
+	public void spawn(Entity e){
+		main.addObject(e);
 	}
 
 	public void setPlayState(Main gs) { main = gs; }
@@ -1630,36 +1689,36 @@ public class Script {
 			this.start = start;
 			this.end = end;
 		}
-		
+
 		public Operation(String type, Pair<Integer, Integer> bounds){
 			this.type = type;
 			this.start = bounds.getKey();
 			this.end = bounds.getValue();
 		}
-		
+
 		public String toString(){
 			return "["+type+", "+"("+start+", "+end+") ] Choices:";
 		}
 	}
-	
+
 	public class Choice {
 		public int start, end;
 		private Array<Option> options;
-		
+
 		public Choice(int start, int end, Array<Option> options){
 			this.start = start;
 			this.end = end;
 			this.options = options;
 		}
-		
+
 		public String toString(){
 			return "["+start+", "+end+"]\n\t{"+options.toString()+"}";
 		}
-		
+
 		public boolean contains(String key){
 			return options.contains(new Option(key), false);
 		}
-		
+
 		public Option get(String key){
 			int index = options.indexOf(new Option(key), false);
 			if(index>=0)
@@ -1667,11 +1726,11 @@ public class Script {
 			else return null;
 		}
 	}
-	
+
 	public class Option{
 		public String condition, message;
 		public int start, end, type;
-		
+
 		public Option(String name, int type){
 			this.start = -1;
 			this.end = -1;
@@ -1679,34 +1738,34 @@ public class Script {
 			this.type = type;
 			condition ="";
 		}
-		
+
 		public Option(String name){
 			this(name, 0);
 		}
-		
+
 		public boolean isAvailable(){
 			if(!condition.isEmpty())
 				return compare(condition);
 			return true;
 		}
-		
+
 		public void setCondition(String s){ condition = s; }
-		
+
 		public Pair<Integer, Integer> getBounds(){
 			return new Pair<Integer, Integer>(start, end);
 		}
-		
+
 		public void setBounds(Pair<Integer, Integer> b){
 			start = b.getKey();
 			end = b.getValue();
 		}
-		
+
 		public String toString(){
 			if(condition.isEmpty())				
 				return message +"{"+type+"} ["+start+", "+end+"]";
 			return message +"{"+type+"} ["+start+", "+end+"] :: "+condition;
 		}
-		
+
 		public boolean equals(Object o){
 			if (o instanceof Option)
 				return ((Option) o).message.toLowerCase().equals(message.toLowerCase());

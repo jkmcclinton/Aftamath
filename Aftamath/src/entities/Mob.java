@@ -35,6 +35,7 @@ public class Mob extends Entity{
 	public ScriptAI controlledAction;
 	public boolean canWarp, canClimb, wasOnGround, running;
 	public boolean climbing, falling, snoozing, knockedOut;
+	public float experience;
 
 	//used for adjusting the distance between the character
 	//and the object currently being interacted with
@@ -54,12 +55,30 @@ public class Mob extends Entity{
 	protected int ctrlRepeat = -1, timesIdled;
 	protected TextureRegion[] face, healthBar;
 	protected Warp warp;
+	private Path path;
 	protected Array<Entity> attackables, discovered;
 	protected Entity attackFocus, AIfocus;
 	protected float visionRange = DEFAULT_VISION_RANGE;
 	protected Entity interactable;
+	protected static final int IDLE_LIMIT = 500;
 	
 	private static Array<Action> immobileActions = new Array<>(); 
+
+	//determines when the NPC fights back
+	public static enum AttackType{
+		ON_SIGHT, ON_ATTACKED, ON_DEFEND, /*ON_EVENT,*/ RANDOM, NEVER
+	}
+
+	//determines what the NPC does when the character is spotted
+	public static enum SightResponse{
+		FOLLOW, ATTACK, TALK, EVADE, IGNORE
+	}
+
+	//determines what 
+	public static enum AIState{
+		STATIONARY, IDLEWALK, FOLLOWING, FACEPLAYER, FACEOBJECT, ATTACKING, FIGHTING, 
+		EVADING, EVADING_ALL, DANCING, BLOCKPATH, TIMEDFIGHT, PATH, PATH_PAUSE
+	}
 	
 	static{
 	 Action[] tmp = {Action.DEAD, Action.DIE_TRANS, Action.FLINCHING, Action.GET_DOWN, Action.SNOOZING, Action.WAKE_UP, 
@@ -228,6 +247,10 @@ public class Mob extends Entity{
 	}
 
 	public void update(float dt){
+		if(main==null){
+			System.out.println("still BROKEN");
+			return;
+		}
 		attackTime+=dt;
 		
 		if(frozen)
@@ -488,23 +511,6 @@ public class Mob extends Entity{
 		}
 	}
 
-	//determines when the NPC fights back
-	public static enum AttackType{
-		ON_SIGHT, ON_ATTACKED, ON_DEFEND, /*ON_EVENT,*/ RANDOM, NEVER
-	}
-
-	//determines what the NPC does when the character is spotted
-	public static enum SightResponse{
-		FOLLOW, ATTACK, TALK, EVADE, IGNORE
-	}
-
-	public static enum AIState{
-		STATIONARY, IDLEWALK, FOLLOWING, FACEPLAYER, FACEOBJECT, ATTACKING, FIGHTING, 
-		EVADING, EVADING_ALL, DANCING, BLOCKPATH, TIMEDFIGHT
-	}
-
-	protected static final int IDLE_LIMIT = 500;
-
 	public void setState(String state){
 		try{
 			AIState s = AIState.valueOf(state.toUpperCase());
@@ -583,10 +589,35 @@ public class Mob extends Entity{
 		if(ID==null)return;
 		discoverScript = new Script(ID, ScriptType.DISCOVER, main, this);
 	}
+	
+	public void moveToPath(){
+		moveToPath(path);
+	}
+	
+	// for setting mobs to always follow path
+	public void moveToPath(String src){
+		Path p = main.getPath(src);
+		if(p!=null){
+			this.path = p;
+			goalPosition = path.getCurrent();
+			state = AIState.PATH;
+		}
+	}
+	
+	public void moveToPath(Path path){
+		if(path!=null){
+			System.out.println(this + "\t"+path);
+			this.path = path;
+			doAction(ScriptAI.MOVE);
+		}
+	}
+	
+	public void setPath(Path path){
+		this.path = path;
+	}
 
 	//possibly crunch this down
 	public void act(){
-		
 		float dx, dy;
 //		if(sceneID==1)
 //			System.out.println(ID+":"+state);
@@ -616,7 +647,6 @@ public class Mob extends Entity{
 		} else
 			doTime+=Vars.DT;
 		
-		
 			switch (state){
 			//walk to random locations within a radius, then wait a random amount of time
 			case IDLEWALK: 
@@ -637,8 +667,8 @@ public class Mob extends Entity{
 							inactiveTime = 0;
 							reached = true;
 						} else {
-							if(dx < 1) left();
-							if(dx > -1) right();
+							if(dx <= -1) left();
+							if(dx >= 1) right();
 						}
 					}
 				}
@@ -668,8 +698,8 @@ public class Mob extends Entity{
 						float d = (float) Math.sqrt(dx*dx + dy+dy);
 
 						if(Math.abs(d)>attackRange){
-							if(dx > 1) right();
-							if(dx < -1) left();
+							if(dx <= -1) left();
+							if(dx >= 1) right();
 						} else{
 							attack();
 							attacked = true;
@@ -681,6 +711,33 @@ public class Mob extends Entity{
 					}
 				}
 
+				break;
+			case PATH:
+				if (!isReachable()) {
+					path.stepIndex();
+					if(path.completed){
+						path = null;
+						state = AIState.STATIONARY;
+					} else {
+						goalPosition = path.getCurrent();
+					}
+				}
+				else {
+					dx = (goalPosition.x - body.getPosition().x*PPM) ;
+					if(dx < 1 && dx > -1){
+						path.stepIndex();
+						if(path.completed){
+							path = null;
+							state = AIState.STATIONARY;
+						} else {
+							goalPosition = path.getCurrent();
+							reached = true;
+						}
+					} else {
+						if(dx <= -1) left();
+						if(dx >= 1) right();
+					}
+				}
 				break;
 			case FIGHTING:
 				fightAI();
@@ -695,8 +752,8 @@ public class Mob extends Entity{
 					if(dx < 1 && dx > -1){
 						reached = true;
 					} else {
-						if(dx < 1) left();
-						if(dx > -1) right();
+						if(dx <= -1) left();
+						if(dx >= 1) right();
 					}
 				} else {
 					boolean found = false; dx =0;
@@ -918,8 +975,11 @@ public class Mob extends Entity{
 						freeze();
 				}
 
-				if(health<=0)
+				if(health<=0){
+					if(owner.equals(main.character) && this.iff!=IFFTag.FRIENDLY)
+						owner.experience+= .15f/owner.level;
 					die();
+				}
 				else
 					if(val>DAMAGE_THRESHOLD)
 						setTransAnimation(Action.STUMBLE, Action.KNOCKED_OUT);
@@ -995,6 +1055,7 @@ public class Mob extends Entity{
 		this.maxHealth = maxHealth;
 	}
 
+	//create the mob in its last saved position
 	public void respawn(){
 		if (respawnPoint!=null){
 			System.out.println("respawning");
@@ -1018,6 +1079,7 @@ public class Mob extends Entity{
 
 	public void setGoal(float gx) { 
 		this.goalPosition = new Vector2((float) gx/PPM + getPosition().x, getPosition().y); 
+//		if(path==null)
 		doAction(ScriptAI.MOVE);
 	}
 
@@ -1252,7 +1314,7 @@ public class Mob extends Entity{
 		case RUN:
 			run();
 		case MOVE:
-			if(goalPosition==null)
+			if(goalPosition==null && path==null)
 				return;
 
 			if(isReachable()){
@@ -1262,15 +1324,27 @@ public class Mob extends Entity{
 					if (dx > 0) right();
 					else left();
 				} else {
+					// handling when the mob engages conversation
 					if (positioning) {
 						positioning = false;
 						if(positioningFocus!=null)
 							faceObject(positioningFocus);
 						finishAction();
+					} else if(path!=null){
+						path.stepIndex();
+						if (path.completed)
+							path = null;
+						else
+							goalPosition = path.getCurrent();
 					}
 				}
-			} else 
+			} else {
+				//path cannot be completed
+				if(path!=null) {
+					path = null;
+				}
 				finishAction();
+			}
 			break;
 		// go to the focus object and hug it
 		// if the object is a mob, make it hug back
@@ -1352,6 +1426,9 @@ public class Mob extends Entity{
 				ctrlRepeat--;
 			} else {
 				if(isReachable()){
+					if(goalPosition==null)
+						goalPosition = new Vector2(getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
+								Vars.TILE_SIZE, getPosition().y);
 					float dx = (goalPosition.x - getPosition().x)* PPM ;
 
 					if(Math.abs(dx) > 1){
@@ -1435,6 +1512,7 @@ public class Mob extends Entity{
 				finishAction();
 	}
 	
+	//conclude any controlled actions for mob
 	private void finishAction(){
 		goalPosition = null;
 		controlled = false;
@@ -1445,11 +1523,7 @@ public class Mob extends Entity{
 	}
 
 	public void lookUp(){
-		setTransAnimation(Action.LOOK_UP, Action.LOOKING_UP);
-//		System.out.println(" ---------- ");
-//		System.out.println("LOOK: "+actionLengths[animationIndicies.get(Action.LOOK_UP)]);
-//		System.out.println("LOOKING: "+actionLengths[animationIndicies.get(Action.LOOKING_UP)]);
-//		System.out.println("WALKING: "+actionLengths[animationIndicies.get(Action.WALKING)]);
+		setTransAnimation(Action.LOOKING_UP, Action.LOOK_UP);
 	}
 
 	public void lookDown(){
@@ -1495,13 +1569,13 @@ public class Mob extends Entity{
 			if(body.getFixtureList().get(2).getUserData().equals("interact")){
 				w1 = w + INTERACTION_SPACE;
 				shape = (PolygonShape) body.getFixtureList().get(2).getShape();
-				shape.setAsBox((w1/2f)/Vars.PPM, rh/Vars.PPM, new Vector2(d*INTERACTION_SPACE/(2*Vars.PPM), 0), 0);
+				shape.setAsBox((w1/2f)/Vars.PPM, (rh+1)/Vars.PPM, new Vector2(d*INTERACTION_SPACE/(2*Vars.PPM), 0), 0);
 			} 
 		if(max >=4)
 			if(body.getFixtureList().get(3).getUserData().equals("attack")){
 				w1 = w + attackRange;
 				shape = (PolygonShape) body.getFixtureList().get(3).getShape();
-				shape.setAsBox((w1/2f)/Vars.PPM, rh/Vars.PPM, new Vector2(d*attackRange/(2*Vars.PPM), 0), 0);
+				shape.setAsBox((w1/2f)/Vars.PPM, (rh-1)/Vars.PPM, new Vector2(d*attackRange/(2*Vars.PPM), 0), 0);
 			}
 		if(max >=5)
 			if(body.getFixtureList().get(4).getUserData().equals("vision")){
@@ -1546,7 +1620,11 @@ public class Mob extends Entity{
 		return true;
 	}
 	
+	//ensure the mob can reach its destination
 	public boolean isReachable(){
+		if(!canMove())
+			return false;
+		//goalPosisition;
 		return true;
 	}
 
@@ -1611,6 +1689,9 @@ public class Mob extends Entity{
 
 	public Script interact(){
 		if (interactable == null) return null;
+		
+		killVelocity();
+		interactable.killVelocity();
 		return interactable.getScript();
 	}
 
@@ -1813,6 +1894,7 @@ public class Mob extends Entity{
 
 	private float w = DEFAULT_WIDTH/2f-4;
 	public void create(){
+		init = true;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 
@@ -1859,7 +1941,7 @@ public class Mob extends Entity{
 		if(facingLeft) d = -1;
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((w1/2f)/Vars.PPM, rh/Vars.PPM, new Vector2(d*INTERACTION_SPACE/(2*Vars.PPM), 0), 0);
+		shape.setAsBox((w1/2f)/Vars.PPM, (rh+1)/Vars.PPM, new Vector2(d*INTERACTION_SPACE/(2*Vars.PPM), 0), 0);
 		fdef.shape = shape;
 		
 		
@@ -1876,7 +1958,7 @@ public class Mob extends Entity{
 		if(facingLeft) d = -1;
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((w1/2f)/Vars.PPM, rh/Vars.PPM, new Vector2(d*attackRange/(2*Vars.PPM), 0), 0);
+		shape.setAsBox((w1/2f)/Vars.PPM, (rh-1)/Vars.PPM, new Vector2(d*attackRange/(2*Vars.PPM), 0), 0);
 		fdef.shape = shape;
 		
 		fdef.isSensor = true;
@@ -1917,4 +1999,6 @@ public class Mob extends Entity{
 
 		return n;
 	}
+	
+	public String toString(){ return ID +": " + name; }
 }

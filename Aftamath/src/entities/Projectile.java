@@ -52,6 +52,7 @@ public class Projectile extends Entity {
 	}
 	
 	public void create(){
+		init = true;
 		Gdx.audio.newSound(new FileHandle("res/sounds/chirp5.wav")).play();
 		
 		//hitbox

@@ -29,7 +29,6 @@ public class SpeechBubble extends Entity {
 	private int time = idleTime;
 	private int maxWidth = 16, minWidth, innerWidth;
 	private PositionType positioningType;
-	private float px, py;
 	
 	public static final int DEFAULT_WIDTH = 14;
 	public static final int DEFAULT_HEIGHT = 12;
@@ -141,24 +140,25 @@ public class SpeechBubble extends Entity {
 		if(sizingState!=0||expanded){
 			if(getBody()==null)
 				create();
-			switch(positioningType){
-				case LEFT_MARGIN:
-					sb.draw(left, getPosition().x*Vars.PPM - rw, getPosition().y*Vars.PPM-rh);
-					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth + 3, getPosition().y*Vars.PPM-rh);
-					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
-					break;
-				case CENTERED:
-					sb.draw(left, getPosition().x*Vars.PPM - rw - innerWidth/2 + 1, getPosition().y*Vars.PPM-rh);
-					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth/2 +3, getPosition().y*Vars.PPM-rh);
-					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
-					sb.draw(middle, getPosition().x*Vars.PPM - rw - innerWidth/2 + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
-					break;
-				case RIGHT_MARGIN:
-					sb.draw(left, getPosition().x*Vars.PPM + rw - innerWidth - 5, getPosition().y*Vars.PPM-rh);
-					sb.draw(right, getPosition().x*Vars.PPM + rw - 3, getPosition().y*Vars.PPM-rh);
-					sb.draw(middle, getPosition().x*Vars.PPM + rw - innerWidth - 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
-					break;
-				}
+			drawBacking(innerWidth, sb);
+//			switch(positioningType){
+//				case LEFT_MARGIN:
+//					sb.draw(left, getPosition().x*Vars.PPM - rw, getPosition().y*Vars.PPM-rh);
+//					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth + 3, getPosition().y*Vars.PPM-rh);
+//					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
+//					break;
+//				case CENTERED:
+//					sb.draw(left, getPosition().x*Vars.PPM - rw - innerWidth/2 + 1, getPosition().y*Vars.PPM-rh);
+//					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth/2 +3, getPosition().y*Vars.PPM-rh);
+//					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
+//					sb.draw(middle, getPosition().x*Vars.PPM - rw - innerWidth/2 + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
+//					break;
+//				case RIGHT_MARGIN:
+//					sb.draw(left, getPosition().x*Vars.PPM + rw - innerWidth - 5, getPosition().y*Vars.PPM-rh);
+//					sb.draw(right, getPosition().x*Vars.PPM + rw - 3, getPosition().y*Vars.PPM-rh);
+//					sb.draw(middle, getPosition().x*Vars.PPM + rw - innerWidth - 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
+//					break;
+//				}
 			if(expanded){
 				float x = 0;
 				if (positioningType==PositionType.RIGHT_MARGIN) 
@@ -168,11 +168,42 @@ public class SpeechBubble extends Entity {
 				main.drawString(sb, font, font[0].getRegionWidth(), message, 
 						getPosition().x*Vars.PPM-rw-x+3, getPosition().y*Vars.PPM-rh+2f);
 			}
-		} else
+		} else{
+			if(ID.contains("ble6")){
+				drawBacking(8, sb);
+				float x = 0;
+				if (positioningType==PositionType.RIGHT_MARGIN) 
+					x = font[0].getRegionWidth()- font[0].getRegionWidth()-2;
+				else if (positioningType==PositionType.CENTERED)
+					x = font[0].getRegionWidth()/2f-1;
+				main.drawString(sb, font, font[0].getRegionWidth(), message.substring(0, 1), 
+						getPosition().x*Vars.PPM-rw-x+3, getPosition().y*Vars.PPM-rh+2f);
+			} else
 			super.render(sb);
-
+		}
 		if(bool)
 			sb.setOverlayDraw(true);
+	}
+	
+	private void drawBacking(int w, FadingSpriteBatch sb){
+		switch(positioningType){
+		case LEFT_MARGIN:
+			sb.draw(left, getPosition().x*Vars.PPM - rw, getPosition().y*Vars.PPM-rh);
+			sb.draw(right, getPosition().x*Vars.PPM - rw + w +3, getPosition().y*Vars.PPM-rh);
+			sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, w, middle.getRegionHeight());
+			break;
+		case CENTERED:
+			sb.draw(left, getPosition().x*Vars.PPM - rw - w/2 + 1, getPosition().y*Vars.PPM-rh);
+			sb.draw(right, getPosition().x*Vars.PPM - rw + w/2 +3, getPosition().y*Vars.PPM-rh);
+			sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, w/2, middle.getRegionHeight());
+			sb.draw(middle, getPosition().x*Vars.PPM - rw - w/2 + 3, getPosition().y*Vars.PPM-rh, w/2, middle.getRegionHeight());
+			break;
+		case RIGHT_MARGIN:
+			sb.draw(left, getPosition().x*Vars.PPM + rw - w - 5, getPosition().y*Vars.PPM-rh);
+			sb.draw(right, getPosition().x*Vars.PPM + rw - 3, getPosition().y*Vars.PPM-rh);
+			sb.draw(middle, getPosition().x*Vars.PPM + rw - w - 3, getPosition().y*Vars.PPM-rh, w, middle.getRegionHeight());
+			break;
+		}
 	}
 	
 	public void expand(){ 
@@ -186,6 +217,7 @@ public class SpeechBubble extends Entity {
 		expanded = false;
 	}
 	
+	//floating arround algorithm
 	public void reposition() {
 		time++;
 		if (reached && time >= idleTime){
@@ -202,13 +234,13 @@ public class SpeechBubble extends Entity {
 				time = 0;
 			}
 			else {
-				px = dx * 1.5f; py = dy * 1.5f;
-				body.setLinearVelocity(px, py);
+				body.setLinearVelocity(dx * 1.5f, dy * 1.5f);
 			}
 		}
 	}
 	
 	public void create(){
+		init = true;
 		//hitbox
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw-2)/PPM, (rh)/PPM);

@@ -52,9 +52,9 @@ I've tried my best to add print statements to help you debug your script.
 	  checkPoint
 	  choice
 	  declare
-	  doAction
+	~ doAction
 	  done
-	  doTimedAction
+	~ doTimedAction
 	  else
 	~ elseIf
 	  end
@@ -72,11 +72,11 @@ I've tried my best to add print statements to help you debug your script.
 	  follow
 	  resetState
 	  lockPlayer
-	~ lock
+       X~ lock
 	  moveCamera
 	  focus/focusCamera
 	  unfocus/unfocusCamera/removeFocus
-	~ moveObject
+	~ move
 	~ pause
 	~ playSound
 	  remove/removeObject
@@ -84,9 +84,9 @@ I've tried my best to add print statements to help you debug your script.
 	  return
 	  say
 	  setAttackType
-	~ setChoice
+	  setChoice
 	  setDefaultState
-	~ setEvent
+	  setEvent
 	  setFlag
 	  setResponse
 	~ setScene
@@ -161,17 +161,6 @@ doTimedAction:
 else:
 	part of "if" and ~"elseIf" condition handling
 	else
-~elseIf:
-	provides another condition following an "if" command.
-	if no "if" command preceeds this command, this acts just like an "if"
-	elseIF(flag + and/or + [comparison] +...)
-
-	use "!" to denote a "not" statement
-	use "." to obtain object properties
-	comparisons would be things like [player.health > 7] or [!civilian1.gender = male]
-
-	~capitalization does matter
-	handling must be capped with an end statement
 end:
 	halts handling for certain commands
 	basically the same as and end brace } in programming
@@ -256,13 +245,15 @@ focus/focusCamera:
 unfocus/unfocusCamera/removeFocus:
 	focuses the camera back on the player
 	unfocus
-~moveObject:
+~move/moveObject:
 	moves the mob to the specified location; units in tiles
 	if the boolean [run] is included, the mob will run to the location
 	if object is not a mob, this does nothing
-	moveObject(objectName, x, y, [run])
+	moveObject(objectName, x, y, [run]) //accepts Tile Location
+	moveObject(objectName, pathName, [run]) //accepts a path
+	moveObject(objectName, targetName, [run]) //accepts a mob
 
-	To get the Tile Location (x, y), you have to look use Tiled.
+	To get the Tile Location (x, y) and pathName, you have to use Tiled.
 ~pause:
 	makes the dialogue wait for user input
 	pause
@@ -322,7 +313,10 @@ setDefaultState:
 		attacking	
 ~setEvent:
 	adds the event to the player's history
-	setEvent(eventName)
+	the description should be modified during the event. For example, if one event has multiple
+	 outcomes, the script should include a string variable that describes what the player actually
+	 did
+	setEvent(eventName, description)
 
 	NOTE: if you add a new event, please add it to the list of events throughout the game
   	        so we can keep of all the events. Also tell me if it is a major event so it can show
@@ -373,9 +367,13 @@ setScript:
 	if none are given, all are shown
 ~spawn:
 	spawns the object at the specified location
-	spawn(objectType, x, y)
+	spawn(objectType, NPCtype, name, x, y, layer) //for spawning NPCs
 
-	x and y are in pixels
+	NPCtype must be a valid image base name, like "boss1" or "bballer". For full list of current 
+		available images see "Aftamath/assets/images/entities/mobs"
+	layer must either be 1 or 3
+	objectType must be either NPC or other valid types (there aren't any as of now)
+	location (x, y) is a Tiled Vector.
 	refer to object type list for possible values
 statUpdate:
 	adds nicetyVal and braveryVal player's current stats to the given values. 
@@ -460,6 +458,7 @@ text delimiters:
 	/partnergps - parner gender, possessive singular (his, her)
 	/partnergp - parner gender, possessive plural (his, hers)
 	/partnergo - partner gender, objective (he, she)
+	/partnert - partner title (boyfriend, girlfriend, wife, husband, sidekick, friend)
 	/home - player's house type
 	/address - player's house address
 	~ /variable[]
