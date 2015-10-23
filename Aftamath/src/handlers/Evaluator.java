@@ -30,7 +30,7 @@ public class Evaluator {
 			return true;
 		if(statement.contains(">") || statement.contains("<") || statement.contains("=")){
 			String value = "", val = "";
-
+			
 			//separate value and condition from tmp
 			obj = "";
 			String condition = "";
@@ -59,7 +59,7 @@ public class Evaluator {
 
 			obj = tmp.substring(0, tmp.indexOf(condition));
 			val = tmp.substring(tmp.indexOf(condition)+condition.length());
-
+			
 			if(obj.contains("+")||obj.contains("-")||obj.contains("*")||obj.contains("/"))
 				property = evaluateExpression(obj);
 			else
@@ -70,8 +70,8 @@ public class Evaluator {
 			else
 				value = determineValue(val, false);
 
-
-//			System.out.println("p: " + property + "\nc: " + condition + "\nv: " + value);
+//			System.out.println(statement);
+//			System.out.println("p: " + property + "\tc: " + condition + "\tv: " + value);
 
 			//actual comparator
 			try{
@@ -104,6 +104,7 @@ public class Evaluator {
 					System.out.println("\""+condition+"\" is not a vaild operator; Line: "+(script.index+1)+"\tScript: "+script.ID);
 				}
 
+//				System.out.println("result: "+result);
 				if(not) return !result;
 				else return result;
 			} catch(Exception e){
@@ -112,9 +113,10 @@ public class Evaluator {
 				return false;
 			}
 		} else {
-			//remove brackes
+			//remove brackets
 			if(!statement.isEmpty())
-				statement = statement.substring(1, statement.length()-1);
+				if(statement.contains("[") && statement.contains("]"))
+				statement = statement.substring(statement.indexOf("[")+1, statement.indexOf("]"));
 			if(statement.startsWith("!")){
 				not = true;
 				statement = statement.substring(1);
@@ -152,8 +154,10 @@ public class Evaluator {
 		}
 
 		//sort expressions
+		//not programmed, sorry
 
 		//evaluate
+		//separates all arguments and contstants from operators
 		arguments = new Array<>(tmp.split("(?<=[&+*/])|(?=[&+*/])"));
 		if(arguments.size<3||arguments.contains("", false)) return obj;
 
@@ -164,6 +168,8 @@ public class Evaluator {
 				result = new String(res);
 		}
 
+		//continuously evaluate operations until there aren't enough
+		//left to perform a single operation
 		while(arguments.size>=3){
 			val = arguments.get(2);
 			switch(arguments.get(1)){
@@ -247,9 +253,16 @@ public class Evaluator {
 	private String determineValue(String obj, boolean boolPossible){
 		String prop = "", not = "", property = null;
 		Object object=null;
+		
+		//ensure that invald characters do not change the outcome
+		obj = (obj.replace("[", "")).replace("]", "");
 
 		if(Vars.isNumeric(obj))
 			property = obj;
+		//the object is a string and must be parsed out
+		else if(obj.contains("{") && obj.contains("}"))
+			return getSubstitutions(obj.substring(obj.indexOf("{")+1, obj.lastIndexOf("{")));
+		//the value is an object's property
 		else if(obj.contains(".")){
 			prop = obj.substring(obj.indexOf(".")+1);
 			obj = obj.substring(0, obj.indexOf("."));
@@ -405,6 +418,92 @@ public class Evaluator {
 			break;
 		}
 		return property;
+	}
+	
+	//	string substitutions
+	private String getSubstitutions(String txt){
+		while(txt.contains("/")){
+			if(txt.contains("/player")){
+				txt = txt.substring(0, txt.indexOf("/player")) + main.character.getName() + 
+						txt.substring(txt.indexOf("/player") + "/player".length());
+			}if(txt.contains("/playerg")){
+				String g = "guy";
+				if(main.character.getGender().equals("female")) g="girl";
+				txt = txt.substring(0, txt.indexOf("/playerg")) + g + 
+						txt.substring(txt.indexOf("/playerg") + "/playerg".length());
+			}if(txt.contains("/playergps")){
+				String g = "his";
+				if(main.character.getGender().equals("female")) g="her";
+				txt = txt.substring(0, txt.indexOf("/playergps")) +g + 
+						txt.substring(txt.indexOf("/playergps") + "/playergps".length());
+			}if(txt.contains("/playergp")){
+				String g = "his";
+				if(main.character.getGender().equals("female")) g="hers";
+				txt = txt.substring(0, txt.indexOf("/playergp")) + g + 
+						txt.substring(txt.indexOf("/playergp") + "/playergp".length());
+			}if(txt.contains("/playergo")){
+				String g = "he";
+				if(main.character.getGender().equals("female")) g="she";
+				txt = txt.substring(0, txt.indexOf("/playergo")) + g + 
+						txt.substring(txt.indexOf("/playergo") + "/playergo".length());
+			} if(txt.contains("/partner")){
+				String s = "";
+				if(main.player.getPartner()==null)
+					s=main.player.getPartner().getName();
+				txt = txt.substring(0, txt.indexOf("/partner")) + s + 
+						txt.substring(txt.indexOf("/partner") + "/partner".length());
+			}if(txt.contains("/partnerg")){
+				String g = "";
+				if(main.player.getPartner()!=null){
+					if(main.player.getPartner().getGender().equals("female")) g="girl";
+					else g = "guy"; 
+				}
+				txt = txt.substring(0, txt.indexOf("/partnerg")) + g + 
+						txt.substring(txt.indexOf("/partnerg") + "/partnerg".length());
+			}if(txt.contains("/partnergps")){
+				String g = "";
+				if(main.player.getPartner()!=null){
+					if(main.player.getPartner().getGender().equals("female")) g="her";
+					else g = "his"; 
+				}
+				txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
+						txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
+			}if(txt.contains("/partnergp")){
+				String g = "";
+				if(main.player.getPartner()!=null){
+					if(main.player.getPartner().getGender().equals("female")) g="hers";
+					else g = "his"; 
+				}
+				txt = txt.substring(0, txt.indexOf("/partnergp")) + g + 
+						txt.substring(txt.indexOf("/partnergp") + "/partnergp".length());
+			}if(txt.contains("/partnergo")){
+				String g = "";
+				if(main.player.getPartner()!=null){
+					if(main.player.getPartner().getGender().equals("female")) g="she";
+					else g = "he"; 
+				}
+				txt = txt.substring(0, txt.indexOf("/partnergo")) + g + 
+						txt.substring(txt.indexOf("/partnergo") + "/partnergo".length());
+			} if (txt.contains("/partnert")) {
+				txt = txt.substring(0, txt.indexOf("/partnert")) + main.player.getPartnerTitle() + 
+						txt.substring(txt.indexOf("/partnergt") + "/partnergt".length());
+			} if(txt.contains("/house")){
+				txt = txt.substring(0, txt.indexOf("/house")) + main.player.getHome().getType() + 
+						txt.substring(txt.indexOf("/house") + "/house".length());
+			} if(txt.contains("/address")){
+				txt = txt.substring(0, txt.indexOf("/address")) + main.player.getHome().getType() + 
+						txt.substring(txt.indexOf("/address") + "/address".length());
+			} if(txt.contains("/variable[")&& txt.indexOf("]")>=0){
+				String varName = txt.substring(txt.indexOf("/variable[")+"/variable[".length(), txt.indexOf("]"));
+				Object var = main.history.getVariable(varName);
+				if(var!= null) {
+					txt = txt.substring(0, txt.indexOf("/variable[")) + var +
+							txt.substring(txt.indexOf("/variable[")+"/variable[".length()+ varName.length() + 1);
+				}
+			}
+		}
+		
+		return txt;
 	}
 
 }

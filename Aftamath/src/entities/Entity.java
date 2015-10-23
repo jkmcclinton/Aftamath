@@ -175,9 +175,12 @@ public class Entity{
 	}
 	
 	public void changeLayer(short layer){
+		System.out.println("layer changed");
 		this.layer = layer;
 		if(body!=null){
 			main.addBodyToRemove(body);
+			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+			fdef.filter.categoryBits = layer;
 			create();
 		} else {
 			System.out.println(layer);

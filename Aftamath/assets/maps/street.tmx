@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="44">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="48">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bgm day" value="Misdirection"/>
@@ -219,7 +219,7 @@
     <property name="ID" value="4"/>
     <property name="NPC" value="girlfriend2"/>
     <property name="attackScript" value="onAttacked2"/>
-    <property name="layer" value="back"/>
+    <property name="layer" value="front"/>
     <property name="name" value="Naja"/>
     <property name="script" value="generic_1"/>
     <property name="state" value="IDLEWALK"/>
@@ -317,18 +317,11 @@
     <property name="ID" value="4"/>
     <property name="NPC" value="boss2"/>
     <property name="attackScript" value="onAttacked"/>
-    <property name="layer" value="back"/>
+    <property name="layer" value="front"/>
     <property name="name" value="Mr. Bidd"/>
     <property name="path" value="TestPath"/>
-    <property name="script" value="generic_1"/>
+    <property name="script" value="bidd"/>
     <property name="state" value="PATH"/>
-   </properties>
-  </object>
-  <object id="32" x="944" y="1392" width="16" height="176">
-   <properties>
-    <property name="dank" value=""/>
-    <property name="event" value=""/>
-    <property name="retriggerable" value=""/>
    </properties>
   </object>
   <object id="34" name="TestPath" x="800" y="1552">
@@ -364,6 +357,24 @@
     <property name="name" value="Narrator"/>
     <property name="script" value="endOfDemo"/>
     <property name="state" value="BLOCKPATH"/>
+   </properties>
+  </object>
+  <object id="44" name="5" x="1420" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="15"/>
+    <property name="NPC" value="villain1"/>
+    <property name="attckScript" value="onAttacked2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="The Flying Chick"/>
+    <property name="script" value="SUPA"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="45" x="1136" y="1392" width="0.01" height="176">
+   <properties>
+    <property name="event" value="false"/>
+    <property name="grimReaper" value=""/>
+    <property name="retriggerable" value=""/>
    </properties>
   </object>
  </objectgroup>

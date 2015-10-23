@@ -135,7 +135,7 @@ declare:
 	declare(variableName, scope, type, initialValue)
 
 	scopes: local, global
-	types: Integer, Float, String
+	types: Integer, Float, String, Flag
 	NOTE: local variables delete themselves when the script ends (i.e. with the done command),
 	      so keep that in mind when you want to declare variables
 doAction:
@@ -310,7 +310,10 @@ setDefaultState:
 
 	see list of AI states
 	invalid state type(s):
-		attacking	
+		attacking
+setDialogue:
+	changes the dialogue script for the given mob. Usually use this after spawning a mob in
+	setDialogue(objectName, scriptName)	
 ~setEvent:
 	adds the event to the player's history
 	the description should be modified during the event. For example, if one event has multiple
@@ -349,7 +352,7 @@ setSpeaker:
 setScript:
 	sets the read location for the object's script
 	!!does not change the source file!!
-	If you want to change what something else says, create a flag and go to that
+	If you want to change what something else says, use setDialogue
 	setScript(scriptTitle)
 ~setState:
 	sets the NPC's current AI state to the given state. The NPC reverts to its default state
@@ -451,7 +454,7 @@ text delimiters:
 	/player - player name
 	/playerg - player gender (guy, girl)
 	/playergps - player gender, possessive singular (his, her)
-	/playergp - player gender, possessive plural (his, her)
+	/playergp - player gender, possessive plural (his, hers)
 	/playergo - player gender, objective (he, she)
 	/partner - partner name
 	/partnerg - partner gender

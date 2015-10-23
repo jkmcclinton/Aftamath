@@ -108,7 +108,7 @@ public class HUD {
 				sb.draw(splashOverlay, 0, 0, Game.width, Game.height);
 			sb.setProjectionMatrix(cam.combined);
 			drawDialog(sb, emotion);
-			if(!showStats) drawStats(sb);
+			drawStats(sb);
 			
 			if (splashTime>0 && splash!=null)
 				drawSplash(sb);

@@ -473,10 +473,13 @@ public class Scene {
 					if(object.getProperties().get("event")!=null){
 						Iterator<String> it = object.getProperties().getKeys();
 						EventTrigger et = new EventTrigger(main, rect.x, rect.y, rect.width, rect.height);
-						String script, condition;
+						String script, condition, halt;
 //						String spawnSet = object.getProperties().get("", String.class);
 						if(object.getProperties().get("retriggerable", String.class)!=null)
 							et.setRetriggerable(true);
+						halt = object.getProperties().get("event", String.class);
+						if(!halt.isEmpty())
+							et.setHalt(halt);
 						
 						while(it.hasNext()){
 							script = it.next();

@@ -82,8 +82,9 @@ public class Camera extends OrthographicCamera{
 
 			if(Math.abs(dx) < .5f && Math.abs(dy) < .5f) {
 				moving = false;
-				if(character.getGameState().currentScript.getActiveObject().equals(this))
-					character.getGameState().currentScript.setActiveObj(new Entity());
+				if(character.getGameState().currentScript!=null)
+					if(character.getGameState().currentScript.getActiveObject().equals(this))
+						character.getGameState().currentScript.setActiveObj(new Entity());
 			} else { 
 				float x1 = position.x + (dx * 5 / Vars.PPM);
 				float y1 = position.y + (dy * 5 / Vars.PPM);
@@ -150,7 +151,7 @@ public class Camera extends OrthographicCamera{
 		if (zoom<=.8){
 			YOFFSET = 0;
 		} else if (zoom>=1.2f){ 
-			YOFFSET = 37;
+			YOFFSET = 36;
 		} else {
 			YOFFSET = 92.5f*zoom-74;
 		}

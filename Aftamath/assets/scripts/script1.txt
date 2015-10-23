@@ -1,12 +1,12 @@
 Script Intro
 lockPlayer
-eventMusic(Explosive)
+eventMusic(Helpful Hints)
 faceobject(this, player)
 SetSpeaker(this)
-text(normal, {This is a test for individual scripts./l~Perhaps I should include a tool to automatically/llimit the amount of text is written per/lline and per page to simplify things.})
+text(normal, {This is a test for individual scripts./l~Fun fact: this was also the first ever script to be written into the game. Cool huh?})
 SetChoice(YesNo)
   [Choice Yes]
-    text(normal, {I'll think about implementing it into/lwhat I already have.})
+    text(normal, {I know, right? I'm so awesome I got to say the first ever words in the big city!})
    setScript(RobberIntro)
   end
 
@@ -22,35 +22,42 @@ end
 done
 
 Script RobberIntro
+eventMusic(Helpful Hints)
+lockplayer
 SetSpeaker(this)
 faceobject(this, player)
+
 text(normal, {Look over there.}, false)
 wait(1)
-focusCamera(1)
+focusCamera(Tough Guy)
 lockplayer
+
 pause
+
 unfocus
 faceobject(this, player)
-text(normal, {That guy is a robber. He'll kill you.})
-lowerdialog
+text(normal, {That guy is a cold blooded killer. He'd kill you if this were the real deal.})
+hidedialog
 faceobject(this, player)
-focus(1)
-doAction(1, aim)
-faceobject(1, player)
-SetSpeaker(1)
+focus(Tough Guy)
+doAction(Tough Guy, aim)
+faceobject(Tough Guy, player)
+SetSpeaker(Tough Guy)
 text(mad, {Don't think I cant hear you guys/lyapping over there!~ I'm not/lstupid!})
-doAction(1, loseaim)
+doAction(Tough Guy, loseaim)
+
+setScript(GenderTest)
 done
 
 Script GenderTest
 lockplayer
 if([player.gender = female])
-  SetSpeaker(1, true)
+  SetSpeaker(Sasha, true)
   text(sad, {You are a female.})
-  movePlayer(-10)
+  move(player, -10)
 else
   SetSpeaker(this)
   text(normal, {You are a male.})
-  movePlayer(25)
+  move(player, 25)
 end
 done

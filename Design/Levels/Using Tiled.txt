@@ -388,8 +388,10 @@ depending on your configuration.
 
 --------------------Event Trigger Properties--------------------
 
-	event |
+	event | [halt]
 		This is necessary to denote that the object is an event trigger
+		include the boolean halt to specify wether the trigger should stop the player
+			whenever they first collide with it. By default this value is true
 
 	retriggerable |
 		if this is included then the event will ALWAYS to trigger when the player collides

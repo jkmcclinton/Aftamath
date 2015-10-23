@@ -36,6 +36,7 @@ import entities.TextBox;
 import entities.Warp;
 import handlers.Camera;
 import handlers.Evaluator;
+import handlers.EventTrigger;
 import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyContactListener;
@@ -294,6 +295,11 @@ public class Main extends GameState {
 		cam.locate(dt);
 		if(quitting)
 			quit();
+		
+		
+//		Entity e = findObject("Grim Reaper");
+//		if(e!=null)
+//			cam.setFocus(e);
 	}
 	
 	public void handleWeather(){
@@ -466,8 +472,16 @@ public class Main extends GameState {
 		if(e!=null){
 			if(!cam.getFocus().equals(e))
 				cam.setFocus(e);
-		debugText+="/l("+e.getPosition().x*Vars.PPM + ", " + e.getPosition().y*Vars.PPM+")";
+			debugText+="/l("+e.getPosition().x*Vars.PPM + ", " + e.getPosition().y*Vars.PPM+")";
 		}
+		
+		e = findObject("Grim Reaper");
+		if(e!=null){
+//			debugText+="/l("+e.getPosition().x*Vars.PPM + ", " + e.getPosition().y*Vars.PPM+")";
+			debugText+="/lisInteractable: "+e.isInteractable;
+			debugText+="/lScript: "+e.getScript();
+		}
+		
 		sb.begin();
 			drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
 		sb.end();
@@ -896,7 +910,19 @@ public class Main extends GameState {
 				if(hud.raised) speakDelay = .020f;
 				else speakDelay = 2f;
 
-				if(speakText[sy].length()>0){
+				if(sy>=speakText.length){
+					speaking = false;
+					speakText = null;
+					
+					music.fadeIn(Game.musicVolume);
+					
+					if (currentScript != null){
+						if(currentScript.peek() != null)
+							if(currentScript.peek().toLowerCase().equals("choice")
+									&& displayText.isEmpty())
+								currentScript.readNext();
+					}
+				} else if(speakText[sy].length()>0){
 					char c = speakText[sy].charAt(sx);
 					if (c == ".".charAt(0) || c == ",".charAt(0)|| c == "!".charAt(0)|| c == "?".charAt(0)) 
 						speakDelay = .25f;
@@ -1137,7 +1163,15 @@ public class Main extends GameState {
 	}
 	
 	public void createPlayer(Vector2 location){
-		String gender = character.ID.substring(0, character.ID.indexOf("player"));
+		String gender = character.getGender();
+		System.out.println(gender);
+//		try {
+//			gender = character.ID.substring(0, character.ID.indexOf("player"));
+//		} catch(Exception e){
+//			gender = character.getGender();
+//		}
+		
+		
 		character.setGender(gender);
 		
 		cam.zoom = Camera.ZOOM_NORMAL;
@@ -1179,12 +1213,20 @@ public class Main extends GameState {
 	}
 	
 	public void triggerScript(String src){
+		triggerScript(src, null);
+	}
+	
+	public void triggerScript(String src, EventTrigger tg){
 		Script s = new Script(src, ScriptType.DIALOGUE, this, character);
 		if (s.ID!=null && s.source!=null)
-			triggerScript(s);
+			triggerScript(s, tg);
 	}
 	
 	public void triggerScript(Script script){
+		triggerScript(script, null);
+	}
+	
+	public void triggerScript(Script script, EventTrigger tg){
 		currentScript = script;
 		
 		if (analyzing) return;
@@ -1194,11 +1236,14 @@ public class Main extends GameState {
 				if (e instanceof SpeechBubble)
 					addBodyToRemove(e.getBody()); //remove talking speech bubble
 			script.analyze();
-			if (currentScript.limitDistance) {
+			if (currentScript.limitDistance) { //script can somehow become null at this point (threading issue?)
 				setStateType(InputState.MOVELISTEN);
 			} else {
 				if(character.getInteractable()!=null)
-					positionPlayer(character.getInteractable());
+					if(tg==null)
+						positionPlayer(character.getInteractable());
+					else if (tg.halt) System.out.println("not positioning");
+//						do something
 			}
 		}
 	}
@@ -1394,13 +1439,15 @@ public class Main extends GameState {
 		public void addFunds(double amount){ goalMoney += amount; }
 		public void updateMoney(){
 			double dx = (goalMoney - money)/2;
-//			if(dx < 1d && dx != 0) dx = 1 * (dx/Math.abs(dx));
-			
+			if(Math.abs(dx)<.01) {
+				money = goalMoney;
+				dx = 0;
+			}
 			money += dx;
 		}
 		
 		public double getMoney(){ return money; }
-		public void resetMoney(double money){ this.money = money; }
+		public void resetMoney(double money){ this.money = goalMoney = money; }
 		
 		public void evict(){ home = new House(); }
 		public void moveHome(House newHouse){ home = newHouse; }
@@ -1464,7 +1511,11 @@ public class Main extends GameState {
 			addFlag(flag, val);
 		}
 		
-		public void addFlag(String flag, boolean val){ 	flagList.put(flag, val); 	}
+		public void addFlag(String flag, boolean val){ 	
+			for(String p : flagList.keySet())
+				if(p.equals(flag))
+					return;
+				flagList.put(flag, val); 	}
 		
 		public boolean setEvent(String event, String description){ 
 			for(Pair<String, String> p : eventList)

@@ -263,7 +263,7 @@ public class Mob extends Entity{
 				else
 					doAction();
 			} else if (!equals(main.character)){
-				if (isOnGround() && !locked && !controlled) 
+				if (isOnGround() && !locked && !controlled && state!=null) 
 					act();
 			}
 
@@ -441,10 +441,12 @@ public class Mob extends Entity{
 		this.action = action;
 
 		int aI = animationIndicies.get(action);
+		int i = actionLengths[aI];
+		if(ID.equals("reaper")) i = 6;
 
 		try{
 			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[aI];
-			animation.setAction(sprites, actionLengths[aI], facingLeft, aI, delay, repeat);
+			animation.setAction(sprites, i, facingLeft, aI, delay, repeat);
 		} catch(Exception e) { }
 	}
 
@@ -519,11 +521,12 @@ public class Mob extends Entity{
 	}
 
 	public void setState(AIState state){ 
+		System.out.println("setting: "+state);
 		if (state == AIState.FOLLOWING) follow(main.character);
 		else this.state = state;
 	}
 
-	public void setState(AIState state, Entity focus){ 
+	public void setState(AIState state, Entity focus){
 		if (state == AIState.FOLLOWING) follow(focus);
 		else this.state = state;
 
@@ -646,6 +649,8 @@ public class Mob extends Entity{
 			}
 		} else
 			doTime+=Vars.DT;
+//		if(ID.equals("reaper"))
+//			System.out.println("State: " +state.name());
 		
 			switch (state){
 			//walk to random locations within a radius, then wait a random amount of time
@@ -684,8 +689,8 @@ public class Mob extends Entity{
 				facePlayer();
 				dx = main.character.getPosition().x - body.getPosition().x;
 
-				float m = MAX_DISTANCE * main.character.getFollowerIndex(this);
-
+				float m = MAX_DISTANCE * (main.character.getFollowerIndex(this)+1);
+				
 				if(dx > m/PPM) right();
 				else if (dx < -1 * m/PPM) left();
 				break;
@@ -863,7 +868,7 @@ public class Mob extends Entity{
 	}
 	
 	public void facePlayer(){
-		watchObject(main.character);
+		faceObject(main.character);
 	}
 	
 	public void faceObject(Entity obj){
@@ -882,7 +887,7 @@ public class Mob extends Entity{
 	}
 
 	public void follow(Entity focus){
-		state = AIState.FOLLOWING;
+		setDefaultState(AIState.FOLLOWING);
 		focus.addFollower(this);
 	}
 

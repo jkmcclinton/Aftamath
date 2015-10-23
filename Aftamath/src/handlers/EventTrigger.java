@@ -1,8 +1,5 @@
 package handlers;
 
-import main.Main;
-
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -11,11 +8,12 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 import entities.Entity;
+import main.Main;
 
 public class EventTrigger extends Entity{
 	
 	public float x, y, width, height;
-	public boolean triggered, retriggerable;
+	public boolean triggered, retriggerable, halt = true;
 	
 	private Body body;
 	private BodyDef bdef = new BodyDef();
@@ -46,17 +44,21 @@ public class EventTrigger extends Entity{
 		if(conditionsMet() && !triggered){
 			if(!retriggerable)
 				triggered = true;
-			main.triggerScript(script);
-			main.character.killVelocity();
+			main.triggerScript(script, this);
+			if(halt) main.character.killVelocity();
 		}
 	}
 		
+	// find condition based on given event index
 //	public boolean conditionsMet(int event){
 //		return main.evaluator.evaluate(conditions.get(event));
 //	}
 	
 	public boolean conditionsMet(){
-		return main.evaluator.evaluate(condition);
+		if(!condition.isEmpty())
+			return main.evaluator.evaluate(condition);
+		else 
+			return true;
 	}
 
 //	public void addCondition(String event, String condition){
@@ -74,6 +76,11 @@ public class EventTrigger extends Entity{
 	public void setRetriggerable(boolean retrig){ retriggerable = retrig; }
 	public void setCondition(String condition){ this.condition = condition; }
 	public void setScript(String script){ this.script = script; }
+	public void setHalt(String val){
+		try{
+			halt = Boolean.parseBoolean(val);
+		}catch(Exception e){}
+	}
 	
 	public void create() {
 		PolygonShape shape = new PolygonShape();

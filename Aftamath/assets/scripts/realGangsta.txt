@@ -1,7 +1,9 @@
-Script Main
+Script Meet
+declare(not, local, integer, 0)
 lockplayer
 setSpeaker(this)
 facePlayer(this)
+eventMusic(Explosive)
 
 text(mad, {Who the f&@# are you?! ~/lHow tha HELL did you get in heer?!})
 
@@ -9,7 +11,7 @@ setSpeaker(player)
 text(normal, {Um, your door was unlocked.})
 
 hideDialog
-wait(3)
+wait(1.5)
 
 setSpeaker(this)
 text(normal, {Oh... that right?})
@@ -18,7 +20,28 @@ text(normal, {...})
 text(flirty, {...since you heer, wunt sum crack? ~/l/lI gots loads.})
 setChoice(6:Sure, 6:Maybe, 3:For real?)
 	[Choice Sure]
+		text(happy, {Great! ~100k. ~Cough it up.})
 		
+		hidedialog
+		wait(1.5)
+		
+		if([player.money >= 100000])
+			text(normal, {DAMN!~ You actually got all that cash on you!?})
+			text(normal, {I don't even want to know.})
+			text(normal, {Cash first.})
+			
+			hideDialog
+			value(add, player.money, -100000])
+			wait(1)
+			text(happy, {HAH!~ You was played, bruh! I ain't got shit!})
+			
+			setSpeaker(player)
+			text(mad, {Man that's some bull.})
+			value(set, not, 2)
+		else
+			text(normal, {Ain't got it? Too bad.})
+			value(set, not, 1)
+		end
 	end
 	
 	[Choice Maybe]
@@ -30,7 +53,15 @@ setChoice(6:Sure, 6:Maybe, 3:For real?)
 	end
 end
 
-setScript(Crack)
+if([not = 0])
+	setScript(Crack)
+else
+	if([not = 1])
+		setScript(Money)
+	else
+		setScript(Cheated)
+	end
+end
 done
 
 Script Crack
@@ -39,7 +70,38 @@ setSpeaker(this)
 facePlayer(this)
 
 text(normal, {...Wunt sum crack?})
-text(normal, {~~~shit... you take too long.})
+text(normal, {~~shit... you take too long.})
 doAction(this, aim)
 text(mad, {Now get the f&!#@ out my house befo I bust a cap.})
+done
+
+Script Money
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+if([player.money >= 100000])
+	text(normal, {DAMN!~ You actually got all that cash on you!?})
+	text(normal, {I don't even want to know.})
+	text(normal, {Cash first.})
+	
+	hideDialog
+	value(add, player.money, -100000])
+	wait(1)
+	text(happy, {HAH!~ You was played, bruh! I ain't got shit!})
+	
+	setSpeaker(player)
+	text(mad, {Man that's some bull.})
+	setScript(Cheated)
+else
+	text(mad, {You ain't gettin' shit if you don't cough up sum cash...})
+end
+done
+
+Script Cheated
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+text(mad, {You best think again if you think you gon' getchyo money back.})
 done

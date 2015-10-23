@@ -1,0 +1,16 @@
+Script Main
+if(!gaveSoul)
+	declare(found, global, Flag, false)
+	wait(.1)
+	findObject(Grim Reaper, found)
+	if(!found)
+		spawn(NPC, reaper, Grim Reaper, 64, 97)
+		setDialogue(Grim Reaper, grimResponse)
+		follow(Grim Reaper, player)
+		#setLayer(Grim Reaper, projectile)
+	else
+		remove(Grim Reaper)
+	end
+end
+
+done
