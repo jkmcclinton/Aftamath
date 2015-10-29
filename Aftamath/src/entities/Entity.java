@@ -1,6 +1,10 @@
 package entities;
 
 import static handlers.Vars.PPM;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import handlers.Animation;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
@@ -21,8 +25,14 @@ import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
-public class Entity{
+public class Entity implements Serializable {
+	
+	//global mapping of IDs (in Tiled, custom prop "ID") to an Entity reference
+	public static Map<Integer, Entity> idToEntity;
 	
 	public String ID;
 	public Animation animation;
@@ -57,6 +67,10 @@ public class Entity{
 	protected short layer, origLayer;
 	protected Array<Mob> followers;
 	
+	static {
+		idToEntity = new HashMap<Integer, Entity>();
+	}
+	
 	public enum DamageType{
 		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND;
 	}
@@ -67,6 +81,7 @@ public class Entity{
 	public Entity(){} 
 	
 	public Entity (float x, float y, String ID) {
+		//this(x, y, -1, -1, ID);			//negative width, height reserved for finding from texture
 		this.ID = ID;
 		this.x = x;
 		this.y = y;
@@ -77,6 +92,7 @@ public class Entity{
 		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		loadSprite();
 		followers = new Array<>();
+
 		origLayer = Vars.BIT_LAYER1;
 	}
 	
@@ -299,6 +315,11 @@ public class Entity{
 	}
 	
 	protected void setDimensions(int width, int height){
+		//if (width < 0 || height < 0) {
+		//	width = getWidth(this.ID);
+		//	height = getHeight(this.ID);
+		//}
+		
 		this.width = width; 
 		this.height = height;
 
@@ -401,4 +422,44 @@ public class Entity{
 		fdef.filter.maskBits = (short) (Vars.BIT_HALFGROUND | Vars.BIT_GROUND);
 		body.createFixture(fdef).setUserData("center");
 	}
+
+	@Override
+	public void read(Json json, JsonValue jsonMap) {
+		//System.out.println(json);
+		//System.out.println(jsonMap.prettyPrint(new JsonValue.PrettyPrintSettings()));
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("ID", this.ID);
+		json.writeValue("sceneID", this.sceneID);
+		json.writeValue("x", this.x);
+		json.writeValue("y", this.y);
+		json.writeValue("health", this.health);
+		json.writeValue("burning", this.burning);
+		json.writeValue("frozen", this.frozen);
+		json.writeValue("burnTime", this.burnTime);
+		json.writeValue("burnDelay", this.burnDelay);
+		json.writeValue("facingLeft", this.facingLeft);
+		json.writeValue("isInteractable", this.isInteractable);
+		json.writeValue("layer", this.layer);
+		json.writeValue("origLayer", this.origLayer);
+		
+		Array<Integer> mobRef = new Array<Integer>();
+		for (Mob m : this.followers) {
+			mobRef.add(m.sceneID);
+		}
+		//json.writeObjectStart("followersObj");
+		json.writeValue("followerObj", mobRef);
+		//json.writeObjectEnd();
+		
+		//json.writeObjectStart("scriptObj");
+		json.writeValue("script", this.script);
+		//json.writeObjectEnd();
+		
+		//json.writeObjectStart("attackScriptObj");
+		json.writeValue("attackScript", this.attackScript);
+		//json.writeObjectEnd();
+	}
+	
 }

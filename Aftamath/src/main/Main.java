@@ -20,6 +20,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 import box2dLight.RayHandler;
 import entities.CamBot;
@@ -39,6 +42,7 @@ import handlers.Evaluator;
 import handlers.EventTrigger;
 import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
+import handlers.JsonSerializer;
 import handlers.MyContactListener;
 import handlers.MyInput;
 import handlers.MyInput.Input;
@@ -542,7 +546,10 @@ public class Main extends GameState {
 		if(MyInput.isPressed(Input.LIGHTS)) rayHandling = !rayHandling ;
 		if(MyInput.isPressed(Input.COLLISION)) dbRender = !dbRender ;
 		if(MyInput.isPressed(Input.DEBUG)) character.respawn();
-		if(MyInput.isPressed(Input.DEBUG2)) render=!render;
+		if(MyInput.isPressed(Input.DEBUG2)) {
+			//render=!render;
+			JsonSerializer.saveGameState("savegame.txt");
+		}
 		if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
 		
 		if (paused){
@@ -1343,7 +1350,7 @@ public class Main extends GameState {
 	}
 	
 	//contains all data related to the player
-	public class Player {
+	public class Player implements Serializable {
 
 		public boolean stopPartnerDisabled = false;
 		
@@ -1470,10 +1477,32 @@ public class Main extends GameState {
 		}
 
 		public void setTypeCounter(HashMap<DamageType, Integer> tc){ typeCounter = tc; }
+
+		@Override
+		public void read(Json arg0, JsonValue arg1) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void write(Json json) {
+			json.writeValue("money", this.money);
+			json.writeValue("info", this.info);
+			json.writeValue("relationship", this.relationship);
+			json.writeValue("bravery", this.bravery);
+			json.writeValue("nicety", this.nicety);
+			json.writeValue("Llimit", this.L);
+			json.writeValue("Blimit", this.B);
+			json.writeValue("Nlimit", this.N);
+			json.writeValue("typeCounter", this.typeCounter);
+			json.writeValue("partnerTitle", this.partnerTitle);
+			json.writeValue("partner", this.myPartner.getSceneID());
+			
+		}
 	}
 	
 	//class that contains minor handling for all events and flags
-	public class History {
+	public class History implements Serializable {
 
 		private HashSet<Pair<String, String>> eventList;
 		private HashMap<String, Boolean> flagList;
@@ -1592,6 +1621,25 @@ public class Main extends GameState {
 			default:
 				return null;
 			}
+		}
+
+		@Override
+		public void read(Json arg0, JsonValue arg1) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void write(Json json) {
+			json.writeObjectStart();
+			json.writeValue("eventList", this.eventList);
+			json.writeObjectEnd();
+			json.writeObjectStart();
+			json.writeValue("flagList", this.flagList);
+			json.writeObjectEnd();
+			json.writeObjectStart();
+			json.writeValue("variableList", this.variableList);
+			json.writeObjectEnd();
 		}
 	}
 }

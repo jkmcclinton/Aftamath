@@ -13,6 +13,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 import entities.Barrier;
 import entities.Entity;
@@ -40,7 +43,7 @@ import main.Main.InputState;
  *  you shouldn't have to debug this class for the most part
  *  if there is an issue, make sure you are writing the script correctly
  * ----------------------------------------------------------------------  */
-public class Script {
+public class Script implements Serializable {
 
 	public String ID;
 	public Array<String> source;
@@ -68,17 +71,20 @@ public class Script {
 		ATTACKED, DISCOVER, EVENT, DIALOGUE, SCENE
 	}
 
-	public Script(String scriptID, ScriptType type, Main m, Entity owner){
-		this.owner = owner;
-		this.type = type;
-		ID = scriptID;
-		main = m;
-
+	public Script() {
 		choiceIndicies = new HashMap<>();
 		conditions = new LinkedHashMap<>();
 		operations = new Stack<>();
 		checkpoints = new HashMap<>();
 		localVars = new HashMap<>();
+	}
+	
+	public Script(String scriptID, ScriptType type, Main m, Entity owner){
+		this();
+		this.owner = owner;
+		this.type = type;
+		this.ID = scriptID;
+		main = m;
 
 		loadScript(scriptID);
 		if(source!=null){
@@ -1804,5 +1810,18 @@ public class Script {
 				return ((Option) o).message.toLowerCase().equals(message.toLowerCase());
 			return false;
 		}
+	}
+
+	@Override
+	public void read(Json arg0, JsonValue arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("ID", this.ID);
+		json.writeValue("type", this.type);
+		json.writeValue("current", this.current);
 	}
 }

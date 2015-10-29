@@ -5,7 +5,10 @@ import static handlers.Vars.PPM;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -50,6 +53,9 @@ import scenes.Script.ScriptType;
 
 public class Scene {
 	
+	// global mapping of scenes to the entities they contain
+	public static Map<String, Set<Integer> > sceneToEntityIds;
+	
 	public Script script;
 	public int width, height;
 	public String title;
@@ -82,6 +88,10 @@ public class Scene {
 	private static final int NOON = 1;
 	private static final int NIGHT =2;
 	
+	static {
+		sceneToEntityIds = new HashMap<String, Set<Integer> >();
+	}
+	
 	public Scene(){}
 	
 	public Scene(World world, Main m, String ID) {
@@ -99,7 +109,10 @@ public class Scene {
 		width = 1000;
 		height = 1000;
 		title = ID.toLowerCase();
-
+		if (!sceneToEntityIds.containsKey(title)) {	//first time scene is referenced
+			sceneToEntityIds.put(title, new HashSet<Integer>());
+		}
+		
 		tileMap = new TmxMapLoader().load("assets/maps/" + title + ".tmx");
 		MapProperties prop = tileMap.getProperties();
 		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
@@ -389,11 +402,11 @@ public class Scene {
 
 					Object o = object.getProperties().get("NPC");
 					if(o!=null) {
-						String l = object.getProperties().get("layer", String.class);
-						String ID = object.getProperties().get("NPC", String.class);
-						String sceneID = object.getProperties().get("ID", String.class);
-						String name = object.getProperties().get("name", String.class);
-						String state = object.getProperties().get("state", String.class);
+						String l = object.getProperties().get("layer", String.class);		//render/collision layer
+						String ID = object.getProperties().get("NPC", String.class);		//name used for art file
+						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+						String name = object.getProperties().get("name", String.class);		//character name
+						String state = object.getProperties().get("state", String.class);	//AI state
 						String script = object.getProperties().get("script", String.class);
 						String aScript = object.getProperties().get("attackScript", String.class);
 						String dScript = object.getProperties().get("discoverScript", String.class);
@@ -410,11 +423,14 @@ public class Scene {
 							Field f = Vars.class.getField("BIT_LAYER"+l);
 							short lyr = f.getShort(f);
 							ID = ID.toLowerCase();
+							int sceneIDParsed = Integer.parseInt(sceneID);
 
 							if (sceneID==null)
 								System.out.println("NPC: "+ID+", name: "+name+" not given sceneID");
-							else{
-								Mob e = new Mob(name, ID, Integer.parseInt(sceneID), rect.x, rect.y, lyr);
+							else if (Scene.sceneToEntityIds.containsKey(sceneIDParsed)) {
+								//ignore since object was already created via save file
+							} else{
+								Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);
 								e.setGameState(main);
 								e.setDefaultState(state);
 								e.setDialogueScript(script);
@@ -426,6 +442,8 @@ public class Scene {
 								
 								if(pathName!=null)
 									pathsToAdd.put(e, pathName);
+								
+								Scene.sceneToEntityIds.get(this.title).add(sceneIDParsed);
 							}
 						} catch (NoSuchFieldException | SecurityException e) {
 							e.printStackTrace();
