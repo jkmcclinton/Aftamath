@@ -32,7 +32,7 @@ public class Barrier extends Entity {
 		
 		fdef.friction = .25f;
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		fdef.isSensor = false;
 		body = world.createBody(bdef);
 		body.createFixture(fdef).setUserData("barrier");

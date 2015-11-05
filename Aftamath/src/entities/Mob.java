@@ -107,7 +107,7 @@ public class Mob extends Entity{
 	protected static final int DEFAULT_WIDTH = 20;
 	protected static final int DEFAULT_HEIGHT = 50;
 	protected static final float DEFAULT_ATTACK_DELAY = .5f;
-	protected static final float DEFAULT_ATTACK_RANGE = 10;
+	protected static final float DEFAULT_ATTACK_RANGE = 20;
 	protected static final float DEFAULT_VISION_RANGE = 10*Vars.TILE_SIZE;
 	protected static final double DEFAULT_STRENGTH = 1;
 	protected static final double DAMAGE_THRESHOLD = 4;
@@ -174,17 +174,6 @@ public class Mob extends Entity{
 //			System.out.println(Action.values()[i]);
 		}
 	}
-	
-	// determines what animation gets played first 
-	protected static final int[] actionPriorities = {0,1,1,5,3,3,4,2,2,0,0,4,4, /*SITTING*/
-													 1,2,2,2,3,3,2,2,2,2,5,2,4,4, /*RECOVER*/
-													 3,3,4,4,6,6,3,3,3,3,0,1,2, /*TURN_SWIM*/
-													 3,3,3,3};
-	protected static final int[] actionLengths =    {0,8,8,3,1,2,3,3,1,1,16,4,16,
-													 16,2,4,4,4,5,1,1,1,1,1,1,1,1,
-													 1,1,1,1,1,1,1,1,1,1,1,1,1,
-													 1,1,1,1};
-	//	protected static int[] reset = new int[]{WALKING, FALLING, FALLING_TRANS};
 	
 	public Mob(String name, String ID, float x, float y, short layer) {
 		this(name, ID, 0, DamageType.PHYSICAL, x, y, layer);
@@ -272,7 +261,7 @@ public class Mob extends Entity{
 				animation.removeAction();
 				idleTime+=dt;
 				if(idleTime>=idleDelay){
-					timesIdled +=1;
+					timesIdled +=4;
 					idleTime = 0;
 					if(timesIdled >=4 && main.character.equals(this) && 
 							(main.stateType==InputState.MOVE || main.stateType==InputState.MOVELISTEN)){
@@ -281,8 +270,15 @@ public class Mob extends Entity{
 						snoozing = true;
 //						controlledAction = ScriptAI.SNOOZE;
 					}
-					else
-						setAnimation(Action.IDLE);
+					else{
+						if(this.equals(main.character))
+							if(Math.random()>.25d)
+								setAnimation(Action.IDLE);
+							else
+								setAnimation(Action.DANCE);
+						else
+							setAnimation(Action.IDLE);
+					}
 				}
 			}
 
@@ -384,7 +380,9 @@ public class Mob extends Entity{
 	}
 
 	protected void setAnimation(Action action, boolean repeat){
-		setAnimation(action, Vars.ACTION_ANIMATION_RATE, repeat);
+		if(action==Action.RUNNING)
+			setAnimation(action, .07f, repeat);
+		else setAnimation(action, Vars.ACTION_ANIMATION_RATE, repeat);
 	}
 
 	protected void setAnimation(Action action, float delay){
@@ -466,8 +464,8 @@ public class Mob extends Entity{
 		try{
 			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[aI];
 			TextureRegion[] nextSprites = TextureRegion.split(texture, width, height)[tAI];
-			animation.setTransitionAction(nextSprites, actionLengths[tAI], facingLeft, 
-					aI, sprites, actionLengths[aI], tAI, looping);
+			animation.setTransitionAction(nextSprites, actionLengths[aI], facingLeft, 
+					aI, sprites, actionLengths[tAI], tAI, looping);
 		} catch (Exception e){
 
 		}
@@ -622,7 +620,7 @@ public class Mob extends Entity{
 	//possibly crunch this down
 	public void act(){
 		float dx, dy;
-//		if(sceneID==1)
+//		if(ID.equals("maleplayer1"))
 //			System.out.println(ID+":"+state);
 		
 		if(discovered.contains(main.character, true)&&!triggered){
@@ -822,7 +820,7 @@ public class Mob extends Entity{
 		if(!attacked){
 //			System.out.println("!attacked");
 			if(attackFocus!=null && doTime>=doDelay){
-				System.out.println("attackFocus!=null && doTime>=doDelay");
+				//System.out.println("attackFocus!=null && doTime>=doDelay");
 				dx = attackFocus.getPosition().x - getPosition().x;
 				dy = attackFocus.getPosition().x - getPosition().x;
 				float d = (float) Math.sqrt(dx*dx + dy+dy);
@@ -836,8 +834,8 @@ public class Mob extends Entity{
 					doDelay = (float) (Math.random()*3);
 					doTime = 0;
 				}
-			} else
-				System.out.println(doTime+":"+doDelay);
+			} /*else
+				System.out.println(doTime+":"+doDelay);*/
 		} else {
 			if(reached) inactiveWait++;
 			if(inactiveTime >= inactiveWait && reached) {
@@ -1528,11 +1526,23 @@ public class Mob extends Entity{
 	}
 
 	public void lookUp(){
-		setTransAnimation(Action.LOOKING_UP, Action.LOOK_UP);
+		if(snoozing){
+			animation.removeAction();
+			setAnimation(true, Action.GET_DOWN);
+			snoozing = false;
+			return;
+		}
+		setTransAnimation(Action.LOOK_UP, Action.LOOKING_UP, true);
 	}
 
-	public void lookDown(){
-
+	public void duck(){
+		if(snoozing){
+			animation.removeAction();
+			setAnimation(true, Action.GET_DOWN);
+			snoozing = false;
+			return;
+		}
+		setTransAnimation(Action.DUCK, Action.DUCKING);
 	}
 
 	public void jump() {
@@ -1660,6 +1670,12 @@ public class Mob extends Entity{
 		if (!canMove()) return;
 		//		if (animation.actionID != JUMPING && animation.actionID != RUNNING) action = WALKING;
 		if (!facingLeft) changeDirection();
+		if(action==Action.TURN || action==Action.TURN_RUN || action==Action.TURN_SWIM) return;
+		if(getAnimationAction()==Action.DUCKING) {
+			animation.removeAction();
+			setAnimation(true, Action.DUCK); 
+			return;
+		}
 
 		float x = 1;
 		if(running) x = 2;
@@ -1676,6 +1692,12 @@ public class Mob extends Entity{
 		if(!canMove()) return;
 //		if (animation.actionID != JUMPING && animation.actionID != RUNNING) action = WALKING;
 		if (facingLeft) changeDirection();
+		if(action==Action.TURN || action==Action.TURN_RUN || action==Action.TURN_SWIM) return;
+		if(getAnimationAction()==Action.DUCKING) {
+			animation.removeAction();
+			setAnimation(true, Action.DUCK); 
+			return;
+		}
 
 		float x = 1;
 		if(running) x = 2;
@@ -1913,7 +1935,7 @@ public class Mob extends Entity{
 
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+		fdef.filter.maskBits = (short) (Vars.BIT_GROUND | Vars.BIT_BATTLE);
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 		body.setFixedRotation(true);
@@ -1924,9 +1946,6 @@ public class Mob extends Entity{
 		createAttackSensor();
 		createVisionSensor();
 		createCenter();
-		
-//		if(main.character.equals(this))
-//			System.out.println("created main character");
 	}
 
 	protected void createFootSensor(){
@@ -2006,4 +2025,94 @@ public class Mob extends Entity{
 	}
 	
 	public String toString(){ return ID +": " + name; }
+
+	// determines what animation gets played first 
+	protected static final int[] actionPriorities = {0,
+			1, /*WALKING*/
+			1, /*RUNNING*/
+			5, /*JUMPING*/
+			3, /*FALLING_TRANS*/
+			3, /*FALLING*/
+			4, /*LANDING*/
+			3, /*DUCK*/
+			1, /*DUCKING*/
+			0, /*LOOK_UP*/
+			0, /*LOOKING_UP*/
+			4, /*SIT_DOWN*/
+			4, /*SITTING*/
+			1, /*IDLE*/
+			2, /*GET_DOWN*/
+			2, /*SNOOZING*/
+			2, /*GET_UP*/
+			3, /*LIE_DOWN*/
+			3, /*SLEEPING*/
+			2, /*DANCE*/
+			2, /*TURN*/
+			2, /*TURN_RUN*/
+			2, /*ON_FIRE*/
+			5, /*FLINCHING*/
+			2, /*STUMBLE*/
+			4, /*KOCKED_OUT*/
+			4, /*RECOVER*/
+			3, /*AIMING_TRANS*/
+			3, /*AIMING*/
+			4, /*ATTACKING*/
+			4, /*PUNCHING*/
+			6, /*DIE_TRANS*/
+			6, /*DEAD*/
+			3, /*EMBRACE*/
+			3, /*HUGGING*/
+			3, /*ENGAGE_KISS*/
+			3, /*KISSING*/
+			0, /*FLOATING*/
+			1, /*SWIMMING*/
+			2, /*TURN_SWIM*/
+			3, /*SPECIAL1*/
+			3, /*SPECIAL2*/
+			3, /*SPECIAL3*/
+			3}; /*SPECIAL3_TRANS*/
+	protected static final int[] actionLengths =    {0,
+			8,  /*WALKING*/
+			8,  /*RUNNING*/
+			3,  /*JUMPING*/
+			1,  /*FALL_TRANS*/
+			2,  /*FALLING*/
+			3,  /*LANDING*/
+			3,  /*DUCK*/
+			1,  /*DUCKING*/
+			1,  /*LOOK_UP*/
+			16, /*LOOKING_UP*/
+			4,  /*SIT_DOWN*/
+			16, /*SIITING*/
+			16, /*IDLE*/
+			2,  /*GET_DOWN*/
+			16, /*SNOOZING*/
+			4,  /*GET_UP*/
+			4,  /*LIE_DOWN*/
+			16, /*SLEEPING*/
+			12, /*DANCE*/
+			2,  /*TURN*/
+			4,  /*TURN_RUN*/
+			1,  /*ON_FIRE*/
+			1,  /*FLINCHING*/
+			1,  /*STUMBLE*/
+			16, /*KNOCKED_OUT*/
+			1,  /*RECOVER*/
+			1,  /*AIMING_TRANS*/
+			1,  /*AIMING*/
+			1,  /*ATTACKING*/
+			4,  /*PUNCHING*/
+			1,  /*DIE_TRANS*/
+			1,  /*DEAD*/
+			1,  /*EMBRACE*/
+			1,  /*HUGGING*/
+			1,  /*ENGRAGE_KISS*/
+			1,  /*KISSING*/
+			16,  /*FLOATING*/
+			8,  /*SWIMMING*/
+			1,  /*TURN_SWIM*/
+			1,  /*SPECIAL1*/
+			1,  /*SPECIAL2*/
+			1,  /*SPECIAL3*/
+			1}; /*SPECIAL3_TRANS*/
 }

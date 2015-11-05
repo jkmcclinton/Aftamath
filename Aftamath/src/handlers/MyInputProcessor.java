@@ -38,7 +38,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, true);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, true);
 			if(k == Keys.F4) MyInput.setKey(Input.DEBUG2, true);
-			if(k == Keys.PLUS) MyInput.setKey(Input.ZOOM_IN, true);
+			if(k == Keys.EQUALS) MyInput.setKey(Input.ZOOM_IN, true);
 			if(k == Keys.MINUS) MyInput.setKey(Input.ZOOM_OUT, true);
 		} else {
 //			System.out.println(k+":"+Keys.toString(k));
@@ -117,7 +117,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, false);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, false);
 			if(k == Keys.F4) MyInput.setKey(Input.DEBUG2, false);
-			if(k == Keys.PLUS) MyInput.setKey(Input.ZOOM_IN, false);
+			if(k == Keys.EQUALS) MyInput.setKey(Input.ZOOM_IN, false);
 			if(k == Keys.MINUS) MyInput.setKey(Input.ZOOM_OUT, false);
 		} else {
 			if(k == Keys.ESCAPE){ MyInput.setKey(Input.PAUSE, false); }

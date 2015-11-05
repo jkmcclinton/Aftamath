@@ -1,5 +1,6 @@
 package main;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 /*
@@ -18,7 +19,7 @@ public static void main(String[] args) {
 		cfg.vSyncEnabled = true; // vSync makes frames load better
 //		cfg.useGL20 = true;  
 //		cfg.fullscreen = true; // Forces the game screen into fullscreen
-//      cfg.addIcon("res/images/Icon.png", Files.FileType.Internal); 
+      cfg.addIcon("assets/images/Icon.png", Files.FileType.Internal); 
 		
 		new LwjglApplication(new Game(), cfg); //Creates and launches the game file using the previous settings
 		

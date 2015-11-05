@@ -14,7 +14,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-import entities.Barrier;
 import entities.Entity;
 import entities.Entity.DamageType;
 import entities.Mob;
@@ -508,11 +507,9 @@ public class Script {
 			case "remove":
 			case "removeObject":
 				obj = findObject(firstArg(line));
-				if (obj!= null){
-					if(!(obj instanceof Barrier))
-						main.playSound("beep5");
+				if (obj!= null)
 					main.addBodyToRemove(obj.getBody());
-				}else
+				else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "removepartner":

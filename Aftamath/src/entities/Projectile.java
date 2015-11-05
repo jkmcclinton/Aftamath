@@ -34,7 +34,7 @@ public class Projectile extends Entity {
 		super(x,y,getID(type));
 		
 		animation.setSpeed(ANIM_RATE);
-		layer = Vars.BIT_PROJECTILE;
+		layer = Vars.BIT_BATTLE;
 		this.owner = owner;
 		this.velocity = Vars.getVelocity(getPosition(), target, speed);
 		

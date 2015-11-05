@@ -143,7 +143,7 @@ public class HUD {
 		drawString(sb);
 		if (speaker != null) if (speaker.name != null) {
 //			sb.draw(faceHud, x, y - 76);
-			if(!speaker.equals(main.character)){
+			if(speaker.getFace(0)!=null){
 				sb.draw(emotions[emotion],  x + 7, y - 69);
 				sb.draw(speaker.getFace(emotion), x + 7, y - 69);
 			}

@@ -193,7 +193,7 @@ public class Main extends GameState {
 			debugText = "";
 			player.updateMoney();
 			
-			handleDayCycle();
+//			handleDayCycle();
 			if(scene.outside) {
 				weatherTime+=dt;
 				handleWeather();
@@ -466,21 +466,9 @@ public class Main extends GameState {
 //		debugText+= "/lIdle Time: "+ Vars.formatTime(character.getIdleTime()) + "    Idled: "+character.getTimesIdled();
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
+		debugText+="/l"+character.getAnimationAction()+": "+character.animation.getActionLength();
+		debugText+="/l"+character.animation.getDelay();
 //		debugText +="/l"+cam.getCharacter().getName() + " x: " + (int) (cam.position.x) + "    y: " + ((int) (cam.position.y));
-		
-		Entity e = findObject("Jose");
-		if(e!=null){
-			if(!cam.getFocus().equals(e))
-				cam.setFocus(e);
-			debugText+="/l("+e.getPosition().x*Vars.PPM + ", " + e.getPosition().y*Vars.PPM+")";
-		}
-		
-		e = findObject("Grim Reaper");
-		if(e!=null){
-//			debugText+="/l("+e.getPosition().x*Vars.PPM + ", " + e.getPosition().y*Vars.PPM+")";
-			debugText+="/lisInteractable: "+e.isInteractable;
-			debugText+="/lScript: "+e.getScript();
-		}
 		
 		sb.begin();
 			drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
@@ -525,7 +513,6 @@ public class Main extends GameState {
 		
 		if(MyInput.isPressed(Input.DEBUG_CENTER)) {
 			random=true;
-			changeSong(new Song(Game.SONG_LIST.get((int) (Math.random()*(Game.SONG_LIST.size)))));
 			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
 			changeSong(new Song(Game.SONG_LIST.get(current)));
 //			dayTime+=1.5f;
@@ -681,7 +668,7 @@ public class Main extends GameState {
 				if(MyInput.isDown(Input.DOWN)) 
 					if(character.canClimb)
 						character.descend();
-					else character.lookDown();
+					else character.duck();
 				if(MyInput.isPressed(Input.USE)) partnerFollow();
 				if(MyInput.isPressed(Input.INTERACT)) {
 					triggerScript(character.interact());
@@ -1065,7 +1052,7 @@ public class Main extends GameState {
 		}
 	}
 	
-	private Entity findObject(String objectName){
+	public Entity findObject(String objectName){
 		Entity object = null;
 
 		if(Vars.isNumeric(objectName)){
@@ -1132,7 +1119,7 @@ public class Main extends GameState {
 			scene.setRayHandler(rayHandler);
 			scene.create();
 			
-			character = new Mob("TestName", "maleplayer3",scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+			character = new Mob("TestName", "maleplayer2",scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 			createPlayer(scene.getSpawnPoint());
 		}
 		

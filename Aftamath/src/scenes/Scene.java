@@ -515,14 +515,14 @@ public class Scene {
 		Body body = world.createBody(bdef);
 		fdef.shape = shape;
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 
 		//right wall
 		bdef.position.set(width / PPM,  height/ 2 / PPM);
 		body = world.createBody(bdef);
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 		
 		System.out.println(groundLevel);

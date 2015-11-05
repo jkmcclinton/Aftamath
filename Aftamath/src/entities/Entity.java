@@ -179,12 +179,12 @@ public class Entity{
 		this.layer = layer;
 		if(body!=null){
 			main.addBodyToRemove(body);
-			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 			fdef.filter.categoryBits = layer;
 			create();
 		} else {
 			System.out.println(layer);
-			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 			fdef.filter.categoryBits = layer;
 		}
 	}
@@ -382,7 +382,7 @@ public class Entity{
 		fdef.shape = shape;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 		body.setMassData(mdat);

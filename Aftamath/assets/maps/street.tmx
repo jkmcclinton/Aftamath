@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="48">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="51">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bgm day" value="Misdirection"/>
@@ -309,7 +309,7 @@
   <object id="29" x="240" y="1392" width="16" height="176">
    <properties>
     <property name="event" value=""/>
-    <property name="robbers1" value="[!RobberIntro]"/>
+    <property name="robbers1" value="[RobberIntro]"/>
    </properties>
   </object>
   <object id="31" name="10" x="800" y="1552" width="16" height="16">
@@ -375,6 +375,42 @@
     <property name="event" value="false"/>
     <property name="grimReaper" value=""/>
     <property name="retriggerable" value=""/>
+   </properties>
+  </object>
+  <object id="48" name="2" x="96" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="75"/>
+    <property name="NPC" value="maleplayer1"/>
+    <property name="attackScript" value="onAttacked1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Sarren"/>
+    <property name="onAttacked" value="on_attacked"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="DANCING"/>
+   </properties>
+  </object>
+  <object id="49" name="2" x="176" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="75"/>
+    <property name="NPC" value="maleplayer4"/>
+    <property name="attackScript" value="onAttacked1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Sarren"/>
+    <property name="onAttacked" value="on_attacked"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="DANCING"/>
+   </properties>
+  </object>
+  <object id="50" name="2" x="208" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="75"/>
+    <property name="NPC" value="maleplayer3"/>
+    <property name="attackScript" value="onAttacked1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Sarren"/>
+    <property name="onAttacked" value="on_attacked"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="DANCING"/>
    </properties>
   </object>
  </objectgroup>

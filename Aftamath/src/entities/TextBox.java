@@ -214,7 +214,7 @@ public class TextBox extends Entity {
 		fdef.shape = shape;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData(ID);
 	}

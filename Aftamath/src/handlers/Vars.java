@@ -14,14 +14,14 @@ public class Vars {
 	public static final short BIT_LAYER1 = 8;
 	public static final short BIT_PLAYER_LAYER = 16;
 	public static final short BIT_LAYER3 = 32;	
-	public static final short BIT_PROJECTILE = 64;
+	public static final short BIT_BATTLE = 64;
 	
 	//global constants
 	public static final float DT = .016666668f;
 	public static final float PPM = 100f;
 	public static final float GRAVITY = -9.81f;
 	public static final float ANIMATION_RATE = .21f;
-	public static final float ACTION_ANIMATION_RATE = .07f;
+	public static final float ACTION_ANIMATION_RATE = .09f;
 	public static final float ALPHA = .99607843f;
 	public static final int FONT_OFFSET = -33;
 	public static final int OBJ_SCALE = 2;
