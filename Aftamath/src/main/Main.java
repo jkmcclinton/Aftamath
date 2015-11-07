@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -1527,12 +1528,12 @@ public class Main extends GameState {
 	//class that contains minor handling for all events and flags
 	public class History implements Serializable {
 
-		private HashSet<Pair<String, String>> eventList;
+		private Map<String, String> eventList;
 		private HashMap<String, Boolean> flagList;
 		private HashMap<String, Object> variableList;
 		
 		public History(){
-			eventList = new HashSet<>();
+			eventList = new HashMap<>();
 			flagList = new HashMap<>();
 			variableList = new HashMap<>();
 			
@@ -1571,24 +1572,21 @@ public class Main extends GameState {
 		}
 		
 		public boolean setEvent(String event, String description){ 
-			for(Pair<String, String> p : eventList)
-				if (p.getKey().equals(event))
-					return false;
-			eventList.add(new Pair<>(event, description)); 
+			if (findEvent(event)) {
+				return false;
+			}
+			eventList.put(event, description);
 			return true;
 		}
 		
 		public boolean findEvent(String event){ 
-			for(Pair<String, String> p : eventList)
-				if (p.getKey().equals(event))
-					return true;
-			return false;
+			return eventList.containsKey(event);
 		}
 		
 		public String getDescription(String event){
-			for(Pair<String, String> p : eventList)
-				if (p.getKey().equals(event))
-					return p.getValue();
+			if (findEvent(event)) {
+				return eventList.get(event);
+			}
 			return null;
 		}
 		
@@ -1650,7 +1648,7 @@ public class Main extends GameState {
 		@Override
 		public void read(Json json, JsonValue val) {
 			for (JsonValue child = val.getChild("eventList"); child != null; child = child.next()) {
-				//TODO: fill in
+				this.eventList.put(child.name(), child.getString("value"));
 			}
 			
 			for (JsonValue child = val.getChild("flagList"); child != null; child = child.next()) {
