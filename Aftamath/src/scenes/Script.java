@@ -1813,9 +1813,10 @@ public class Script implements Serializable {
 	}
 
 	@Override
-	public void read(Json arg0, JsonValue arg1) {
-		// TODO Auto-generated method stub
-		
+	public void read(Json json, JsonValue val) {
+		this.ID = val.getString("ID");
+		this.type = ScriptType.valueOf(val.getString("type"));
+		this.current = val.getInt("current");
 	}
 
 	@Override

@@ -2017,7 +2017,20 @@ public class Mob extends Entity {
 	
 	
 	@Override
-	public void read(Json json, JsonValue jsonMap) {
+	public void read(Json json, JsonValue val) {
+		super.read(json, val);
+		this.respawnPoint = json.fromJson(Vector2.class, val.getString("respawnPoint"));
+		this.iff = IFFTag.valueOf(val.getString("iff"));
+		this.name = val.getString("name");
+		this.strength = val.getDouble("strength");
+		this.level = val.getInt("level");
+		this.experience = val.getFloat("experience");
+		this.action = Action.valueOf(val.getString("action"));
+		this.defaultState = AIState.valueOf(val.getString("defaultState"));
+		this.powerType = Entity.DamageType.valueOf(val.getString("powerType"));
+		this.visionRange = val.getFloat("visionRange");
+		
+		//TODO: mob ref
 	}
 
 	@Override
@@ -2041,6 +2054,6 @@ public class Mob extends Entity {
 		
 		//other fields probably necessary
 		
-		//todo: path loading
+		//TODO: path loading
 	}
 }

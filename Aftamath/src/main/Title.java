@@ -2,6 +2,7 @@ package main;
 
 import handlers.Animation;
 import handlers.GameStateManager;
+import handlers.JsonSerializer;
 import handlers.MyInput;
 import handlers.MyInput.Input;
 import handlers.Vars;
@@ -74,6 +75,11 @@ public class Title extends GameState {
 	
 	public void play() {
 		gsm.setState(GameStateManager.MAIN, true);
+	}
+	
+	public void loadGame() {
+		gsm.setState(GameStateManager.MAIN, true);
+		JsonSerializer.loadGameState("savegame.txt");
 	}
 
 	public void update(float dt) {

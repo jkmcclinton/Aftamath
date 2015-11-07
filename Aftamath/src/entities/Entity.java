@@ -424,9 +424,25 @@ public class Entity implements Serializable {
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonMap) {
-		//System.out.println(json);
-		//System.out.println(jsonMap.prettyPrint(new JsonValue.PrettyPrintSettings()));
+	public void read(Json json, JsonValue val) {
+		this.ID = val.getString("ID");
+		this.sceneID = val.getInt("sceneID");
+		this.x = val.getFloat("x");
+		this.y = val.getFloat("y");
+		this.health = val.getDouble("health");
+		this.burning = val.getBoolean("burning");
+		this.frozen = val.getBoolean("frozen");
+		this.burnTime = val.getFloat("burnTime");
+		this.burnDelay = val.getFloat("burnDelay");
+		this.facingLeft = val.getBoolean("facingLeft");
+		this.isInteractable = val.getBoolean("isInteractable");
+		this.layer = val.getShort("layer");
+		this.origLayer = val.getShort("origLayer");
+		
+		//TODO: handle followers mob ref
+		
+		this.script = json.fromJson(Script.class, val.getString("script"));
+		this.attackScript = json.fromJson(Script.class, val.getString("attackScript"));
 	}
 
 	@Override

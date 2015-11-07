@@ -136,6 +136,7 @@ public class Main extends GameState {
 	public Main(GameStateManager gsm, String gameFile) {
 		super(gsm);
 		this.gameFile = gameFile;
+		JsonSerializer.gMain = this;
 	}
 	
 	public void create(){
@@ -175,7 +176,7 @@ public class Main extends GameState {
 		
 		hud = new HUD(this, hudCam);
 		handleDayCycle();
-		handleWeather();
+		handleWeather();		
 	}
 	
 	public void update(float dt) {
@@ -1117,6 +1118,8 @@ public class Main extends GameState {
 		player = new Player(this);
 //		if(gameFile==null){
 		if(gameFile!=null){
+			//JsonSerializer.loadGameState(this.gameFile);
+			
 			scene= new Scene(world,this,"Street");
 //			scene = new Scene(world, this, "room1_1");
 			scene.setRayHandler(rayHandler);
@@ -1363,7 +1366,8 @@ public class Main extends GameState {
 		private double bravery;
 		private double nicety;
 		private float N, B, L;
-		private String info, partnerTitle;
+		private String info;
+		private String partnerTitle;
 		
 		private HashMap<DamageType, Integer> typeCounter;
 		
@@ -1373,6 +1377,8 @@ public class Main extends GameState {
 			home = new House();
 			
 			L = 1; B = 1; N = 1;
+			this.info = "";
+			this.partnerTitle = "";
 			typeCounter = new HashMap<>();
 		}
 		
@@ -1479,9 +1485,21 @@ public class Main extends GameState {
 		public void setTypeCounter(HashMap<DamageType, Integer> tc){ typeCounter = tc; }
 
 		@Override
-		public void read(Json arg0, JsonValue arg1) {
-			// TODO Auto-generated method stub
-			
+		public void read(Json json, JsonValue val) {
+			this.money = val.getDouble("money");
+			this.info = val.getString("info");
+			this.relationship = val.getDouble("relationship");
+			this.bravery = val.getDouble("bravery");
+			this.nicety = val.getDouble("nicety");
+			this.L = val.getFloat("Llimit");
+			this.B = val.getFloat("Blimit");
+			this.N = val.getFloat("Nlimit");
+			for (JsonValue child = val.get("typeCounter").child(); child != null; child = child.next()) {
+				typeCounter.put(DamageType.valueOf(child.name()), child.getInt("value"));
+				//TODO: test with data in here
+			}
+			this.partnerTitle = val.getString("partnerTitle");
+			//TODO: init partner ref
 		}
 
 		@Override
@@ -1496,7 +1514,7 @@ public class Main extends GameState {
 			json.writeValue("Nlimit", this.N);
 			json.writeValue("typeCounter", this.typeCounter);
 			json.writeValue("partnerTitle", this.partnerTitle);
-			json.writeValue("partner", this.myPartner.getSceneID());
+			json.writeValue("partner", (this.myPartner != null) ? this.myPartner.getSceneID() : -1);
 			
 		}
 	}
@@ -1624,22 +1642,32 @@ public class Main extends GameState {
 		}
 
 		@Override
-		public void read(Json arg0, JsonValue arg1) {
-			// TODO Auto-generated method stub
+		public void read(Json json, JsonValue val) {
+			for (JsonValue child = val.getChild("eventList"); child != null; child = child.next()) {
+				//TODO: fill in
+			}
 			
+			for (JsonValue child = val.getChild("flagList"); child != null; child = child.next()) {
+				this.flagList.put(child.name(), child.getBoolean("value"));
+			}
+			
+			for (JsonValue child = val.getChild("variableList"); child != null; child = child.next()) {
+				Object obj = json.fromJson(Object.class, child.toString());
+				this.variableList.put(child.name(), obj);
+			}			
 		}
 
 		@Override
 		public void write(Json json) {
-			json.writeObjectStart();
+			//json.writeObjectStart();
 			json.writeValue("eventList", this.eventList);
-			json.writeObjectEnd();
-			json.writeObjectStart();
+			//json.writeObjectEnd();
+			//json.writeObjectStart();
 			json.writeValue("flagList", this.flagList);
-			json.writeObjectEnd();
-			json.writeObjectStart();
+			//json.writeObjectEnd();
+			//json.writeObjectStart();
 			json.writeValue("variableList", this.variableList);
-			json.writeObjectEnd();
+			//json.writeObjectEnd();
 		}
 	}
 }
