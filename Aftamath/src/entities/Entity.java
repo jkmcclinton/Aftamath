@@ -440,16 +440,13 @@ public class Entity implements Serializable {
 		this.layer = val.getShort("layer");
 		this.origLayer = val.getShort("origLayer");
 		
+		this.script = json.fromJson(Script.class, val.getString("script"));
+		this.attackScript = json.fromJson(Script.class, val.getString("attackScript"));
+
 		Array<Integer> mobRef = new Array<Integer>();
 		for (JsonValue child = val.get("followers").child(); child != null; child = child.next()) {
 			mobRef.add(child.getInt("value"));
-			//TODO: test
-			
-		}
-		
-		this.script = json.fromJson(Script.class, val.getString("script"));
-		this.attackScript = json.fromJson(Script.class, val.getString("attackScript"));
-		
+		}				
 		if (mobRef.size > 0) {
 			JsonSerializer.pushEntityRef(this, mobRef);
 		}
@@ -475,7 +472,7 @@ public class Entity implements Serializable {
 		for (Mob m : this.followers) {
 			mobRef.add(m.sceneID);
 		}
-		json.writeValue("followers", mobRef);		
+		json.writeValue("followers", mobRef);
 		
 		json.writeValue("script", this.script);
 		json.writeValue("attackScript", this.attackScript);

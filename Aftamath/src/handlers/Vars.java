@@ -37,6 +37,9 @@ public class Vars {
 	public static final Color SUNRISE = new Color(109/255f, 163/255f, 187/255f, ALPHA);
 	public static final Color FROZEN_OVERLAY = new Color(139/255f, 195/255f, 217/255f, ALPHA/2f);
 	
+	public static final int PLAYER_SCENE_ID = 0;
+	public static final int NARRATOR_SCENE_ID = 1000;
+	
 	public static final Array<Color> DEFAULT_COLOR_LIST = new Array<Color>();
 	public static final Array<String> MALES = new Array<String>(new String[] {"narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
 					"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2",

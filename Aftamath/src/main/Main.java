@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
@@ -1115,7 +1114,7 @@ public class Main extends GameState {
 	}
 	
 	public void load(){
-		narrator = new Mob("Narrator", "narrator1", 0, 0, 0, Vars.BIT_LAYER1);
+		narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 		player = new Player(this);
 //		if(gameFile==null){
 		if(gameFile!=null){
@@ -1143,7 +1142,7 @@ public class Main extends GameState {
 			scene.setRayHandler(rayHandler);
 			scene.create();
 			
-			character = new Mob("TestName", "maleplayer3",scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+			character = new Mob("TestName", "maleplayer3", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
 			createPlayer(scene.getSpawnPoint());
 		}
 		
@@ -1169,7 +1168,7 @@ public class Main extends GameState {
 					max = e.getSceneID();
 			}
 			
-			return max++;
+			return max + 1;
 		}
 	}
 	
@@ -1499,7 +1498,6 @@ public class Main extends GameState {
 			this.N = val.getFloat("Nlimit");
 			for (JsonValue child = val.get("typeCounter").child(); child != null; child = child.next()) {
 				typeCounter.put(DamageType.valueOf(child.name()), child.getInt("value"));
-				//TODO: test with data in here
 			}
 			this.partnerTitle = val.getString("partnerTitle");
 			int partnerId = val.getInt("partner");

@@ -383,7 +383,7 @@ public class Script implements Serializable {
 				target = findObject(lastArg(line));
 				if (obj != null && target != null){
 					if (obj instanceof Mob){
-						((Mob) obj).setState(AIState.FOLLOWING, obj);
+						((Mob) obj).setState(AIState.FOLLOWING, target);
 					}else obj.faceObject(target);
 				}
 				break;
@@ -434,7 +434,7 @@ public class Script implements Serializable {
 				main.addBodyToRemove(main.character.getBody());
 				main.character = new Mob(main.character.getName(), 
 						String.valueOf(getVariable("playergender")) + "player" + getVariable("playertype"),
-						main.getScene().getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
+						Vars.PLAYER_SCENE_ID, main.getScene().getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
 				main.createPlayer(main.getScene().getSpawnPoint());
 				main.addObject(main.character);
 

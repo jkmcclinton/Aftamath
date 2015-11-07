@@ -188,22 +188,23 @@ public class Mob extends Entity {
 													 1,1,1,1,1,1,1,1,1,1,1,1,1,
 													 1,1,1,1};
 	//	protected static int[] reset = new int[]{WALKING, FALLING, FALLING_TRANS};
-	
-	public Mob(String name, String ID, float x, float y, short layer) {
-		this(name, ID, 0, DamageType.PHYSICAL, x, y, layer);
+
+	//Instantiate NPC mobs
+	public Mob(String name, String ID, int sceneID, float x, float y, short layer){
+		this(name, ID, sceneID, 0, DamageType.PHYSICAL, x, y, layer);
 	}
 	
-	public Mob(String name, String ID, Vector2 location, short layer) {
-		this(name, ID, 0, DamageType.PHYSICAL, location.x, location.y, layer);
+	public Mob(String name, String ID, int sceneID, Vector2 location, short layer) {
+		this(name, ID, sceneID, 0, DamageType.PHYSICAL, location.x, location.y, layer);
 	}
 
-	public Mob(String name, String ID, int level, DamageType type, float x, float y, short layer){
+	public Mob(String name, String ID, int sceneID, int level, DamageType type, float x, float y, short layer){
 		super(x, y+getHeight(ID)/2f, ID);
 		this.name = name;
 		this.layer = layer;
 		origLayer = layer;
 		
-		gender = "";
+		//gender = "";
 		this.powerType = type;
 
 		attackables = new Array<>();
@@ -220,11 +221,7 @@ public class Mob extends Entity {
 		attackTime = attackDelay;
 		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
 		iff=IFFTag.FRIENDLY;
-	}
-	
-	//Instantiate NPC mobs
-	public Mob(String name, String ID, int sceneID, float x, float y, short layer){
-		this(name, ID, x, y, layer);
+		
 		health = maxHealth = DEFAULT_MAX_HEALTH;
 		determineGender();
 		
@@ -237,16 +234,16 @@ public class Mob extends Entity {
 		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);
 		inactiveWait = (float)(Math.random() *(IDLE_LIMIT)+100);
 		time = 0;
-		
+
 		if (!Entity.idToEntity.containsKey(this.sceneID)) {
 			Entity.idToEntity.put(this.sceneID, this);
 		} else {
-			System.out.println("Created entity with ID "+this.sceneID+" when one already exists.");			
+			System.out.println("Created entity with ID "+this.sceneID+" when one already exists.");
 		}
 	}
 
 	public Mob(){
-		this(null, "", 0, 0, Vars.BIT_LAYER3);
+		this(null, "", 0, 0, 0, Vars.BIT_LAYER3);
 		gender = "n/a";
 		
 		state = AIState.STATIONARY;
@@ -531,14 +528,22 @@ public class Mob extends Entity {
 
 	public void setState(AIState state){ 
 		System.out.println("setting: "+state);
-		if (state == AIState.FOLLOWING) follow(main.character);
-		else this.state = state;
+		if (state == AIState.FOLLOWING) {
+			follow(main.character);
+		} else {
+			this.state = state;
+		}
+		//replace with
+		//setState(state, main.character);
+		//?
 	}
 
 	public void setState(AIState state, Entity focus){
-		if (state == AIState.FOLLOWING) follow(focus);
-		else this.state = state;
-
+		if (state == AIState.FOLLOWING) {
+			follow(focus);
+		} else {
+			this.state = state;
+		}
 		this.focus = focus;
 	}
 
