@@ -1418,21 +1418,23 @@ public class Main extends GameState {
 		//following methods are getters and setters
 		
 		public void goOut(Mob newPartner, String info){
-			myPartner = newPartner;
+			setPartner(newPartner);
 			this.info = info;
 			relationship = 0;
 			L = 0;
 			
-			main.history.setFlag("hasPatner", true);
+			main.history.setFlag("hasPartner", true);
 		}
 		
 		public void breakUp(){
-			myPartner = new Mob();
-			main.history.setFlag("hasPatner", false);
+			//myPartner = new Mob();	//???
+			myPartner = null;
+			main.history.setFlag("hasPartner", false);
 //			relationship = 0;
 //			L = 0;
 		}
 		
+		public void setPartner(Mob partner) { this.myPartner = partner; }
 		public Mob getPartner(){ return myPartner; }
 		public void resetRelationship(double d){ relationship = d; }
 		public void setRelationship(double amount){ relationship += amount * L; }
@@ -1499,7 +1501,10 @@ public class Main extends GameState {
 				//TODO: test with data in here
 			}
 			this.partnerTitle = val.getString("partnerTitle");
-			//TODO: init partner ref
+			int partnerId = val.getInt("partner");
+			if (partnerId > -1) {
+				JsonSerializer.pushPlayerRef(this, partnerId);
+			}
 		}
 
 		@Override
@@ -1562,7 +1567,8 @@ public class Main extends GameState {
 			for(String p : flagList.keySet())
 				if(p.equals(flag))
 					return;
-				flagList.put(flag, val); 	}
+				flagList.put(flag, val);
+		}
 		
 		public boolean setEvent(String event, String description){ 
 			for(Pair<String, String> p : eventList)
@@ -1659,15 +1665,9 @@ public class Main extends GameState {
 
 		@Override
 		public void write(Json json) {
-			//json.writeObjectStart();
 			json.writeValue("eventList", this.eventList);
-			//json.writeObjectEnd();
-			//json.writeObjectStart();
 			json.writeValue("flagList", this.flagList);
-			//json.writeObjectEnd();
-			//json.writeObjectStart();
 			json.writeValue("variableList", this.variableList);
-			//json.writeObjectEnd();
 		}
 	}
 }

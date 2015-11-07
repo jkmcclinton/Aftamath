@@ -2,6 +2,7 @@ package entities;
 
 import static handlers.Vars.PPM;
 import handlers.FadingSpriteBatch;
+import handlers.JsonSerializer;
 import handlers.Vars;
 
 import java.util.HashMap;
@@ -2030,7 +2031,12 @@ public class Mob extends Entity {
 		this.powerType = Entity.DamageType.valueOf(val.getString("powerType"));
 		this.visionRange = val.getFloat("visionRange");
 		
-		//TODO: mob ref
+		int attackFocusId = val.getInt("attackFocus");
+		int aiFocusId = val.getInt("AIfocus");
+		int interactableId = val.getInt("interactable");
+		if (attackFocusId > -1 || aiFocusId > -1 || interactableId > -1) {
+			JsonSerializer.pushMobRef(this, attackFocusId, aiFocusId, interactableId);
+		}
 	}
 
 	@Override

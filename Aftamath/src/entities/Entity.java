@@ -7,6 +7,7 @@ import java.util.Map;
 
 import handlers.Animation;
 import handlers.FadingSpriteBatch;
+import handlers.JsonSerializer;
 import handlers.Vars;
 import main.Game;
 import main.Main;
@@ -439,10 +440,19 @@ public class Entity implements Serializable {
 		this.layer = val.getShort("layer");
 		this.origLayer = val.getShort("origLayer");
 		
-		//TODO: handle followers mob ref
+		Array<Integer> mobRef = new Array<Integer>();
+		for (JsonValue child = val.get("followers").child(); child != null; child = child.next()) {
+			mobRef.add(child.getInt("value"));
+			//TODO: test
+			
+		}
 		
 		this.script = json.fromJson(Script.class, val.getString("script"));
 		this.attackScript = json.fromJson(Script.class, val.getString("attackScript"));
+		
+		if (mobRef.size > 0) {
+			JsonSerializer.pushEntityRef(this, mobRef);
+		}
 	}
 
 	@Override
@@ -465,17 +475,10 @@ public class Entity implements Serializable {
 		for (Mob m : this.followers) {
 			mobRef.add(m.sceneID);
 		}
-		//json.writeObjectStart("followersObj");
-		json.writeValue("followerObj", mobRef);
-		//json.writeObjectEnd();
+		json.writeValue("followers", mobRef);		
 		
-		//json.writeObjectStart("scriptObj");
 		json.writeValue("script", this.script);
-		//json.writeObjectEnd();
-		
-		//json.writeObjectStart("attackScriptObj");
 		json.writeValue("attackScript", this.attackScript);
-		//json.writeObjectEnd();
 	}
 	
 }
