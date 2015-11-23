@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import main.Main;
-import main.Main.Player;
+import main.Player;
+import main.History;
 import scenes.Scene;
 
 import com.badlogic.gdx.files.FileHandle;
@@ -58,6 +59,7 @@ public class JsonSerializer {
 			Json reader = new Json();
 
 			// build the associative arrays through iteration
+			Scene.sceneToEntityIds.clear();
 			for (JsonValue child = root.get("sceneToEntityIds").child(); child != null; child = child.next()) {
 				Set<Integer> entityIds = new HashSet<Integer>();
 				for (JsonValue child2 = child.child(); child2 != null; child2 = child2.next()) {
@@ -66,14 +68,19 @@ public class JsonSerializer {
 				Scene.sceneToEntityIds.put(child.name(), entityIds);
 			}
 			
+			Entity.idToEntity.clear();
 			for (JsonValue child = root.get("idToEntity").child(); child != null; child = child.next()) {
 				Entity e = reader.fromJson(Entity.class, child.toString());
 				Entity.idToEntity.put(Integer.parseInt(child.name()), e);
 			}
 			
-			gMain.player = reader.fromJson(gMain.player.getClass(), root.getString("playerData"));
-			gMain.history = reader.fromJson(gMain.history.getClass(), root.getString("history"));	
-			
+			if (gMain != null) {
+				gMain.player = reader.fromJson(Player.class, root.get("playerData").toString());
+				gMain.player.setMainRef(gMain);
+				gMain.history = reader.fromJson(History.class, root.get("history").toString());	
+			} else {
+				System.out.println("JsonSerializer has no reference to instance of Main");
+			}
 			initReferences();
 		} catch (Exception e) {
 			e.printStackTrace();

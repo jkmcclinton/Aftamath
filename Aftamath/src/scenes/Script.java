@@ -944,7 +944,7 @@ public class Script implements Serializable {
 				source = new Array<>();
 				String line = br.readLine();
 
-				while (line != null ) {;
+				while (line != null ) {
 				source.add(line);
 				line = br.readLine();
 				}
@@ -1710,6 +1710,7 @@ public class Script implements Serializable {
 
 	public void setPlayState(Main gs) { main = gs; }
 	public Entity getOwner(){ return owner; }
+	public void setOwner(Entity owner) { this.owner = owner; }
 	public Object getActiveObject(){ return activeObj; }
 	public void setActiveObj(Object obj){ activeObj = obj; }
 	public String getCurrentName() { return currentName; }
@@ -1817,6 +1818,14 @@ public class Script implements Serializable {
 		this.ID = val.getString("ID");
 		this.type = ScriptType.valueOf(val.getString("type"));
 		this.current = val.getInt("current");
+		
+		//TODO make sure script loading is correct
+		loadScript(this.ID);
+		if (source != null) {
+			findIndicies();
+			getDistanceLimit();
+			activeObj = new Entity();
+		}
 	}
 
 	@Override

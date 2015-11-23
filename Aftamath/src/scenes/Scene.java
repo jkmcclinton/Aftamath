@@ -341,6 +341,11 @@ public class Scene {
 //		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
 //		TiledMapTileLayer bg2 = (TiledMapTileLayer) tileMap.getLayers().get("bg2");
 		
+		//add in entities loaded from save file
+		for (int sid : Scene.sceneToEntityIds.get(this.title)) {
+			this.entities.add(Entity.idToEntity.get(sid));
+		}
+		
 		for (int y = 0; y < ground.getHeight(); y++)
 			for(int x = 0; x < ground.getWidth(); x++){
 				Cell cell = ground.getCell(x, y);
@@ -427,7 +432,8 @@ public class Scene {
 
 							if (sceneID==null)
 								System.out.println("NPC: "+ID+", name: "+name+" not given sceneID");
-							else if (Scene.sceneToEntityIds.containsKey(sceneIDParsed)) {
+							else if (Entity.idToEntity.containsKey(sceneIDParsed)) {
+								System.out.println("Entity with sceneID "+sceneIDParsed+" already exists");
 								//ignore since object was already created via save file
 							} else{
 								Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);

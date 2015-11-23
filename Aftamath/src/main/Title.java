@@ -78,8 +78,9 @@ public class Title extends GameState {
 	}
 	
 	public void loadGame() {
-		gsm.setState(GameStateManager.MAIN, true);
-		JsonSerializer.loadGameState("savegame.txt");
+		//TODO menus that allow user to select game file
+		gsm.setState(GameStateManager.MAIN, true, "savegame.txt");
+		//JsonSerializer.loadGameState("savegame.txt");
 	}
 
 	public void update(float dt) {

@@ -1113,29 +1113,36 @@ public class Main extends GameState {
 		return null;
 	}
 	
-	public void load(){
-		narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
-		player = new Player(this);
-//		if(gameFile==null){
+	public void load(){		
+		//gameFile is not null if the player chose to load a game
 		if(gameFile!=null){
-			//JsonSerializer.loadGameState(this.gameFile);
+			JsonSerializer.loadGameState(this.gameFile);
 			
 			scene= new Scene(world,this,"Street");
-//			scene = new Scene(world, this, "room1_1");
+			//scene = new Scene(world, this, "room1_1");
 			scene.setRayHandler(rayHandler);
 			setSong(scene.DEFAULT_SONG[dayState]);
 			music.pause();
 			scene.create();
 		
-			if(scene.getCBSP()!=null)
-				createEmptyPlayer(scene.getCBSP());
-			else
-				createEmptyPlayer(scene.getSpawnPoint());
+			narrator = (Mob)Entity.idToEntity.get(Vars.NARRATOR_SCENE_ID);
+			character = (Mob)Entity.idToEntity.get(Vars.PLAYER_SCENE_ID);
+			createPlayer(scene.getSpawnPoint());	//TODO get Mob respawnpoint serialize working
+			
+			//TODO unsure what this accomplishes
+			//if(scene.getCBSP()!=null)
+			//	createEmptyPlayer(scene.getCBSP());
+			//else
+			//	createEmptyPlayer(scene.getSpawnPoint());
 			 
 //			tstLight = new PointLight(rayHandler, Vars.LIGHT_RAYS, Color.RED, 100, 0, 0);
 //			tstLight.attachToBody(character.getBody(), 0, 0);
-			triggerScript("intro");
+			
+			//triggerScript("intro");
 		} else {
+			//TODO why are multiple narrator objects floating around
+			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
+			player = new Player(this);
 			scene= new Scene(world,this,"Street");
 			//scene = load recent scene from
 			setSong(scene.DEFAULT_SONG[dayState]);
@@ -1350,321 +1357,6 @@ public class Main extends GameState {
 	public Color getColorOverlay(){
 		// should be dependant on time;
 		return new Color(2,2,2,Vars.ALPHA);
-	}
-	
-	//contains all data related to the player
-	public class Player implements Serializable {
-
-		public boolean stopPartnerDisabled = false;
-		
-		private double money, goalMoney;
-		private House home;
-		private Mob myPartner;
-		//private String nickName;
-		private Main main;
-		private double relationship;
-		private double bravery;
-		private double nicety;
-		private float N, B, L;
-		private String info;
-		private String partnerTitle;
-		
-		private HashMap<DamageType, Integer> typeCounter;
-		
-		public Player(Main main) {
-			this.main = main;
-			money = goalMoney = 1500.00;
-			home = new House();
-			
-			L = 1; B = 1; N = 1;
-			this.info = "";
-			this.partnerTitle = "";
-			typeCounter = new HashMap<>();
-		}
-		
-		//make the player do some random SUPA power
-		//if the player has done this enough times, the most common power will become their permanent power
-		//if they don't have one already
-		public void doRandomPower(Vector2 target){
-			int type = (int) Math.random()*(DamageType.values().length-1);
-			DamageType dT = DamageType.values()[type];
-			
-			character.setPowerType(dT);
-			typeCounter.put(dT, typeCounter.get(dT)+1);
-			
-			int max = 0, c;
-			for(DamageType d : typeCounter.keySet()){
-				c = typeCounter.get(d);
-				if(c>=max) {
-					max = c; 
-				}
-			}
-			
-			main.character.powerAttack(target);
-
-			if(max<3)
-				character.setPowerType(DamageType.PHYSICAL);
-			else
-				character.setPowerType(dT);
-		}
-		
-		public void follow(Entity focus) {
-//			this.focus = focus;
-//			controlled = true;
-//			controlledAction = Action.WALKING;
-			
-		}
-		
-		//following methods are getters and setters
-		
-		public void goOut(Mob newPartner, String info){
-			setPartner(newPartner);
-			this.info = info;
-			relationship = 0;
-			L = 0;
-			
-			main.history.setFlag("hasPartner", true);
-		}
-		
-		public void breakUp(){
-			//myPartner = new Mob();	//???
-			myPartner = null;
-			main.history.setFlag("hasPartner", false);
-//			relationship = 0;
-//			L = 0;
-		}
-		
-		public void setPartner(Mob partner) { this.myPartner = partner; }
-		public Mob getPartner(){ return myPartner; }
-		public void resetRelationship(double d){ relationship = d; }
-		public void setRelationship(double amount){ relationship += amount * L; }
-		public void setLoveScale(float val){ L = val; }
-		public float getLoveScale(){return L;}
-		public double getRelationship(){ return relationship; }
-		public String getPartnerInfo(){ return info; }
-		public void resetPartnerInfo(String info){this.info=info;}
-		public String getPartnerTitle(){ return partnerTitle; }
-		public void setPartnerTitle(String title){ partnerTitle = title; }
-		
-		public void resetFollowers(Array <Mob> followers){
-			for(Mob m : followers)
-				main.character.getFollowers().add(m);
-		}
-		
-		public void addFunds(double amount){ goalMoney += amount; }
-		public void updateMoney(){
-			double dx = (goalMoney - money)/2;
-			if(Math.abs(dx)<.01) {
-				money = goalMoney;
-				dx = 0;
-			}
-			money += dx;
-		}
-		
-		public double getMoney(){ return money; }
-		public void resetMoney(double money){ this.money = goalMoney = money; }
-		
-		public void evict(){ home = new House(); }
-		public void moveHome(House newHouse){ home = newHouse; }
-		public House getHome(){  return home; }
-		
-		public void resetNiceness(double d){ nicety = d; }
-		public void setNiceness(double d){ nicety += d * N; }
-		public void setNicenessScale(float val){ N = val; }
-		public double getNiceness() { return nicety; }
-		public float getNicenessScale() { return N; }
-
-		public void resetBravery(double d){ nicety = d; }
-		public void setBravery(double d){ bravery += d * B; }
-		public void setBraveryScale(float val){ B = val; }
-		public double getBravery() { return bravery; }
-		public float getBraveryScale() { return B; }
-		
-		public void spawnPartner(Vector2 location){
-			myPartner.spawn(location);
-		}
-
-		public void setTypeCounter(HashMap<DamageType, Integer> tc){ typeCounter = tc; }
-
-		@Override
-		public void read(Json json, JsonValue val) {
-			this.money = val.getDouble("money");
-			this.info = val.getString("info");
-			this.relationship = val.getDouble("relationship");
-			this.bravery = val.getDouble("bravery");
-			this.nicety = val.getDouble("nicety");
-			this.L = val.getFloat("Llimit");
-			this.B = val.getFloat("Blimit");
-			this.N = val.getFloat("Nlimit");
-			for (JsonValue child = val.get("typeCounter").child(); child != null; child = child.next()) {
-				typeCounter.put(DamageType.valueOf(child.name()), child.getInt("value"));
-			}
-			this.partnerTitle = val.getString("partnerTitle");
-			int partnerId = val.getInt("partner");
-			if (partnerId > -1) {
-				JsonSerializer.pushPlayerRef(this, partnerId);
-			}
-		}
-
-		@Override
-		public void write(Json json) {
-			json.writeValue("money", this.money);
-			json.writeValue("info", this.info);
-			json.writeValue("relationship", this.relationship);
-			json.writeValue("bravery", this.bravery);
-			json.writeValue("nicety", this.nicety);
-			json.writeValue("Llimit", this.L);
-			json.writeValue("Blimit", this.B);
-			json.writeValue("Nlimit", this.N);
-			json.writeValue("typeCounter", this.typeCounter);
-			json.writeValue("partnerTitle", this.partnerTitle);
-			json.writeValue("partner", (this.myPartner != null) ? this.myPartner.getSceneID() : -1);
-			
-		}
-	}
-	
-	//class that contains minor handling for all events and flags
-	public class History implements Serializable {
-
-		private Map<String, String> eventList;
-		private HashMap<String, Boolean> flagList;
-		private HashMap<String, Object> variableList;
-		
-		public History(){
-			eventList = new HashMap<>();
-			flagList = new HashMap<>();
-			variableList = new HashMap<>();
-			
-			flagList.put("true",true);
-			flagList.put("false",false);
-			variableList.put("male", "male");
-			variableList.put("female", "female");
-		}
-		
-		public History(String loadedData){
-			// put shit into eventList, flagList, variableList
-		}
-		
-		public Boolean getFlag(String flag){ 
-			for(String p : flagList.keySet())
-				if (p.equals(flag))
-					return flagList.get(p);
-			return null;
-		}
-	
-		//creates the flag if no flag found
-		public void setFlag(String flag, boolean val){
-			for(String p : flagList.keySet())
-				if(p.equals(flag)){
-					flagList.put(p, val);
-					return;
-				}
-			addFlag(flag, val);
-		}
-		
-		public void addFlag(String flag, boolean val){ 	
-			for(String p : flagList.keySet())
-				if(p.equals(flag))
-					return;
-				flagList.put(flag, val);
-		}
-		
-		public boolean setEvent(String event, String description){ 
-			if (findEvent(event)) {
-				return false;
-			}
-			eventList.put(event, description);
-			return true;
-		}
-		
-		public boolean findEvent(String event){ 
-			return eventList.containsKey(event);
-		}
-		
-		public String getDescription(String event){
-			if (findEvent(event)) {
-				return eventList.get(event);
-			}
-			return null;
-		}
-		
-		public boolean declareVariable(String variableName, Object value){
-			if (value instanceof Boolean){ 
-				addFlag(variableName, (Boolean)value);
-				return true;
-			}
-			
-			for(String p : variableList.keySet())
-				if (p.equals(variableName))
-					return false;
-			if (!(value instanceof String) && !(value instanceof Integer) && !(value instanceof Float))
-				return false;
-			
-			variableList.put(variableName, value);
-			return true;
-		}
-		
-		public Object getVariable(String variableName){
-			for(String p : variableList.keySet())
-				if (p.equals(variableName))
-					return variableList.get(p);
-			return null;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-		}
-	
-		public void setVariable(String var, Object val){
-			for(String p : variableList.keySet())
-				if(p.equals(var)){
-					String type = variableList.get(p).getClass().getSimpleName();
-					if(!var.getClass().getSimpleName().equals(type)){
-						try{
-							if(type.toLowerCase().equals("float"))
-								variableList.put(p, (float) val);
-							if(type.toLowerCase().equals("integer"))
-								variableList.put(p, (int) val);
-							if(type.toLowerCase().equals("string"))
-								variableList.put(p, (String) val);
-						} catch (Exception e){ }
-					} else 
-						variableList.put(p, val);
-				}
-		}
-		
-		//for use in the history section in the stats window
-		//only includes major events
-		public Texture getEventIcon(String event/*, String descriptor*/){
-			switch(event){
-			case "BrokeAnOldLadyCurse": return Game.res.getTexture("girlfriend1face");
-			case "MetTheBadWitch": return Game.res.getTexture("witchface");
-			case "RobbedTwoGangsters": return Game.res.getTexture("gangster1face");
-			case "FellFromNowhere": return Game.res.getTexture(character.ID+"base");
-			case "FoundTheNarrator": return Game.res.getTexture("narrator1face");
-			default:
-				return null;
-			}
-		}
-
-		@Override
-		public void read(Json json, JsonValue val) {
-			for (JsonValue child = val.getChild("eventList"); child != null; child = child.next()) {
-				this.eventList.put(child.name(), child.getString("value"));
-			}
-			
-			for (JsonValue child = val.getChild("flagList"); child != null; child = child.next()) {
-				this.flagList.put(child.name(), child.getBoolean("value"));
-			}
-			
-			for (JsonValue child = val.getChild("variableList"); child != null; child = child.next()) {
-				Object obj = json.fromJson(Object.class, child.toString());
-				this.variableList.put(child.name(), obj);
-			}			
-		}
-
-		@Override
-		public void write(Json json) {
-			json.writeValue("eventList", this.eventList);
-			json.writeValue("flagList", this.flagList);
-			json.writeValue("variableList", this.variableList);
-		}
 	}
 }
 

@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SerializationException;
 
 public class Entity implements Serializable {
 	
@@ -79,37 +80,39 @@ public class Entity implements Serializable {
 	protected static final float MAX_DISTANCE = 50;
 	protected static final double DEFAULT_MAX_HEALTH = 20;
 
-	public Entity(){} 
+	//no-arg should only be used by serializer
+	public Entity() {
+		this.init();
+	} 
 	
+	//TODO consolidate these constructors if possible
 	public Entity (float x, float y, String ID) {
-		//this(x, y, -1, -1, ID);			//negative width, height reserved for finding from texture
+		this.init();
 		this.ID = ID;
 		this.x = x;
 		this.y = y;
-		isAttackable = false;
 		
 		setDimensions();
-		
-		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		loadSprite();
-		followers = new Array<>();
-
-		origLayer = Vars.BIT_LAYER1;
 	}
 	
 	public Entity(float x, float y, int width, int height, String ID) {
+		this.init();
 		this.ID = ID;
 		this.x = x;
 		this.y = y;
-		isAttackable = false;
 		
 		setDimensions(width, height);
-		
-		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		loadSprite();
-		followers = new Array<>();
 	}
 
+	private void init() {
+		isAttackable = false;
+		this.health = maxHealth = DEFAULT_MAX_HEALTH;
+		followers = new Array<>();
+		origLayer = Vars.BIT_LAYER1;
+	}
+	
 	public void loadSprite() {
 		animation = new Animation();
 		texture = Game.res.getTexture(ID);
@@ -440,9 +443,16 @@ public class Entity implements Serializable {
 		this.layer = val.getShort("layer");
 		this.origLayer = val.getShort("origLayer");
 		
-		this.script = json.fromJson(Script.class, val.getString("script"));
-		this.attackScript = json.fromJson(Script.class, val.getString("attackScript"));
-
+		try {
+			this.script = json.fromJson(Script.class, val.get("script").toString());
+			this.script.setOwner(this);
+		} catch (SerializationException | NullPointerException e) {}
+		
+		try {
+			this.attackScript = json.fromJson(Script.class, val.get("attackScript").toString());
+			this.script.setOwner(this);
+		} catch (SerializationException | NullPointerException e) {}
+		
 		Array<Integer> mobRef = new Array<Integer>();
 		for (JsonValue child = val.get("followers").child(); child != null; child = child.next()) {
 			mobRef.add(child.getInt("value"));
@@ -450,6 +460,10 @@ public class Entity implements Serializable {
 		if (mobRef.size > 0) {
 			JsonSerializer.pushEntityRef(this, mobRef);
 		}
+		
+		//other stuff from constructor
+		setDimensions();		
+		loadSprite();
 	}
 
 	@Override

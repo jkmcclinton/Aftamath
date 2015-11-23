@@ -7,6 +7,8 @@ import handlers.Vars;
 
 import java.util.HashMap;
 
+import javax.sql.rowset.serial.SerialException;
+
 import main.Game;
 import main.Main;
 import main.Main.InputState;
@@ -26,6 +28,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SerializationException;
 
 import entities.Projectile.ProjectileType;
 
@@ -200,58 +203,57 @@ public class Mob extends Entity {
 
 	public Mob(String name, String ID, int sceneID, int level, DamageType type, float x, float y, short layer){
 		super(x, y+getHeight(ID)/2f, ID);
+		this.init();
+		
 		this.name = name;
 		this.layer = layer;
-		origLayer = layer;
-		
+		origLayer = layer;		
 		//gender = "";
 		this.powerType = type;
-
-		attackables = new Array<>();
-		discovered = new Array<>();
-		contacts = new Array<>();
-		flamable = true;
-		isAttackable = true;
 
 		Texture texture = Game.res.getTexture(ID + "face");
 		if (texture != null) face = TextureRegion.split(texture, 64, 64)[0];
 		texture = Game.res.getTexture("healthBar");
 		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
-
-		attackTime = attackDelay;
-		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
-		iff=IFFTag.FRIENDLY;
 		
-		health = maxHealth = DEFAULT_MAX_HEALTH;
 		determineGender();
+		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
 		
-		state = AIState.STATIONARY;
-		defaultState = AIState.STATIONARY;
-		attackType = AttackType.NEVER;
-		responseType = SightResponse.IGNORE;
-
 		this.sceneID = sceneID;
-		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);
-		inactiveWait = (float)(Math.random() *(IDLE_LIMIT)+100);
-		time = 0;
-
 		if (!Entity.idToEntity.containsKey(this.sceneID)) {
 			Entity.idToEntity.put(this.sceneID, this);
 		} else {
-			System.out.println("Created entity with ID "+this.sceneID+" when one already exists.");
+			System.out.println("Created entity with ID "+this.sceneID+" ("+ this.name +") when one already exists.");
 		}
 	}
 
+	//constructor called from serializer - use others in other cases
 	public Mob(){
-		this(null, "", 0, 0, 0, Vars.BIT_LAYER3);
-		gender = "n/a";
-		
+		//this(null, "", 0, 0, 0, Vars.BIT_LAYER3);
+		super();
+		this.init();
+		gender = "n/a";	
+	}
+
+	private void init() {
+		attackables = new Array<>();
+		discovered = new Array<>();
+		contacts = new Array<>();
+		flamable = true;
+		isAttackable = true;
+		attackTime = attackDelay;
+		iff=IFFTag.FRIENDLY;
+		health = maxHealth = DEFAULT_MAX_HEALTH;
+		action = Action.STANDING;
 		state = AIState.STATIONARY;
 		defaultState = AIState.STATIONARY;
 		attackType = AttackType.NEVER;
 		responseType = SightResponse.IGNORE;
+		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);
+		inactiveWait = (float)(Math.random() *(IDLE_LIMIT)+100);
+		time = 0;
 	}
-
+	
 	public void update(float dt){
 		if(main==null){
 			System.out.println("still BROKEN");
@@ -2025,7 +2027,11 @@ public class Mob extends Entity {
 	@Override
 	public void read(Json json, JsonValue val) {
 		super.read(json, val);
-		this.respawnPoint = json.fromJson(Vector2.class, val.getString("respawnPoint"));
+		try {
+			//TODO figure out why this doesnt work
+			this.respawnPoint = json.fromJson(Vector2.class, val.get("respawnPoint").child().toString());
+		} catch (SerializationException | NullPointerException e) {
+		}
 		this.iff = IFFTag.valueOf(val.getString("iff"));
 		this.name = val.getString("name");
 		this.strength = val.getDouble("strength");
@@ -2042,6 +2048,14 @@ public class Mob extends Entity {
 		if (attackFocusId > -1 || aiFocusId > -1 || interactableId > -1) {
 			JsonSerializer.pushMobRef(this, attackFocusId, aiFocusId, interactableId);
 		}
+				
+		//other stuff that typically happens in constructor
+		Texture texture = Game.res.getTexture(ID + "face");
+		if (texture != null) face = TextureRegion.split(texture, 64, 64)[0];
+		texture = Game.res.getTexture("healthBar");
+		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
+		determineGender();
+		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
 	}
 
 	@Override
