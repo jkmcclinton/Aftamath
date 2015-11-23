@@ -7,8 +7,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -29,6 +31,7 @@ import entities.Ground;
 import entities.HUD;
 import entities.Mob;
 import entities.Mob.AIState;
+import entities.Mob.Anim;
 import entities.Path;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
@@ -80,6 +83,7 @@ public class Main extends GameState {
 	private ArrayList<Entity> objects/*, UIobjects, UItoRemove*/;
 	private ArrayList<Path> paths;
 	private ArrayList<PositionalAudio> sounds;
+	private Hashtable<String, Warp> warps;
 	private Box2DDebugRenderer b2dr;
 	private InputState beforePause;
 	private RayHandler rayHandler;
@@ -152,9 +156,10 @@ public class Main extends GameState {
 		speakText = null;
 //		dayTime = 3*NOON_TIME/2f;
 		
-		objects = new ArrayList<Entity>();
-		paths = new ArrayList<Path>();
-		sounds = new ArrayList<PositionalAudio>();
+		objects = new ArrayList<>();
+		paths = new ArrayList<>();
+		sounds = new ArrayList<>();
+		warps = new Hashtable<>();
 		world = new World(new Vector2 (0, Vars.GRAVITY), true);
 		world.setContactListener(cl);
 		b2dr = new Box2DDebugRenderer();
@@ -162,8 +167,12 @@ public class Main extends GameState {
 		rayHandler = new RayHandler(world);
 //		rayHandler.setAmbientLight(0);
 		
+		System.out.println("Don't Panic! The game is just linking levels together!");
+		drawString(sb, "Loading...", Game.width/4, Game.height/4);
+		
 		cam.reset();
 		b2dCam.reset();
+		catalogueWarps();
 		load();
 		
 		speakTime = 0;
@@ -172,6 +181,7 @@ public class Main extends GameState {
 		hud = new HUD(this, hudCam);
 		handleDayCycle();
 		handleWeather();
+		hud.showLocation();
 	}
 	
 	public void update(float dt) {
@@ -295,11 +305,6 @@ public class Main extends GameState {
 		cam.locate(dt);
 		if(quitting)
 			quit();
-		
-		
-//		Entity e = findObject("Grim Reaper");
-//		if(e!=null)
-//			cam.setFocus(e);
 	}
 	
 	public void handleWeather(){
@@ -450,6 +455,7 @@ public class Main extends GameState {
 //		debugText= "Volume: "+music.getVolume();
 //		debugText= "next: "+nextSong+"     "+music;
 		debugText= Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
+		debugText += "/lLevel: " + scene.title;
 		debugText += "/lSong: " + music;
 		debugText+= "/lState: "+(stateType);
 //		debugText+="/lATTACKABLES: "+character.getAttackables();
@@ -466,6 +472,7 @@ public class Main extends GameState {
 //		debugText+= "/lIdle Time: "+ Vars.formatTime(character.getIdleTime()) + "    Idled: "+character.getTimesIdled();
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
+		debugText+="/l"+character.isFacingLeft();
 		debugText+="/l"+character.getAnimationAction()+": "+character.animation.getActionLength();
 		debugText+="/l"+character.animation.getDelay();
 //		debugText +="/l"+cam.getCharacter().getName() + " x: " + (int) (cam.position.x) + "    y: " + ((int) (cam.position.y));
@@ -654,8 +661,63 @@ public class Main extends GameState {
 //				break;
 			case MOVE:
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
-				if(cam.focusing||warping||quitting||character.dead||waiting||character.frozen) return;
+				if(/*cam.focusing||*/warping||quitting||character.dead||waiting||character.frozen) return;
 				if(MyInput.isPressed(Input.JUMP)) character.jump();
+				if(MyInput.isDown(Input.UP)) {
+					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+							!character.getWarp().instant) {
+					}
+					else if(character.canClimb) character.climb();
+					else {
+						Vector2 f = new Vector2(character.getPixelPosition().x, 
+								character.getPixelPosition().y + 4.5f*Vars.TILE_SIZE*cam.zoom + cam.offsetY);
+						cam.setFocus(f);
+						b2dCam.setFocus(f);
+						character.lookUp();
+					}
+				}
+
+				if(MyInput.isPressed(Input.UP)) {
+					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+							!character.getWarp().instant) {
+						initWarp(character.getWarp());
+						character.killVelocity();
+					}
+				}
+				
+
+				if(MyInput.isDown(Input.DOWN)) 
+					if(character.canClimb)
+						character.descend();
+					else character.duck();
+				if(MyInput.isPressed(Input.USE)) partnerFollow();
+				if(MyInput.isPressed(Input.INTERACT)) {
+					triggerScript(character.interact());
+				}
+
+				if(MyInput.isDown(Input.LEFT)) character.left();
+				if(MyInput.isDown(Input.RIGHT)) character.right();
+				if(MyInput.isDown(Input.RUN)) {character.run();}
+				if(MyInput.isPressed(Input.ATTACK)) {
+					character.attack();
+				}
+				
+				if(MyInput.isUp(Input.UP) && (character.getAnimationAction().equals(Anim.LOOKING_UP)
+						|| character.getAnimationAction().equals(Anim.LOOK_UP))){
+					character.setAnimation(true, Anim.LOOK_UP);
+					cam.removeFocus();
+					b2dCam.removeFocus();
+				}
+
+				if(MyInput.isUp(Input.DOWN) && (character.getAnimationAction().equals(Anim.DUCKING)
+						|| character.getAnimationAction().equals(Anim.DUCK))){
+					character.unDuck();
+				}
+				
+				break;
+			case MOVELISTEN:
+				if(MyInput.isPressed(Input.PAUSE)) pause();
+				if(cam.moving/*||cam.focusing*/||warping||quitting||character.dead/*||waiting*/||character.frozen) return;
 				if(MyInput.isDown(Input.UP)) {
 					if(character.canWarp && character.isOnGround() && !character.snoozing && 
 							!character.getWarp().instant) {
@@ -673,19 +735,6 @@ public class Main extends GameState {
 				if(MyInput.isPressed(Input.INTERACT)) {
 					triggerScript(character.interact());
 				}
-
-				if(MyInput.isDown(Input.LEFT)) character.left();
-				if(MyInput.isDown(Input.RIGHT)) character.right();
-				if(MyInput.isDown(Input.RUN)) {character.run();}
-				if(MyInput.isPressed(Input.ATTACK)) {
-					character.attack();
-				}
-				break;
-			case MOVELISTEN:
-				if(MyInput.isPressed(Input.PAUSE)) pause();
-				if(cam.moving/*||cam.focusing*/||warping||quitting||character.dead/*||waiting*/||character.frozen) return;
-				if(MyInput.isDown(Input.UP)) character.climb();
-				if(MyInput.isDown(Input.DOWN)) character.descend();
 				if(MyInput.isDown(Input.LEFT)) character.left();
 				if(MyInput.isDown(Input.RIGHT)) character.right();
 				if(MyInput.isPressed(Input.JUMP) && !speaking && buttonTime >= DELAY) {
@@ -702,6 +751,39 @@ public class Main extends GameState {
 				} else if (MyInput.isPressed(Input.JUMP) && speaking){
 					buttonTime = 0;
 					speaking = hud.fillSpeech(speakText);
+				}
+				
+				if(MyInput.isDown(Input.UP)) {
+					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+							!character.getWarp().instant) {
+					}
+					else if(character.canClimb) character.climb();
+					else {
+						Vector2 f = new Vector2(character.getPixelPosition().x, 
+								character.getPixelPosition().y + 4.5f*Vars.TILE_SIZE*cam.zoom + cam.offsetY);
+						cam.setFocus(f);
+						b2dCam.setFocus(f);
+						character.lookUp();
+					}
+				}
+
+				if(MyInput.isPressed(Input.UP)) {
+					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+							!character.getWarp().instant) {
+						initWarp(character.getWarp());
+						character.killVelocity();
+					}
+				}
+				
+				if(MyInput.isUp(Input.UP) && (character.getAnimationAction().equals(Anim.LOOKING_UP)
+						|| character.getAnimationAction().equals(Anim.LOOK_UP))){
+					character.setAnimation(true, Anim.LOOK_UP);
+					cam.removeFocus();
+					b2dCam.removeFocus();
+				}
+				if(MyInput.isUp(Input.DOWN) && (character.getAnimationAction().equals(Anim.DUCKING)
+						|| character.getAnimationAction().equals(Anim.DUCK))){
+					character.setAnimation(true, Anim.DUCK);
 				}
 				break;
 			case LISTEN:
@@ -948,7 +1030,7 @@ public class Main extends GameState {
 		beforePause = stateType;
 		setStateType(InputState.PAUSED);
 		
-		menuOptions = new String[][] {{"Resume", "Stats", "Save Game", "Load Game", 
+		menuOptions = new String[][] {{"Resume", "Journal", "Load Game", 
 			"Options", "Quit to Menu", "Quit"}}; 
 		
 		paused = true;
@@ -958,7 +1040,7 @@ public class Main extends GameState {
 		menuIndex[1] = 0;
 	}
 	
-	public void stats(){
+	public void journal(){
 		//change menu to display stats
 	}
 	
@@ -994,7 +1076,7 @@ public class Main extends GameState {
 		warping = true;
 		warped = false;
 		this.warp = warp;
-		nextScene = warp.getNext();
+		nextScene = warp.getNextScene();
 //		scene.saveLevel();
 
 		sb.fade();
@@ -1005,12 +1087,17 @@ public class Main extends GameState {
 	public void warp(){
 		if(warped) return;
 		
-		random=false;
+		random = false;
 		destroyBodies();
 		scene = nextScene;
 		scene.create();
-		createPlayer(new Vector2(warp.getLink().x, warp.getLink().y+character.rh));
+		Vector2 w = warp.getLink().getWarpLoc();
+		w.y+=character.rh;
+		createPlayer(w);
 		initEntities();
+		
+		if(warp.getLink().warpID==1 && !character.isFacingLeft()) character.setDirection(true);
+		if(warp.getLink().warpID==0 && !character.isFacingLeft()) character.setDirection(false);
 		cam.setBounds(Vars.TILE_SIZE*4, (scene.width-Vars.TILE_SIZE*4), 0, scene.height);
 		b2dCam.setBounds((Vars.TILE_SIZE*4)/PPM, (scene.width-Vars.TILE_SIZE*4)/PPM, 0, scene.height/PPM);
 		
@@ -1093,11 +1180,12 @@ public class Main extends GameState {
 	}
 	
 	public void load(){
+		System.out.println(cam.viewportHeight);
 		narrator = new Mob("Narrator", "narrator1", 0, 0, 0, Vars.BIT_LAYER1);
 		player = new Player(this);
 //		if(gameFile==null){
 		if(gameFile!=null){
-			scene= new Scene(world,this,"Street");
+			scene= new Scene(world,this,"Residential District N");
 //			scene = new Scene(world, this, "room1_1");
 			scene.setRayHandler(rayHandler);
 			setSong(scene.DEFAULT_SONG[dayState]);
@@ -1113,13 +1201,13 @@ public class Main extends GameState {
 //			tstLight.attachToBody(character.getBody(), 0, 0);
 			triggerScript("intro");
 		} else {
-			scene= new Scene(world,this,"Street");
+			scene= new Scene(world,this,"Residential District N");
 			//scene = load recent scene from
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
 			scene.create();
 			
-			character = new Mob("TestName", "maleplayer2",scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+			character = new Mob("TestName", "femaleplayer2",scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 			createPlayer(scene.getSpawnPoint());
 		}
 		
@@ -1127,6 +1215,35 @@ public class Main extends GameState {
 		cam.bind(scene, false);
 		b2dCam.bind(scene, true);
 		world.setGravity(scene.getGravity());
+	}
+	
+	//precreates all existing warps across entire game and puts them to hashtable
+	public void catalogueWarps(){
+		//collect names for valid levels
+		Array<String> levels = new Array<>();
+		FileHandle [] files = Gdx.files.internal("assets/maps").list();
+		for(FileHandle f:files)
+			if(f.extension().equals("tmx"))
+				levels.add(f.nameWithoutExtension());
+		
+		Scene s;
+		Array<Warp> w;
+		// create warps from each level and add them to the hash
+		for(String l : levels){
+			s = new Scene(l);
+			w = s.createWarps();
+			for(Warp i : w) 
+				warps.put(l+i.warpID, i);
+		}
+		
+		//link all warps together
+		Enumeration<Warp> e = warps.elements();
+		while(e.hasMoreElements()){
+			Warp i = e.nextElement();
+//			if(i.type==Warp.Type.LINK);
+//			System.out.print(i.locTitle+i.warpID+" :->: "+ i.next+i.getLinkID()+":\t");
+			i.setLink(warps.get(i.next + i.getLinkID()));
+		}
 	}
 	
 	//basically a numerical representation of an entity
@@ -1151,7 +1268,6 @@ public class Main extends GameState {
 	
 	public void createPlayer(Vector2 location){
 		String gender = character.getGender();
-		System.out.println(gender);
 //		try {
 //			gender = character.ID.substring(0, character.ID.indexOf("player"));
 //		} catch(Exception e){
@@ -1160,10 +1276,12 @@ public class Main extends GameState {
 		
 		
 		character.setGender(gender);
-		
+
+//		cam.setLock(false);
+//		b2dCam.setLock(false);
 		cam.zoom = Camera.ZOOM_NORMAL;
 		b2dCam.zoom = Camera.ZOOM_NORMAL;
-		
+
 		character.setPosition(location);
 		character.setGameState(this);
 		character.create();
@@ -1248,7 +1366,7 @@ public class Main extends GameState {
 		if(player.getPartner()!=null)
 			if (player.getPartner().getName() != null) 
 				objects.add(player.getPartner());
-
+		
 		for (Entity d : objects){
 			d.setGameState(this);
 			if(!d.equals(character))
@@ -1283,6 +1401,10 @@ public class Main extends GameState {
 		paths = new ArrayList<Path>();
 	}
 	
+	public Warp findWarp(String levelID, int warpID){
+		return warps.get(levelID + warpID);
+		
+	}
 	public Scene getScene(){ return scene; }
 	public World getWorld(){ return world; }
 	public HUD getHud() { return hud; }
@@ -1317,7 +1439,7 @@ public class Main extends GameState {
 	
 	public void printObjects() {
 		for(Entity e:objects){
-			debugText+="/l"+e.ID;
+//			debugText+="/l"+e.ID;
 			System.out.println(e);
 		}
 	}

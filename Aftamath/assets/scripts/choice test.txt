@@ -28,6 +28,7 @@ setChoice(1:Apartment, 2:Penthouse, 4:Parent's, 3:Mansion)
 		setSpeaker(narrator)
 		value(set, player.money, 0)
 		text(sad, {Oh and that money you had? It's gone.})
+		stop
 	end
 end
 
@@ -62,15 +63,15 @@ setChoice(6:Male, 6:Female, 1:Other)
   [choice Female]
     value(set, player.gender, female)
     text(normal, {Congradulations, you're now a girl. Horray})
-    #text(normal, {Have you played this before?})
-    #setChoice(yesno)
-    #  [choice yes]
-    #    text(normal, {Then welcome back. ~Try to talk to someone new.})
-    #  end
-    #  [choice no]
-    #    text(happy, {Well your in for a treat! This game is great!})
-    #  end
-    #end
+    text(normal, {Have you played this before?})
+    setChoice(yesno)
+      [choice yes]
+        text(normal, {Then welcome back. ~Try to talk to someone new.})
+      end
+      [choice no]
+        text(happy, {Well your in for a treat! This game is great!})
+      end
+    end
   end
   
   [Choice Other]

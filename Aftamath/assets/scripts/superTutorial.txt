@@ -1,0 +1,213 @@
+Script AfterVillain
+lockplayer
+
+#enter hero
+eventMusic(Tension and Excitement)
+face(Villain, Hero)
+face(player, Hero)
+
+setSpeaker(Hero)
+text(mad, {What? What are you doing?})
+
+setSpeaker(Villain)
+text(sad, {What it looks like. Training a new recruit.})
+
+setSpeaker(Hero)
+if([player.gender = male])
+	text(mad, {Training? I know what this really is! ~A hostage!/lHold on, I'll save you!})
+else
+	text(mad, {Training? I know what this really is!})
+	text(mad, {This poor girl is a hostage!/lHold on milady, I'll save you!})
+end
+#hero runs to player
+
+#villain shoots villain
+setSpeaker(Villain)
+text(mad, {Hands off. ~This rookie's mine.})
+
+setSpeaker(Hero)
+text(sad, {You're not serious about joining her, are you? })
+text(sad, {Listen, I know I'm not the smartest or the coolest guy around, but at least I have a heart.})
+text(normal, {A life full of wrongdoings is not a life worth living. What good are powers if they're used for evil?})
+
+setSpeaker(Villain)
+text(sad, {You're such an idiot.})
+text(normal, {Don't you understand that you'll only ever reach your full power by not caring about those around you?})
+text(normal, {If you constantly let others limit you with things like "morals" or "duty," you'll always be pathetic.})
+
+setSpeaker(Hero)
+text(sad, {...sigh... let /player choose for /playergppself.})
+
+declare(ask, local, integer, 0)
+checkpoint(choiceHero)
+setChoice(6:Hero, 6:Villain, 4:NEITHER!, 3:Do I have to?)
+	[choice Hero]
+		setEvent(VillainTutGood, {Went with hero after learning from villain})
+		value(add, player.niceness, 2)
+		
+		setSpeaker(Hero)
+		text(happy, {I knew you were a good person from the moment I saw you.})
+		
+		# move player and hero stage left
+		stop
+	end
+	
+	[choice Villain]
+		setEvent(VillainTut, {Went with villain})
+		value(add, player.niceness, -2)
+		
+		setSpeaker(Villain)
+		text(happy, {I knew I made the right choice in trusting you.})
+		
+		setSpeaker(Hero, true)
+		text(mad, {Today, /player, you have made an enemy!})
+		text(mad, {You and I will fight to the death one day, and it will be glorious!})
+		text(mad, {This I swear!})
+		
+		setSpeaker(Villain)
+		text(sad, {Come on punk, let's blow this dump.})
+		
+		#move villain and player stage right
+		stop
+	end
+	
+	[choice NEITHER!]
+		setEvent(RogueTutorial, {Did something roguish})
+		setSpeaker(player)
+		text(normal, {Screw both of you!/l/lWhatever's going on between you two, leave me out of it.})
+		
+		#setDialogueScript(Villain, {disappointedVillain})
+		#setDialogueScript(Hero, {disappointedHero})
+	end
+	
+	[choice Do I have to?]
+		if([ask = 0])
+			setSpeaker(Hero)
+			value(add, ask, 1)
+			text(mad, {What do you mean, do you have to?})
+			text(mad, {This is the choice of a lifetime! A superperson's defining moment!})
+			text(mad, {You can't just ignore it!})
+			return(choiceHero)
+		end
+		if([ask = 1])
+			setSpeaker(Villain)
+			text(mad, {Yes you have to!})
+			text(normal, {Who's it going to be?~/lMe or him.})
+			value(set, ask, 0)
+			return(choiceHero)
+		end
+		if([ask = 2])
+			#do stuff
+			value(add, player.bravery, -1)
+		end
+	end
+end
+done
+
+#----------------------------------------------------------------
+
+Script AfterHero
+lockplayer
+
+#enter Villain
+#spawn(Villain)
+eventMusic(Tension and Excitement)
+face(Hero, Villain)
+face(player, Villain)
+
+setSpeaker(Villain)
+text(sad, {Oh, it's you...})
+
+setSpeaker(Hero)
+text(happy, {I'm here! ~Yes, I'm always here to save the day! That's why they call me a here-o. Get it? Hahahahaha!})
+
+setSpeaker(Villain)
+text(sad, {Oh, brother...})
+text(normal, {Listen punk. Are you seriously going to hang around with this dweeb?})
+
+setSpeaker(player)
+text(normal, {...})
+
+setSpeaker(Hero)
+text(normal, {Of course /playergo is. We'll be living the life. })
+text(normal, {Saving beautiful damsels in distress, making the world a better place, dancing in the rain, drinking from the same cup with two straws-})
+
+setSpeaker(Villain)
+text(sad, {How quaint.})
+text(normal, {/player, have you ever wondered what the true extent of your powers is?}) 
+text(normal, {Have you ever thirsted for a life full of excitement, chaos, and limitless power?})
+text(normal, {Come with me, and I can show you things you never even thought possible.})
+
+setSpeaker(Hero)
+face(Hero, player)
+text(sad, {Surely you're not considering it, right?/lWhat good are powers if they're used for evil?})
+text(normal, {L-Look, I know I'm not the smartest or the coolest guy around, but at least I have a heart.})
+text(normal, {A life full of wrongdoings is not a life worth living.})
+
+setSpeaker(Villain)
+text(mad, {Let /player answer for /playergppself.})
+
+declare(ask, local, integer, 0)
+checkpoint(choiceHero)
+setChoice(6:Hero, 6:Villain, 4:NEITHER!, 3:Do I have to?)
+	[choice Hero]
+		setEvent(HeroTut, {Went with hero})
+		value(add, player.niceness, 2)
+		
+		setSpeaker(Hero)
+		text(happy, {I knew you were a good person from the moment I saw you.})
+		
+		# move player and hero stage left
+		stop
+	end
+	
+	[choice Villain]
+		setEvent(HeroTutEvil, {Went with villain after learning from hero})
+		value(add, player.niceness, -2)
+		
+		setSpeaker(Villain)
+		text(happy, {Excellent...})
+		
+		setSpeaker(Hero, true)
+		text(sad, {/player/c!~WHY?!})
+		text(sad, {I had so much hope for you!})
+		
+		setSpeaker(Villain)
+		text(sad, {Come on punk, let's blow this dump.})
+		
+		#move villain and player stage right
+		stop
+	end
+	
+	[choice NEITHER!]
+		setEvent(RogueTutorial, {Did something roguish})
+		setSpeaker(player)
+		text(normal, {Screw both of you!/l/lWhatever's going on between you two, leave me out of it.})
+		
+		#setDialogueScript(Villain, {disappointedVillain})
+		#setDialogueScript(Hero, {disappointedHero})
+	end
+	
+	[choice Do I have to?]
+		if([ask = 0])
+			setSpeaker(Hero)
+			value(add, ask, 1)
+			text(mad, {What do you mean, do you have to?})
+			text(mad, {This is the choice of a lifetime! A superperson's defining moment!})
+			text(mad, {You can't just ignore this!})
+			return(choiceHero)
+		end
+		if([ask = 1])
+			setSpeaker(Villain)
+			text(mad, {Yes you have to!})
+			text(normal, {Who's it going to be?~/lMe or him.})
+			value(set, ask, 0)
+			return(choiceHero)
+		end
+		if([ask = 2])
+			#do stuff
+			value(add, player.bravery, -1)
+		end
+	end
+end
+done

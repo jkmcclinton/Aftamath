@@ -1,16 +1,8 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.FadingSpriteBatch;
-import handlers.Vars;
 
 import java.util.HashMap;
-
-import main.Game;
-import main.Main;
-import main.Main.InputState;
-import scenes.Script;
-import scenes.Script.ScriptType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -25,6 +17,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
 import entities.Projectile.ProjectileType;
+import handlers.FadingSpriteBatch;
+import handlers.Vars;
+import main.Game;
+import main.Main;
+import main.Main.InputState;
+import scenes.Scene;
+import scenes.Script;
+import scenes.Script.ScriptType;
 
 public class Mob extends Entity{
 
@@ -47,7 +47,7 @@ public class Mob extends Entity{
 	protected IFFTag iff;
 	protected Vector2 respawnPoint;
 	protected String groundType, gender, name;
-	protected Action action;
+	protected Anim action;
 	protected float knockOutTime, idleTime, idleDelay;
 	protected float stepTime, actionTime, attackTime, attackDelay=DEFAULT_ATTACK_DELAY;
 	protected float maxSpeed = WALK_SPEED;
@@ -62,11 +62,11 @@ public class Mob extends Entity{
 	protected Entity interactable;
 	protected static final int IDLE_LIMIT = 500;
 	
-	private static Array<Action> immobileActions = new Array<>(); 
+	private static Array<Anim> immobileActions = new Array<>(); 
 
 	//determines when the NPC fights back
 	public static enum AttackType{
-		ON_SIGHT, ON_ATTACKED, ON_DEFEND, /*ON_EVENT,*/ RANDOM, NEVER
+		ON_SIGHT, ENGAGE, HIT_ONCE, /*ON_EVENT,*/ RANDOM, NEVER
 	}
 
 	//determines what the NPC does when the character is spotted
@@ -81,9 +81,9 @@ public class Mob extends Entity{
 	}
 	
 	static{
-	 Action[] tmp = {Action.DEAD, Action.DIE_TRANS, Action.FLINCHING, Action.GET_DOWN, Action.SNOOZING, Action.WAKE_UP, 
-			Action.SIT_DOWN, Action.SITTING, Action.AIMING, Action.TURN_RUN, Action.LIE_DOWN, 
-			Action.SLEEPING, Action.STUMBLE, Action.KNOCKED_OUT, Action.RECOVER};
+	 Anim[] tmp = {Anim.DEAD, Anim.DIE_TRANS, Anim.FLINCHING, Anim.GET_DOWN, Anim.SNOOZING, Anim.WAKE_UP, 
+			Anim.SIT_DOWN, Anim.SITTING, Anim.AIMING, Anim.TURN_RUN, Anim.LIE_DOWN, 
+			Anim.SLEEPING, Anim.STUMBLE, Anim.KNOCKED_OUT, Anim.RECOVER};
 		immobileActions.addAll(tmp);
 	}
 	
@@ -114,7 +114,7 @@ public class Mob extends Entity{
 	protected static final int INTERACTION_SPACE = 17;
 
 	//used solely for controlling animation
-	public static enum Action{
+	public static enum Anim{
 		STANDING,
 		WALKING,
 		RUNNING,
@@ -167,10 +167,10 @@ public class Mob extends Entity{
 		KISS, SNOOZE, DANCE, SPECIAL1, SPECIAL2, SPECIAL3, STOP
 	}
 	
-	public static HashMap<Action, Integer> animationIndicies = new HashMap<>();
+	public static HashMap<Anim, Integer> animationIndicies = new HashMap<>();
 	static{
-		for(int i = 0; i<Action.values().length; i++){
-			animationIndicies.put(Action.values()[i], i);
+		for(int i = 0; i<Anim.values().length; i++){
+			animationIndicies.put(Anim.values()[i], i);
 //			System.out.println(Action.values()[i]);
 		}
 	}
@@ -188,8 +188,8 @@ public class Mob extends Entity{
 		this.name = name;
 		this.layer = layer;
 		origLayer = layer;
-		
-		gender = "";
+
+		determineGender();
 		this.powerType = type;
 
 		attackables = new Array<>();
@@ -257,15 +257,15 @@ public class Mob extends Entity{
 			}
 
 			// idle player actions
-			if (action == Action.STANDING && main.currentScript==null) {
+			if (action == Anim.STANDING && main.currentScript==null) {
 				animation.removeAction();
 				idleTime+=dt;
 				if(idleTime>=idleDelay){
-					timesIdled +=4;
+					timesIdled +=1;
 					idleTime = 0;
 					if(timesIdled >=4 && main.character.equals(this) && 
 							(main.stateType==InputState.MOVE || main.stateType==InputState.MOVELISTEN)){
-						setTransAnimation(Action.GET_DOWN, Action.SNOOZING, true);
+						setTransAnimation(Anim.GET_DOWN, Anim.SNOOZING, true);
 						timesIdled = 0;
 						snoozing = true;
 //						controlledAction = ScriptAI.SNOOZE;
@@ -273,24 +273,25 @@ public class Mob extends Entity{
 					else{
 						if(this.equals(main.character))
 							if(Math.random()>.25d)
-								setAnimation(Action.IDLE);
+								setAnimation(Anim.IDLE);
 							else
-								setAnimation(Action.DANCE);
+								setAnimation(Anim.IDLE);
 						else
-							setAnimation(Action.IDLE);
+							setAnimation(Anim.IDLE);
 					}
 				}
-			}
+			} else
+				idleTime = 0;
 
 			if(knockedOut){
 				knockOutTime+=dt;
 				if(knockOutTime>=3f)
-					setAnimation(Action.RECOVER);
-				else if(action!=Action.RECOVER && action!=Action.STUMBLE)
-					setAnimation(Action.KNOCKED_OUT);
-			}else if(knockedOut && action==Action.RECOVER)
-				if(animationIndicies.get(Action.RECOVER)<=actionLengths.length)
-					if(animation.getIndex()==actionLengths[animationIndicies.get(Action.RECOVER)]-1){
+					setAnimation(Anim.RECOVER);
+				else if(action!=Anim.RECOVER && action!=Anim.STUMBLE)
+					setAnimation(Anim.KNOCKED_OUT);
+			}else if(knockedOut && action==Anim.RECOVER)
+				if(animationIndicies.get(Anim.RECOVER)<=actionLengths.length)
+					if(animation.getIndex()==actionLengths[animationIndicies.get(Anim.RECOVER)]-1){
 						knockedOut = controlled = false;
 					}
 
@@ -299,10 +300,10 @@ public class Mob extends Entity{
 //				setAnimation(Action.SNOOZING, true);
 
 			if (!isOnGround()) 
-				setAnimation(Action.FALLING);
-			if(isOnGround() && !wasOnGround && (getAnimationAction()==Action.FALLING||
-					getAnimationAction()==Action.FALLING_TRANS))
-				setAnimation(Action.LANDING);
+				setAnimation(Anim.FALLING);
+			if(isOnGround() && !wasOnGround && (getAnimationAction()==Anim.FALLING||
+					getAnimationAction()==Anim.FALLING_TRANS))
+				setAnimation(Anim.LANDING);
 
 			if (!climbing)
 				animation.update(dt);
@@ -344,9 +345,9 @@ public class Mob extends Entity{
 				stepTime = 0;
 			}
 
-			if (animation.actionIndex < 4 && getAnimationAction()!= Action.JUMPING && getAnimationAction()!= Action.FLINCHING
-					&& getAnimationAction()!= Action.LANDING) {
-				action = Action.STANDING;
+			if (animation.actionIndex < 4 && getAnimationAction()!= Anim.JUMPING && getAnimationAction()!= Anim.FLINCHING
+					&& getAnimationAction()!= Anim.LANDING) {
+				action = Anim.STANDING;
 			} 
 
 			wasOnGround = isOnGround();
@@ -375,17 +376,17 @@ public class Mob extends Entity{
 		setRespawnpoint(location);
 	}
 
-	protected void setAnimation(Action action){
+	protected void setAnimation(Anim action){
 		setAnimation(action, false);
 	}
 
-	protected void setAnimation(Action action, boolean repeat){
-		if(action==Action.RUNNING)
+	protected void setAnimation(Anim action, boolean repeat){
+		if(action==Anim.RUNNING)
 			setAnimation(action, .07f, repeat);
 		else setAnimation(action, Vars.ACTION_ANIMATION_RATE, repeat);
 	}
 
-	protected void setAnimation(Action action, float delay){
+	protected void setAnimation(Anim action, float delay){
 		setAnimation(action, delay, false);
 	}
 	
@@ -395,9 +396,9 @@ public class Mob extends Entity{
 	 * @param reversed if the operation should be completed. If not, then the animation plays like normal 
 	 * @param action the action of the animation to be reversed
 	 */
-	protected void setAnimation(boolean reversed, Action action) {
-		Array<Action> reverseable = new Array<>(new Action[]{Action.LOOK_UP, Action.SIT_DOWN, Action.LIE_DOWN,
-				Action.GET_DOWN, Action.AIM_TRANS, Action.EMBRACE, Action.ENGAGE_KISS, Action.SPECIAL3_TRANS});
+	public void setAnimation(boolean reversed, Anim action) {
+		Array<Anim> reverseable = new Array<>(new Anim[]{Anim.LOOK_UP, Anim.DUCK, Anim.SIT_DOWN, Anim.LIE_DOWN,
+				Anim.GET_DOWN, Anim.AIM_TRANS, Anim.EMBRACE, Anim.ENGAGE_KISS, Anim.SPECIAL3_TRANS});
 		if(reversed){
 			if(!reverseable.contains(action, true))
 				return;
@@ -405,7 +406,6 @@ public class Mob extends Entity{
 			setAnimation(action);
 			return;
 		}
-		
 		if (isNotAvailable(action)) return;
 		this.action = action;
 		int aI = animationIndicies.get(action);
@@ -427,14 +427,14 @@ public class Mob extends Entity{
 				sprites[i] = tmp.get(i);
 			}
 			
-			animation.setAction(sprites, actionLengths[aI], facingLeft, aI, Vars.ACTION_ANIMATION_RATE, false);
+			animation.setAction(sprites, actionLengths[aI], isFacingLeft(), aI, Vars.ACTION_ANIMATION_RATE, false);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
 	}
 
-	protected void setAnimation(Action action, float delay, boolean repeat) {
+	protected void setAnimation(Anim action, float delay, boolean repeat) {
 		if (isNotAvailable(action)) return;
 		this.action = action;
 
@@ -444,15 +444,15 @@ public class Mob extends Entity{
 
 		try{
 			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[aI];
-			animation.setAction(sprites, i, facingLeft, aI, delay, repeat);
+			animation.setAction(sprites, i, isFacingLeft(), aI, delay, repeat);
 		} catch(Exception e) { }
 	}
 
-	public void setTransAnimation(Action trans, Action action) {
+	public void setTransAnimation(Anim trans, Anim action) {
 		setTransAnimation(trans, action, false);
 	}
 	
-	public void setTransAnimation(Action trans, Action action, boolean looping) {
+	public void setTransAnimation(Anim trans, Anim action, boolean looping) {
 		if (isNotAvailable(trans)) return;
 		if (this.action == trans)
 			return;
@@ -464,14 +464,14 @@ public class Mob extends Entity{
 		try{
 			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[aI];
 			TextureRegion[] nextSprites = TextureRegion.split(texture, width, height)[tAI];
-			animation.setTransitionAction(nextSprites, actionLengths[aI], facingLeft, 
+			animation.setTransitionAction(nextSprites, actionLengths[aI], isFacingLeft(), 
 					aI, sprites, actionLengths[tAI], tAI, looping);
 		} catch (Exception e){
 
 		}
 	}
 	
-	public boolean isNotAvailable(Action action){
+	public boolean isNotAvailable(Anim action){
 		int i = animationIndicies.get(action);
 		
 		if(i < actionPriorities.length)
@@ -480,13 +480,13 @@ public class Mob extends Entity{
 		return false;
 	}
 	
-	public Action getAnimationAction(){
-		return Action.values()[animation.actionIndex];
+	public Anim getAnimationAction(){
+		return Anim.values()[animation.actionIndex];
 	}
 	
-	public static Action getAnimationAction(int index){
-		if(index >=0 && index < Action.values().length)
-			return Action.values()[index];
+	public static Anim getAnimationAction(int index){
+		if(index >=0 && index < Anim.values().length)
+			return Anim.values()[index];
 		else return null;
 	}
 	
@@ -795,8 +795,8 @@ public class Mob extends Entity{
 				facePlayer();
 				break;
 			case DANCING:
-				if(getAnimationAction()!=Action.DANCE)
-					setAnimation(Action.DANCE, true);
+				if(getAnimationAction()!=Anim.DANCE)
+					setAnimation(Anim.DANCE, true);
 				break;
 			case TIMEDFIGHT:
 				time-=Vars.DT;
@@ -871,8 +871,8 @@ public class Mob extends Entity{
 	
 	public void faceObject(Entity obj){
 		float dx = obj.getPosition().x - getPosition().x;
-		if(dx > 0 && facingLeft) changeDirection();
-		else if(dx < 0 && !facingLeft) changeDirection();
+		if(dx > 0 && isFacingLeft()) changeDirection();
+		else if(dx < 0 && !isFacingLeft()) changeDirection();
 	}
 
 	public void evade(){
@@ -952,9 +952,9 @@ public class Mob extends Entity{
 				if(health<=0)
 					die();
 				else if(val<=DAMAGE_THRESHOLD)
-					setAnimation(Action.FLINCHING);
+					setAnimation(Anim.FLINCHING);
 				else {
-					setTransAnimation(Action.STUMBLE, Action.KNOCKED_OUT);
+					setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
 				}
 			}
 	}
@@ -985,9 +985,9 @@ public class Mob extends Entity{
 				}
 				else
 					if(val>DAMAGE_THRESHOLD)
-						setTransAnimation(Action.STUMBLE, Action.KNOCKED_OUT);
+						setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
 
-				setAnimation(Action.FLINCHING);
+				setAnimation(Anim.FLINCHING);
 			}
 
 		if(owner.equals(main.character)){
@@ -997,11 +997,11 @@ public class Mob extends Entity{
 						main.triggerScript(script);
 					else
 						switch(getAttackType()){
-						case ON_ATTACKED:
-						fight(this);
+						case ENGAGE:
+						fight(owner);
 							break;
-						case ON_DEFEND:
-							attack(getPosition());
+						case HIT_ONCE:
+							attack(owner.getPosition());
 							break;
 						case RANDOM:
 							double chance = Math.random();
@@ -1045,7 +1045,7 @@ public class Mob extends Entity{
 //		deadTime = 0;
 
 		body.setLinearVelocity(0, 0);
-		setTransAnimation(Action.DIE_TRANS, Action.DEAD);
+		setTransAnimation(Anim.DIE_TRANS, Anim.DEAD);
 	}
 
 	/**
@@ -1114,33 +1114,33 @@ public class Mob extends Entity{
 	
 	public void doTimedAction(){
 		//do shit
-		Action anim = null;
+		Anim anim = null;
 		switch(controlledAction){
 		case AIM:
 			if(actionTime<=Vars.DT){
 				aiming = false;
-				setAnimation(true, Action.AIM_TRANS);
+				setAnimation(true, Anim.AIM_TRANS);
 			}else if(!aiming){
 				aiming = true;
-				setTransAnimation(Action.AIM_TRANS, Action.AIMING, true);
+				setTransAnimation(Anim.AIM_TRANS, Anim.AIMING, true);
 			}
 			break;
 		case ATTACK:
-			anim = Action.ATTACKING;
+			anim = Anim.ATTACKING;
 			break;
 		case DANCE:
-			anim = Action.DANCE;
+			anim = Anim.DANCE;
 			break;
 		case FLAIL:
 			if(!controlledPT2){
-				setAnimation(Action.ON_FIRE, true);
+				setAnimation(Anim.ON_FIRE, true);
 				controlledPT2 = true;
 			} else {
 				if(ctrlReached){
 					goalPosition = new Vector2(getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
 							Vars.TILE_SIZE, getPosition().y);
 					float d = 1;
-					if(!facingLeft) d = -1;
+					if(!isFacingLeft()) d = -1;
 
 					goalPosition = new Vector2(d * goalPosition.x, goalPosition.y);
 					ctrlReached = false;
@@ -1165,49 +1165,49 @@ public class Mob extends Entity{
 			break;
 		case HUG:
 			if(actionTime<=Vars.DT)
-				setAnimation(true, Action.EMBRACE);
+				setAnimation(true, Anim.EMBRACE);
 			else if(!controlledPT2){
 				controlledPT2 = true;
-				setTransAnimation(Action.EMBRACE, Action.HUGGING, true);
+				setTransAnimation(Anim.EMBRACE, Anim.HUGGING, true);
 			}
 			break;
 		case IDLE:
-			anim = Action.IDLE;
+			anim = Anim.IDLE;
 			break;
 		case JUMP:
 			jump();
 			break;
 		case KISS:
 			if(actionTime<=Vars.DT)
-				setAnimation(true, Action.ENGAGE_KISS);
+				setAnimation(true, Anim.ENGAGE_KISS);
 			else if(!controlledPT2){
 				controlledPT2 = true;
-				setTransAnimation(Action.ENGAGE_KISS, Action.KISSING, true);
+				setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, true);
 			}
 			break;
 		case PUNCH:
-			anim = Action.PUNCHING;
+			anim = Anim.PUNCHING;
 			break;
 		case SNOOZE:
 			if(actionTime<=Vars.DT)
-				setAnimation(true, Action.GET_DOWN);
+				setAnimation(true, Anim.GET_DOWN);
 			else if(!controlledPT2){
 				controlledPT2 = true;
-				setTransAnimation(Action.GET_DOWN, Action.SNOOZING);			
+				setTransAnimation(Anim.GET_DOWN, Anim.SNOOZING);			
 			}
 			break;
 		case SPECIAL1:
-			anim = Action.SPECIAL1;
+			anim = Anim.SPECIAL1;
 			break;
 		case SPECIAL2:
-			anim = Action.SPECIAL2;
+			anim = Anim.SPECIAL2;
 			break;
 		case SPECIAL3:
 			if(actionTime<=Vars.DT)
-				setAnimation(true, Action.SPECIAL3);
+				setAnimation(true, Anim.SPECIAL3);
 			else if(!controlledPT2){
 				controlledPT2 = true;
-				setTransAnimation(Action.SPECIAL3, Action.HUGGING, true);
+				setTransAnimation(Anim.SPECIAL3, Anim.HUGGING, true);
 			}
 			break;
 		default:
@@ -1263,40 +1263,40 @@ public class Mob extends Entity{
 			break;
 		case AIM:
 			aiming = true;
-			setTransAnimation(Action.AIM_TRANS, Action.AIMING);
+			setTransAnimation(Anim.AIM_TRANS, Anim.AIMING);
 			break;
 		case LOSEAIM:
 			aiming = false;
-			setAnimation(true, Action.AIM_TRANS);
+			setAnimation(true, Anim.AIM_TRANS);
 			break;
 		case ATTACK:
-			setAnimation(Action.ATTACKING);
+			setAnimation(Anim.ATTACKING);
 			break;
 		case PUNCH:
-			setAnimation(Action.PUNCHING);
+			setAnimation(Anim.PUNCHING);
 			break;
 		case DANCE:
 			if(actionTime>0)
-				setAnimation(Action.DANCE, true);
-			else setAnimation(Action.DANCE);
+				setAnimation(Anim.DANCE, true);
+			else setAnimation(Anim.DANCE);
 			break;
 		case FLAIL:
-			setAnimation(Action.ON_FIRE, true);
+			setAnimation(Anim.ON_FIRE, true);
 			break;
 		case FLY:
 			//flying related mechanics
 			
 			//flying = true;
 			body.setType(BodyType.KinematicBody);
-			setAnimation(Action.SWIMMING);
+			setAnimation(Anim.SWIMMING);
 			break;
 		case IDLE:
 			if(actionTime>0)
-				setAnimation(Action.IDLE, true);
-			else setAnimation(Action.IDLE);
+				setAnimation(Anim.IDLE, true);
+			else setAnimation(Anim.IDLE);
 			break;
 		case SLEEP:
-			setTransAnimation(Action.LIE_DOWN, Action.SLEEPING, true);
+			setTransAnimation(Anim.LIE_DOWN, Anim.SLEEPING, true);
 			if(main.character.equals(this)/* && !sleepSpell*/){
 				main.getSpriteBatch().fade();
 				
@@ -1304,7 +1304,7 @@ public class Mob extends Entity{
 			}
 			break;
 		case SPECIAL3:
-			setTransAnimation(Action.SPECIAL3_TRANS, Action.SPECIAL3);
+			setTransAnimation(Anim.SPECIAL3_TRANS, Anim.SPECIAL3);
 			break;
 		default:
 			break;
@@ -1312,7 +1312,7 @@ public class Mob extends Entity{
 	}
 	
 	public void doAction(){
-		Action remove=null;
+		Anim remove=null;
 		switch(controlledAction){
 		case RUN:
 			run();
@@ -1356,7 +1356,7 @@ public class Mob extends Entity{
 			if(AIfocus==null)
 				finishAction();
 			else {
-				if(getAnimationAction()!=Action.HUGGING && getAnimationAction()!=Action.EMBRACE){
+				if(getAnimationAction()!=Anim.HUGGING && getAnimationAction()!=Anim.EMBRACE){
 					float dx = (AIfocus.getPosition().x - getPosition().x) * PPM;
 				
 					if(Math.abs(dx) > 1){
@@ -1365,18 +1365,18 @@ public class Mob extends Entity{
 					} else {
 						AIfocus.faceObject(this);
 						if(AIfocus instanceof Mob)
-							((Mob)AIfocus).setTransAnimation(Action.EMBRACE, Action.HUGGING, true);
-						setTransAnimation(Action.EMBRACE, Action.HUGGING, true);
+							((Mob)AIfocus).setTransAnimation(Anim.EMBRACE, Anim.HUGGING, true);
+						setTransAnimation(Anim.EMBRACE, Anim.HUGGING, true);
 					}
-				} else if (getAnimationAction()==Action.HUGGING){
+				} else if (getAnimationAction()==Anim.HUGGING){
 					if(animation.getSpeed() * animation.getTimesPlayed() >= 2){
 						if(AIfocus instanceof Mob)
-							((Mob)AIfocus).setAnimation(true, Action.EMBRACE);
-						setAnimation(true, Action.EMBRACE);
+							((Mob)AIfocus).setAnimation(true, Anim.EMBRACE);
+						setAnimation(true, Anim.EMBRACE);
 						controlledPT2 =true;
 					}
 				} else if (controlledPT2){
-					if(getAnimationAction()!=Action.EMBRACE)
+					if(getAnimationAction()!=Anim.EMBRACE)
 						finishAction();
 				}
 			}
@@ -1385,7 +1385,7 @@ public class Mob extends Entity{
 			if(AIfocus==null)
 				finishAction();
 			else {
-				if(getAnimationAction()!=Action.KISSING && getAnimationAction()!=Action.ENGAGE_KISS){
+				if(getAnimationAction()!=Anim.KISSING && getAnimationAction()!=Anim.ENGAGE_KISS){
 					float dx = (AIfocus.getPosition().x - getPosition().x) * PPM;
 					
 					if(Math.abs(dx) > 1){
@@ -1393,15 +1393,15 @@ public class Mob extends Entity{
 						else left();
 					} else {
 						AIfocus.faceObject(this);
-						setTransAnimation(Action.ENGAGE_KISS, Action.KISSING, true);
+						setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, true);
 					}
-				} else if (getAnimationAction()==Action.KISSING){
+				} else if (getAnimationAction()==Anim.KISSING){
 					if(animation.getSpeed() * animation.getTimesPlayed() >= 2){
-						setAnimation(true, Action.ENGAGE_KISS);
+						setAnimation(true, Anim.ENGAGE_KISS);
 						controlledPT2 =true;
 					}
 				} else if (controlledPT2){
-					if(getAnimationAction()!=Action.ENGAGE_KISS)
+					if(getAnimationAction()!=Anim.ENGAGE_KISS)
 						finishAction();
 				}
 			}
@@ -1422,7 +1422,7 @@ public class Mob extends Entity{
 				goalPosition = new Vector2(getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
 						Vars.TILE_SIZE, getPosition().y);
 				float d = 1;
-				if(!facingLeft) d = -1;
+				if(!isFacingLeft()) d = -1;
 				
 				goalPosition = new Vector2(d * goalPosition.x, goalPosition.y);
 				ctrlReached = false;
@@ -1463,10 +1463,10 @@ public class Mob extends Entity{
 			
 			if(health == maxHealth && !controlledPT2){
 				controlledPT2=true;
-				setAnimation(true, Action.LIE_DOWN);
+				setAnimation(true, Anim.LIE_DOWN);
 			}
 			
-			if(controlledPT2 && getAnimationAction()!=Action.LIE_DOWN){
+			if(controlledPT2 && getAnimationAction()!=Anim.LIE_DOWN){
 				finishAction();
 				if(main.character.equals(this)){
 					//trigger any events
@@ -1475,36 +1475,36 @@ public class Mob extends Entity{
 			break;
 		case SNOOZE:
 			if(!controlledPT2)
-				if(getAnimationAction()!=Action.SNOOZING && getAnimationAction()!=Action.GET_DOWN)
+				if(getAnimationAction()!=Anim.SNOOZING && getAnimationAction()!=Anim.GET_DOWN)
 					if(animation.getTimesPlayed() * animation.getSpeed() >= 3){
 						controlledPT2 = true;
-						setAnimation(true, Action.GET_DOWN);
+						setAnimation(true, Anim.GET_DOWN);
 					}
 			break;
 		case LOSEAIM:
 		case AIM:
-			remove = Action.AIM_TRANS;
+			remove = Anim.AIM_TRANS;
 			break;
 		case IDLE:
-			remove = Action.IDLE;
+			remove = Anim.IDLE;
 			break;
 		case DANCE:
-			remove = Action.DANCE;
+			remove = Anim.DANCE;
 			break;
 		case SPECIAL1:
-			remove = Action.SPECIAL1;
+			remove = Anim.SPECIAL1;
 			break;
 		case SPECIAL2:
-			remove = Action.SPECIAL2;
+			remove = Anim.SPECIAL2;
 			break;
 		case SPECIAL3:
-			remove = Action.SPECIAL3;
+			remove = Anim.SPECIAL3;
 			break;
 		case ATTACK:
-			remove = Action.ATTACKING;
+			remove = Anim.ATTACKING;
 			break;
 		case PUNCH:
-			remove = Action.PUNCHING;
+			remove = Anim.PUNCHING;
 			break;
 		default:
 			break;
@@ -1528,21 +1528,29 @@ public class Mob extends Entity{
 	public void lookUp(){
 		if(snoozing){
 			animation.removeAction();
-			setAnimation(true, Action.GET_DOWN);
+			setAnimation(true, Anim.GET_DOWN);
 			snoozing = false;
 			return;
 		}
-		setTransAnimation(Action.LOOK_UP, Action.LOOKING_UP, true);
+		setTransAnimation(Anim.LOOK_UP, Anim.LOOKING_UP, true);
 	}
 
 	public void duck(){
 		if(snoozing){
+			//set body to half its size
 			animation.removeAction();
-			setAnimation(true, Action.GET_DOWN);
+			setAnimation(true, Anim.GET_DOWN);
 			snoozing = false;
 			return;
 		}
-		setTransAnimation(Action.DUCK, Action.DUCKING);
+		setTransAnimation(Anim.DUCK, Anim.DUCKING);
+	}
+	
+	public void unDuck(){
+
+		//normalize body shape
+		
+		setAnimation(true, Anim.DUCK);
 	}
 
 	public void jump() {
@@ -1550,7 +1558,7 @@ public class Mob extends Entity{
 		timesIdled=0;
 		if(snoozing){
 			animation.removeAction();
-			setAnimation(true, Action.GET_DOWN);
+			setAnimation(true, Anim.GET_DOWN);
 			snoozing = false;
 		}
 		
@@ -1558,11 +1566,11 @@ public class Mob extends Entity{
 		if(immobileActions.contains(getAnimationAction(), true) || frozen)
 			return;
 		if (isOnGround()) {
-			action = Action.JUMPING;
+			action = Anim.JUMPING;
 
 			main.playSound(getPosition(), "jump1");
 			body.applyForceToCenter(0f, 160f, true);
-			setAnimation(Action.JUMPING, Vars.ACTION_ANIMATION_RATE*1.5f);
+			setAnimation(Anim.JUMPING, Vars.ACTION_ANIMATION_RATE*1.5f);
 		}
 	}
 
@@ -1573,8 +1581,8 @@ public class Mob extends Entity{
 
 	public void changeDirection(){
 		int d = -1;
-		if (facingLeft) {facingLeft = false; d = 1; }
-		else facingLeft = true;
+		if (isFacingLeft()) {setDirection(false); d = 1; }
+		else setDirection(true);
 		
 		int max = body.getFixtureList().size;
 		float w1;
@@ -1601,12 +1609,12 @@ public class Mob extends Entity{
 			}
 		
 		if(isOnGround())
-			if(Math.abs(body.getLinearVelocity().x)> WALK_SPEED){
+			if(Math.abs(body.getLinearVelocity().x)> WALK_SPEED + .2f){
 				main.playSound(getPosition(), "skid");
-				setAnimation(Action.TURN_RUN, false);
+				setAnimation(Anim.TURN_RUN, false);
 			}else
-				setAnimation(Action.TURN, false);
-		animation.flip(facingLeft);
+				setAnimation(Anim.TURN, false);
+		animation.flip(isFacingLeft());
 	}
 
 	public boolean canMove() {
@@ -1614,7 +1622,7 @@ public class Mob extends Entity{
 		timesIdled=0;
 		if(snoozing){
 			animation.removeAction();
-			setAnimation(true, Action.GET_DOWN);
+			setAnimation(true, Anim.GET_DOWN);
 			snoozing = false;
 		}
 		
@@ -1662,26 +1670,26 @@ public class Mob extends Entity{
 
 	public void run(){
 		if(!canMove() || !canRun()) return;
-		if (getAnimationAction() != Action.JUMPING) action = Action.RUNNING;
+		if (getAnimationAction() != Anim.JUMPING) action = Anim.RUNNING;
 		maxSpeed = RUN_SPEED;
 	}
 
 	public void left(){
 		if (!canMove()) return;
 		//		if (animation.actionID != JUMPING && animation.actionID != RUNNING) action = WALKING;
-		if (!facingLeft) changeDirection();
-		if(action==Action.TURN || action==Action.TURN_RUN || action==Action.TURN_SWIM) return;
-		if(getAnimationAction()==Action.DUCKING) {
+		if (!isFacingLeft()) changeDirection();
+		if(action==Anim.TURN || action==Anim.TURN_RUN || action==Anim.TURN_SWIM) return;
+		if(getAnimationAction()==Anim.DUCKING) {
 			animation.removeAction();
-			setAnimation(true, Action.DUCK); 
+			setAnimation(true, Anim.DUCK); 
 			return;
 		}
 
 		float x = 1;
 		if(running) x = 2;
 		if (body.getLinearVelocity().x > -maxSpeed) body.applyForceToCenter(-5f*x, 0, true);
-		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f) setAnimation(Action.RUNNING);
-		else setAnimation(Action.WALKING);
+		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f) setAnimation(Anim.RUNNING);
+		else setAnimation(Anim.WALKING);
 
 		if (!(this.equals(main.character)) && mustJump()){
 			jump();
@@ -1691,19 +1699,19 @@ public class Mob extends Entity{
 	public void right(){
 		if(!canMove()) return;
 //		if (animation.actionID != JUMPING && animation.actionID != RUNNING) action = WALKING;
-		if (facingLeft) changeDirection();
-		if(action==Action.TURN || action==Action.TURN_RUN || action==Action.TURN_SWIM) return;
-		if(getAnimationAction()==Action.DUCKING) {
+		if (isFacingLeft()) changeDirection();
+		if(action==Anim.TURN || action==Anim.TURN_RUN || action==Anim.TURN_SWIM) return;
+		if(getAnimationAction()==Anim.DUCKING) {
 			animation.removeAction();
-			setAnimation(true, Action.DUCK); 
+			setAnimation(true, Anim.DUCK); 
 			return;
 		}
 
 		float x = 1;
 		if(running) x = 2;
 		if (body.getLinearVelocity().x < maxSpeed) body.applyForceToCenter(5f*x, 0, true);
-		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f) setAnimation(Action.RUNNING);
-		else setAnimation(Action.WALKING);
+		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f) setAnimation(Anim.RUNNING);
+		else setAnimation(Anim.WALKING);
 
 		if (!(this.equals(main.character)) && mustJump()){
 			jump();
@@ -1711,7 +1719,6 @@ public class Mob extends Entity{
 	}
 
 	public void climb(){ }
-
 	public void descend(){ }
 
 	public Script interact(){
@@ -1720,6 +1727,16 @@ public class Mob extends Entity{
 		killVelocity();
 		interactable.killVelocity();
 		return interactable.getScript();
+	}
+	
+	public boolean useWarp(){
+		//if(canWarp)
+		if(warp == null) return false;
+		main.addBodyToRemove(getBody());
+		setPosition(warp.getLink().getWarpLoc());
+		Scene s = warp.getLink().owner;
+		//save location in new level
+		return true;
 	}
 
 	public TextureRegion getFace(int face){
@@ -1765,7 +1782,7 @@ public class Mob extends Entity{
 		
 		if(focus!=null){
 			if(powerType!=DamageType.PHYSICAL){
-				setAnimation(Action.ATTACKING);
+				setAnimation(Anim.ATTACKING);
 				powerAttack(focus);
 			}
 		} else
@@ -1778,7 +1795,7 @@ public class Mob extends Entity{
 		
 		if(attackFocus!=null){
 			if(powerType!=DamageType.PHYSICAL){
-				setAnimation(Action.ATTACKING);
+				setAnimation(Anim.ATTACKING);
 				powerAttack(attackFocus.getPosition());
 			}
 		} else 
@@ -1786,7 +1803,7 @@ public class Mob extends Entity{
 	}
 	
 	public void punch(){
-		setAnimation(Action.PUNCHING);
+		setAnimation(Anim.PUNCHING);
 		for(Entity e : attackables){
 			if(e instanceof Mob)
 				if(((Mob)e).getIFF()!=IFFTag.FRIENDLY)
@@ -1844,7 +1861,7 @@ public class Mob extends Entity{
 			break;
 		}
 		
-		setAnimation(Action.ATTACKING);
+		setAnimation(Anim.ATTACKING);
 		p.setGameState(this.main);
 		p.create();
 		return p;
@@ -1868,7 +1885,7 @@ public class Mob extends Entity{
 			break;
 		}
 		
-		setTransAnimation(Action.AIM_TRANS, Action.ATTACKING);
+		setTransAnimation(Anim.AIM_TRANS, Anim.ATTACKING);
 		return null;
 	}
 
@@ -1962,7 +1979,7 @@ public class Mob extends Entity{
 	protected void createInteractSensor(){
 		float w1 = w + INTERACTION_SPACE;
 		int d = 1;
-		if(facingLeft) d = -1;
+		if(isFacingLeft()) d = -1;
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((w1/2f)/Vars.PPM, (rh+1)/Vars.PPM, new Vector2(d*INTERACTION_SPACE/(2*Vars.PPM), 0), 0);
@@ -1979,7 +1996,7 @@ public class Mob extends Entity{
 	protected void createAttackSensor(){
 		float w1 = w + attackRange;
 		int d = 1;
-		if(facingLeft) d = -1;
+		if(isFacingLeft()) d = -1;
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((w1/2f)/Vars.PPM, (rh-1)/Vars.PPM, new Vector2(d*attackRange/(2*Vars.PPM), 0), 0);
@@ -1994,7 +2011,7 @@ public class Mob extends Entity{
 	protected void createVisionSensor(){
 		float w1 = w + visionRange;
 		int d = 1, h = main.getScene().height/8;
-		if(facingLeft) d = -1;
+		if(isFacingLeft()) d = -1;
 		
 		
 		PolygonShape shape = new PolygonShape();

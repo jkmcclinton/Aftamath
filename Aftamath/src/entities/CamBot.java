@@ -29,7 +29,7 @@ public class CamBot extends Mob {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		//hitbox
-		facingLeft = false;
+		setDirection(false);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw-4)/Vars.PPM, (rh)/Vars.PPM);
 		

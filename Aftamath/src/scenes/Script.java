@@ -122,7 +122,7 @@ public class Script {
 	}
 
 	public void analyze(){
-		//		System.out.println("---"+(index+1)+"---- "+source.get(index));
+//		System.out.print("---"+(index+1)+"---- "+source.get(index));
 
 		Operation o;
 		dialog = false;
@@ -285,11 +285,10 @@ public class Script {
 
 						if(!operations.isEmpty())
 							if(operations.peek().type=="setchoice"){
-								index = operations.peek().end+1;
-								System.out.println(operations);
-								operations.pop();
+								index = operations.peek().end-1;
 							}
 					}
+//								System.out.println(operations);
 				} else
 					System.out.println("Extra end statement found at Line: "+(index+1)+"\tScript: "+ID);
 				break;
@@ -830,6 +829,7 @@ public class Script {
 	private void finish(){
 		localVars = new HashMap<>();
 		checkpoints = new HashMap<>();
+		operations.clear();
 		main.setStateType(InputState.MOVE);
 		main.analyzing = false;
 		index = current;
@@ -853,10 +853,10 @@ public class Script {
 			if(owner instanceof Mob){
 				Mob o = (Mob) owner;
 				switch(o.getAttackType()){
-				case ON_ATTACKED:
+				case ENGAGE:
 					o.fight(main.character);
 					break;
-				case ON_DEFEND:
+				case HIT_ONCE:
 					o.attack(main.character.getPosition());
 					break;
 				case RANDOM:
@@ -1024,7 +1024,7 @@ public class Script {
 		}
 
 
-//		if(ID.equals("choice test")){
+//		if(ID.equals("superTutorial")){
 //				System.out.println("\nID: "+ID);
 //				System.out.println("scripts:    "+subScripts);
 //				System.out.println("conditions: "+conditions);
@@ -1261,7 +1261,12 @@ public class Script {
 	
 //	string substitutions
 	private String getSubstitutions(String txt){
-		while(txt.contains("/playergps")){
+		while(txt.contains("/playergpp")){
+			String g = "him";
+			if(main.character.getGender().equals("female")) g="her";
+			txt = txt.substring(0, txt.indexOf("/playergpp")) +g + 
+					txt.substring(txt.indexOf("/playergpp") + "/playergpp".length());
+		} while(txt.contains("/playergps")){
 			String g = "his";
 			if(main.character.getGender().equals("female")) g="her";
 			txt = txt.substring(0, txt.indexOf("/playergps")) +g + 
@@ -1292,14 +1297,22 @@ public class Script {
 			}
 			txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
 					txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
-		} while(txt.contains("/partnergp")){
+		} while(txt.contains("/partnergps")){
 			String g = "";
 			if(main.player.getPartner()!=null){
-				if(main.player.getPartner().getGender().equals("female")) g="hers";
+				if(main.player.getPartner().getGender().equals("female")) g="her";
 				else g = "his"; 
 			}
-			txt = txt.substring(0, txt.indexOf("/partnergp")) + g + 
-					txt.substring(txt.indexOf("/partnergp") + "/partnergp".length());
+			txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
+					txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
+		}while(txt.contains("/partnergpp")){
+			String g = "";
+			if(main.player.getPartner()!=null){
+				if(main.player.getPartner().getGender().equals("female")) g="her";
+				else g = "him"; 
+			}
+			txt = txt.substring(0, txt.indexOf("/partnergpp")) + g + 
+					txt.substring(txt.indexOf("/partnergpp") + "/partnergpp".length());
 		} while(txt.contains("/partnergo")){
 			String g = "";
 			if(main.player.getPartner()!=null){
@@ -1340,6 +1353,12 @@ public class Script {
 						txt.substring(txt.indexOf("/variable[")+"/variable[".length()+ varName.length() + 1);
 			} else
 				System.out.println("No variable with name \""+ varName +"\" found; Line: "+(index+1)+"\tScript: "+ID);
+		} while(txt.contains("/cc")){
+			txt = txt.substring(0, txt.indexOf("/cc")) + "" + 
+					txt.substring(txt.indexOf("/cc") + "/cc".length());
+		} while(txt.contains("/c")){
+			txt = txt.substring(0, txt.indexOf("/c")) + "" + 
+					txt.substring(txt.indexOf("/c") + "/c".length());
 		}
 		return txt;
 	}
@@ -1350,6 +1369,7 @@ public class Script {
 			txt = getSubstitutions(txt);
 			return Vars.formatDialog(txt, true);
 		} catch(Exception e){
+e.printStackTrace();
 			System.out.println("Missing bracket pair to initialize text; Line: "+(index+1)+"\tScript: "+ID);
 		}
 		
@@ -1498,7 +1518,6 @@ public class Script {
 					}
 					break;
 				default:
-					System.out.println(1);
 					System.out.println("\""+function+"\" is not a valid operation for modifying values; Line: "+(index+1)+"\tScript: "+ID);
 				}
 
@@ -1575,7 +1594,6 @@ public class Script {
 							}
 							break;
 						default:
-							System.out.println(2);
 							System.out.println("\""+function+"\" is not a valid operation for modifying values; Line: "+(index+1)+"\tScript: "+ID);
 
 						}

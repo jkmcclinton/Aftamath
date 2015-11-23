@@ -51,7 +51,7 @@ public class SpeechBubble extends Entity {
 	 */
 		
 	
-	//Standard interaction based bubble, e.g. speech
+	//Standard interaction based bubble, e.g. choices
 	public SpeechBubble(Entity d, float x, float y, int ID, String message, PositionType positioningType) {
 		super(x, y, "speechBubble");
 		setGameState(d.getGameState());

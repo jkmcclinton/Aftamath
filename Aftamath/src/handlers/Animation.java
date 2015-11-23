@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
 import entities.Mob;
-import entities.Mob.Action;
+import entities.Mob.Anim;
 
 public class Animation {
 
@@ -64,7 +64,7 @@ public class Animation {
 	}
 
 	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, float delay, boolean controlled) {
-		if (actionIndex == ID && actionIndex != Mob.animationIndicies.get(Action.JUMPING)) return;
+		if (actionIndex == ID && actionIndex != Mob.animationIndicies.get(Anim.JUMPING)) return;
 
 		if(!add(frames))
 			return;

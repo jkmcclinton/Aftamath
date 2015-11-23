@@ -22,7 +22,7 @@ public class HUD {
 	public int moving;
 	public boolean raised, showStats;
 	
-	private float splashTime;
+	private float splashTime, locationTime;
 	private boolean top;
 	private OrthographicCamera cam;
 	private Mob character, speaker;
@@ -99,6 +99,9 @@ public class HUD {
 		
 		if(splashTime>0)
 			splashTime-=dt;
+		
+		if(locationTime>0)
+			locationTime-=dt;
 	}
 	
 	public void render(SpriteBatch sb, int emotion) {
@@ -106,12 +109,15 @@ public class HUD {
 
 			if (splashTime>0 && splash!=null)
 				sb.draw(splashOverlay, 0, 0, Game.width, Game.height);
+			
 			sb.setProjectionMatrix(cam.combined);
 			drawDialog(sb, emotion);
 			drawStats(sb);
 			
 			if (splashTime>0 && splash!=null)
 				drawSplash(sb);
+			if(locationTime>0)
+				main.drawString(sb, main.getScene().title, 5, Game.height/2 - 5 - font[0].getRegionHeight());
 			
 			if (main.paused && main.getStateType() == InputState.PAUSED)
 				drawPauseMenu(sb);
@@ -195,6 +201,10 @@ public class HUD {
 		raised = false;
 		
 		//Gdx.audio.newSound(new FileHandle("assets/sounds/slidedown.wav"));
+	}
+	
+	public void showLocation(){
+		locationTime = 5;
 	}
 	
 	public void showStats(){
