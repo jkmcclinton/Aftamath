@@ -544,7 +544,6 @@ public class Main extends GameState {
 		if(MyInput.isPressed(Input.DEBUG)) character.respawn();
 		if(MyInput.isPressed(Input.DEBUG2)) {
 			//render=!render;
-			JsonSerializer.saveGameState("savegame.txt");
 		}
 		if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
 		
@@ -1039,7 +1038,7 @@ public class Main extends GameState {
 		beforePause = stateType;
 		setStateType(InputState.PAUSED);
 		
-		menuOptions = new String[][] {{"Resume", "Journal", "Load Game", 
+		menuOptions = new String[][] {{"Resume", "Journal", "Save Game", "Load Game", 
 			"Options", "Quit to Menu", "Quit"}}; 
 		
 		paused = true;
@@ -1055,6 +1054,8 @@ public class Main extends GameState {
 	
 	public void saveGame() {
 		//save game menu
+		System.out.println("saving game to savegame.txt");
+		JsonSerializer.saveGameState("savegame.txt");
 	}
 	
 	public void loadGame() {

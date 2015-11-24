@@ -382,8 +382,10 @@ public class Scene {
 //		TiledMapTileLayer bg2 = (TiledMapTileLayer) tileMap.getLayers().get("bg2");
 		
 		//add in entities loaded from save file
-		for (int sid : Scene.sceneToEntityIds.get(this.title)) {
-			this.entities.add(Entity.idToEntity.get(sid));
+		if (Scene.sceneToEntityIds.containsKey(this.ID)) {
+			for (int sid : Scene.sceneToEntityIds.get(this.ID)) {
+				this.entities.add(Entity.idToEntity.get(sid));
+			}
 		}
 		
 		for (int y = 0; y < ground.getHeight(); y++)
@@ -490,7 +492,7 @@ public class Scene {
 								if(pathName!=null)
 									pathsToAdd.put(e, pathName);
 								
-								Scene.sceneToEntityIds.get(this.title).add(sceneIDParsed);
+								Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
 							}
 						} catch (NoSuchFieldException | SecurityException e) {
 							e.printStackTrace();

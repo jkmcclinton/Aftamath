@@ -1832,7 +1832,7 @@ e.printStackTrace();
 	public void read(Json json, JsonValue val) {
 		this.ID = val.getString("ID");
 		this.type = ScriptType.valueOf(val.getString("type"));
-		this.current = val.getInt("current");
+		this.index = this.current = val.getInt("current");
 		
 		//TODO make sure script loading is correct
 		loadScript(this.ID);
