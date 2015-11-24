@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
 import entities.Mob;
-import entities.Mob.Action;
+import entities.Mob.Anim;
 
 public class Animation {
 
@@ -64,13 +64,13 @@ public class Animation {
 	}
 
 	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, float delay, boolean controlled) {
-		if (actionIndex == ID && actionIndex != Mob.animationIndicies.get(Action.JUMPING)) return;
+		if (actionIndex == ID && actionIndex != Mob.animationIndicies.get(Anim.JUMPING)) return;
 
 		if(!add(frames))
 			return;
 		
 		this.controlled = controlled;
-		actionLength = length;
+		setActionLength(length);
 		actionIndex = ID;
 		this.delay = delay;
 		transitioning = false;
@@ -94,12 +94,15 @@ public class Animation {
 		
 		if(!add(frames))
 			return;
-		this.delay = Vars.ACTION_ANIMATION_RATE;
+		if(!looping)
+			this.delay = Vars.ACTION_ANIMATION_RATE;
+		else
+			this.delay = Vars.ANIMATION_RATE;
 		nextActionLength = length;
 		nextID = ID;
 		
 		add(transFrames);
-		actionLength = transLength;
+		setActionLength(transLength);
 		actionIndex = transID;
 
 		if (direction) flipAction(true);
@@ -117,7 +120,7 @@ public class Animation {
 		actionIndex = nextID;
 		timesPlayed = 0;
 		currentFrame = 0;
-		actionLength = nextActionLength;
+		setActionLength(nextActionLength);
 	}
 
 	public void removeAction(){
@@ -130,7 +133,7 @@ public class Animation {
 
 		timesPlayed = 0;
 		currentFrame = 0;
-		actionLength = 0;
+		setActionLength(0);
 		actionIndex = 0;
 		delay = defaultDelay;
 		transitioning = false;
@@ -177,7 +180,7 @@ public class Animation {
 	private void step(){
 		time -= delay;
 		currentFrame++;
-		if((frames.size == 1 && currentFrame == frames.peek().length) || (frames.size > 1 && currentFrame == actionLength)){
+		if((frames.size == 1 && currentFrame == frames.peek().length) || (frames.size > 1 && currentFrame == getActionLength())){
 			currentFrame = 0;
 			timesPlayed++;
 			if(timesPlayed > 0 ) {
@@ -199,17 +202,15 @@ public class Animation {
 		return true;
 	}
 
-	public TextureRegion getFrame() {
-		return frames.peek()[currentFrame]; 
-	}
+	public TextureRegion getFrame() {	return frames.peek()[currentFrame];  }
 	public int getTimesPlayed() { return timesPlayed; }
 	public Array<TextureRegion[]> getFrames(){return frames; }
 	public void setSpeed(float delay) { this.delay = delay; }
 	public float getSpeed() { return delay; }
 	public int getSize() { return frames.size; }
 	public int getDefaultLength() { return frames.get(0).length; }
-	public int getIndex() {
-		return currentFrame;
-	}
-
+	public int getIndex() { return currentFrame; }
+	public int getActionLength() { return actionLength; }
+	public void setActionLength(int l){ actionLength = l; }
+	public float getDelay(){ return delay; }
 }

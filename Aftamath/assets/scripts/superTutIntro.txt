@@ -1,0 +1,33 @@
+Script Main
+
+lockplayer
+setSpeaker(this, true)
+face(this, player)
+text(normal, {Hey kid, over here.})
+removeFocus
+move(player, this)
+
+if([player.niceness>=0])
+	#text(flirty, {I saw what you did in that bar.})
+	#text(flirty, {Not to shabby for a n00b, if I do say so myself.})
+	
+	text(flirty, {You look like someone with superpowers...})
+	text(normal, {Listen, kid... ~I want to see what you can do against someone stronger than those nincompoops in the bar.})
+	text(normal, {I want you to fight me. No, seriously! Give me all you got!})
+	#doAction(this, aim, player)
+else
+	#evil dialogue, please change
+	text(flirty, {You look like a [enter description here].})
+	text(normal, {Help me out here, landy. I'm bored. I haven't had any action in the past month.)
+	text(normal, {What can you do? Shoot me. Right in the face.})
+	
+	hidedialog
+	wait(.5)
+	text(sad, {What? ~The pain feels good.})
+	#doAction(this, aim, player)
+end
+
+setFlag(inSupTut, true)
+setAttackScript(this, tutOnAttacked1)
+setSuperAttackScript(this, tutOnSupAttacked1)
+done

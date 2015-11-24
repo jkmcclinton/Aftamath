@@ -42,10 +42,13 @@ import entities.Entity;
 import entities.Ground;
 import entities.Mob;
 import entities.Path;
+import entities.SpeechBubble;
+import entities.TextTrigger;
 import entities.Warp;
 import handlers.Camera;
 import handlers.EventTrigger;
 import handlers.FadingSpriteBatch;
+import handlers.PositionalAudio;
 import handlers.Vars;
 import main.Game;
 import main.Main;
@@ -58,7 +61,7 @@ public class Scene {
 	
 	public Script script;
 	public int width, height;
-	public String title;
+	public String title, ID;
 	public Song[] DEFAULT_SONG;
 	public boolean newSong; //tells us whether or not to fade music when loading scene from previous scene
 	public boolean outside; //controls whether or not to step weather time or to add the day/night cycle effect
@@ -92,7 +95,26 @@ public class Scene {
 		sceneToEntityIds = new HashMap<String, Set<Integer> >();
 	}
 	
-	public Scene(){}
+	//temporary object used only for creating warps
+	public Scene(String ID){
+		ID = ID.replaceAll(" ", "");
+		this.ID=ID;
+		tileMap = new TmxMapLoader().load("assets/maps/" + ID + ".tmx");
+		MapProperties prop = tileMap.getProperties();
+		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
+		height = prop.get("height", Integer.class)*Vars.TILE_SIZE;
+		title = prop.get("name", String.class);
+		if(title==null) title = ID;
+		
+		String light= "";
+		if((light=prop.get("ambient", String.class))!=null){
+			if(light.equals("daynight".toUpperCase()))
+				outside = true;
+			else
+				if(prop.get("outside", String.class)!=null)
+					outside = true;
+		}
+	}
 	
 	public Scene(World world, Main m, String ID) {
 		this.world = world;
@@ -108,26 +130,38 @@ public class Scene {
 		pathsToAdd = new HashMap<>();
 		width = 1000;
 		height = 1000;
+
 		title = ID.toLowerCase();
-		if (!sceneToEntityIds.containsKey(title)) {	//first time scene is referenced
-			sceneToEntityIds.put(title, new HashSet<Integer>());
+		this.ID = ID.replaceAll(" ", "");
+
+		tileMap = new TmxMapLoader().load("assets/maps/" + this.ID + ".tmx");
+		if (!sceneToEntityIds.containsKey(this.ID)) {	//first time scene is referenced
+			sceneToEntityIds.put(this.ID, new HashSet<Integer>());
 		}
 		
-		tileMap = new TmxMapLoader().load("assets/maps/" + title + ".tmx");
 		MapProperties prop = tileMap.getProperties();
 		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
 		height = prop.get("height", Integer.class)*Vars.TILE_SIZE;
+
+		title = prop.get("name", String.class);
+		if(title==null) title = ID;
 		
+		// Create Music
 		String[] bgm = {"","",""};
 		bgm[DAY] = prop.get("bgm day", String.class);
 		bgm[NOON] = prop.get("bgm noon", String.class);
 		bgm[NIGHT] = prop.get("bgm night", String.class);
-
+		
 		//all three must be clearly defined in .tmx file to have dynamic bgm
 		if(bgm[DAY]!=null&&bgm[NOON]!=null&&bgm[NIGHT]!=null){
 			DEFAULT_SONG[DAY] = new Song(bgm[DAY]);
 			DEFAULT_SONG[NOON] = new Song(bgm[NOON]);
 			DEFAULT_SONG[NIGHT] = new Song(bgm[NIGHT]);
+		} else if(bgm[DAY]!=null&&bgm[NIGHT]!=null){
+			DEFAULT_SONG[DAY] = new Song(bgm[DAY]);
+			DEFAULT_SONG[NOON] = new Song(bgm[DAY]);
+			DEFAULT_SONG[NIGHT] = new Song(bgm[NIGHT]);
+			
 		} else {
 			if((bgm[0] = prop.get("bgm", String.class))!=null){
 				//sets all songs to the same song; no song changing
@@ -143,19 +177,23 @@ public class Scene {
 		}
 
 		newSong = true;
-
-		background = Game.res.getTexture(title + "_bg");
-//		background = Game.res.getTexture("test_bg");
-		midground = Game.res.getTexture(title + "_mg");
-//		foreground = Game.res.getTexture(ID + "_fg");
+		
+		//load the image for the backgrounds and forgrounds
+		String src = prop.get("bg", String.class);
+		background = Game.res.getTexture(src+"_bg");
+		midground = Game.res.getTexture(src+"_mg");
+		src = prop.get("fg", String.class);
+		foreground = Game.res.getTexture(src+"_fg");
+		
 		clouds = Game.res.getTexture("clouds");
 		sky = Game.res.getTexture("sky");
 		grad = Game.res.getTexture("sky_grad");
 		sun = Game.res.getTexture("sun");
 		moon = Game.res.getTexture("moon");
 		
+		//set a local zoom for the camera
 		String zoom; float areaZoom;
-		if((zoom=prop.get("tileBG", String.class))!=null){
+		if((zoom = prop.get("tileBG", String.class))!=null){
 			try{
 				Field f = Camera.class.getField(zoom);
 				areaZoom = f.getFloat(f);
@@ -166,7 +204,7 @@ public class Scene {
 		main.getB2dCam().setDefaultZoom(areaZoom);
 		
 		String bool;
-		if((bool=prop.get("tileBG", String.class))!=null)
+		if((bool = prop.get("tileBG", String.class))!=null)
 			try{
 				tileBG = Boolean.parseBoolean(bool);
 			} catch(Exception e){ }
@@ -174,8 +212,8 @@ public class Scene {
 		try {
 			
 			// redo me
-			String light= "";
-			if((light=prop.get("ambient", String.class))!=null){
+			String light = "";
+			if((light = prop.get("ambient", String.class))!=null){
 				if(light.equals("daynight".toUpperCase())){
 					outside = true;
 					ambient = m.getColorOverlay();
@@ -193,7 +231,7 @@ public class Scene {
 			sb.setRHAmbient(ambient);
 		}
 		
-		script = new Script(title, ScriptType.SCENE, m, null);
+		script = new Script(this.ID, ScriptType.SCENE, m, null);
 		tmr = new OrthogonalTiledMapRenderer(tileMap, m.getSpriteBatch());
 	}
 	
@@ -203,13 +241,14 @@ public class Scene {
 		float w = cam.viewportWidth;
 		float h = cam.viewportHeight;
 		boolean overlay = sb.isDrawingOverlay();
-		
-		if(main.render){
+
 		if(overlay) sb.setOverlayDraw(false);
-		
-//		sb.disableBlending();
+
+		//draw sky stuff
 		sb.begin();
-		if(outside){
+		//the reason why we do not use just the outside variable is because we might want to
+		//have windows from the indoors
+		if(background!=null || outside){
 			if(sky!=null){
 				float t = main.dayTime;
 				float x = cam.position.x-w*z/2f;
@@ -217,12 +256,12 @@ public class Scene {
 				float s = sky.getHeight()*z;
 				float o = (sky.getHeight()*t*s)/Main.DAY_TIME;
 				float y = y1-s*sky.getHeight()+o+z*h;
-				
+
 				if(main.dayTime<=Main.NIGHT_TIME) 
 					sb.draw(sky, x, y-2*s*sky.getHeight(), w*z, s*sky.getHeight());
 				sb.draw(sky, x,	y, w*z, s*sky.getHeight());
 				sb.draw(grad, x, y1/2f, w*z, h*z+y1/2);
-				
+
 //				Main.debugText+="/l/l cam: ("+x+" , "+ y1+")"+
 //						"   ("+(cam.position.x)+" , "+ 	(cam.position.y)+")";
 //				Main.debugText+="/l sky: ("+x+" , "+ y+")";
@@ -236,7 +275,7 @@ public class Scene {
 				float x1 = 2*t - z*(w+sun.getWidth()/z)/2f + cam.position.x;
 				float x = x1 - cam.position.x*rate - z*o.x;
 				float y = a*x*x+ b + cam.position.y*rate + z*o.y - sun.getHeight()/2f;
-				
+
 //				float rot = (20*main.dayTime*(360/Main.DAY_TIME))%360;
 				sb.draw(sun, x1, y);
 			} if(moon!=null){
@@ -250,7 +289,7 @@ public class Scene {
 				float x1 = 2*t - z*(w+moon.getWidth()/z)/2f + cam.position.x;
 				float x = x1 - cam.position.x*rate - z*o.x - moon.getWidth()/2f;
 				float y = a*x*x+ b + cam.position.y*rate + z*o.y - moon.getHeight()/2f;;
-				
+
 				sb.draw(moon, x1, y);
 			}
 		}
@@ -263,8 +302,8 @@ public class Scene {
 			int bgh = background.getHeight();
 			if(tileBG){
 				int offset = (int) ((cam.position.x*rate+bgw/2f)/(float) bgw);
-				sb.draw(background, cam.position.x*rate+bgw*offset, height-bgh + cam.position.y*rate);
-				sb.draw(background, cam.position.x*rate+bgw*(offset-1), height-bgh + cam.position.y*rate);
+				sb.draw(background, cam.position.x*rate+bgw*offset, groundLevel-bgh/3.3f + cam.position.y*rate);
+				sb.draw(background, cam.position.x*rate+bgw*(offset-1), groundLevel-bgh/3.3f + cam.position.y*rate);
 			} else 
 				sb.draw(background, cam.position.x*rate, height-bgh + cam.position.y*rate); 
 		} if(midground!=null){
@@ -273,9 +312,9 @@ public class Scene {
 			int mgh = midground.getHeight();
 			if(tileBG){
 				int offset = (int) ((cam.position.x*rate*3+mgw/2f)/(float) mgw);
-				sb.draw(midground, cam.position.x*rate+mgw*offset, height-mgh + cam.position.y*5/16f);
-				sb.draw(midground, cam.position.x*rate+mgw*(offset-1), height-mgh + cam.position.y*5/16f);
-				sb.draw(midground, cam.position.x*rate+mgw*(offset+1), height-mgh + cam.position.y*5/16f);
+				sb.draw(midground, cam.position.x*rate+mgw*offset, groundLevel-mgh/2.6f + cam.position.y*5/16f);
+				sb.draw(midground, cam.position.x*rate+mgw*(offset-1), groundLevel-mgh/2.6f + cam.position.y*5/16f);
+				sb.draw(midground, cam.position.x*rate+mgw*(offset+1), groundLevel-mgh/2.6f + cam.position.y*5/16f);
 			} else 
 				sb.draw(midground, cam.position.x*rate, height-mgh + cam.position.y*5/16f);
 		} if(outside){
@@ -283,7 +322,6 @@ public class Scene {
 				sb.draw(clouds, 0, 0);		// horizontal mvmt and frequency according to weather 
 		}
 		sb.end();
-		}
 	}
 	
 	public void renderEnvironment(OrthographicCamera cam){
@@ -336,9 +374,11 @@ public class Scene {
 	public Vector2 getCBSP() { return camBotSpawnpoint; }
 
 	public void create() {
+		if(main.getHud()!=null) //that means we're no longer initializing the game
+			main.getHud().showLocation();
 		TiledMapTileLayer ground = (TiledMapTileLayer) tileMap.getLayers().get("ground");
-//		TiledMapTileLayer fg = (TiledMapTileLayer) tileMap.getLayers().get("fg");
-//		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
+		TiledMapTileLayer fg = (TiledMapTileLayer) tileMap.getLayers().get("fg");
+		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
 //		TiledMapTileLayer bg2 = (TiledMapTileLayer) tileMap.getLayers().get("bg2");
 		
 		//add in entities loaded from save file
@@ -349,39 +389,39 @@ public class Scene {
 		for (int y = 0; y < ground.getHeight(); y++)
 			for(int x = 0; x < ground.getWidth(); x++){
 				Cell cell = ground.getCell(x, y);
-//				Vector2 location = new Vector2((x+.5f) * Vars.TILE_SIZE / Vars.PPM,
-//						y * Vars.TILE_SIZE / Vars.PPM);
+				Vector2 location = new Vector2((x+.5f) * Vars.TILE_SIZE / Vars.PPM,
+						y * Vars.TILE_SIZE / Vars.PPM);
 				if (cell == null) continue;
 				if (cell.getTile() == null) continue;
 				
-				groundLevel = y*Vars.TILE_SIZE ;
+				groundLevel = (y-1)*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f;
 				String type = "";
 				if(cell.getTile().getProperties().get("type")!=null)
 					type = cell.getTile().getProperties().get("type", String.class);
 				new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
 						(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
 				
-//				cell = fg.getCell(x, y);
-//				if (cell != null) {
-//					if (cell.getTile() != null) {
-//						Object b = cell.getTile().getProperties().get("sound");
-//						if(b!=null){
-//							String src = cell.getTile().getProperties().get("sound", String.class);
-//							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, p);
-//						}
-//					}
-//				}
+				cell = fg.getCell(x, y);
+				if (cell != null) {
+					if (cell.getTile() != null) {
+						Object b = cell.getTile().getProperties().get("sound");
+						if(b!=null){
+							String src = cell.getTile().getProperties().get("sound", String.class);
+							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
+						}
+					}
+				}
 //				
-//				cell = bg1.getCell(x, y);
-//				if (cell != null) {
-//					if (cell.getTile() != null) {
-//						Object b = cell.getTile().getProperties().get("sound");
-//						if(b!=null){
-//							String src = cell.getTile().getProperties().get("sound", String.class);
-//							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, p);
-//						}
-//					}
-//				}
+				cell = bg1.getCell(x, y);
+				if (cell != null) {
+					if (cell.getTile() != null) {
+						Object b = cell.getTile().getProperties().get("sound");
+						if(b!=null){
+							String src = cell.getTile().getProperties().get("sound", String.class);
+							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
+						}
+					}
+				}
 			}
 		
 		//lights
@@ -399,11 +439,11 @@ public class Scene {
 			for(MapObject object : objects) {
 				if (object instanceof RectangleMapObject) {
 					Rectangle rect = ((RectangleMapObject) object).getRectangle();
-					if(object.getProperties().get("warp")!=null)
-						System.out.println(new Vector2(rect.x,rect.y));
+//					if(object.getProperties().get("warp")!=null)
+//						System.out.println(new Vector2(rect.x,rect.y));
 					rect.set(rect.x+7.1f, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
 
-					entities.add(new Entity(rect.x,rect.y,(int)rect.width,(int)rect.height,"TiledObject"));
+//					entities.add(new Entity(rect.x,rect.y,(int)rect.width,(int)rect.height,"TiledObject"));
 
 					Object o = object.getProperties().get("NPC");
 					if(o!=null) {
@@ -444,6 +484,7 @@ public class Scene {
 								e.setDiscoverScript(dScript);
 								e.setResponseType(dType);
 								e.setAttackType(aType);
+								e.active = true;
 								entities.add(e);
 								
 								if(pathName!=null)
@@ -459,30 +500,13 @@ public class Scene {
 							e.printStackTrace();
 						}
 					}
-
-					if(object.getProperties().get("warp")!=null) {
-						String next = object.getProperties().get("next", String.class);
-						String nextWarp = object.getProperties().get("nextWarp", String.class);
-						String id = object.getProperties().get("ID", String.class);
-						String condition = object.getProperties().get("condition", String.class);
-						boolean instant = false;
-						
-						if(object.getProperties().get("instant")!=null)
-							instant = true;
-						
-						int warpID = Integer.parseInt(id);
-						int nextID = Integer.parseInt(nextWarp);
-						Warp w = new Warp(this, next, warpID, nextID, rect.x, 
-								rect.y+rect.height/2, rect.width, rect.height);
-						w.setCondition(condition);
-						w.setInstant(instant);
-						entities.add(w);
-					}
 					
 					if(object.getProperties().get("barrier")!=null) {
 						String id = object.getProperties().get("ID", String.class);
-						entities.add(new Barrier(rect.x, rect.y+rect.height/2, 
-								(int)rect.width, (int)rect.height, id));
+						Entity e = new Barrier(rect.x, rect.y+rect.height/2, 
+								(int)rect.width, (int)rect.height, id);
+						e.active = false;
+						entities.add(e);
 					}
 
 					if(object.getProperties().get("spawn")!=null) {
@@ -492,6 +516,16 @@ public class Scene {
 					
 					if(object.getProperties().get("cambot spawn")!=null) {
 						camBotSpawnpoint = new Vector2(rect.x, rect.y);
+					}
+					
+					// pull warp from existing warps
+					if(object.getProperties().get("warp")!=null) {
+						String id = object.getProperties().get("ID", String.class);
+						int warpID = Integer.parseInt(id);
+						Warp w = main.findWarp(ID, warpID);
+						w.setOwner(this);
+						w.active = false;
+						entities.add(w);
 					}
 					
 					if(object.getProperties().get("event")!=null){
@@ -533,23 +567,128 @@ public class Scene {
 		}
 		
 		//left wall
+		float offset = 0;
+		if(main.findWarp(ID, 0)==null) offset = 3*Vars.TILE_SIZE/PPM;
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(Vars.TILE_SIZE / PPM, height/2 / PPM);
-		bdef.position.set(0, height/ 2 / PPM);
+		bdef.position.set(offset, height/ 2 / PPM);
 		Body body = world.createBody(bdef);
 		fdef.shape = shape;
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 
 		//right wall
-		bdef.position.set(width / PPM,  height/ 2 / PPM);
+		offset = 0;
+		if(main.findWarp(ID, 1)==null) offset = -3*Vars.TILE_SIZE/PPM;
+		bdef.position.set(width / PPM+offset,  height/ 2 / PPM);
 		body = world.createBody(bdef);
 		fdef.filter.categoryBits = Vars.BIT_GROUND;
-		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_PROJECTILE;
+		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 		
-		System.out.println(groundLevel);
+		entities.addAll(createLinkWarps());
+	}
+	
+	
+	// create all existing warps on level
+	public Array<Warp> createWarps(){
+		Array<Warp> warps = new Array<>();
+		MapProperties prop = tileMap.getProperties();
+
+		//create right warp
+		if(prop.get("next")!=null) {
+			String next = prop.get("next", String.class);
+			String nextWarp = prop.get("nextWarp", String.class);
+			boolean instant = true;
+
+			int nextID = 0;
+			if(nextWarp!=null) nextID = Integer.parseInt(nextWarp);
+			Rectangle rect = new Rectangle(width-Vars.TILE_SIZE*2, 0, Vars.TILE_SIZE*2, height);
+
+			Warp w = new Warp(this, next.replaceAll(" ", ""), 1, nextID, rect.x, 
+					rect.y+rect.height/2, rect.width, rect.height);
+
+			w.setInstant(instant);
+			warps.add(w);
+		}
+
+		//create left warp
+		if(prop.get("previous")!=null) {
+			String next = prop.get("previous", String.class);
+			String nextWarp = prop.get("prevWarp", String.class);
+			boolean instant = true;
+
+			int nextID = 1;
+			if(nextWarp!=null) nextID = Integer.parseInt(nextWarp);
+			Rectangle rect = new Rectangle(Vars.TILE_SIZE*2, 0, Vars.TILE_SIZE*2, height);
+
+			Warp w = new Warp(this, next.replaceAll(" ", ""), 0, nextID, rect.x, 
+					rect.y+rect.height/2, rect.width, rect.height);
+
+			w.setInstant(instant);
+			warps.add(w);
+		}
+
+		//create all other warps
+		if(tileMap.getLayers().get("entities")!=null){
+			MapObjects objects = tileMap.getLayers().get("entities").getObjects();
+			for(MapObject object : objects) {
+				if (object instanceof RectangleMapObject) {
+					Rectangle rect = ((RectangleMapObject) object).getRectangle();
+					if(object.getProperties().get("warp")!=null) {
+						String next = object.getProperties().get("next", String.class);
+						String nextWarp = object.getProperties().get("nextWarp", String.class);
+						String id = object.getProperties().get("ID", String.class);
+						String condition = object.getProperties().get("warp", String.class);
+						boolean instant = false;
+
+						//instant property must have a constant tile offset to ensure that the player
+						//doesn't constantly bounce between levels
+						if(object.getProperties().get("instant")!=null)
+							instant = true;
+
+						int warpID = Integer.parseInt(id);
+						int nextID = Integer.parseInt(nextWarp);
+						Warp w = new Warp(this, next.replaceAll(" ", ""), warpID, nextID, rect.x, 
+								rect.y+rect.height/2, rect.width, rect.height);
+						w.setCondition(condition);
+						w.setInstant(instant);
+						warps.add(w);
+					}
+				}
+			}
+		}
+		
+		return warps;
+	}
+	
+	//pull side warps from hashtable for adding into world
+	public ArrayList<Entity> createLinkWarps(){
+		ArrayList<Entity> warps = new ArrayList<>();
+		MapProperties prop = tileMap.getProperties();
+
+		Warp w;
+		if(prop.get("next")!=null){
+			w = main.findWarp(ID, 1);
+			w.setOffset(-4*Vars.TILE_SIZE, this.groundLevel);
+			w.setOwner(this);
+			warps.add(w);
+			// adds a trigger to show the title of the next location
+			if(w.getLink().owner.outside)
+				warps.add(new TextTrigger(w.getWarpLoc().x + Vars.TILE_SIZE, w.getWarpLoc().y+
+						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.RIGHT_MARGIN));
+		} if(prop.get("previous")!=null){
+			w = main.findWarp(ID, 0);
+			w.setOffset(4*Vars.TILE_SIZE, this.groundLevel);
+			w.setOwner(this);
+			warps.add(w);
+			if(w.getLink().owner.outside)
+				warps.add(new TextTrigger(w.getWarpLoc().x - Vars.TILE_SIZE, w.getWarpLoc().y+
+						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.LEFT_MARGIN));
+		}
+		
+		return warps;
 	}
 
 	public String getType() {
@@ -563,34 +702,15 @@ public class Scene {
 	
 	public Scene levelFromID(String ID, Warp warp, int warpID){
 		Scene s = new Scene(world, main, ID);
+		s.setRayHandler(rayHandler);
 		
 		if(warp!=null)
 			if(!warp.owner.newSong) s.newSong = false;
 		
-		Vector2 nextWarp = s.findWarpLoc(warpID);
-		s.setRayHandler(rayHandler);
-		if(nextWarp!=null) warp.setLink(nextWarp);
-		else warp.setLink(s.spawnpoint);
+//		Vector2 linkLoc = main.findWarp(ID, warpID).getLink();
+//		if(linkLoc!=null) warp.setLink(linkLoc);
+//		else warp.setLink(s.spawnpoint);
 		
 		return s;
-	}
-	
-	public Vector2 findWarpLoc(int warpID){
-		MapObjects objects = tileMap.getLayers().get("entities").getObjects();
-		for(MapObject object : objects) {
-			if (object instanceof RectangleMapObject) {
-				Rectangle rect = ((RectangleMapObject) object).getRectangle();
-		        rect.set(rect.x+7.1f*2, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
-
-				Object o = object.getProperties().get("warp");
-				if(o!=null) {
-		        	String id = object.getProperties().get("ID", String.class);
-		        	int warp = Integer.parseInt(id);
-					if(warp==warpID)
-			        	return new Vector2(rect.x, rect.y-rect.height/2+10);
-				}
-			}
-		}
-		return null;
 	}
 }

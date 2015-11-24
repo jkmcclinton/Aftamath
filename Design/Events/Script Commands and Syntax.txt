@@ -97,7 +97,7 @@ I've tried my best to add print statements to help you debug your script.
 	~ spawn
 	  statUpdate
 	  text
-	~ unlock
+       X~ unlock
 	  value/changeValue
 	  wait
 
@@ -128,8 +128,8 @@ checkPoint:
 	checkPoint(Name)
 choice:
 	provides handling for the indicated choice
-	must be ended with "endOption" command
-	[choiceName]
+	must be ended with "end" command
+	[choice choiceName]
 declare:
 	use to declare counter variables to keep track of throughout the game
 	declare(variableName, scope, type, initialValue)
@@ -147,7 +147,7 @@ doAction:
 	see action type list
 done:
 	ends handling for the entire script
-	resets the state of all NPCs
+	resets the state of some NPCs
 	lowers the dialog box
 	focuses camera on player
 	done
@@ -450,21 +450,24 @@ object properties:
 
 text delimiters:
 	/l - line
-	~ /c - capitilize previous variable
+	~ /c - capitilize previous word/variable
+	~ /cc - fully capitilize previous word/variable
 	/player - player name
 	/playerg - player gender (guy, girl)
+	/playergpp - player gender, passive (him, her)
 	/playergps - player gender, possessive singular (his, her)
 	/playergp - player gender, possessive plural (his, hers)
 	/playergo - player gender, objective (he, she)
 	/partner - partner name
 	/partnerg - partner gender
+	/partnergpp - parner gender, passive (his, her)
 	/partnergps - parner gender, possessive singular (his, her)
 	/partnergp - parner gender, possessive plural (his, hers)
 	/partnergo - partner gender, objective (he, she)
 	/partnert - partner title (boyfriend, girlfriend, wife, husband, sidekick, friend)
 	/home - player's house type
 	/address - player's house address
-	~ /variable[]
+	/variable[]
 
 emotions:
 	normal
@@ -523,7 +526,6 @@ NPC attackTypes:
 	on_sight - if the character is seen
 	on_attacked - if the NPC is attacked, fight back
 	on_defend - if the NPC is attacked, generally only attack once
-	~on_event
 	~random - attack randomly
 	never
 	

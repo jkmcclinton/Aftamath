@@ -34,8 +34,8 @@
   <object id="26" name="outside" x="130.44" y="41.9545" width="25.2878" height="53.9394">
    <properties>
     <property name="ID" value="1"/>
-    <property name="next" value="street"/>
-    <property name="nextWarp" value="1"/>
+    <property name="next" value="Residential District N"/>
+    <property name="nextWarp" value="3"/>
     <property name="warp" value=""/>
    </properties>
   </object>

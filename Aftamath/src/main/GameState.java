@@ -195,7 +195,7 @@ public abstract class GameState {
 	public void playSound(Vector2 position, Sound sound, float pitch) {
 		position = new Vector2(position.x * Vars.PPM, position.y * Vars.PPM);
 		float dx = cam.position.x - position.x;
-		float dy = cam.position.y - cam.YOFFSET - position.y;
+		float dy = cam.position.y - cam.offsetY - position.y;
 		float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
 		float pan;
@@ -215,7 +215,7 @@ public abstract class GameState {
 	public void updateSound(Vector2 position, Music sound) {
 		position = new Vector2(position.x * Vars.PPM, position.y * Vars.PPM);
 		float dx = cam.position.x - position.x;
-		float dy = cam.position.y - cam.YOFFSET - position.y;
+		float dy = cam.position.y - cam.offsetY - position.y;
 		float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
 		float pan;

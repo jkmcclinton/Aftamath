@@ -34,7 +34,7 @@ public class Projectile extends Entity {
 		super(x,y,getID(type));
 		
 		animation.setSpeed(ANIM_RATE);
-		layer = Vars.BIT_PROJECTILE;
+		layer = Vars.BIT_BATTLE;
 		this.owner = owner;
 		this.velocity = Vars.getVelocity(getPosition(), target, speed);
 		
@@ -46,8 +46,8 @@ public class Projectile extends Entity {
 	public Vector2 getVelocity(){ return velocity; }
 	
 	public void update(float dt){
-		if(body.getLinearVelocity().x < 0 && !facingLeft) changeDirection();
-		else if(body.getLinearVelocity().x > 0 && facingLeft) changeDirection();
+		if(body.getLinearVelocity().x < 0 && !isFacingLeft()) changeDirection();
+		else if(body.getLinearVelocity().x > 0 && isFacingLeft()) changeDirection();
 		animation.update(dt);
 	}
 	

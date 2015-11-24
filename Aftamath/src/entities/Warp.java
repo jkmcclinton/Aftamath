@@ -11,12 +11,20 @@ public class Warp extends Entity {
 
 	public String next = null;
 	public Scene owner;
+	public String locTitle;
 	public int warpID;
 	public boolean instant;
+	public TransType transitionType;
 	
 	private String condition;
-	private Vector2 warpLocation;
+	private Vector2 warpLoc, offset;
 	private int nextWarp;
+	private Warp link;
+	
+	public enum TransType {
+		HORIZONTAL_BARS, PINHOLE, ZOOM, BLACKOUT, FADE, FADE_WHITE,
+		FADE_RISE, FADE_SINK
+	}
 
 	public Warp(Scene owner, String next, int warpID, int nextWarp, float x, float y, float w, float h){
 		this.ID = "warp";
@@ -24,6 +32,7 @@ public class Warp extends Entity {
 		this.nextWarp = nextWarp;
 		this.x = x;
 		this.y = y;
+		this.transitionType = TransType.FADE;
 
 		this.next = next;
 		this.width = (int) w; 
@@ -31,6 +40,9 @@ public class Warp extends Entity {
 		this.rw = width/2;
 		this.rh = height/2;
 		this.owner = owner;
+		this.offset = new Vector2(0, 0);
+		this.warpLoc = new Vector2(x, y-rh);
+		this.locTitle = owner.title;
 		loadSprite();
 	}
 
@@ -46,15 +58,23 @@ public class Warp extends Entity {
 		this.condition = condition;
 	}
 
-	public Scene getNext(){
+	public Scene getNextScene(){
 		if (next!=null)
 			return owner.levelFromID(next, this, nextWarp);
 		return null;
 	}
-
-	public Vector2 getLink() { return warpLocation; }
-	public void setLink(Vector2 link){ warpLocation = link.cpy(); }
-	public Vector2 getPosition(){ return new Vector2(x/Vars.PPM, y/Vars.PPM); }
+	
+	public void setOwner(Scene owner){ this.owner =owner; }
+	public int getLinkID(){ return nextWarp; }
+	public Warp getLink() { return link; }
+	public void setLink(Warp link){this.link = link; }
+	public Vector2 getWarpLoc(){ return warpLoc.cpy(); }
+	public void setOffset(float x, float y){ 
+		offset = new Vector2(x, y); 
+		warpLoc = new Vector2(this.x+offset.x, this.y+offset.y-rh);
+	}
+	
+	public Vector2 getOffset(){ return offset; }
 	public void setInstant(boolean instant){ this.instant = instant; }
 
 	@Override
@@ -70,10 +90,14 @@ public class Warp extends Entity {
 		fdef.isSensor = true;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
-		fdef.filter.categoryBits = (short) ( Vars.BIT_GROUND | Vars.BIT_PROJECTILE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
+		fdef.filter.maskBits = (short) ( Vars.BIT_GROUND | Vars.BIT_BATTLE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
+		fdef.filter.categoryBits = (short) ( Vars.BIT_GROUND | Vars.BIT_BATTLE| Vars.BIT_LAYER1| Vars.BIT_PLAYER_LAYER| Vars.BIT_LAYER3);
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 		
 		createCenter();
+	}
+	
+	public String toString(){
+		return locTitle+warpID;
 	}
 }

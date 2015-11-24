@@ -11,7 +11,7 @@ import entities.Mob;
 public class Camera extends OrthographicCamera{
 
 	public boolean reached, focusing, moving, zooming, constrained;
-	public float YOFFSET = 20f; //offset camera up
+	public float offsetY = 20f; //offset camera up
 
 	private float minx, maxx, miny, maxy;
 	private float tempMinx, tempMaxx, tempMiny, tempMaxy;
@@ -68,7 +68,7 @@ public class Camera extends OrthographicCamera{
 					focus = character;
 				
 				if(focus.getBody()!=null)
-					setPosition(focus.getPixelPosition().x, focus.getPixelPosition().y + YOFFSET);
+					setPosition(focus.getPixelPosition().x, focus.getPixelPosition().y + offsetY);
 			}
 		else {
 			float dx, dy;
@@ -77,7 +77,7 @@ public class Camera extends OrthographicCamera{
 				dy = tmpFocus.y - position.y;
 			} else {
 				dx = focus.getPixelPosition().x - position.x;
-				dy = focus.getPixelPosition().y - position.y + YOFFSET;
+				dy = focus.getPixelPosition().y - position.y + offsetY;
 			}
 
 			if(Math.abs(dx) < .5f && Math.abs(dy) < .5f) {
@@ -149,11 +149,11 @@ public class Camera extends OrthographicCamera{
 
 	public void fixOffset(){
 		if (zoom<=.8){
-			YOFFSET = 0;
+			offsetY = 0;
 		} else if (zoom>=1.2f){ 
-			YOFFSET = 36;
+			offsetY = 36;
 		} else {
-			YOFFSET = 92.5f*zoom-74;
+			offsetY = 92.5f*zoom-74;
 		}
 	}
 
@@ -186,6 +186,7 @@ public class Camera extends OrthographicCamera{
 	}
 
 	public void removeFocus(){ 
+		tmpFocus = null;
 		focus = character;
 		focusing = false;
 		moving = true;
@@ -196,42 +197,37 @@ public class Camera extends OrthographicCamera{
 	}
 
 	public Entity getFocus() {return focus;}
-	public void setVerticalOffset(float y){ YOFFSET = y; }
-
-	public void offsetPosition(float x, float y){
-		boolean prev = locked;
-		locked = false;
-		setPosition(x, y);
-		locked = prev;
-	}
-
+	public void setVerticalOffset(float y){ offsetY = y; }
 	public void setPosition(Vector2 v){ setPosition(v.x, v.y); }
 	public void setPosition(float x, float y) {
 		Vector2 v = new Vector2(x, y);
 
 		if(locked){
-			if(constrained) adjust(tempMinx, tempMaxx, tempMiny, tempMaxy, v);
-			else adjust(minx, maxx, miny, maxy, v);
-		} else 
-			position.set(v.x, v.y, 0);
+			if(constrained) v = adjust(tempMinx, tempMaxx, tempMiny, tempMaxy, v);
+			else v = adjust(minx, maxx, miny, maxy, v);
+		}
+		
+		position.set(v, 0);
 	}
 
 	public void setPosition(Entity focus) {
 		this.focus = focus;
 
 		if(locked){
-			if(constrained) adjust(tempMinx, tempMaxx, tempMiny, tempMaxy, focus.getPosition());
-			else adjust(minx, maxx, miny, maxy, focus.getPosition());
+			Vector2 v;
+			if(constrained) v = adjust(tempMinx, tempMaxx, tempMiny, tempMaxy, focus.getPosition());
+			else v = adjust(minx, maxx, miny, maxy, focus.getPosition());
+			position.set(v, 0);
 		} else 
 			position.set(focus.getPosition(), 0);
 	}
 
-	private void adjust(float minx, float maxx, float miny, float maxy, Vector2 v){
+	private Vector2 adjust(float minx, float maxx, float miny, float maxy, Vector2 v){
 		if(v.x > maxx - viewportWidth * zoom / 2) v.x = maxx - viewportWidth * zoom / 2;
 		if(v.x < minx + viewportWidth * zoom / 2) v.x = minx + viewportWidth * zoom / 2;
 		if(v.y > maxy - viewportHeight * zoom / 2) v.y = maxy - viewportHeight * zoom / 2;
 		if(v.y < miny + viewportHeight * zoom / 2) v.y = miny + viewportHeight * zoom / 2;
-		position.set(v, 0);
+		return v;
 	}
 
 	public void bind(Scene s, boolean b2d){
@@ -274,4 +270,6 @@ public class Camera extends OrthographicCamera{
 	public RefocusTrigger getTrigger(){ return trigger; }
 	public void setCharacter(Mob mob) { this.character = mob; }  //set camera focus to the character
 	public Mob getCharacter(){ return character; }
+
+	public float getDefaultZoom() { return defaultZoom; }
 }

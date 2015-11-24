@@ -51,7 +51,7 @@ public class MyInput {
 	}
 	
 	public static void setKey(Input k, boolean b) { keys.put(k, b);  }
-	public static boolean isDown(Input k) { return keys.get(k); }
+	public static boolean isDown(Input k) { return keys.get(k) && pkeys.get(k); }
 	public static boolean isDown(){
 		for(Input k : keys.keySet())
 			if(keys.get(k))
@@ -59,5 +59,6 @@ public class MyInput {
 		return false;
 	}
 	public static boolean isPressed(Input k) { return keys.get(k) && !pkeys.get(k); }
+	public static boolean isUp(Input k) { return !keys.get(k) && pkeys.get(k); }
 	
 }

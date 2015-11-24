@@ -349,8 +349,20 @@ depending on your configuration.
 
 --------------------Warp Properties--------------------
 
-	warp |
+	*warp | [condition]
 		This must be included to denote that the object is a warp tile
+		The optional property value condition must be phrased similar to "if" commands for
+		scripts. Expressions like 1+x=2 must be surrounded with [], while everything outside
+		the [] will be treated as boolean (such as events and flags). Here is an example:
+
+		FoundTheNarrator and [player.gender = male] or ![spawnSet = 1]
+
+		Keep in mind, events and flags must already be created by the time the player gets to
+		the trigger. If they have not been, they will automatically be treated as false
+		
+		see the events folder (Aftamath/Aftamath/assets/scripts/events) for a list of
+		event related scripts
+		
 	ID | number
 		This gives each warp a specific identity. The value must be an integer and be unique
 		from other warps on the same level.
@@ -376,14 +388,14 @@ depending on your configuration.
 		by default, the transition type is fade
 
 		type list:
-			horizontal bars		- bars come from sides of screen 
+			horizontal_bars		- bars come from sides of screen 
 			pinhole			- classic Looney Toons style circle
 			zoom			- zoom into character's face, blackout
 			blackout		- instant blackout
 			fade			- regular fade to black
-			fade white		- regular fade to white
-			fade and rise		- fade to black and move camera upward
-			fade and sink		- fade to black and move camera downward
+			fade_white		- regular fade to white
+			fade_rise		- fade to black and move camera upward
+			fade_sink		- fade to black and move camera downward
 
 
 --------------------Event Trigger Properties--------------------
@@ -400,16 +412,10 @@ depending on your configuration.
 	~trigCount | num
 		this allows the eventTrigger to trigger only a specific number of times		
 
-	*scriptName | condition
+	*scriptName | [condition]
 		use this to declare what script can be called under the given conditions.
 		The "scriptName" field must be the name for an existing script, while the condition
-		must be phrased similar to "if" commands for scripts. Expressions like 1+x=2 must be 
-		surrounded with [], while everything outside the [] willbe treated as boolean (such as
-		events and flags). Here is an example:
-
-		FoundTheNarrator and [player.gender = male] or ![spawnSet = 1]
-
-		Keep in mind, events and flags must.... I forgot. Sorry! We'll go over this.
+		must be phrased similar to "if" commands for scripts. 
 		
 		see the events folder (Aftamath/Aftamath/assets/scripts/events) for a list of
 		event related scripts

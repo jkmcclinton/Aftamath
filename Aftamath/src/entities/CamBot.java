@@ -29,7 +29,7 @@ public class CamBot extends Mob {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		//hitbox
-		facingLeft = false;
+		setDirection(false);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw-4)/Vars.PPM, (rh)/Vars.PPM);
 		
@@ -39,7 +39,7 @@ public class CamBot extends Mob {
 		
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 		fdef.filter.categoryBits = layer;
 		fdef.isSensor = true;
 		body.setBullet(true);

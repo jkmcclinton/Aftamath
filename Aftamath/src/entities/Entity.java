@@ -39,7 +39,7 @@ public class Entity implements Serializable {
 	public String ID;
 	public Animation animation;
 	public boolean isInteractable, isAttackable, dead, controlled;
-	public boolean burning, flamable, frozen, init;
+	public boolean burning, flamable, frozen, init, active;
 	public float x, y;
 	public int height, width, rw, rh;
 
@@ -58,7 +58,7 @@ public class Entity implements Serializable {
 	protected float invulnerableTime;
 	protected Vector2 goalPosition;
 	protected Texture texture;
-	protected boolean facingLeft;
+	private boolean facingLeft;
 	protected World world;
 	protected Main main;
 	protected Body body;
@@ -77,7 +77,7 @@ public class Entity implements Serializable {
 		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND;
 	}
 	
-	protected static final float MAX_DISTANCE = 50;
+	protected static final float MAX_DISTANCE = 65;
 	protected static final double DEFAULT_MAX_HEALTH = 20;
 
 	//no-arg should only be used by serializer
@@ -173,7 +173,7 @@ public class Entity implements Serializable {
 	}
 	
 	public void setDefaultAnimation(TextureRegion[] reg, float delay){
-		animation.setFrames(reg, delay, facingLeft);
+		animation.setFrames(reg, delay, isFacingLeft());
 	}
 	
 	public void setGameState(Main gs){
@@ -195,16 +195,15 @@ public class Entity implements Serializable {
 	}
 	
 	public void changeLayer(short layer){
-		System.out.println("layer changed");
 		this.layer = layer;
 		if(body!=null){
 			main.addBodyToRemove(body);
-			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 			fdef.filter.categoryBits = layer;
 			create();
 		} else {
-			System.out.println(layer);
-			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+//			System.out.println(layer);
+			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 			fdef.filter.categoryBits = layer;
 		}
 	}
@@ -226,12 +225,18 @@ public class Entity implements Serializable {
 	public String toString(){ return ID; }
 	
 	public void changeDirection(){
-		if (facingLeft) facingLeft = false;
+		if (isFacingLeft()) facingLeft = false;
 		else facingLeft = true;
 
-		animation.flip(facingLeft);
+		animation.flip(isFacingLeft());
 	}
 	
+	public boolean isFacingLeft() { return facingLeft; }
+	public void setDirection(boolean val){ 
+		facingLeft = val;
+		animation.flip(val);
+	}
+
 	public void ignite(){
 		if(!flamable || burning) return;
 		totBurnLength = (float) (Math.random()*MAX_BURN_TIME);
@@ -297,8 +302,8 @@ public class Entity implements Serializable {
 	public void facePlayer(){
 		if(main.character!=null){
 			float dx = main.character.getPosition().x - getPosition().x;
-			if(dx > 0 && facingLeft) changeDirection();
-			else if (dx < 0 && !facingLeft) changeDirection();
+			if(dx > 0 && isFacingLeft()) changeDirection();
+			else if (dx < 0 && !isFacingLeft()) changeDirection();
 		}
 	}
 	
@@ -306,12 +311,12 @@ public class Entity implements Serializable {
 		if (obj != null)
 			if(obj.getBody() != null){
 				float dx = obj.getPosition().x - getPosition().x;
-				if(dx > 0 && facingLeft) changeDirection();
-				else if (dx < 0 && !facingLeft) changeDirection();
+				if(dx > 0 && isFacingLeft()) changeDirection();
+				else if (dx < 0 && !isFacingLeft()) changeDirection();
 			}
 	}
 	
-	public boolean getDirection(){ return facingLeft; }
+	public boolean getDirection(){ return isFacingLeft(); }
 	
 
 	protected void setDimensions(){
@@ -382,7 +387,7 @@ public class Entity implements Serializable {
 				return super.equals(o);
 			if(e.ID!=null && e.animation!=null){
 				if(e.ID.equals(ID) && this.getClass().equals(o.getClass()) && 
-						e.getPosition().equals(getPosition()) && e.facingLeft==facingLeft && 
+						e.getPosition().equals(getPosition()) && e.isFacingLeft()==isFacingLeft() && 
 						e.animation.equals(animation))
 					return true;
 			} else
@@ -407,7 +412,7 @@ public class Entity implements Serializable {
 		fdef.shape = shape;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 		body.setMassData(mdat);

@@ -1,7 +1,5 @@
 package handlers;
 
-import main.Main;
-
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -16,7 +14,9 @@ import entities.Projectile;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
+import entities.TextTrigger;
 import entities.Warp;
+import main.Main;
 
 public class MyContactListener implements ContactListener {
 
@@ -90,24 +90,58 @@ public class MyContactListener implements ContactListener {
 			((Mob) entB).discover(entA);
 		}if(typeA.equals("warp") && typeB.equals("foot")){
 			if(((Warp) entA).conditionsMet()) {
-				if (entB.equals(main.character))
-					new SpeechBubble(entA, entA.getPixelPosition().x, ((Warp)entA).rh +
-							entA.getPixelPosition().y, "arrow");
-				Mob m = (Mob) entB;
-				m.canWarp = true;
-				m.setWarp((Warp) entA);
+				if(((Warp)entA).instant){
+					if (entB.equals(main.character))
+						main.initWarp((Warp) entA);
+					else; //move the Mob to that Level
+				} else {
+					if (entB.equals(main.character)){
+						if(((Warp)entA).getLink().owner.outside && ((Warp)entA).owner.outside){
+							String message = "To " + ((Warp)entA).getLink().locTitle;
+							(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y
+									+ entA.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
+						} else
+							new SpeechBubble(entA, entA.getPixelPosition().x, entA.rh +
+									entA.getPixelPosition().y, "arrow");
+					}
+					Mob m = (Mob) entB;
+					m.canWarp = true;
+					m.setWarp((Warp) entA);
+				}
 			}
 		} if(typeB.equals("warp") && typeA.equals("foot")){
 			if(((Warp) entB).conditionsMet()) {
-				if (entA.equals(main.character))
-					new SpeechBubble(entB, entB.getPixelPosition().x, ((Warp)entB).rh +
-							entB.getPixelPosition().y, "arrow");
-				Mob m = (Mob) entA;
-				m.canWarp = true;
-				m.setWarp((Warp) entB);
-				if(((Warp)entB).instant && entA.equals(main.character))
-					main.initWarp(((Warp)entB));
+				if(((Warp)entB).instant){
+					if (entA.equals(main.character))
+						main.initWarp((Warp) entB);
+					else; //move the Mob to that Level
+				} else {
+					if (entA.equals(main.character)){
+						if(((Warp)entB).getLink().owner.outside && ((Warp)entB).owner.outside){
+							String message = "To " + ((Warp)entB).getLink().locTitle;
+							(new SpeechBubble(entB, entB.getPixelPosition().x, entB.getPixelPosition().y
+									+ entB.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
+						} else
+							new SpeechBubble(entB, entB.getPixelPosition().x, entB.rh +
+									entB.getPixelPosition().y, "arrow");
+					}
+					Mob m = (Mob) entA;
+					m.canWarp = true;
+					m.setWarp((Warp) entB);
+					if(((Warp)entB).instant && entA.equals(main.character))
+						main.initWarp(((Warp)entB));
+				}
 			}
+		} if(typeA.equals("texttrigger") && typeB.equals("foot")){
+			if (entB.equals(main.character))
+				(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y
+						+ entA.rh, 6, ((TextTrigger)entA).message, ((TextTrigger)entA).positioning)).expand();
+			
+		} if(typeB.equals("texttrigger") && typeA.equals("foot")){
+			if (entA.equals(main.character))
+				(new SpeechBubble(entB, entB.getPixelPosition().x, entB.getPixelPosition().y
+						+ entB.rh, 6, ((TextTrigger)entB).message, ((TextTrigger)entB).positioning)).expand();
+			
 		} if(typeA.equals("refocusTrigger") && entB instanceof Mob && !unstandable.contains(typeB, false)){
 			Camera cam = main.getCam();
 			if (main.character.equals((Mob) entB))
@@ -172,24 +206,38 @@ public class MyContactListener implements ContactListener {
 			((Mob) entA).loseSightOf(entB);
 		} if(typeB.equalsIgnoreCase("vision")){ 
 			((Mob) entB).loseSightOf(entA);
-		} if(typeA.equals("warp")){
+		} if(typeA.equals("warp") && typeB.equals("foot")){
 			Mob m = (Mob) entB;
 			if(m.getWarp()!=null)
 				if(m.getWarp().equals(entA)) {
 					m.setWarp(null);
 					m.canWarp = false;
 				}
-			for(Entity e:main.getObjects())
-				if(e instanceof SpeechBubble)
-					if(((SpeechBubble)e).getOwner().equals(entA))
-						main.addBodyToRemove(e.getBody());
-		} if(typeB.equals("warp")){
+			
+			if(entB.equals(main.character))
+				for(Entity e:main.getObjects())
+					if(e instanceof SpeechBubble)
+						if(((SpeechBubble)e).getOwner().equals(entA))
+							main.addBodyToRemove(e.getBody());
+		} if(typeB.equals("warp") && typeA.equals("foot")){
 			Mob m = (Mob) entA;
 			if(m.getWarp()!=null)
 				if(m.getWarp().equals(entB)) {
 					m.setWarp(null);
 					m.canWarp = false;
 				}  
+			
+			if(entA.equals(main.character))
+				for(Entity e:main.getObjects())
+					if(e instanceof SpeechBubble)
+						if(((SpeechBubble)e).getOwner().equals(entB))
+							main.addBodyToRemove(e.getBody());
+		} if(typeA.equals("texttrigger") && typeB.equals("foot") && entB.equals(main.character)){
+			for(Entity e:main.getObjects())
+				if(e instanceof SpeechBubble)
+					if(((SpeechBubble)e).getOwner().equals(entA))
+						main.addBodyToRemove(e.getBody());
+		} if(typeB.equals("texttrigger") && typeA.equals("foot") && entA.equals(main.character)){
 			for(Entity e:main.getObjects())
 				if(e instanceof SpeechBubble)
 					if(((SpeechBubble)e).getOwner().equals(entB))

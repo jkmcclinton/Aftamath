@@ -22,12 +22,13 @@ public class Evaluator {
 	}
 	
 	public boolean evaluate(String statement, Script script){
+		if(statement==null) return true;
+		if(statement.isEmpty()) return true;
+		
 		String obj, property = null;
 		boolean not=false, result=false;
 		this.script = script;
 		
-		if(statement==null)
-			return true;
 		if(statement.contains(">") || statement.contains("<") || statement.contains("=")){
 			String value = "", val = "";
 			
@@ -70,8 +71,8 @@ public class Evaluator {
 			else
 				value = determineValue(val, false);
 
-//			System.out.println(statement);
-//			System.out.println("p: " + property + "\tc: " + condition + "\tv: " + value);
+			System.out.println(statement);
+			System.out.println("p: " + property + "\tc: " + condition + "\tv: " + value);
 
 			//actual comparator
 			try{

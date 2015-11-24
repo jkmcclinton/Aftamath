@@ -27,18 +27,18 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.ESCAPE) MyInput.setKey(Input.PAUSE, true);
 			if(k == Keys.ENTER) MyInput.setKey(Input.ENTER, true);
 			if(k == Keys.TAB) MyInput.setKey(Input.DEBUG, true);
-			if(k == Keys.NUMPAD_8) MyInput.setKey(Input.DEBUG_UP, true);
-			if(k == Keys.NUMPAD_2) MyInput.setKey(Input.DEBUG_DOWN, true);
+			if(k == Keys.NUMPAD_8 || k == Keys.U) MyInput.setKey(Input.DEBUG_UP, true);
+			if(k == Keys.NUMPAD_2 || k == Keys.J) MyInput.setKey(Input.DEBUG_DOWN, true);
 			if(k == Keys.NUMPAD_4) MyInput.setKey(Input.DEBUG_LEFT, true);
 			if(k == Keys.NUMPAD_6) MyInput.setKey(Input.DEBUG_RIGHT, true);
-			if(k == Keys.NUMPAD_7) MyInput.setKey(Input.DEBUG_LEFT2, true);
-			if(k == Keys.NUMPAD_9) MyInput.setKey(Input.DEBUG_RIGHT2, true);
+			if(k == Keys.NUMPAD_7 || k == Keys.K) MyInput.setKey(Input.DEBUG_LEFT2, true);
+			if(k == Keys.NUMPAD_9 || k == Keys.I) MyInput.setKey(Input.DEBUG_RIGHT2, true);
 			if(k == Keys.M) MyInput.setKey(Input.DEBUG_CENTER, true);
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, true);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, true);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, true);
 			if(k == Keys.F4 || k == Keys.P) MyInput.setKey(Input.DEBUG2, true);
-			if(k == Keys.PLUS) MyInput.setKey(Input.ZOOM_IN, true);
+			if(k == Keys.EQUALS) MyInput.setKey(Input.ZOOM_IN, true);
 			if(k == Keys.MINUS) MyInput.setKey(Input.ZOOM_OUT, true);
 		} else {
 //			System.out.println(k+":"+Keys.toString(k));
@@ -106,18 +106,18 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.ESCAPE) MyInput.setKey(Input.PAUSE, false);
 			if(k == Keys.ENTER) MyInput.setKey(Input.ENTER, false);
 			if(k == Keys.TAB) MyInput.setKey(Input.DEBUG, false);
-			if(k == Keys.NUMPAD_8) MyInput.setKey(Input.DEBUG_UP, false);
-			if(k == Keys.NUMPAD_2) MyInput.setKey(Input.DEBUG_DOWN, false);
+			if(k == Keys.NUMPAD_8 || k == Keys.U) MyInput.setKey(Input.DEBUG_UP, false);
+			if(k == Keys.NUMPAD_2 || k == Keys.J) MyInput.setKey(Input.DEBUG_DOWN, false);
 			if(k == Keys.NUMPAD_4) MyInput.setKey(Input.DEBUG_LEFT, false);
 			if(k == Keys.NUMPAD_6) MyInput.setKey(Input.DEBUG_RIGHT, false);
-			if(k == Keys.NUMPAD_7) MyInput.setKey(Input.DEBUG_LEFT2, false);
-			if(k == Keys.NUMPAD_9) MyInput.setKey(Input.DEBUG_RIGHT2, false);
+			if(k == Keys.NUMPAD_7 || k == Keys.K) MyInput.setKey(Input.DEBUG_LEFT2, false);
+			if(k == Keys.NUMPAD_9 || k == Keys.I) MyInput.setKey(Input.DEBUG_RIGHT2, false);
 			if(k == Keys.M) MyInput.setKey(Input.DEBUG_CENTER, false);
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, false);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, false);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, false);
 			if(k == Keys.F4) MyInput.setKey(Input.DEBUG2, false);
-			if(k == Keys.PLUS) MyInput.setKey(Input.ZOOM_IN, false);
+			if(k == Keys.EQUALS) MyInput.setKey(Input.ZOOM_IN, false);
 			if(k == Keys.MINUS) MyInput.setKey(Input.ZOOM_OUT, false);
 		} else {
 			if(k == Keys.ESCAPE){ MyInput.setKey(Input.PAUSE, false); }

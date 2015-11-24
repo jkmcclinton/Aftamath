@@ -1,0 +1,81 @@
+Variables to save
+
+Main:
+playTime - "dayTime" should be extrapolated from this, but not saved
+weatherTime
+~Lights
+
+Player:
+myPartner - reference to a Mob
+partnerTitle
+info
+relationship
+home - reference to a House class that has yet to be designed
+money - must also set goalMoney; this allows us to do animation tricks w/ it
+nicety
+bravery
+N - this limits how much nicety can increase
+B - same deal here, but bravery
+L - sam deal, but relationship
+typerCounter - keeps track of the different damage types the player has used randomly
+
+History:
+eventList
+variableList
+flagList
+
+Scene: 
+script 
+
+Any entity that needs to be constantly updated and rendered must be added using
+"Main.addObject()". Everything else must have its "body" inserted into "Main.world"
+directly
+Entity:
+ID
+health - even if this is 0 the entity should still be saved/loaded; this also means the
+	variable "dead" must be tracked
+scene - reference to its current scene name
+location - LibGDX's Box2D stores this in meters; for ease of use the game does everything
+	else in pixels per meter and is thus spawned in using those units. To convert,
+	100 pixels = 1 meter. It's not likely to change, but for safety use Vars.PPM as
+	the conversion constant
+
+frozen
+burning
+burnTime
+burnDelay
+facingLeft
+isInteractable
+layer
+origLayer
+followers - array of Mob references
+script
+attackScript
+
+NPC/Mob:
+respawnPoint
+iff - friend or foe tag
+name
+voice
+strength
+level
+experience
+action
+state
+defaultState
+powerType
+attackFocus - reference to Entity
+AIfocus - reference to Entity
+interactable - Entity
+visionRange
+
+If an NPC has a path:
+	- only save references to paths w/ CONTINUOUS behavior
+	forward
+	current
+	- Since paths are static they are created from the Tiled file, 
+	which gets loaded after. This means you'll have to do some juggling with
+	"pathsToSet()" and "Mob.movetoPath()". Then you have to give the path its current values
+
+Script:
+current

@@ -51,7 +51,7 @@ public class SpeechBubble extends Entity {
 	 */
 		
 	
-	//Standard interaction based bubble, e.g. speech
+	//Standard interaction based bubble, e.g. choices
 	public SpeechBubble(Entity d, float x, float y, int ID, String message, PositionType positioningType) {
 		super(x, y, "speechBubble");
 		setGameState(d.getGameState());
@@ -250,7 +250,7 @@ public class SpeechBubble extends Entity {
 		fdef.shape = shape;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_PROJECTILE);
+		fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 	}
