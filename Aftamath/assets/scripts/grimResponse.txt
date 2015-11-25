@@ -39,8 +39,8 @@ else
 	setChoice(yesno)
 		[Choice yes]
 			text(normal, {Excellent.......})
-			value(set, player.money, 9999999999999.99)
-			setEvent(gaveSoul, Willingly gave soul to get money)
+			value(set, player.money, 9999999999.89)
+			setEvent(gaveSoul, {Willingly gave soul to get money})
 			setScript(Money)
 		end
 		

@@ -79,27 +79,27 @@ public class Evaluator {
 				switch (condition){
 				case "=":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						result =( Float.parseFloat(property) == Float.parseFloat(value));
+						result =(Double.parseDouble(property) == Double.parseDouble(value));
 					else
 						result = property.equals(value);
 					break;
 				case ">":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						result = (Float.parseFloat(property) > Float.parseFloat(value));
+						result = (Double.parseDouble(property) > Double.parseDouble(value));
 					break;
 				case ">=":
 				case "=>":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						result = (Float.parseFloat(property) >= Float.parseFloat(value));
+						result = (Double.parseDouble(property) > Double.parseDouble(value));
 					break;
 				case "<":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						result = (Float.parseFloat(property) < Float.parseFloat(value));
+						result = (Double.parseDouble(property) < Double.parseDouble(value));
 					break;
 				case "<=":
 				case "=<":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						result = (Float.parseFloat(property) <= Float.parseFloat(value));
+						result = (Double.parseDouble(property) <= Double.parseDouble(value));
 					break;
 				default:
 					System.out.println("\""+condition+"\" is not a vaild operator; Line: "+(script.index+1)+"\tScript: "+script.ID);
@@ -117,7 +117,7 @@ public class Evaluator {
 			//remove brackets
 			if(!statement.isEmpty())
 				if(statement.contains("[") && statement.contains("]"))
-				statement = statement.substring(statement.indexOf("[")+1, statement.indexOf("]"));
+					statement = statement.substring(statement.indexOf("[")+1, statement.indexOf("]"));
 			if(statement.startsWith("!")){
 				not = true;
 				statement = statement.substring(1);
@@ -255,7 +255,7 @@ public class Evaluator {
 		String prop = "", not = "", property = null;
 		Object object=null;
 		
-		//ensure that invald characters do not change the outcome
+		//ensure that invalid characters do not change the outcome
 		obj = (obj.replace("[", "")).replace("]", "");
 
 		if(Vars.isNumeric(obj))
@@ -367,7 +367,7 @@ public class Evaluator {
 				property = String.valueOf(((Mob)object).getHealth());
 			break;
 		case "money":
-			property = String.valueOf(main.player.getMoney());
+			property = String.valueOf(Double.valueOf(main.player.getMoney()).longValue());
 			break;
 		case "gender":
 			if(object instanceof Mob) 

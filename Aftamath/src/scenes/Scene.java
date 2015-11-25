@@ -43,8 +43,10 @@ import entities.SpeechBubble;
 import entities.TextTrigger;
 import entities.Warp;
 import handlers.Camera;
+import handlers.Evaluator;
 import handlers.EventTrigger;
 import handlers.FadingSpriteBatch;
+import handlers.Pair;
 import handlers.PositionalAudio;
 import handlers.Vars;
 import main.Game;
@@ -53,7 +55,7 @@ import scenes.Script.ScriptType;
 
 public class Scene {
 	
-	public Script script;
+	public Script loadScript;
 	public int width, height;
 	public String title, ID;
 	public Song[] DEFAULT_SONG;
@@ -69,6 +71,7 @@ public class Scene {
 	private ArrayList<Entity> entities;
 	private ArrayList<PointLight> lights;
 	private ArrayList<Path> paths;
+	private HashMap<Script, Pair<String, Boolean>> conditionalScripts;
 	private HashMap<Mob, String> pathsToAdd;
 	private TiledMap tileMap;
 	private Texture background, midground, foreground, clouds, sky, grad, sun, moon;
@@ -118,6 +121,7 @@ public class Scene {
 		lights = new ArrayList<>();
 		paths = new ArrayList<>();
 		pathsToAdd = new HashMap<>();
+		conditionalScripts = new HashMap<>();
 		width = 1000;
 		height = 1000;
 		this.ID = ID.replaceAll(" ", "");
@@ -215,8 +219,34 @@ public class Scene {
 			sb.setRHAmbient(ambient);
 		}
 		
-		script = new Script(this.ID, ScriptType.SCENE, m, null);
+		//get scripts
+			Iterator<String> it = prop.getKeys();
+			String script, condition;
+			
+			while(it.hasNext()){
+				script = it.next();
+				if(!Game.SCRIPT_LIST.contains(script, false))
+					continue;
+				condition = prop.get(script, String.class);
+				conditionalScripts.put(new Script(script, ScriptType.SCENE, m, null),
+						new Pair<String, Boolean>(condition, false));
+			}
+		
+		loadScript = new Script(this.ID, ScriptType.SCENE, m, null);
+		if(loadScript.source!=null) main.triggerScript(loadScript);
 		tmr = new OrthogonalTiledMapRenderer(tileMap, m.getSpriteBatch());
+	}
+	
+	
+	//trigger any script stuff
+	public void update(float dt){
+		Evaluator e = new Evaluator(main);
+		for(Script s : conditionalScripts.keySet())
+			if(e.evaluate(conditionalScripts.get(s).getKey()) 
+					&& !conditionalScripts.get(s).getValue()){
+				main.triggerScript(conditionalScripts.get(s).getKey());
+				conditionalScripts.get(s).setValue(true);
+			}
 	}
 	
 	public void renderBG(FadingSpriteBatch sb){

@@ -1,4 +1,5 @@
 Script Main
+eventMusic(Jamming Time)
 lockplayer
 face(this, player)
 setSpeaker(this)

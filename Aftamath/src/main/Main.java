@@ -163,7 +163,7 @@ public class Main extends GameState {
 		world = new World(new Vector2 (0, Vars.GRAVITY), true);
 		world.setContactListener(cl);
 		b2dr = new Box2DDebugRenderer();
-//		b2dr.setDrawVelocities(true);
+		b2dr.setDrawVelocities(true);
 		rayHandler = new RayHandler(world);
 //		rayHandler.setAmbientLight(0);
 		
@@ -1180,7 +1180,6 @@ public class Main extends GameState {
 	}
 	
 	public void load(){
-		System.out.println(cam.viewportHeight);
 		narrator = new Mob("Narrator", "narrator1", 0, 0, 0, Vars.BIT_LAYER1);
 		player = new Player(this);
 //		if(gameFile==null){
@@ -1322,7 +1321,7 @@ public class Main extends GameState {
 	}
 	
 	public void triggerScript(String src, EventTrigger tg){
-		Script s = new Script(src, ScriptType.DIALOGUE, this, character);
+		Script s = new Script(src, ScriptType.EVENT, this, character);
 		if (s.ID!=null && s.source!=null)
 			triggerScript(s, tg);
 	}

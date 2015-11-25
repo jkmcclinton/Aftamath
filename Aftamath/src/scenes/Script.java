@@ -79,6 +79,7 @@ public class Script {
 		checkpoints = new HashMap<>();
 		localVars = new HashMap<>();
 
+		if(!Game.SCRIPT_LIST.contains(scriptID, false)) return;
 		loadScript(scriptID);
 		if(source!=null){
 			findIndicies();

@@ -145,6 +145,12 @@ public class Vars {
 	 */
 	public static boolean isNumeric(String s){
 		if(s==null) return false;
+		if(s.contains("E")){
+			String mantissa = s.substring(0, s.indexOf("E"));
+			String power = s.substring(s.indexOf("E")+1);
+			return isNumeric(mantissa) && isNumeric(power);
+		}
+		
 		if (s.matches("((-|\\+)?[0-9]+(\\.[0-9]+)?)+")) return true;
 	    return false;
 	}
