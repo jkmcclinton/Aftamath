@@ -13,10 +13,11 @@ public class Camera extends OrthographicCamera{
 	public boolean reached, focusing, moving, zooming, constrained;
 	public float offsetY = 20f; //offset camera up
 
-	private float minx, maxx, miny, maxy;
+	private float minx, maxx, miny, maxy, amplitude, shakeTime, phaseX, phaseY;
+	private float frequency = 150*1000; // in Hertz
 	private float tempMinx, tempMaxx, tempMiny, tempMaxy;
 	private float defaultZoom, goalZoom, oldZoom, zoomTime, goalTime;
-	private boolean locked = true;
+	private boolean locked = true, shaking;
 	private Boolean wasCharacterFacingLeft;
 	private Entity focus;
 	private Vector2 tmpFocus;
@@ -128,8 +129,35 @@ public class Camera extends OrthographicCamera{
 				zoom=y;
 				fixOffset();
 			}
-		} 
+		}
+
+		if(shaking) applyShake(dt);
 		update();
+	}
+	
+	//give new offset for camera
+	private void applyShake(float dt){
+		shakeTime +=dt;
+		float offX = (float) (amplitude * Math.sin(frequency * shakeTime + phaseX));
+		float offY = (float) (amplitude * Math.cos(frequency * shakeTime + phaseY));
+		position.set(position.x+offX, position.y+offY, 0);
+		
+		amplitude-=2*dt;
+		if(amplitude<=0)
+			shaking = false;
+	}
+	
+	public void shake(){
+		shake(3);
+	}
+	
+	public void shake(float maxAmp){
+		amplitude = maxAmp;
+		shakeTime = 0;
+		shaking = true;
+		
+		phaseX = (float) Math.random()*1.2f;
+		phaseY = (float) Math.random()*1.2f;
 	}
 
 	public void resetZoom(){ zoom(defaultZoom, DEFAULT_ZOOM_TIME); }

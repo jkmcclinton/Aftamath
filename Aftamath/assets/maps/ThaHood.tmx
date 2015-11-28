@@ -189,7 +189,7 @@
   </object>
   <object id="3" name="1" x="672" y="1248" width="16" height="16">
    <properties>
-    <property name="ID" value="1"/>
+    <property name="ID" value="28"/>
     <property name="NPC" value="hippie"/>
     <property name="layer" value="front"/>
     <property name="name" value="Sasha"/>
@@ -199,7 +199,7 @@
   </object>
   <object id="4" name="1" x="720" y="1248" width="16" height="16">
    <properties>
-    <property name="ID" value="2"/>
+    <property name="ID" value="13"/>
     <property name="NPC" value="doctordisco"/>
     <property name="attackScript" value="discoResponse"/>
     <property name="layer" value="front"/>

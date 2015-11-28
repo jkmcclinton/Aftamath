@@ -233,7 +233,14 @@ public abstract class GameState {
 	}
 
 	public void loadGame() {
-
+		//TODO menus that allow user to select game file
+		
+		//temporary conditioning
+		if(Gdx.files.internal("saves/savegame.txt").exists())
+			gsm.setState(GameStateManager.MAIN, true, "savegame");
+		else 
+			System.out.println("No save file to load");
+//		JsonSerializer.loadGameState("savegame.txt");
 	}
 
 	public void options() {

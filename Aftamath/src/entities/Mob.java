@@ -15,18 +15,21 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SerializationException;
 
 import entities.Projectile.ProjectileType;
 import handlers.FadingSpriteBatch;
+import handlers.JsonSerializer;
 import handlers.Vars;
 import main.Game;
 import main.Main;
 import main.Main.InputState;
-import scenes.Scene;
 import scenes.Script;
 import scenes.Script.ScriptType;
 
-public class Mob extends Entity{
+public class Mob extends Entity {
 
 	public Array<Entity> contacts;
 	public double strength = DEFAULT_STRENGTH;
@@ -50,7 +53,7 @@ public class Mob extends Entity{
 	protected Anim action;
 	protected float knockOutTime, idleTime, idleDelay;
 	protected float stepTime, actionTime, attackTime, attackDelay=DEFAULT_ATTACK_DELAY;
-	protected float maxSpeed = WALK_SPEED;
+	protected float maxSpeed = WALK_SPEED, fallTime;
 	protected boolean controlledPT2, aiming, ctrlReached;
 	protected int ctrlRepeat = -1, timesIdled;
 	protected TextureRegion[] face, healthBar;
@@ -175,16 +178,20 @@ public class Mob extends Entity{
 		}
 	}
 	
-	public Mob(String name, String ID, float x, float y, short layer) {
-		this(name, ID, 0, DamageType.PHYSICAL, x, y, layer);
+	//Instantiate NPC mobs
+	public Mob(String name, String ID, int sceneID, float x, float y, short layer){
+		this(name, ID, sceneID, 0, DamageType.PHYSICAL, x, y, layer);
 	}
 	
-	public Mob(String name, String ID, Vector2 location, short layer) {
-		this(name, ID, 0, DamageType.PHYSICAL, location.x, location.y, layer);
+	public Mob(String name, String ID, int sceneID, Vector2 location, short layer) {
+		this(name, ID, sceneID, 0, DamageType.PHYSICAL, location.x, location.y, layer);
 	}
 
-	public Mob(String name, String ID, int level, DamageType type, float x, float y, short layer){
+	public Mob(String name, String ID, int sceneID, int level, DamageType type, float x, float y, short layer){
 		super(x, y+getHeight(ID)/2f, ID);
+		respawnPoint = new Vector2(x,y);
+		this.init();
+		
 		this.name = name;
 		this.layer = layer;
 		origLayer = layer;
@@ -192,49 +199,62 @@ public class Mob extends Entity{
 		determineGender();
 		this.powerType = type;
 
+		Texture texture = Game.res.getTexture(ID + "face");
+		if (texture != null) face = TextureRegion.split(texture, 64, 64)[0];
+		texture = Game.res.getTexture("healthBar");
+		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
+		
+		determineGender();
+		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
+		
+		this.sceneID = sceneID;
+		if (!Entity.idToEntity.containsKey(this.sceneID)) {
+			Entity.idToEntity.put(this.sceneID, this);
+		} else {
+			Entity e = Entity.idToEntity.get(sceneID);
+			boolean conflict = true;
+			String error = e.ID;
+			
+			if(e instanceof Mob)
+				if(this.getName().equals(((Mob) e).getName()) && ID.equals(e.ID)){
+					conflict = false;
+					Entity.idToEntity.put(sceneID, this);
+				} else
+					error = "("+((Mob)e).getName() + ", "+e.ID+")";
+			
+			if(conflict)
+				System.out.println("Created mob with ID "+this.sceneID+" ("+ this.name +", "+ID+") when " +
+						error + " already exists");
+		}
+	}
+
+	//constructor called from serializer - use others in other cases
+	public Mob(){
+		//this(null, "", 0, 0, 0, Vars.BIT_LAYER3);
+		super();
+		this.init();
+		gender = "n/a";	
+	}
+
+	private void init() {
 		attackables = new Array<>();
 		discovered = new Array<>();
 		contacts = new Array<>();
 		flamable = true;
 		isAttackable = true;
-
-		Texture texture = Game.res.getTexture(ID + "face");
-		if (texture != null) face = TextureRegion.split(texture, 64, 64)[0];
-		texture = Game.res.getTexture("healthBar");
-		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
-
 		attackTime = attackDelay;
-		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
 		iff=IFFTag.FRIENDLY;
-	}
-	
-	//Instantiate NPC mobs
-	public Mob(String name, String ID, int sceneID, float x, float y, short layer){
-		this(name, ID, x, y, layer);
 		health = maxHealth = DEFAULT_MAX_HEALTH;
-		determineGender();
-		
+		action = Anim.STANDING;
 		state = AIState.STATIONARY;
 		defaultState = AIState.STATIONARY;
 		attackType = AttackType.NEVER;
 		responseType = SightResponse.IGNORE;
-
-		this.sceneID = sceneID;
 		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);
 		inactiveWait = (float)(Math.random() *(IDLE_LIMIT)+100);
 		time = 0;
 	}
-
-	public Mob(){
-		this(null, "", 0, 0, Vars.BIT_LAYER3);
-		gender = "n/a";
-		
-		state = AIState.STATIONARY;
-		defaultState = AIState.STATIONARY;
-		attackType = AttackType.NEVER;
-		responseType = SightResponse.IGNORE;
-	}
-
+	
 	public void update(float dt){
 		if(main==null){
 			System.out.println("still BROKEN");
@@ -299,11 +319,21 @@ public class Mob extends Entity{
 //			if(snoozing && action!=Action.GET_DOWN)
 //				setAnimation(Action.SNOOZING, true);
 
-			if (!isOnGround()) 
+			if (!isOnGround()){
 				setAnimation(Anim.FALLING);
-			if(isOnGround() && !wasOnGround && (getAnimationAction()==Anim.FALLING||
-					getAnimationAction()==Anim.FALLING_TRANS))
+				fallTime+=dt;
+			}if(isOnGround() && !wasOnGround && (getAnimationAction()==Anim.FALLING||
+					getAnimationAction()==Anim.FALLING_TRANS)){
 				setAnimation(Anim.LANDING);
+				
+				if(this.equals(main.character)){
+					float a = .4f, b = 2, t = fallTime;
+					float maxAmp = (float) (b*t / (t + Math.exp(1 - a*t)));
+					main.getCam().shake(maxAmp);
+				}
+				
+				fallTime=0;
+			}
 
 			if (!climbing)
 				animation.update(dt);
@@ -520,14 +550,22 @@ public class Mob extends Entity{
 
 	public void setState(AIState state){ 
 		System.out.println("setting: "+state);
-		if (state == AIState.FOLLOWING) follow(main.character);
-		else this.state = state;
+		if (state == AIState.FOLLOWING) {
+			follow(main.character);
+		} else {
+			this.state = state;
+		}
+		//replace with
+		//setState(state, main.character);
+		//?
 	}
 
 	public void setState(AIState state, Entity focus){
-		if (state == AIState.FOLLOWING) follow(focus);
-		else this.state = state;
-
+		if (state == AIState.FOLLOWING) {
+			follow(focus);
+		} else {
+			this.state = state;
+		}
 		this.focus = focus;
 	}
 
@@ -1734,7 +1772,7 @@ public class Mob extends Entity{
 		if(warp == null) return false;
 		main.addBodyToRemove(getBody());
 		setPosition(warp.getLink().getWarpLoc());
-		Scene s = warp.getLink().owner;
+//		Scene s = warp.getLink().owner;
 		//save location in new level
 		return true;
 	}
@@ -2042,6 +2080,65 @@ public class Mob extends Entity{
 	}
 	
 	public String toString(){ return ID +": " + name; }
+	
+	@Override
+	public void read(Json json, JsonValue val) {
+		super.read(json, val);
+		try {
+			//TODO figure out why this doesnt work
+			this.respawnPoint = json.fromJson(Vector2.class, val.get("respawnPoint").child().toString());
+		} catch (SerializationException | NullPointerException e) {
+		}
+		
+		this.iff = IFFTag.valueOf(val.getString("iff"));
+		this.name = val.getString("name");
+		this.strength = val.getDouble("strength");
+		this.level = val.getInt("level");
+		this.experience = val.getFloat("experience");
+		this.action = Anim.valueOf(val.getString("action"));
+		this.defaultState = AIState.valueOf(val.getString("defaultState"));
+		this.powerType = Entity.DamageType.valueOf(val.getString("powerType"));
+		this.visionRange = val.getFloat("visionRange");
+		
+		int attackFocusId = val.getInt("attackFocus");
+		int aiFocusId = val.getInt("AIfocus");
+		int interactableId = val.getInt("interactable");
+		if (attackFocusId > -1 || aiFocusId > -1 || interactableId > -1) {
+			JsonSerializer.pushMobRef(this, attackFocusId, aiFocusId, interactableId);
+		}
+				
+		//other stuff that typically happens in constructor
+		Texture texture = Game.res.getTexture(ID + "face");
+		if (texture != null) face = TextureRegion.split(texture, 64, 64)[0];
+		texture = Game.res.getTexture("healthBar");
+		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
+		determineGender();
+		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
+	}
+
+	@Override
+	public void write(Json json) {
+		super.write(json);
+		json.writeValue("respawnPoint", this.respawnPoint);
+		json.writeValue("iff", this.iff);
+		json.writeValue("name", this.name);
+		//json.writeValue("voice", this.voice);	//todo: implement voice
+		json.writeValue("strength", this.strength);
+		json.writeValue("level", this.level);
+		json.writeValue("experience", this.experience);
+		json.writeValue("action", this.action);
+		json.writeValue("defaultState", this.defaultState);
+		json.writeValue("powerType", this.powerType);
+		json.writeValue("visionRange", this.visionRange);
+		
+		json.writeValue("attackFocus", (this.attackFocus != null) ? this.attackFocus.sceneID : -1);
+		json.writeValue("AIfocus", (this.AIfocus != null) ? this.AIfocus.sceneID : -1);	
+		json.writeValue("interactable", (this.interactable != null) ? this.interactable.sceneID : -1);
+		
+		//other fields probably necessary
+		
+		//TODO: path loading
+	}
 
 	// determines what animation gets played first 
 	protected static final int[] actionPriorities = {0,

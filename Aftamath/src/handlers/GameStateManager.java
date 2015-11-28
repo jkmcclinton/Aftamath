@@ -23,8 +23,8 @@ public class GameStateManager {
 	public GameStateManager(Game game) {
 		this.game = game;
 		gameStates = new ArrayDeque<GameState>();
-//		pushState(TITLE);
-		pushState(MAIN);
+		pushState(TITLE);
+		//pushState(MAIN);
 		gameStates.peek().create();
 	}
 
@@ -58,9 +58,17 @@ public class GameStateManager {
 		gameStates.peekFirst().render();
 	}
 	
-	public GameState initState(int state){
-		if(state == MAIN) return new Main(this);
-		if(state == TITLE) return new Title(this);
+	public GameState initState(int state, Object... args){
+		if(state == MAIN) {
+			String filename = "newgame";
+			if (args.length > 0) {
+				filename = args[0].toString();
+			}
+			return new Main(this, filename);
+		}
+		if(state == TITLE) {
+			return new Title(this);
+		}
 		return null;
 	}
 	
@@ -70,10 +78,10 @@ public class GameStateManager {
 		setState(state, false);
 	}
 	
-	public void setState(int state, boolean fade){
+	public void setState(int state, boolean fade, Object... args) {
 		GameState g = gameStates.peekFirst();
 		if (fade) {
-			pushState(state);
+			pushState(state, args);
 			fading = true;
 			fadeType = -1;
 			g.getSpriteBatch().fade();
@@ -82,15 +90,15 @@ public class GameStateManager {
 				s.fadeOut();
 		} else {
 			popState();
-			pushState(state);
-		}
+			pushState(state, args);
+		}		
 	}
-
-	private void pushState(int state) {
+	
+	private void pushState(int state, Object... args) {
 		if(gameStates.size() == 2)
 			return;
 		
-		gameStates.add(initState(state));
+		gameStates.add(initState(state, args));
 	}
 	
 	private void popState() {

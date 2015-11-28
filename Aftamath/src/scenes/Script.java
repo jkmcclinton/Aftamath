@@ -13,6 +13,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 import entities.Entity;
 import entities.Entity.DamageType;
@@ -39,7 +42,7 @@ import main.Main.InputState;
  *  you shouldn't have to debug this class for the most part
  *  if there is an issue, make sure you are writing the script correctly
  * ----------------------------------------------------------------------  */
-public class Script {
+public class Script implements Serializable {
 
 	public String ID;
 	public Array<String> source;
@@ -67,17 +70,20 @@ public class Script {
 		ATTACKED, DISCOVER, EVENT, DIALOGUE, SCENE
 	}
 
-	public Script(String scriptID, ScriptType type, Main m, Entity owner){
-		this.owner = owner;
-		this.type = type;
-		ID = scriptID;
-		main = m;
-
+	public Script() {
 		choiceIndicies = new HashMap<>();
 		conditions = new LinkedHashMap<>();
 		operations = new Stack<>();
 		checkpoints = new HashMap<>();
 		localVars = new HashMap<>();
+	}
+	
+	public Script(String scriptID, ScriptType type, Main m, Entity owner){
+		this();
+		this.owner = owner;
+		this.type = type;
+		this.ID = scriptID;
+		main = m;
 
 		if(!Game.SCRIPT_LIST.contains(scriptID, false)) return;
 		loadScript(scriptID);
@@ -376,7 +382,7 @@ public class Script {
 				target = findObject(lastArg(line));
 				if (obj != null && target != null){
 					if (obj instanceof Mob){
-						((Mob) obj).setState(AIState.FOLLOWING, obj);
+						((Mob) obj).setState(AIState.FOLLOWING, target);
 					}else obj.faceObject(target);
 				}
 				break;
@@ -427,7 +433,7 @@ public class Script {
 				main.addBodyToRemove(main.character.getBody());
 				main.character = new Mob(main.character.getName(), 
 						String.valueOf(getVariable("playergender")) + "player" + getVariable("playertype"),
-						main.getScene().getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
+						Vars.PLAYER_SCENE_ID, main.getScene().getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
 				main.createPlayer(main.getScene().getSpawnPoint());
 				main.addObject(main.character);
 
@@ -629,7 +635,6 @@ public class Script {
 				
 				if(description.contains("{") && description.contains("}")){
 					description = getSubstitutions(description);
-					description = description.substring(description.indexOf("{"), description.indexOf("{"));
 				} else {
 					var = getVariable(description); // get local var
 					if(var==null)
@@ -936,7 +941,7 @@ public class Script {
 				source = new Array<>();
 				String line = br.readLine();
 
-				while (line != null ) {;
+				while (line != null ) {
 				source.add(line);
 				line = br.readLine();
 				}
@@ -1720,6 +1725,7 @@ e.printStackTrace();
 
 	public void setPlayState(Main gs) { main = gs; }
 	public Entity getOwner(){ return owner; }
+	public void setOwner(Entity owner) { this.owner = owner; }
 	public Object getActiveObject(){ return activeObj; }
 	public void setActiveObj(Object obj){ activeObj = obj; }
 	public String getCurrentName() { return currentName; }
@@ -1820,5 +1826,27 @@ e.printStackTrace();
 				return ((Option) o).message.toLowerCase().equals(message.toLowerCase());
 			return false;
 		}
+	}
+
+	@Override
+	public void read(Json json, JsonValue val) {
+		this.ID = val.getString("ID");
+		this.type = ScriptType.valueOf(val.getString("type"));
+		this.index = this.current = val.getInt("current");
+		
+		//TODO make sure script loading is correct
+		loadScript(this.ID);
+		if (source != null) {
+			findIndicies();
+			getDistanceLimit();
+			activeObj = new Entity();
+		}
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("ID", this.ID);
+		json.writeValue("type", this.type);
+		json.writeValue("current", this.current);
 	}
 }

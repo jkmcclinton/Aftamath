@@ -1,8 +1,13 @@
 package entities;
 
 import static handlers.Vars.PPM;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import handlers.Animation;
 import handlers.FadingSpriteBatch;
+import handlers.JsonSerializer;
 import handlers.Vars;
 import main.Game;
 import main.Main;
@@ -21,8 +26,15 @@ import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SerializationException;
 
-public class Entity{
+public class Entity implements Serializable {
+	
+	//global mapping of IDs (in Tiled, custom prop "ID") to an Entity reference
+	public static Map<Integer, Entity> idToEntity;
 	
 	public String ID;
 	public Animation animation;
@@ -30,6 +42,7 @@ public class Entity{
 	public boolean burning, flamable, frozen, init, active;
 	public float x, y;
 	public int height, width, rw, rh;
+	public Object o;
 
 	//damage constants
 	public static final float MAX_BURN_TIME = 10f; // in seconds
@@ -57,6 +70,10 @@ public class Entity{
 	protected short layer, origLayer;
 	protected Array<Mob> followers;
 	
+	static {
+		idToEntity = new HashMap<Integer, Entity>();
+	}
+	
 	public enum DamageType{
 		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND;
 	}
@@ -64,35 +81,39 @@ public class Entity{
 	protected static final float MAX_DISTANCE = 65;
 	protected static final double DEFAULT_MAX_HEALTH = 20;
 
-	public Entity(){} 
+	//no-arg should only be used by serializer
+	public Entity() {
+		this.init();
+	} 
 	
+	//TODO consolidate these constructors if possible
 	public Entity (float x, float y, String ID) {
+		this.init();
 		this.ID = ID;
 		this.x = x;
 		this.y = y;
-		isAttackable = false;
 		
 		setDimensions();
-		
-		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		loadSprite();
+	}
+	
+	public Entity(float x, float y, int width, int height, String ID) {
+		this.init();
+		this.ID = ID;
+		this.x = x;
+		this.y = y;
+		
+		setDimensions(width, height);
+		loadSprite();
+	}
+
+	private void init() {
+		isAttackable = false;
+		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		followers = new Array<>();
 		origLayer = Vars.BIT_LAYER1;
 	}
 	
-	public Entity(float x, float y, int width, int height, String ID) {
-		this.ID = ID;
-		this.x = x;
-		this.y = y;
-		isAttackable = false;
-		
-		setDimensions(width, height);
-		
-		this.health = maxHealth = DEFAULT_MAX_HEALTH;
-		loadSprite();
-		followers = new Array<>();
-	}
-
 	public void loadSprite() {
 		animation = new Animation();
 		texture = Game.res.getTexture(ID);
@@ -198,7 +219,13 @@ public class Entity{
 	}
 	
 	public Vector2 getPosition(){ return body.getPosition(); }
-	public Vector2 getPixelPosition(){ return new Vector2(body.getPosition().x*Vars.PPM, body.getPosition().y*Vars.PPM); }
+	public Vector2 getPixelPosition(){ 
+		if(body!=null)
+			return new Vector2(body.getPosition().x*Vars.PPM, body.getPosition().y*Vars.PPM);
+		else
+			return new Vector2(x, y);
+	}
+	
 	public Body getBody() { return body; }
 
 	public Script getScript() { return script; }
@@ -304,6 +331,11 @@ public class Entity{
 	}
 	
 	protected void setDimensions(int width, int height){
+		//if (width < 0 || height < 0) {
+		//	width = getWidth(this.ID);
+		//	height = getHeight(this.ID);
+		//}
+		
 		this.width = width; 
 		this.height = height;
 
@@ -406,4 +438,68 @@ public class Entity{
 		fdef.filter.maskBits = (short) (Vars.BIT_HALFGROUND | Vars.BIT_GROUND);
 		body.createFixture(fdef).setUserData("center");
 	}
+
+	@Override
+	public void read(Json json, JsonValue val) {
+		this.ID = val.getString("ID");
+		this.sceneID = val.getInt("sceneID");
+		o = val.get("location");
+		this.health = val.getDouble("health");
+		this.burning = val.getBoolean("burning");
+		this.frozen = val.getBoolean("frozen");
+		this.burnTime = val.getFloat("burnTime");
+		this.burnDelay = val.getFloat("burnDelay");
+		this.facingLeft = val.getBoolean("facingLeft");
+		this.isInteractable = val.getBoolean("isInteractable");
+		this.layer = val.getShort("layer");
+		this.origLayer = val.getShort("origLayer");
+		
+		try {
+			this.script = json.fromJson(Script.class, val.get("script").toString());
+			this.script.setOwner(this);
+		} catch (SerializationException | NullPointerException e) {}
+		
+		try {
+			this.attackScript = json.fromJson(Script.class, val.get("attackScript").toString());
+			this.script.setOwner(this);
+		} catch (SerializationException | NullPointerException e) {}
+		
+		Array<Integer> mobRef = new Array<Integer>();
+		for (JsonValue child = val.get("followers").child(); child != null; child = child.next()) {
+			mobRef.add(child.getInt("value"));
+		}				
+		if (mobRef.size > 0) {
+			JsonSerializer.pushEntityRef(this, mobRef);
+		}
+		
+		//other stuff from constructor
+		setDimensions();		
+		loadSprite();
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("ID", this.ID);
+		json.writeValue("sceneID", this.sceneID);
+		json.writeValue("location", this.getPixelPosition());
+		json.writeValue("health", this.health);
+		json.writeValue("burning", this.burning);
+		json.writeValue("frozen", this.frozen);
+		json.writeValue("burnTime", this.burnTime);
+		json.writeValue("burnDelay", this.burnDelay);
+		json.writeValue("facingLeft", this.facingLeft);
+		json.writeValue("isInteractable", this.isInteractable);
+		json.writeValue("layer", this.layer);
+		json.writeValue("origLayer", this.origLayer);
+		
+		Array<Integer> mobRef = new Array<Integer>();
+		for (Mob m : this.followers) {
+			mobRef.add(m.sceneID);
+		}
+		json.writeValue("followers", mobRef);
+		
+		json.writeValue("script", this.script);
+		json.writeValue("attackScript", this.attackScript);
+	}
+	
 }

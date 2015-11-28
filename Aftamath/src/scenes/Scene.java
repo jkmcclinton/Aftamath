@@ -5,7 +5,10 @@ import static handlers.Vars.PPM;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -55,6 +58,8 @@ import scenes.Script.ScriptType;
 
 public class Scene {
 	
+	// global mapping of scenes to the entities they contain
+	public static Map<String, Set<Integer> > sceneToEntityIds;
 	public Script loadScript;
 	public int width, height;
 	public String title, ID;
@@ -87,6 +92,10 @@ public class Scene {
 	private static final int DAY = 0;
 	private static final int NOON = 1;
 	private static final int NIGHT =2;
+	
+	static {
+		sceneToEntityIds = new HashMap<String, Set<Integer> >();
+	}
 	
 	//temporary object used only for creating warps
 	public Scene(String ID){
@@ -124,9 +133,15 @@ public class Scene {
 		conditionalScripts = new HashMap<>();
 		width = 1000;
 		height = 1000;
+
+		title = ID.toLowerCase();
 		this.ID = ID.replaceAll(" ", "");
 
 		tileMap = new TmxMapLoader().load("assets/maps/" + this.ID + ".tmx");
+		if (!sceneToEntityIds.containsKey(this.ID)) {	//first time scene is referenced
+			sceneToEntityIds.put(this.ID, new HashSet<Integer>());
+		}
+		
 		MapProperties prop = tileMap.getProperties();
 		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
 		height = prop.get("height", Integer.class)*Vars.TILE_SIZE;
@@ -395,6 +410,13 @@ public class Scene {
 		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
 //		TiledMapTileLayer bg2 = (TiledMapTileLayer) tileMap.getLayers().get("bg2");
 		
+		//add in entities loaded from save file
+		if (Scene.sceneToEntityIds.containsKey(this.ID)) {
+			for (int sid : Scene.sceneToEntityIds.get(this.ID)) {
+				this.entities.add(Entity.idToEntity.get(sid));
+			}
+		}
+		
 		for (int y = 0; y < ground.getHeight(); y++)
 			for(int x = 0; x < ground.getWidth(); x++){
 				Cell cell = ground.getCell(x, y);
@@ -452,15 +474,16 @@ public class Scene {
 //						System.out.println(new Vector2(rect.x,rect.y));
 					rect.set(rect.x+7.1f, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
 
+					//this indicaties the base spawn location
 //					entities.add(new Entity(rect.x,rect.y,(int)rect.width,(int)rect.height,"TiledObject"));
 
 					Object o = object.getProperties().get("NPC");
 					if(o!=null) {
-						String l = object.getProperties().get("layer", String.class);
-						String ID = object.getProperties().get("NPC", String.class);
-						String sceneID = object.getProperties().get("ID", String.class);
-						String name = object.getProperties().get("name", String.class);
-						String state = object.getProperties().get("state", String.class);
+						String l = object.getProperties().get("layer", String.class);		//render/collision layer
+						String ID = object.getProperties().get("NPC", String.class);		//name used for art file
+						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+						String name = object.getProperties().get("name", String.class);		//character name
+						String state = object.getProperties().get("state", String.class);	//AI state
 						String script = object.getProperties().get("script", String.class);
 						String aScript = object.getProperties().get("attackScript", String.class);
 						String dScript = object.getProperties().get("discoverScript", String.class);
@@ -477,11 +500,28 @@ public class Scene {
 							Field f = Vars.class.getField("BIT_LAYER"+l);
 							short lyr = f.getShort(f);
 							ID = ID.toLowerCase();
+							int sceneIDParsed = Integer.parseInt(sceneID);
 
 							if (sceneID==null)
-								System.out.println("NPC: "+ID+", name: "+name+" not given sceneID");
-							else{
-								Mob e = new Mob(name, ID, Integer.parseInt(sceneID), rect.x, rect.y, lyr);
+								System.out.println("'" + name + "', '"+ID+"' cannot be created without a sceneID!");
+							else if (Entity.idToEntity.containsKey(sceneIDParsed)) {
+								Entity c = Entity.idToEntity.get(sceneIDParsed);
+								boolean conflict = true;
+								
+								if(c instanceof Mob)
+									if(((Mob)c).getName().equals(name) && c.ID.equals(ID))
+										conflict = false;
+
+								if(conflict){
+									System.out.print("'" + name + "', '"+ID+"' cannot be created; ");
+									if(c instanceof Mob)
+										System.out.println("'" + ((Mob)c).getName() + "' already exists with ssceneID " + sceneID);
+									else
+										System.out.println("'" + c.ID + "' already exists with sceneID " + sceneID);
+								}
+								//ignore since object was already created via save file
+							} else{
+								Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);
 								e.setGameState(main);
 								e.setDefaultState(state);
 								e.setDialogueScript(script);
@@ -494,6 +534,9 @@ public class Scene {
 								
 								if(pathName!=null)
 									pathsToAdd.put(e, pathName);
+								
+								if(sceneIDParsed>=0)
+									Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
 							}
 						} catch (NoSuchFieldException | SecurityException e) {
 							e.printStackTrace();

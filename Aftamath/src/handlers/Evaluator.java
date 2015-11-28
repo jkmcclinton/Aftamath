@@ -71,8 +71,8 @@ public class Evaluator {
 			else
 				value = determineValue(val, false);
 
-			System.out.println(statement);
-			System.out.println("p: " + property + "\tc: " + condition + "\tv: " + value);
+//			System.out.println(statement);
+//			System.out.println("p: " + property + "\tc: " + condition + "\tv: " + value);
 
 			//actual comparator
 			try{

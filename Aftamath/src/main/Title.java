@@ -1,14 +1,6 @@
 package main;
 
-import handlers.Animation;
-import handlers.GameStateManager;
-import handlers.MyInput;
-import handlers.MyInput.Input;
-import handlers.Vars;
-
 import java.lang.reflect.Method;
-
-import scenes.Song;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -16,6 +8,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import handlers.Animation;
+import handlers.GameStateManager;
+import handlers.MyInput;
+import handlers.MyInput.Input;
+import handlers.Vars;
+import scenes.Song;
 
 public class Title extends GameState {
 
@@ -164,8 +163,6 @@ public class Title extends GameState {
 	public void create() {
 		Song song = new Song("Title");
 		setSong(song, false);
-//		song.stop();
-//		song.fadeIn();
 		sb.setOverlay(Color.WHITE);
 		sb.setOverlayDraw(false);
 
