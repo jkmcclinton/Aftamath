@@ -6,6 +6,8 @@ if(!gaveSoul)
 	if(!found)
 		spawn(NPC, reaper, Grim Reaper, 64, 97)
 		setDialogue(Grim Reaper, grimResponse)
+		setVul(Grim Reaper, false)
+		setMaxHealh(Grim Reaper, 1000000)
 		follow(Grim Reaper, player)
 		#setLayer(Grim Reaper, projectile)
 	else

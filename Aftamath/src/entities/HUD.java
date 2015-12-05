@@ -1,13 +1,6 @@
 package entities;
 
-import handlers.Animation;
-import handlers.Vars;
-
 import java.text.NumberFormat;
-
-import main.Game;
-import main.Main;
-import main.Main.InputState;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -15,6 +8,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+
+import handlers.Animation;
+import handlers.Vars;
+import main.Game;
+import main.Main;
+import main.Main.InputState;
 
 public class HUD {
 	
@@ -79,7 +78,7 @@ public class HUD {
 		inputBGMid = new TextureRegion(textures, 308, 78, 1, 18);
 		inputBGRight = new TextureRegion(textures, 309, 78, 6, 18);
 		
-		splashOverlay = new Texture(Gdx.files.internal("assets/images/splashOverlay.png"));
+		splashOverlay = Game.res.getTexture("splashOverlay");
 		
 		Texture emote = Game.res.getTexture("emotion");
 		if (emote != null) emotions = TextureRegion.split(emote, 64, 64)[0];
@@ -181,7 +180,7 @@ public class HUD {
 		int x = Game.width/4 - (Game.MAX_INPUT_LENGTH+1)*font[0].getRegionWidth()/2;
 		int y = 195-5;
 		int max = (Game.MAX_INPUT_LENGTH+1)*font[0].getRegionWidth();
-		
+
 		sb.draw(inputBGLeft, x-inputBGLeft.getRegionWidth(), y);
 		for(int i = 0; i < max; i++)
 			sb.draw(inputBGMid, x + i, y);
