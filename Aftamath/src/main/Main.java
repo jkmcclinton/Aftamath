@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -22,6 +25,7 @@ import com.badlogic.gdx.utils.Array;
 
 import box2dLight.RayHandler;
 import entities.CamBot;
+import entities.DamageField;
 import entities.Entity;
 import entities.Ground;
 import entities.HUD;
@@ -76,11 +80,13 @@ public class Main extends GameState {
 	private World world;
 	private Scene scene, nextScene;
 	private Color drawOverlay;
+	private Texture pixel;
 	private Array<Body> bodiesToRemove;
 	private ArrayList<Entity> objects/*, UIobjects, UItoRemove*/;
 	private ArrayList<Path> paths;
 	private ArrayList<PositionalAudio> sounds;
 	private Hashtable<String, Warp> warps;
+	private HashMap<Entity, Float> healthBars;
 	private Box2DDebugRenderer b2dr;
 	private InputState beforePause;
 	private RayHandler rayHandler;
@@ -139,9 +145,11 @@ public class Main extends GameState {
 
 	public void create(){
 		bodiesToRemove = new Array<>();
+		healthBars = new HashMap<>();
 		history = new History();
 		currentScript = null;
 		evaluator = new Evaluator(this);
+		pixel = Game.res.getTexture("pixel");
 
 		stateType = prevStateType = InputState.MOVE;
 		currentEmotion = Mob.NORMAL;
@@ -237,7 +245,22 @@ public class Main extends GameState {
 					setStateType(InputState.MOVE);
 				}
 			}
+			
+			//update health bars and their times
+			Array<Entity> toRemove = new Array<>();
+			for(Entity e: healthBars.keySet()){
+				float time = healthBars.get(e);
+				
+				if(time-dt<=0)
+					toRemove.add(e);
+				else
+					healthBars.put(e, time-dt);
+			}
+			
+			for(Entity e: toRemove)
+				healthBars.remove(e);
 
+			//find bodies that are out of bounds
 			for (Entity e : objects){
 				if (!(e instanceof Ground)) {
 					if(!e.init && e.getBody()==null)
@@ -258,8 +281,9 @@ public class Main extends GameState {
 				}
 			}
 
+			//apply removal of deleted bodies
 			for (Body b : bodiesToRemove){
-				if (b != null) 
+				if (b != null) {
 					if (b.getUserData() != null){
 						Object e = b.getUserData();
 						if(cam.getFocus().equals(e))
@@ -269,6 +293,7 @@ public class Main extends GameState {
 							addObject((Entity) e);
 						world.destroyBody(b);
 					}
+				}
 			}
 
 			bodiesToRemove.clear();
@@ -411,7 +436,9 @@ public class Main extends GameState {
 				}
 				e.render(sb);
 			}
+			drawHealthBars(sb);
 			sb.end();
+
 
 			scene.renderFG(sb);
 
@@ -462,8 +489,15 @@ public class Main extends GameState {
 
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
-		debugText+="/l"+character.o;
 		
+		DamageField dF = null;
+		for(Entity e : objects)
+			if(e instanceof DamageField){
+				dF = (DamageField)e;
+				break;
+			}
+		if(dF!=null)
+			debugText+="/lFirst Field: "+dF.getDamageType()+", "+dF.getVictims();
 
 		sb.begin();
 		drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
@@ -647,17 +681,13 @@ public class Main extends GameState {
 				}
 
 				break;
-				//			case LOCKED:
-				//				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
-				//				break;
 			case MOVE:
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 				if(/*cam.focusing||*/warping||quitting||character.dead||waiting||character.frozen) return;
 				if(MyInput.isPressed(Input.JUMP)) character.jump();
 				if(MyInput.isDown(Input.UP)) {
 					if(character.canWarp && character.isOnGround() && !character.snoozing && 
-							!character.getWarp().instant) {
-					}
+							!character.getWarp().instant) { }
 					else if(character.canClimb) character.climb();
 					else {
 						Vector2 f = new Vector2(character.getPixelPosition().x, 
@@ -676,7 +706,6 @@ public class Main extends GameState {
 					}
 				}
 
-
 				if(MyInput.isDown(Input.DOWN)) 
 					if(character.canClimb)
 						character.descend();
@@ -688,11 +717,22 @@ public class Main extends GameState {
 
 				if(MyInput.isDown(Input.LEFT)) character.left();
 				if(MyInput.isDown(Input.RIGHT)) character.right();
-				if(MyInput.isDown(Input.RUN)) {character.run();}
+				if(MyInput.isDown(Input.RUN)) character.run();
+				if(MyInput.isDown(Input.SPECIAL)) character.aim();
 				if(MyInput.isPressed(Input.ATTACK)) {
-					character.attack();
+					if(MyInput.isDown(Input.SPECIAL)){
+						if(character.sees()){
+							player.doRandomPower(character.target());
+						} else 
+							player.doRandomPower();
+					} else
+						character.attack();
 				}
 
+				if(MyInput.isUp(Input.SPECIAL) && (character.getAnimationAction().equals(Anim.AIMING) ||
+						character.getAnimationAction().equals(Anim.AIM_TRANS) || character.getAnimationAction().equals(Anim.ATTACKING)))
+					character.unAim();
+					
 				if(MyInput.isUp(Input.UP) && (character.getAnimationAction().equals(Anim.LOOKING_UP)
 						|| character.getAnimationAction().equals(Anim.LOOK_UP))){
 					character.setAnimation(true, Anim.LOOK_UP);
@@ -859,6 +899,8 @@ public class Main extends GameState {
 		}
 	}
 
+	
+	//trigger the necessary scripts for making the partner follow
 	private void partnerFollow(){
 		if(player.getPartner()!=null){
 			if(player.getPartner().getName() != null){
@@ -1127,6 +1169,8 @@ public class Main extends GameState {
 	public SpeechBubble[] getChoices(){ return choices; }
 
 	public void addSound(PositionalAudio s){ sounds.add(s); }
+	public void removeSound(PositionalAudio s){ sounds.remove(s); }
+	
 	public void addObject(Entity e){ 
 		if(!exists(e)){
 			objects.add(e); 
@@ -1336,6 +1380,7 @@ public class Main extends GameState {
 				if (e instanceof SpeechBubble)
 					addBodyToRemove(e.getBody()); //remove talking speech bubble
 			script.analyze();
+			if(currentScript==null)return;
 			if (currentScript.limitDistance) { //script can somehow become null at this point (threading issue?)
 				setStateType(InputState.MOVELISTEN);
 			} else {
@@ -1419,8 +1464,7 @@ public class Main extends GameState {
 
 	}
 	
-	public void setScene(Scene s){ scene = s;
-	System.out.println(scene.ID); }
+	public void setScene(Scene s){ scene = s; System.out.println(scene.ID); }
 	public Scene getScene(){ return scene; }
 	public World getWorld(){ return world; }
 	public HUD getHud() { return hud; }
@@ -1458,6 +1502,30 @@ public class Main extends GameState {
 			//			debugText+="/l"+e.ID;
 			System.out.println(e);
 		}
+	}
+	
+	public void drawHealthBars(SpriteBatch sb){
+		Color tint = sb.getColor();
+		for(Entity e: healthBars.keySet()){
+			for(int i = 0; i < e.getMaxHealth(); i++){
+				if(i<=e.getHealth())
+					if(e.frozen)
+						sb.setColor(Color.CYAN);
+					else
+						sb.setColor(Color.RED);
+				else
+					sb.setColor(Color.GRAY);
+//				sb.draw(pixel, e.getPixelPosition().x + i - e.rw, e.getPixelPosition().y + e.rh + 5);
+				sb.draw(pixel, e.getPixelPosition().x + i - (int)(e.getMaxHealth()/2f), e.getPixelPosition().y + e.rh + 5);
+			}
+
+			sb.setColor(tint);
+		}
+	}
+	
+	public void addHealthBar(Entity e){
+		if(!e.equals(character) || !e.destructable)
+			healthBars.put(e, 3f);
 	}
 
 	public ArrayList<Entity> getObjects(){ return objects;	}

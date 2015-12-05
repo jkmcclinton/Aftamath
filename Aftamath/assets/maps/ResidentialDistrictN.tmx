@@ -302,7 +302,7 @@
   <object id="29" x="240" y="1392" width="16" height="176">
    <properties>
     <property name="event" value=""/>
-    <property name="robbers1" value="!RobberIntro"/>
+    <property name="robbers1" value="RobberIntro"/>
    </properties>
   </object>
   <object id="31" name="10" x="800" y="1552" width="16" height="16">

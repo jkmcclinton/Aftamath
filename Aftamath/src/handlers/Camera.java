@@ -152,6 +152,7 @@ public class Camera extends OrthographicCamera{
 	}
 	
 	public void shake(float maxAmp){
+		if(amplitude >= maxAmp) return;
 		amplitude = maxAmp;
 		shakeTime = 0;
 		shaking = true;

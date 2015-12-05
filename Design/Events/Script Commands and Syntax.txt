@@ -93,6 +93,7 @@ I've tried my best to add print statements to help you debug your script.
 	  setSpeaker
 	  setScript
 	~ setState
+	  setVulnerability
 	~ showStats
 	~ spawn
 	  statUpdate
@@ -362,6 +363,10 @@ setScript:
 	setState(objectName, stateType)
 
 	see AI state list
+setVul:
+setVulnerability:
+	set the vulnerability of the given mob. Value must be boolean
+	setVulnerability(objectName, value)
 ~showStats:
 	shows money, health, and, if the player is a super hero, power
 	showStats(statType1, statType2, statType3)

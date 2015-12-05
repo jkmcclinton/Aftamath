@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
 
+import entities.DamageField;
 import entities.Entity;
 import entities.Ground;
 import entities.Mob;
@@ -22,18 +23,19 @@ public class MyContactListener implements ContactListener {
 
 	//	public Array<Body> bodiesToRemove;
 	public static Array<String> unstandable = new Array<>();
+	public static Array<String> unHittable = new Array<>();
 
 	private Main main;
 
 	static {
 		//objects that cannot be stood ontop of
 		unstandable.addAll("wall", "foot", "interact", "attack", "center", "vision", 
-				"tiledobject", "refocusTrigger");
+				"tiledobject", "refocusTrigger", "texttrigger");
+		unHittable.addAll("warp", "eventTrigger", "texttrigger", "refocusTrigger", "damageField");
 	}
 
 	public MyContactListener(Main p){
 		super();
-		//		bodiesToRemove = new Array<>();
 		main = p;
 	}
 
@@ -48,24 +50,27 @@ public class MyContactListener implements ContactListener {
 		if(typeB.equalsIgnoreCase("textBox") && typeA.equalsIgnoreCase("textBox")){
 			((TextBox) entB).add(entA);
 			((TextBox) entA).add(entB);
-		} if(typeB.equals("foot") && !unstandable.contains(typeA, true) && 
+		} if(typeB.equals("foot") && !unstandable.contains(typeA, false) && 
 				!fb.getBody().getUserData().equals(typeA) && !(entA instanceof EventTrigger)) {
 			if(entA instanceof Ground){
 				((Mob) entB).setGround(((Ground) entA).getType());
 			}
 			((Mob) entB).contacts.add(entA);
-		} if(typeA.equals("foot") && !unstandable.contains(typeB, true) && 
+		} if(typeA.equals("foot") && !unstandable.contains(typeB, false) && 
 				!fa.getBody().getUserData().equals(typeB) && !(entB instanceof EventTrigger)) {
-			//			play.playSound(entA.getPosition(), "step1");
 			((Mob) entA).contacts.add(entB);
-		} if(typeB.equals("projectile")) {
+		} if(typeB.equals("projectile") && !unHittable.contains(typeA, false)) {
 			((Projectile) entB).impact(entA);
+		} if(typeA.equals("projectile") && !unHittable.contains(typeB, false)) {
+			((Projectile) entA).impact(entB);
+		} if(typeB.equals("damageField") && !unHittable.contains(typeA, false)) {
+			((DamageField) entB).addVictim(entA);
+		} if(typeA.equals("damageField") && !unHittable.contains(typeB, false)) {
+			((DamageField) entA).addVictim(entB);
 		} if(typeA.equals("reaper") && typeB.indexOf("player") != -1){
 			((Mob) entB).damage(.1d);
 		} if(typeB.equals("reaper") && typeA.indexOf("player") != -1){
 			((Mob) entA).damage(.1d);
-		} if(typeA.equals("projectile")) {
-			((Projectile) entA).impact(entB);
 		} if(typeB.equals("interact") && !fa.isSensor())
 			if(entA.isInteractable && !main.analyzing){
 				((Mob) entB).setInteractable(entA);
@@ -206,6 +211,10 @@ public class MyContactListener implements ContactListener {
 			((Mob) entA).loseSightOf(entB);
 		} if(typeB.equalsIgnoreCase("vision")){ 
 			((Mob) entB).loseSightOf(entA);
+		} if(typeB.equals("damageField") && !unHittable.contains(typeA, false)) {
+			((DamageField) entB).removeVictim(entA);
+		} if(typeA.equals("damageField") && !unHittable.contains(typeB, false)) {
+			((DamageField) entA).removeVictim(entB);
 		} if(typeA.equals("warp") && typeB.equals("foot")){
 			Mob m = (Mob) entB;
 			if(m.getWarp()!=null)
@@ -244,7 +253,7 @@ public class MyContactListener implements ContactListener {
 						main.addBodyToRemove(e.getBody());
 		}
 
-		//		System.out.println("end: " + fbUD + " : " + faUD);
+//		System.out.println("end: " + fbUD + " : " + faUD);
 	}
 
 	public void preSolve(Contact c, Manifold m){}

@@ -417,6 +417,7 @@ public class Scene {
 			}
 		}
 		
+		Ground g;
 		for (int y = 0; y < ground.getHeight(); y++)
 			for(int x = 0; x < ground.getWidth(); x++){
 				Cell cell = ground.getCell(x, y);
@@ -429,8 +430,9 @@ public class Scene {
 				String type = "";
 				if(cell.getTile().getProperties().get("type")!=null)
 					type = cell.getTile().getProperties().get("type", String.class);
-				new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
+				g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
 						(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
+				g.setGameState(main);
 				
 				cell = fg.getCell(x, y);
 				if (cell != null) {
@@ -483,6 +485,7 @@ public class Scene {
 						String ID = object.getProperties().get("NPC", String.class);		//name used for art file
 						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
 						String name = object.getProperties().get("name", String.class);		//character name
+						String nickName = object.getProperties().get("nickname", String.class);
 						String state = object.getProperties().get("state", String.class);	//AI state
 						String script = object.getProperties().get("script", String.class);
 						String aScript = object.getProperties().get("attackScript", String.class);
@@ -534,6 +537,9 @@ public class Scene {
 								
 								if(pathName!=null)
 									pathsToAdd.put(e, pathName);
+								
+								if(nickName!=null)
+									e.setNickName(nickName);
 								
 								if(sceneIDParsed>=0)
 									Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);

@@ -181,7 +181,7 @@ public class Script implements Serializable {
 						else 
 							if(obj.equals(main.character)){
 								if(((Mob) obj).getPowerType()==DamageType.PHYSICAL)
-									main.player.doRandomPower(null);
+									main.player.doRandomPower();
 							} else
 								((Mob) obj).attack();
 					}
@@ -661,7 +661,15 @@ public class Script implements Serializable {
 					} catch(Exception e){
 						System.out.println("Error changing layer to \""+lastArg(line)+"\" for \""+firstArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
 					}	
-			break;
+				break;
+			case "setmaxhealth":
+				obj = findObject(firstArg(line));
+				if(obj!=null){
+					if(Vars.isNumeric(lastArg(line)))
+						obj.setMaxHealth(Double.parseDouble(lastArg(line)));
+				} else
+					System.out.println("Cannot find \""+firstArg(line)+"\" to change max health; Line: "+(index+1)+"\tScript: "+ID);
+				break;
 			case "setresponse":
 				obj = findObject(firstArg(line));
 
@@ -696,6 +704,21 @@ public class Script implements Serializable {
 				if(obj!=null)
 					if(obj instanceof Mob)
 						((Mob) obj).setState(lastArg(line));
+				break;
+			case "setvul":
+			case "setvulnerability":
+				obj = findObject(firstArg(line));
+				String v = lastArg(line);
+				
+				if(obj!=null)
+					try{
+						obj.setDestructability(Boolean.parseBoolean(v));
+					} catch(Exception e){
+						System.out.println("\""+v+"\" is not a valid boolean; Line: "+(index+1)+"\tScript: "+ID);
+					}
+				else
+					System.out.println("Cannot find \""+firstArg(line)+"\" to change vulnerability; Line: "+(index+1)+"\tScript: "+ID);
+					
 				break;
 			case "showstats":
 				main.getHud().showStats = true;
@@ -816,6 +839,17 @@ public class Script implements Serializable {
 					} catch(Exception e){
 						System.out.println("No such sound \""+ src +"\"");
 					}
+				break;
+			case "preset":
+				//do a preset set of code
+				int i;
+				if(Vars.isNumeric(firstArg(line))){
+					i = Integer.parseInt(firstArg(line));
+					switch(i){
+					case 1:
+						break;
+					}
+				}
 				break;
 			case "zoom":
 				//(Float.parseFloat(lastArg(line)));

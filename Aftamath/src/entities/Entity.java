@@ -39,7 +39,7 @@ public class Entity implements Serializable {
 	public String ID;
 	public Animation animation;
 	public boolean isInteractable, isAttackable, dead, controlled;
-	public boolean burning, flamable, frozen, init, active;
+	public boolean burning, flamable, frozen, init, active, destructable;
 	public float x, y;
 	public int height, width, rw, rh;
 	public Object o;
@@ -52,14 +52,15 @@ public class Entity implements Serializable {
 	public static final float RESISTANT = 1/2f;
 	public static final float VERY_RESISTANT = 1/5f;
 	
-	protected double health, maxHealth, resistance = 1;
-	protected boolean invulnerable;
+	protected double health;
+	protected double maxHealth;
+	protected double resistance = 1;
 	protected int sceneID;
 	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
 	protected float invulnerableTime;
 	protected Vector2 goalPosition;
 	protected Texture texture;
-	private boolean facingLeft;
+	protected boolean facingLeft, invulnerable;
 	protected World world;
 	protected Main main;
 	protected Body body;
@@ -86,15 +87,8 @@ public class Entity implements Serializable {
 		this.init();
 	} 
 	
-	//TODO consolidate these constructors if possible
 	public Entity (float x, float y, String ID) {
-		this.init();
-		this.ID = ID;
-		this.x = x;
-		this.y = y;
-		
-		setDimensions();
-		loadSprite();
+		this(x, y, -1, -1, ID);
 	}
 	
 	public Entity(float x, float y, int width, int height, String ID) {
@@ -103,12 +97,17 @@ public class Entity implements Serializable {
 		this.x = x;
 		this.y = y;
 		
-		setDimensions(width, height);
+		if(width>-1)
+			setDimensions(width, height);
+		else
+			setDimensions();
 		loadSprite();
 	}
 
-	private void init() {
+	protected void init() {
 		isAttackable = false;
+		destructable = false;
+		invulnerable = true;
 		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		followers = new Array<>();
 		origLayer = Vars.BIT_LAYER1;
@@ -145,7 +144,7 @@ public class Entity implements Serializable {
 			burnTime+=dt;
 			burnDelay+=dt;
 			if(burnDelay>= 3){
-				damage(maxHealth/(2*DEFAULT_MAX_HEALTH), DamageType.FIRE);
+				damage(getMaxHealth()/(2*DEFAULT_MAX_HEALTH), DamageType.FIRE);
 				burnDelay = 0;
 			} if(burnTime >= totBurnLength){
 				burning = false;
@@ -275,10 +274,12 @@ public class Entity implements Serializable {
 	}
 	
 	public void damage (double val, DamageType type){
+		if(!destructable) return;
 		if(!dead)
 			if(!invulnerable){
+				if(main==null) return; //possibility for things like the ground that don't need constant updating
 				main.playSound(getPosition(), "damage");
-				health -= val*resistance;
+				health = getHealth() - val*resistance;
 				
 				if(type==DamageType.FIRE){
 					double chance = Math.random();
@@ -293,11 +294,12 @@ public class Entity implements Serializable {
 						freeze();
 				}
 				
-				if(health<=0)
+				if(getHealth()<=0)
 					die();
 				else;
 					//shake
 			}
+		main.addHealthBar(this);
 	}
 	
 	public void die(){
@@ -375,6 +377,20 @@ public class Entity implements Serializable {
 		}
 	}
 	
+	public double getMaxHealth() { 	return maxHealth; }
+	public void setMaxHealth(double val) { 
+		this.maxHealth = val; 
+		if(health>maxHealth) 
+			health = val;
+	}
+	
+	public double getHealth() { return health; }
+	public boolean isVulnerable(){ return !invulnerable; }
+	public void setDestructability(boolean val){
+		destructable = val;
+		invulnerable = !val;
+	}
+
 	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
 	public void removeFollower(Mob m){ followers.removeValue(m, true); }
 	public Array<Mob> getFollowers(){ return followers; }
@@ -491,10 +507,9 @@ public class Entity implements Serializable {
 		json.writeValue("ID", this.ID);
 		json.writeValue("sceneID", this.sceneID);
 		Vector2 pos = this.getPixelPosition();
-		//System.out.println(this.ID + " " + this.body);
 		json.writeValue("posX", pos.x);
 		json.writeValue("posY", pos.y);			
-		json.writeValue("health", this.health);
+		json.writeValue("health", this.getHealth());
 		json.writeValue("burning", this.burning);
 		json.writeValue("frozen", this.frozen);
 		json.writeValue("burnTime", this.burnTime);
