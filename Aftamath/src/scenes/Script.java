@@ -317,8 +317,12 @@ public class Script implements Serializable {
 				obj = findObject(firstArg(line));
 				target = findObject(lastArg(line));
 
-				if (obj != null && target != null)
-					obj.faceObject(target);
+				if (obj != null){
+					if(target!=null)
+						obj.faceObject(target);
+					else
+						obj.changeDirection();
+				}
 				break;
 			case "fanfare":
 				if(!Game.SONG_LIST.contains(firstArg(line), false))

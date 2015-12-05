@@ -217,8 +217,9 @@ input:
 	NOTE: use this sparingly!
 face/faceObject:
 	makes a mob face a specific object; does not affect non-Mob objects
+	if no targetName is given, the object faces the opposite direction
 	NPCs will have their state set to FACEOBJECT
-	face(objectName, focus objectName)
+	face(objectName, targetName)
 forcefollow:
 	toggles whether or not the player's partner is forced to follow the player
 	if the player doesn't have a partner, this does nothing
