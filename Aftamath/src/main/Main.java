@@ -1176,15 +1176,11 @@ public class Main extends GameState {
 	}
 
 	public void load()	{
-		narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 		player = new Player(this);
 		
 		if(!gameFile.equals("newgame")){
 			JsonSerializer.loadGameState(gameFile);
 
-			//TODO load recent scene from gameFile
-			scene= new Scene(world,this,"Residential District N");
-			
 			scene.setRayHandler(rayHandler);
 			setSong(scene.DEFAULT_SONG[dayState]);
 			music.pause();
@@ -1192,21 +1188,22 @@ public class Main extends GameState {
 
 			narrator = (Mob)Entity.idToEntity.get(Vars.NARRATOR_SCENE_ID);
 			character = (Mob)Entity.idToEntity.get(Vars.PLAYER_SCENE_ID);
-			createPlayer(null);	//TODO get Mob respawnpoint serialize working
+			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
 			scene= new Scene(world,this,"Residential District N");
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
 			scene.create();
-			
+
+			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
 				character = new Mob("TestName", "femaleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 			} else {
-				//Jay: this spawns a camBot at it's special location to take the place of 
+				
+				//this spawns a camBot at its special location to take the place of 
 				//the player before it has been created by the introduction
-
 				if(scene.getCBSP()!=null)
 					createEmptyPlayer(scene.getCBSP());
 				else
@@ -1385,10 +1382,28 @@ public class Main extends GameState {
 	}
 
 	public void destroyBodies(){
+		//record last position of entity so it can be saved
+		for (Entity e : objects) {
+			Vector2 lastPos = e.getBody().getPosition();
+			lastPos.x *= Vars.PPM;
+			lastPos.y *= Vars.PPM;
+			if (e instanceof Mob) {
+				lastPos.y -= ((Mob)e).rh;	//this offset allows entity to be spawned from right location
+			}
+			e.setPosition(lastPos);
+		}
+
+		//destroy all the bodies
 		Array<Body> tmp = new Array<Body>();
 		world.getBodies(tmp);
-		for(Body b : tmp)
+		for(Body b : tmp) {
 			world.destroyBody(b);
+		}
+				
+		//invalidate references to the destroyed bodies
+		for (Entity e : objects) {
+			e.setBody(null);
+		}
 	}
 
 	public void removeAllObjects(){

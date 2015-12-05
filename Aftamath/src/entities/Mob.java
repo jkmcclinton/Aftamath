@@ -189,9 +189,9 @@ public class Mob extends Entity {
 
 	public Mob(String name, String ID, int sceneID, int level, DamageType type, float x, float y, short layer){
 		super(x, y+getHeight(ID)/2f, ID);
-		respawnPoint = new Vector2(x,y);
 		this.init();
-		
+
+		this.respawnPoint = new Vector2(x,y);
 		this.name = name;
 		this.layer = layer;
 		origLayer = layer;
@@ -206,6 +206,7 @@ public class Mob extends Entity {
 		
 		determineGender();
 		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
+		goalPosition = new Vector2((float) (((Math.random() * 21)+this.x)/PPM), this.y);
 		
 		this.sceneID = sceneID;
 		if (!Entity.idToEntity.containsKey(this.sceneID)) {
@@ -250,7 +251,6 @@ public class Mob extends Entity {
 		defaultState = AIState.STATIONARY;
 		attackType = AttackType.NEVER;
 		responseType = SightResponse.IGNORE;
-		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);
 		inactiveWait = (float)(Math.random() *(IDLE_LIMIT)+100);
 		time = 0;
 	}
@@ -2084,19 +2084,18 @@ public class Mob extends Entity {
 	@Override
 	public void read(Json json, JsonValue val) {
 		super.read(json, val);
-		try {
-			//TODO figure out why this doesnt work
-			this.respawnPoint = json.fromJson(Vector2.class, val.get("respawnPoint").child().toString());
-		} catch (SerializationException | NullPointerException e) {
+		if (val.has("respawnX") && val.has("respawnY")) {
+			float resX = val.getFloat("respawnX");
+			float resY = val.getFloat("respawnY");
+			this.respawnPoint = new Vector2(resX, resY);
 		}
-		
 		this.iff = IFFTag.valueOf(val.getString("iff"));
 		this.name = val.getString("name");
 		this.strength = val.getDouble("strength");
 		this.level = val.getInt("level");
 		this.experience = val.getFloat("experience");
 		this.action = Anim.valueOf(val.getString("action"));
-		this.defaultState = AIState.valueOf(val.getString("defaultState"));
+		this.setDefaultState(AIState.valueOf(val.getString("defaultState")));
 		this.powerType = Entity.DamageType.valueOf(val.getString("powerType"));
 		this.visionRange = val.getFloat("visionRange");
 		
@@ -2114,12 +2113,16 @@ public class Mob extends Entity {
 		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
 		determineGender();
 		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
+		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);
 	}
 
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue("respawnPoint", this.respawnPoint);
+		if (this.respawnPoint != null) {
+			json.writeValue("respawnX", this.respawnPoint.x);
+			json.writeValue("respawnY", this.respawnPoint.y);
+		}
 		json.writeValue("iff", this.iff);
 		json.writeValue("name", this.name);
 		//json.writeValue("voice", this.voice);	//todo: implement voice

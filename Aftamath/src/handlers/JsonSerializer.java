@@ -41,12 +41,8 @@ public class JsonSerializer {
 			PrintWriter fout = new PrintWriter("saves/" + filename + ".txt");
 			Json writer = new Json();
 			writer.setWriter(fout);
-			
 			writer.writeObjectStart();
 			writer.writeValue("levelID", gMain.getScene().ID);
-			writer.writeObjectEnd();
-			
-			writer.writeObjectStart();
 			writer.writeValue("sceneToEntityIds", Scene.sceneToEntityIds);
 			writer.writeValue("idToEntity", Entity.idToEntity);
 			writer.writeValue("playerData", gMain.player);
@@ -63,9 +59,6 @@ public class JsonSerializer {
 			JsonValue root = new JsonReader().parse(new FileHandle("saves/"+filename+".txt"));
 			Json reader = new Json();
 			
-			JsonValue level = root.get("levelID").child();
-			gMain.setScene(new Scene(gMain.getWorld(), gMain, level.asString()));
-
 			// build the associative arrays through iteration
 			Scene.sceneToEntityIds.clear();
 			for (JsonValue child = root.get("sceneToEntityIds").child(); child != null; child = child.next()) {
@@ -89,6 +82,9 @@ public class JsonSerializer {
 				System.out.println("JsonSerializer has no reference to instance of Main");
 			}
 			initReferences();
+			
+			String level = root.getString("levelID");
+			gMain.setScene(new Scene(gMain.getWorld(), gMain, level));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -220,13 +220,16 @@ public class Entity implements Serializable {
 	
 	public Vector2 getPosition(){ return body.getPosition(); }
 	public Vector2 getPixelPosition(){ 
-		if(body!=null)
+		if(body!=null) {
 			return new Vector2(body.getPosition().x*Vars.PPM, body.getPosition().y*Vars.PPM);
-		else
+		}
+		else {
 			return new Vector2(x, y);
+		}
 	}
 	
 	public Body getBody() { return body; }
+	public void setBody(Body b) { this.body = b; } 
 
 	public Script getScript() { return script; }
 	public String toString(){ return ID; }
@@ -443,7 +446,11 @@ public class Entity implements Serializable {
 	public void read(Json json, JsonValue val) {
 		this.ID = val.getString("ID");
 		this.sceneID = val.getInt("sceneID");
-		o = val.get("location");
+		float posX = val.getFloat("posX");
+		float posY = val.getFloat("posY");
+		Vector2 pos = new Vector2(posX, posY);
+		this.o = pos;
+		this.setPosition(pos);
 		this.health = val.getDouble("health");
 		this.burning = val.getBoolean("burning");
 		this.frozen = val.getBoolean("frozen");
@@ -457,11 +464,13 @@ public class Entity implements Serializable {
 		try {
 			this.script = json.fromJson(Script.class, val.get("script").toString());
 			this.script.setOwner(this);
+			this.script.setMainRef(this.main);
 		} catch (SerializationException | NullPointerException e) {}
 		
 		try {
 			this.attackScript = json.fromJson(Script.class, val.get("attackScript").toString());
-			this.script.setOwner(this);
+			this.attackScript.setOwner(this);
+			this.attackScript.setMainRef(this.main);
 		} catch (SerializationException | NullPointerException e) {}
 		
 		Array<Integer> mobRef = new Array<Integer>();
@@ -481,7 +490,10 @@ public class Entity implements Serializable {
 	public void write(Json json) {
 		json.writeValue("ID", this.ID);
 		json.writeValue("sceneID", this.sceneID);
-		json.writeValue("location", this.getPixelPosition());
+		Vector2 pos = this.getPixelPosition();
+		//System.out.println(this.ID + " " + this.body);
+		json.writeValue("posX", pos.x);
+		json.writeValue("posY", pos.y);			
 		json.writeValue("health", this.health);
 		json.writeValue("burning", this.burning);
 		json.writeValue("frozen", this.frozen);

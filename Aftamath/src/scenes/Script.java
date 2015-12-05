@@ -1726,6 +1726,8 @@ e.printStackTrace();
 	public void setPlayState(Main gs) { main = gs; }
 	public Entity getOwner(){ return owner; }
 	public void setOwner(Entity owner) { this.owner = owner; }
+	public Main getMainRef() { return main; }
+	public void setMainRef(Main main) { this.main = main; }
 	public Object getActiveObject(){ return activeObj; }
 	public void setActiveObj(Object obj){ activeObj = obj; }
 	public String getCurrentName() { return currentName; }
@@ -1833,8 +1835,8 @@ e.printStackTrace();
 		this.ID = val.getString("ID");
 		this.type = ScriptType.valueOf(val.getString("type"));
 		this.index = this.current = val.getInt("current");
+		this.currentName = val.getString("currentName");
 		
-		//TODO make sure script loading is correct
 		loadScript(this.ID);
 		if (source != null) {
 			findIndicies();
@@ -1848,5 +1850,6 @@ e.printStackTrace();
 		json.writeValue("ID", this.ID);
 		json.writeValue("type", this.type);
 		json.writeValue("current", this.current);
+		json.writeValue("currentName", this.currentName);
 	}
 }
