@@ -2081,12 +2081,17 @@ public class Script implements Serializable {
 		this.index = this.current = val.getInt("current");
 		this.currentName = val.getString("currentName");
 		
-		for (JsonValue child = val.getChild("localVars"); child != null; child = child.next()) {
-			Object obj = json.fromJson(Object.class, child.toString());
-			this.localVars.put(child.name(), obj);
-		}		
+		//for (JsonValue child = val.getChild("localVars"); child != null; child = child.next()) {
+		//	Object obj = json.fromJson(Object.class, child.toString());
+		//	this.localVars.put(child.name(), obj);
+		//}		
 		
-		loadScript(this.ID);
+		String path;
+		if((path = Game.res.getScript(this.ID))==null) {
+			System.out.println("No such script called \""+this.ID+"\"");
+			return;
+		}
+		loadScript(path);
 		if (source != null) {
 			findIndicies();
 			getDistanceLimit();
@@ -2100,6 +2105,6 @@ public class Script implements Serializable {
 		json.writeValue("type", this.type);
 		json.writeValue("current", this.current);
 		json.writeValue("currentName", this.currentName);
-		json.writeValue("localVars", this.localVars);
+		//json.writeValue("localVars", this.localVars);
 	}
 }

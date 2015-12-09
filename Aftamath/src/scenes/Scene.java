@@ -494,14 +494,25 @@ public class Scene {
 						String aType = object.getProperties().get("onAttacked", String.class);
 						String pathName = object.getProperties().get("path", String.class);
 
-						if(l!=null)
-							if (l.toLowerCase().equals("back")) l = "3";
-							else l = "1";
+						if(l!=null) {
+							if (l.toLowerCase().equals("back")) {
+								l = "3";
+							} else if (l.toLowerCase().equals("player")) {
+								l = "2";
+							} else {
+								l = "1";
+							}
+						}
 						else l = "1";
 
 						try {
-							Field f = Vars.class.getField("BIT_LAYER"+l);
-							short lyr = f.getShort(f);
+							short lyr;
+							if (l.equals("2")) {	//TODO refactor
+								lyr = Vars.BIT_PLAYER_LAYER;
+							} else {
+								Field f = Vars.class.getField("BIT_LAYER"+l);
+								lyr = f.getShort(f);
+							}
 							ID = ID.toLowerCase();
 							int sceneIDParsed = Integer.parseInt(sceneID);
 
