@@ -1,0 +1,19 @@
+Script Main
+lockplayer
+
+setSpeaker(player)
+text(normal, {Making microchips... They gave me a manual, but honestly, this looks way too easy for someone of my intelligence.})
+setChoice(2:Just do it, 4:Quit)
+	[choice Just do it]
+		text(normal, {Onward! So I'll just push this button here...})
+		setFlag(SBDidMenialLabor, true)
+	end
+	[choice Quit]
+		text(mad, {Screw this, I doubt they'll pay me what I'm worth. I'm wasting my time.})
+		setSpeaker(narrator)
+		text(normal, {Have fun trying to find another brainless job that you can get without an interview or a resume.})
+	end
+end
+setFlag(SBCanPushButton, false)
+	
+done

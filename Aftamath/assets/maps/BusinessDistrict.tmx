@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="5">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="6">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -150,7 +150,7 @@
  </tileset>
  <layer name="bg1" width="75" height="100">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztzsWSXQUUheHL7b4dbYkHZ4ITV5wXgGBxxZngxBXnBXDiijPBiSvOC+DEFWeCfDzBGZ0zoNZf9c121V61WkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkrV1Vav1drpoAc96UVv+tCXfvTnZE7hVE7jdM7gTM4q8ba1Xryzisb5M54JTGQSk5nCVKYxnRncxM3cwq3cxu3cwZ0l3o6tF++somX+LGcFK1nFatawlnWsZwMv8TKv8Cqv8Tpv8GaJt0vrxTuraJ8/+znAQQ5xmCMc5RjHOcFP/Mwv/Mpv/M4f/Fni7d568c4qGthUqw1iMEMYyjCGM4KRjGI0F3MJl3IZl3MFV3JVibcDmop3VtEsf2Yzh7nMYz4LWMgiFrOEh3iYR3iUx3icJ3iyxNuZTcU7q2iTP5vZwla2sZ0d7GQXu9nDR3zMJ3zKZ3zOF3xZ4u3GpuKdVdTSXKt1ojNd6Eo3utNKG+100IOe9KI3fehLP/qXeNtoLt5ZRdf4M4ZruY7ruYEbGcs4xjOBiUxiMlOYyjSmM6PE26ubi3dW0dP+PMOzPMfzvMCLLGUZy1nBSlaxmjWsZR3r2VDi7VPNxTur6Gt/vuFbvuN7fuBH9rKP/RzgIIc4zBGOcozjnCjx9qvm4p1VdE6jVjuX8zifC7iQixjAQAYxmCEMZRjDGcFIRjG6xNuzG8U7q+huf+7hXu7jfh7gQWYyi9nMYS7zmM8CFrKIxSwp8fauRvHOKnrbn3d4l/d4nw/4kI1sYjNb2Mo2trODnexiN3tKvH2rUbyziv7255//frXUaidRp4lmGrTQic50oSvd6E4rbbTTUeLtX43inSmllFJKKaWUUkoppZRSSv+3/gVxwWmH
   </data>
  </layer>
  <layer name="bg2" width="75" height="100">
@@ -170,11 +170,11 @@
  </layer>
  <layer name="fg" width="75" height="100">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztzkENgDAABMHyRgpykIIc5NUIEpr0Qe6Smf8mOwYAAAAAAAAAAAAAAAAAAAAAAAAAAAArZ0mX4C7pErwlXYJZ0iW4jo4uwbP5/ncHAAAAAADQ5gOzowd1
   </data>
  </layer>
  <objectgroup name="entities">
-  <object id="1" name="room1_1" x="148" y="1192" width="37" height="73">
+  <object id="1" name="room1_1" x="148" y="1192" width="37" height="73" visible="0">
    <properties>
     <property name="ID" value="2"/>
     <property name="next" value="Subway"/>
@@ -182,7 +182,7 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="2" name="room1_1" x="564" y="1192" width="37" height="73">
+  <object id="2" name="room1_1" x="564" y="1192" width="37" height="73" visible="0">
    <properties>
     <property name="ID" value="4"/>
     <property name="next" value="Church"/>
@@ -190,7 +190,7 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="3" name="room1_1" x="352" y="1192" width="37" height="73">
+  <object id="3" name="room1_1" x="352" y="1192" width="37" height="73" visible="0">
    <properties>
     <property name="ID" value="3"/>
     <property name="next" value="Central Park"/>
