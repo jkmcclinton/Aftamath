@@ -227,7 +227,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="24" x="368" y="1552" width="16" height="16">
+  <object id="24" x="208" y="256" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>

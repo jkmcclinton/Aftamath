@@ -126,7 +126,7 @@ public class Main extends GameState {
 			rayHandling = false, 
 			render 		= true, 
 			dbtrender 	= false,
-			debugging   = true,
+			debugging   = false,
 			random;
 	//	private float ambient = .5f;
 	//	private int colorIndex;
