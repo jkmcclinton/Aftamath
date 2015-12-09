@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 public class History implements Serializable {
 
 	private Map<String, String> eventList;
-	HashMap<String, Boolean> flagList;
+	public HashMap<String, Boolean> flagList;
 	private HashMap<String, Object> variableList;
 	
 	public History(){
