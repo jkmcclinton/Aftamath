@@ -79,7 +79,7 @@ setSpeaker(narrator)
 text(normal, {What are you going to do now that you're cornered?})
 setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
 	[choice Find the bartender]
-		value(set, desc, {You tried to do something you couldn't do})
+		setEvent(GoodBar, {You used your powers for good in the Fat Cocktail})
 		value(add, player.niceness, p)
 		text(normal, {Hah.})
 		text(normal, {I'll be brief.})
@@ -160,7 +160,7 @@ setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
 	end
 	
 	[choice Leave]
-		value(set, desc, {You tried to do something you couldn't do})
+		setEvent(GoodBar, {You used your powers for good in the Fat Cocktail})
 		value(add, player.bravery, -1)
 		text(normal, {HAH!})
 		text(normal, {You thought.})
