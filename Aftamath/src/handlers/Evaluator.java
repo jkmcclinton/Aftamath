@@ -21,17 +21,140 @@ public class Evaluator {
 		return evaluate(statement, null);
 	}
 	
-	public boolean evaluate(String statement, Script script){
-		if(statement==null) return true;
-		if(statement.isEmpty()) return true;
-		
-		String obj, property = null;
-		boolean not=false, result=false;
+	//can be pretty taxing to compute
+	//computes boolean algebra from left to right
+	public boolean evaluate(String origStatement, Script script){
+		if(origStatement==null) return true;
+		if(origStatement.isEmpty()) return true;
 		this.script = script;
+		String statement = origStatement;
+			
+		//split by and/or operators
+		Array<String> arguments = new Array<>();
+		while(statement.contains(" and ") || statement.contains(" or ")){
+			int and = statement.indexOf(" and ");
+			int or = statement.indexOf(" or ");
+			int first = statement.indexOf("(");
+			int last = statement.indexOf(")");
+			boolean split = false;
+			
+			if(first>last || (first==-1 && last!=-1) || (first!=-1 && last==-1)){
+				System.out.println("Mismatch parenthesis; \""+origStatement+"\"");
+				if(this.script!=null) System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
+				return false;
+			}
+			
+			if(and < or){
+				if(and > -1 && !(and>first && and<last)){
+					arguments.add(statement.substring(0, statement.indexOf(" and ")));
+					statement = statement.substring(and+ " and ".length());
+					arguments.add("and");
+					split = true;
+				} 
+				or = statement.indexOf(" or ");
+				if(or > -1 && !(or>first && or<last)){
+					arguments.add(statement.substring(0, statement.indexOf(" or ")));
+					statement = statement.substring(or+ " or ".length());
+					arguments.add("or");
+					split = true;
+				}
+			} else {
+				if(or > -1 && !(or>first && or<last)){
+					arguments.add(statement.substring(0, statement.indexOf(" or ")));
+					statement = statement.substring(or+ " or ".length());
+					arguments.add("or");
+					split = true;
+				} 
+				and = statement.indexOf(" and ");
+				if(and > -1 && !(and>first && and<last)){
+					arguments.add(statement.substring(0, statement.indexOf(" and ")));
+					statement = statement.substring(and+ " and ".length());
+					arguments.add("and");
+					split = true;
+				}
+			}
+			if(!split) break;
+		}
+		arguments.add(statement);
 		
+		if(arguments.size%2!=1){
+			System.out.println("Invalid number of arguments; "+origStatement);
+			if(this.script!=null) System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
+		}
+		
+		String s; boolean not, result;
+		//evaluate individual arguments
+		for(int i = 0; i<arguments.size; i+=2){
+			not = false;
+			s = arguments.get(i).trim();
+			if(s.startsWith("!")){
+				not = true;
+				s = s.substring(1);
+			}
+			
+			//evaluate comparisons
+			if(s.contains("[")){
+				if(s.lastIndexOf("]")==-1){
+					System.out.println("Mismatch braces; "+origStatement);
+					if(this.script!=null) System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
+					
+					return false;
+				}
+				result = evaluateComparison(s.substring(s.indexOf("[")+1, 
+						s.lastIndexOf("]")));
+			//evaluate parentheticals by calling this method
+			} else if(s.contains("(")) {
+				result = evaluate(s.substring(s.indexOf("(")+1, s.lastIndexOf(")")), script);
+			//evaluate boolean variables
+			} else{
+				String val = null;
+				if(script!=null){
+					val = String.valueOf(script.getVariable(s));
+					if(val.equals("null")) val = null;
+				}
+				
+				if(val==null||val.isEmpty()){
+					if(main.history.getFlag(s)!=null){
+						val = String.valueOf(main.history.getFlag(s));
+					} else if(main.history.findEvent(s)){
+						val = "true";
+					} 
+				}
+				if(val!=null)
+					result = Boolean.parseBoolean(val);
+				else
+					result = false;
+			}
+			
+			if(not) result = !result;
+			arguments.set(i, String.valueOf(result));
+		}
+		
+		//combine by operators from left to right
+		while(arguments.size>=3){
+			if(arguments.get(2).equals("or")){
+				arguments.set(1, String.valueOf(Boolean.parseBoolean(arguments.get(1)) ||
+						Boolean.parseBoolean(arguments.get(3))));
+			} else if(arguments.get(2).equals("and")){
+				arguments.set(1, String.valueOf(Boolean.parseBoolean(arguments.get(1)) &&
+						Boolean.parseBoolean(arguments.get(3))));
+			}
+			
+			arguments.removeIndex(1);
+			arguments.removeIndex(1);
+		}
+		return Boolean.parseBoolean(arguments.get(0));
+	}
+	
+	//determines the boolean result of a comparison between expressions,
+	//properties, and variables
+	private boolean evaluateComparison(String statement){
+		String obj, property = null;
+		boolean result=false;
+
 		if(statement.contains(">") || statement.contains("<") || statement.contains("=")){
 			String value = "", val = "";
-			
+
 			//separate value and condition from tmp
 			obj = "";
 			String condition = "";
@@ -50,17 +173,16 @@ public class Evaluator {
 			}
 
 			if(tmp.indexOf(condition)<1){
-				System.out.print("No object found to compare with in statement: "+statement);
+				System.out.println("No object found to compare with in statement: "+statement);
 				if(script!=null)
-					System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+					System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
 				else
-				
-				return false;
+					return false;
 			}
 
 			obj = tmp.substring(0, tmp.indexOf(condition));
 			val = tmp.substring(tmp.indexOf(condition)+condition.length());
-			
+
 			if(obj.contains("+")||obj.contains("-")||obj.contains("*")||obj.contains("/"))
 				property = evaluateExpression(obj);
 			else
@@ -90,7 +212,7 @@ public class Evaluator {
 				case ">=":
 				case "=>":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
-						result = (Double.parseDouble(property) > Double.parseDouble(value));
+						result = (Double.parseDouble(property) >= Double.parseDouble(value));
 					break;
 				case "<":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
@@ -106,34 +228,17 @@ public class Evaluator {
 				}
 
 //				System.out.println("result: "+result);
-				if(not) return !result;
-				else return result;
+				return result;
 			} catch(Exception e){
 				System.out.println("Could not compare \""+property+"\" with \""+value+"\" by condition \""+condition+"\"; Line: "+(script.index+1)+"\tScript: "+script.ID);
 				e.printStackTrace();
 				return false;
 			}
-		} else {
-			//remove brackets
-			if(!statement.isEmpty())
-				if(statement.contains("[") && statement.contains("]"))
-					statement = statement.substring(statement.indexOf("[")+1, statement.indexOf("]"));
-			if(statement.startsWith("!")){
-				not = true;
-				statement = statement.substring(1);
-			}
-
-			if(main.history.getFlag(statement)!=null){
-				result = main.history.getFlag(statement);
-			} else if(main.history.findEvent(statement)){
-				result = true;
-			} 
-		}
-
-		if(not) return !result;
-		return result;
+		} else
+			return false;
 	}
 	
+	//returns the solution to a set of mathematical operators
 	private String evaluateExpression(String obj){
 		Array<String> arguments;
 		String result, res, val;
@@ -395,8 +500,8 @@ public class Evaluator {
 		case "house": 
 			property = (main.player.getHome().getType());
 			break;
-			//		case "haspartner":
-			//			if(object instanceof Player)
+//		case "haspartner":
+//			if(object instanceof Player)
 //				if (player.getPartner()!=null){
 //					if(player.getPartner().getName()!=null)
 //						if(!player.getPartner().getName().equals(""))
@@ -506,5 +611,4 @@ public class Evaluator {
 		
 		return txt;
 	}
-
 }

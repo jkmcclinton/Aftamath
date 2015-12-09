@@ -271,7 +271,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="24" x="208" y="256" width="16" height="16">
+  <object id="24" x="1504" y="1552" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
@@ -359,7 +359,8 @@
     <property name="attckScript" value="onAttacked2"/>
     <property name="layer" value="front"/>
     <property name="name" value="Villain"/>
-    <property name="script" value="SUPA"/>
+    <property name="nickName" value="Some chick in tights"/>
+    <property name="script" value="superGlare"/>
     <property name="state" value="STATIONARY"/>
    </properties>
   </object>
@@ -379,8 +380,9 @@
     <property name="NPC" value="hero1"/>
     <property name="attckScript" value="onAttacked2"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Awesomeness Guy"/>
-    <property name="script" value="superTutorial"/>
+    <property name="name" value="Hero"/>
+    <property name="nickName" value="Some guy in tights"/>
+    <property name="script" value="superGlare"/>
     <property name="state" value="STATIONARY"/>
    </properties>
   </object>
@@ -409,15 +411,17 @@
     <property name="barrier" value=""/>
    </properties>
   </object>
-  <object id="58" x="1217" y="1392" width="1" height="176">
+  <object id="58" x="1207" y="1392" width="1" height="176">
    <properties>
-    <property name="event" value="false"/>
+    <property name="avoidHalt" value=""/>
+    <property name="event" value=""/>
     <property name="grimReaper" value=""/>
    </properties>
   </object>
   <object id="59" x="1184" y="1392" width="1" height="176">
    <properties>
-    <property name="event" value="false"/>
+    <property name="avoidHalt" value=""/>
+    <property name="event" value=""/>
     <property name="grimReaper1" value=""/>
    </properties>
   </object>

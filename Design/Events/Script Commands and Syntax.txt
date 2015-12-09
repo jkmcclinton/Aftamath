@@ -293,14 +293,11 @@ setAttackType:
 	setAttackType(objectName, attackType)
 
 	see attack type list
-~setChoice:
+setChoice:
 	creates a choice situation with the specified types of choices;
 	minimum of 2 choices, maximum of 5 choices
 	MUST be ended with an "endChoice" command
 	setChoice(type# 1:message, type# 2:message, ... type# 5:message)
-
-	choice types: YesNo, 1(simple), 2(exciting), 3(curious), 4(cowardly), 5(power), 
-        ~6(abbreviation)
 
 	NOTE: anything directly after a "setChoice" command will not be processed, unless it
 		is a "choice" or "endChoice" command
@@ -486,6 +483,15 @@ stat types:
 	health
 	money
 	power/level (includes power type)
+
+choice types: 
+	YesNo, 
+	1(simple)
+	2(exciting)
+	3(curious)
+	4(cowardly)
+	5(power) 
+       	6(abbreviation)
 	
 action Types:
 	~fly

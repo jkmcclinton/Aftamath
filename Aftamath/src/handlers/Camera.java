@@ -131,7 +131,7 @@ public class Camera extends OrthographicCamera{
 			}
 		}
 
-		if(shaking) applyShake(dt);
+		if(shaking && !character.getGameState().paused) applyShake(dt);
 		update();
 	}
 	

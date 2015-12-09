@@ -1,5 +1,7 @@
 package handlers;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -13,73 +15,83 @@ import main.Main;
 public class EventTrigger extends Entity{
 	
 	public float x, y, width, height;
-	public boolean triggered, retriggerable, halt = true;
+//	public boolean triggered, retriggerable, halt = true;
 	
 	private Body body;
 	private BodyDef bdef = new BodyDef();
 	private FixtureDef fdef = new FixtureDef();
 	private World world;
-	private String script;
-	private String condition;
+	private HashMap<String, Pair<String, Boolean>> scripts; //scriptID, <condition, triggered>
+	private HashMap<String, Boolean> retriggerables, haltables;
+//	private String condition;
 	
 	//possibly implement multiple scripts for one event, activate them according to spawnSet perhaps?
 	
 	public EventTrigger(Main main, float x, float y, float w, float h){
 		this.x = x;
-		this.y = y;
+		this.y = y + h/2f;
 		this.width = w;
 		this.height = h;
 		setGameState(main);
 		
 		ID = "eventTrigger ("+x+", "+y+")";
-//		conditions = new HashMap<>();
-//		scripts = new HashMap<>();
+		scripts = new HashMap<>();
+		retriggerables = new HashMap<>();
+		haltables = new HashMap<>();
 		
 		create();
 	}
 	
 	public void checkEvent(){
-//		if (conditionsMet(currentEvent))
-//			main.triggerScript(scripts.get(currentEvent));
-		if(conditionsMet() && !triggered){
-			if(!retriggerable)
-				triggered = true;
-			main.triggerScript(script, this);
-			if(halt) main.character.killVelocity();
-		}
-	}
+//		for(String script : haltables.keySet())
+//			System.out.println(script+": "+haltables.get(script));
 		
-	// find condition based on given event index
-//	public boolean conditionsMet(int event){
-//		return main.evaluator.evaluate(conditions.get(event));
-//	}
+		for(String script : scripts.keySet())
+			if(!triggered(script)){
+//				System.out.println("CondMet: \""+script+"\"\t"+
+//			main.evaluator.evaluate(scripts.get(script).getKey())+"\ttrig: "+scripts.get(script).getValue());
+				if(conditionsMet(script)){
+					main.triggerScript(script, this);
+					if(haltable(script)) main.character.killVelocity();
+					if(!retrig(script)) scripts.get(script).setValue(true);
+					break;
+				}
+			}
+	}
 	
-	public boolean conditionsMet(){
-		if(!condition.isEmpty())
-			return main.evaluator.evaluate(condition);
-		else 
+	private boolean triggered(String key){ return scripts.get(key).getValue(); }
+	private boolean retrig(String key){ return retriggerables.get(key); }
+	private boolean haltable(String key){ return haltables.get(key); }
+	
+	public boolean conditionsMet(String key){
+		Pair<String, Boolean> pair;
+		if((pair = scripts.get(key))!=null){
+			if(!pair.getKey().isEmpty())
+				return main.evaluator.evaluate(pair.getKey());
+			else 
+				return true;
+		} else
 			return true;
 	}
-
-//	public void addCondition(String event, String condition){
-//		if(scripts.containsKey(event))
-//			conditions.put(event, condition);
-//		else{
-//			System.out.println("Event trigger does not have the script \""+event+"\" in its memory.");
-//	}
 	
-//	public void addEvent(int eventIndex, String script){
-//		if(!scripts.containsKey(eventName))
-//			scripts.put(eventName, script);
-//	}
+	public void addEvent(String script, String condition){
+		scripts.put(script, new Pair<String, Boolean>(condition, false));
+		haltables.put(script, true);
+		retriggerables.put(script, false);
+	}
 	
-	public void setRetriggerable(boolean retrig){ retriggerable = retrig; }
-	public void setCondition(String condition){ this.condition = condition; }
-	public void setScript(String script){ this.script = script; }
-	public void setHalt(String val){
-		try{
-			halt = Boolean.parseBoolean(val);
-		}catch(Exception e){}
+	public void setRetriggerable(String key, boolean retrig){ retriggerables.put(key, retrig); }
+	public void setRetriggerable(boolean retrig){
+		for(String s: retriggerables.keySet())
+			retriggerables.put(s, retrig);
+	}
+	
+	public void setCondition(String key, String condition){ scripts.get(script).setKey(condition); }
+	public boolean getHalt(String key){ return haltables.get(key); }
+	public void setHalt(String key, boolean retrig){ haltables.put(key, retrig); }
+	public void setHalt(boolean retrig){
+		for(String s: haltables.keySet())
+			haltables.put(s, retrig);
 	}
 	
 	public void create() {

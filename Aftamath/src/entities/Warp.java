@@ -98,6 +98,6 @@ public class Warp extends Entity {
 	}
 	
 	public String toString(){
-		return locTitle+warpID;
+		return "Warp: "+locTitle+warpID;
 	}
 }

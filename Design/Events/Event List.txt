@@ -7,6 +7,10 @@ Event Flags
 "FoundTheNarrator" - the player went to the future to find the narrator
 "OtherNarrator" - the player met the narrator's rival
 
+"GoodBar" - Player used their powers for good in a bar full of convicts
+"EvilBar" - Player used their powers for evil in a bar full of convicts
+
+supTutIntro - Ran into hero/villain on the (Commercial Drive) for a SUPA tutorial
 "VillainTut" - Stuck with villain after she taught you
 "VillainTutGood" - Went with hero after learning from villain
 "RogueTutorial" - Did something roguish

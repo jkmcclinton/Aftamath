@@ -400,19 +400,26 @@ depending on your configuration.
 
 --------------------Event Trigger Properties--------------------
 
-	event | [halt]
+	event |
 		This is necessary to denote that the object is an event trigger
-		include the boolean halt to specify wether the trigger should stop the player
-			whenever they first collide with it. By default this value is true
+			
+	avoidHalt | script1, script2, ....
+		this is used to denote that the trigger should NOT stop the player for specific scripts
+			whenever they first collide with it.
+		if the value is left empty then the trigger won't stop the player for ALL defined scripts
+		NOTE: the script must also be included as a property
 
-	retriggerable |
-		if this is included then the event will ALWAYS to trigger when the player collides
-		with it. Cannot be used in unison with "trigCount". You must choose one or the other.
+	retriggerable | script1, script2, ....
+		if this is included then the events in the list will ALWAYS to trigger when the player collides
+			with it. 
+		if the value is left empty then the trigger will be retriggerable for ALL defined scripts
+		Cannot be used in unison with "trigCount". You must choose one or the other.
+		NOTE: the script must also be included as a property
 
 	~trigCount | num
 		this allows the eventTrigger to trigger only a specific number of times		
 
-	*scriptName | [condition]
+	scriptName | [condition]
 		use this to declare what script can be called under the given conditions.
 		The "scriptName" field must be the name for an existing script, while the condition
 		must be phrased similar to "if" commands for scripts. 
@@ -420,11 +427,8 @@ depending on your configuration.
 		see the events folder (Aftamath/Aftamath/assets/scripts/events) for a list of
 		event related scripts
 
-	I was thinking somewhere along the lines we'll eventually need events to have multiple events.
-	This was too complicated for me to knock out in one go, but the way it's set up now is in
-	planning for it. As such, if new event properties are added, this may cause the game to crash
-	when it tries to load all the properties of eventTriggers (it thinks every property not already
-	defined is a script. Oops!)
+	NOTE: The first script (with respect to the trigger's property list on the Tiled file) that 
+		has its conditions met is triggered.
 		
 ===================================================
 		Pathing

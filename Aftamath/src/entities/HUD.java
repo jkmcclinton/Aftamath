@@ -146,7 +146,7 @@ public class HUD {
 		sb.draw(textHud, x, y - 76);
 		
 		drawString(sb);
-		if (speaker != null) if (speaker.name != null) {
+		if (speaker != null) if (speaker.nickName != null) {
 //			sb.draw(faceHud, x, y - 76);
 			if(speaker.getFace(0)!=null){
 				sb.draw(emotions[emotion],  x + 7, y - 69);
@@ -281,7 +281,7 @@ public class HUD {
 		speakText = new String[s.length+1];
 		
 		if (speaker != null) {
-			if (speaker.getName() != null) speakText[0] = "  " + speaker.getName() + ":";
+			if (speaker.getNickName() != null) speakText[0] = "  " + speaker.getNickName() + ":";
 		} else speakText[0] = "";
 		
 		for (int i = 1; i < speakText.length; i++) speakText[i] = "";

@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
+import entities.DamageField;
 import entities.Entity;
 import entities.Entity.DamageType;
 import entities.Mob;
@@ -49,8 +52,6 @@ public class Script implements Serializable {
 	public Stack<Operation> operations;
 	public HashMap<String, Object> localVars;
 	public boolean paused, limitDistance, forcedPause, dialog;
-	//	public HashMap<Integer, int[]> choiceTypes;
-	//	public HashMap<Integer, String[]> messages;
 	public int current, index; 
 	public float waitTime, time;
 
@@ -74,7 +75,6 @@ public class Script implements Serializable {
 		choiceIndicies = new HashMap<>();
 		conditions = new LinkedHashMap<>();
 		operations = new Stack<>();
-		checkpoints = new HashMap<>();
 		localVars = new HashMap<>();
 	}
 	
@@ -85,8 +85,13 @@ public class Script implements Serializable {
 		this.ID = scriptID;
 		main = m;
 
-		if(!Game.SCRIPT_LIST.contains(scriptID, false)) return;
-		loadScript(scriptID);
+		String path;
+		if((path = Game.res.getScript(scriptID))==null) {
+			System.out.println("No such script called \""+scriptID+"\"");
+			return;
+		}
+		
+		loadScript(path);
 		if(source!=null){
 			findIndicies();
 			getDistanceLimit();
@@ -104,7 +109,7 @@ public class Script implements Serializable {
 	}
 
 	public void update(){
-		if(main.analyzing){
+		if(main.analyzing && this.equals(main.currentScript)){
 			if(!paused){
 				if(activeObj instanceof Entity)
 					if (!((Entity) activeObj).controlled){
@@ -125,15 +130,19 @@ public class Script implements Serializable {
 						}
 				}
 			}
-		}
+		} else if (this.equals(main.loadScript))
+			analyze();
 	}
 
 	public void analyze(){
-//		System.out.print("---"+(index+1)+"---- "+source.get(index));
+		if(index>source.size) {
+			finish();
+			return;
+		}
+//		System.out.println("---"+(index+1)+"---- "+source.get(index));
 
 		Operation o;
 		dialog = false;
-		
 		if(index>=source.size)
 			index = current;
 		
@@ -201,9 +210,6 @@ public class Script implements Serializable {
 			case "changeval":
 				changeValue(line);
 				break;
-			case "checkpoint":
-				addCheckpoint(firstArg(line), index);
-				break;
 			case "declare":
 				String variableName = firstArg(line);
 				String scope = firstArg(middleArg(line));
@@ -234,7 +240,7 @@ public class Script implements Serializable {
 						break;
 					case"flag":
 						if(scope.equalsIgnoreCase("local")){
-							System.out.println("declaring local flag");
+//							System.out.println("declaring local flag");
 							boolean b = false;
 							try{ b = Boolean.parseBoolean(value); }
 							catch(Exception e){
@@ -332,29 +338,48 @@ public class Script implements Serializable {
 				break;
 			case"find":
 			case"findobject":
-				obj=findObject(firstArg(line));
+				//find(objectName, variableName)
+				boolean found = false;
+				
+				//if player produced a damage field, remove it and set value to true
+				if(firstArg(line).toLowerCase().trim().equals("damagefield")){
+					ArrayList<Entity> objects = main.getObjects();
+					for(Entity e : objects){
+						if(e instanceof DamageField)
+							if(((DamageField)e).getOwner().equals(main.character)){
+								found = true;
+								main.addBodyToRemove(e.getBody());
+								((DamageField) e).finalize();;
+								break;
+							}
+					}
+				} else {
+					obj=findObject(firstArg(line));
+					if(obj!=null) found = true;
+				}
+				
+				//find variable
 				var = getVariable(lastArg(line));
 				type = "localflag";
-				
 				if(var==null){
-					type = "globalar";
+					type = "globalvar";
 					var = main.history.getVariable(lastArg(line));
 				} if(var==null){
 					type = "globalflag";
 					var = main.history.getFlag(lastArg(line));
 				}
 				
+				//apply result to variable
 				if(var!=null){
-					boolean b = (obj!=null);
 					switch(type){
-					case "globalflag":
-						main.history.setFlag(lastArg(line), b);
+					case "localflag":
+						setVariable(lastArg(line), found);
 						break;
-					case "localvar":
-						setVariable(lastArg(line), b);
+					case "globalflag":
+						main.history.setFlag(lastArg(line), found);
 						break;
 					case "globalvar":
-						main.history.setVariable(lastArg(line), b);
+						main.history.setVariable(lastArg(line), found);
 						break;
 					}
 				}
@@ -453,53 +478,61 @@ public class Script implements Serializable {
 				break;
 			case "move":
 			case "moveobject":
-//				move(objectName, x, y, [run]) //accepts Tile Location
-//				move(objectName, pathName, [run]) //accepts a path
-//				move(objectName, targetName, [run]) //accepts a mob
+//				move(objectName, x, y, [wait]) //accepts Tile Location
+//				move(objectName, pathName, [wait]) //accepts a path
+//				move(objectName, targetName, [wait]) //accepts a mob
 				args = args(line);
 				loc = null;
-				boolean run = false;
-				
-				if(lastArg(line).contains("true") || lastArg(line).contains(lastArg("false")))
-					run = Boolean.parseBoolean(lastArg(line));
+				boolean wait = true;
+//				Entity targ = null;
+			
+				if(lastArg(line).contains("true") || lastArg(line).contains("false"))
+					wait = Boolean.parseBoolean(lastArg(line));
 				
 				try{
-					//is object a mob or entity in the map?
+					//is object exist in the map?
 					obj = findObject(args[0]);
-					if(obj==null)
+					if(obj==null){
+						System.out.println("Cannot find \""+firstArg(line)+"\" to move to a location; Line: "+(index+1)+"\tScript: "+ID);
 						return;
+					}
 
-					//is argument a pathing object?
+					//is target a pathing object?
 					target = findPath(args[1]);
 					if(target != null)
-						if(target instanceof Mob){
+						if(obj instanceof Mob){
 						Path path = (Path) target;
 						// make object move to path
 						((Mob) obj).moveToPath(path);
-						return;
+						break;
 					}
 
 					//is target a mob?
 					target = findObject(args[1].trim());
 					if(target != null){
 						float dx = target.getPosition().x - obj.getPosition().x;
-						int x = (int) (Math.abs(dx)/dx) * 10;
-						loc = new Vector2(target.getPosition().x*Vars.PPM + x, target.getPosition().y*Vars.PPM);
+						float a = (Math.abs(dx)/dx), max = 3*Vars.TILE_SIZE/Vars.PPM;
+						loc = new Vector2(target.getPosition().x - a*max, target.getPosition().y*Vars.PPM);
+						System.out.println("Move to Entity: "+(int)(loc.x*Vars.PPM));
 					}
 
-					// is target a tile vector?
-					loc = parseTiledVector(args, 1);
+					// is targ a tile vector?
+					if(target==null){
+						loc = parseTiledVector(args, 1);
+						
+						//convert to meters
+						if(loc!=null)
+							loc = new Vector2(loc.x/Vars.PPM, loc.y/Vars.PPM);
+					}
 
 					if(loc != null)
 						if(obj instanceof Mob){
-							if(run);
-								//make mob run to target location
-							((Mob) obj).setGoal(loc.x);
-							activeObj = obj;
+							if(wait) activeObj = obj;
+							((Mob) obj).setGoal(loc);
 						} else
-							System.out.println("Cannot find \""+middleArg(line)+"\" to move; Line: "+(index+1)+"\tScript: "+ID);
+							System.out.println("Cannot move \""+middleArg(line)+"\" because it is not a mob; Line: "+(index+1)+"\tScript: "+ID);
 				}
-				catch (Exception ArrayIndexOutofBoundsException){
+				catch (ArrayIndexOutOfBoundsException e){
 					System.out.println("Insufficient arguments provided; Line: "+(index+1)+"\tScript: "+ID);
 				}
 				break;
@@ -575,6 +608,20 @@ public class Script implements Serializable {
 				}
 
 				break;
+			case"setattackscript":
+				obj = findObject(firstArg(line));
+
+				if(obj!=null){
+					if(obj instanceof Mob){
+						String s= lastArg(line);
+						if(s.contains("{")&&s.contains("}"))
+							s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
+//						System.out.println("Set Ascript: "+s);
+						((Mob) obj).setAttackScript(s);
+					}
+				} else
+					System.out.println("Cannot find object \"" + firstArg(line)+ "\" to set a attack script; Line: "+(index+1)+"\tScript: "+ID);
+				break;
 			case "setattacktype":
 				obj = findObject(firstArg(line));
 
@@ -612,13 +659,33 @@ public class Script implements Serializable {
 				break;
 			case "setdialog":
 			case "setdialogue":
+			case "setdialoguescript":
 				obj = findObject(firstArg(line));
 				
-				if(obj!=null)
-					obj.setDialogueScript(lastArg(line));
-				else
+				if(obj!=null){
+					String s = lastArg(line);
+					if(s.contains("{")&&s.contains("}"))
+						s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
+//					System.out.println("Set Tscript: "+s);
+					obj.setDialogueScript(s);
+				}else
 					System.out.println("Cannot find object \"" + firstArg(line)+ "\" to set a dialogue script; Line: "+(index+1)+"\tScript: "+ID);
 				
+				break;
+			case "setdiscoverscript":
+				obj = findObject(firstArg(line));
+				
+				if(obj!=null){
+					if(obj instanceof Mob){
+						String s = lastArg(line);
+						if(s.contains("{")&&s.contains("}"))
+							s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
+						obj.setDialogueScript(s);
+					} else
+						System.out.println("Cannot set a discover script for \"" + firstArg(line)+ "\" because it is not a mob; Line: "+(index+1)+"\tScript: "+ID);
+				}else
+					System.out.println("Cannot find object \"" + firstArg(line)+ "\" to set a discover script; Line: "+(index+1)+"\tScript: "+ID);
+
 				break;
 			case "setflag":
 				try{
@@ -633,6 +700,20 @@ public class Script implements Serializable {
 				} catch (Exception e){
 					System.out.println("Could not set flag \"" +firstArg(line) + "\" to value \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
 				}
+				break;
+			case "setflamable":
+			case "setflamabililty":
+				obj = findObject(firstArg(line));
+				
+				if(obj!=null){
+					try{
+						obj.flamable = Boolean.parseBoolean(lastArg(line));
+					} catch(Exception e){
+						System.out.println("\"" + lastArg(line)+ "\" is not a valid boolean; Line: "+(index+1)+"\tScript: "+ID);
+					}
+				} else
+					System.out.println("Cannot find object \"" + firstArg(line)+ "\" to set flamability; Line: "+(index+1)+"\tScript: "+ID);
+				
 				break;
 			case "setevent":
 				String description = lastArg(line);
@@ -649,7 +730,7 @@ public class Script implements Serializable {
 						else description = "none";
 					} else {
 						description = "none";
-						System.out.println("Invalid description for event \""+firstArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
+						System.out.println("Invalid description for event \""+firstArg(line)+"\": \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
 					}
 				}
 				
@@ -674,7 +755,19 @@ public class Script implements Serializable {
 				} else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to change max health; Line: "+(index+1)+"\tScript: "+ID);
 				break;
+			case "nickname":
+			case "setnickname":
+				obj = findObject(firstArg(line));
+				if(obj!=null){
+					if(obj instanceof Mob)
+						((Mob) obj).setNickName(lastArg(line));
+					else
+						System.out.println("\""+firstArg(line)+"\" cannot have a nickname because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
+				} else
+					System.out.println("Cannot find \""+firstArg(line)+"\" to change nickname; Line: "+(index+1)+"\tScript: "+ID);
+				break;
 			case "setresponse":
+			case "setresponsetype":
 				obj = findObject(firstArg(line));
 
 				if(obj!=null)
@@ -682,6 +775,7 @@ public class Script implements Serializable {
 						((Mob) obj).setResponseType(lastArg(line));
 				break;
 			case "setscript":
+			case "setsubscript":
 				setIndex(lastArg(line));
 				break;
 			case "setspeaker":
@@ -709,6 +803,20 @@ public class Script implements Serializable {
 					if(obj instanceof Mob)
 						((Mob) obj).setState(lastArg(line));
 				break;
+			case "setsupattackscript":
+			case "setsuperattackscript":
+				obj = findObject(firstArg(line));
+				
+				if(obj!=null){
+					String s = lastArg(line);
+					if(s.contains("{")&&s.contains("}"))
+						s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
+//					System.out.println("Set SAscript: "+s);
+					obj.setSupAttackScript(s);
+				}else
+					System.out.println("Cannot find object \"" + firstArg(line)+ "\" to set a dialogue script; Line: "+(index+1)+"\tScript: "+ID);
+	
+				break;
 			case "setvul":
 			case "setvulnerability":
 				obj = findObject(firstArg(line));
@@ -731,29 +839,7 @@ public class Script implements Serializable {
 				//spawn(NPC, image, name, x, y, layer)
 				args = args(line);
 				if(args[0].equals("NPC") && args.length>=5){
-					loc = parseTiledVector(args, 3);
-					if(loc!=null){
-						short layer = Vars.BIT_LAYER3;
-						if(args.length==6)
-							try{
-								Field f = Vars.class.getField("BIT_"+lastArg(line).toUpperCase());
-								layer = f.getShort(f);
-							} catch(Exception e){
-								System.out.println("Error finding layer \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
-							}
-						
-						//find mob from save data
-						//main.findFromSave(args[2].trim());
-						
-						//create new mob if not found
-						int sceneID = main.createSceneID();
-						
-						Mob e = new Mob(args[2].trim(), args[1].trim(), sceneID, loc.x, loc.y, layer);
-						e.setDefaultState(AIState.FACEPLAYER);
-						e.setDialogueScript("generic_1");
-						spawn(e);
-					} else
-						System.out.println("Cannot spawn \""+args[2]+"\" at given location; Line: "+(index+1)+"\tScript: "+ID);
+					spawn(line);
 				} else
 					System.out.println("Error spawning \""+args[2]+"\" into level; Line: "+(index+1)+"\tScript: "+ID);
 				break;
@@ -864,88 +950,92 @@ public class Script implements Serializable {
 			}
 		}
 
-		//step analyzing; continue stepping if next line contains a note
+		//step analyzing; continue stepping if next line is a comment
 		if(index < source.size-1) index++;
 		while(source.get(index).startsWith("#"))
 			if(index < source.size-1) index++;
 	}
 
 	private void finish(){
-		localVars = new HashMap<>();
-		checkpoints = new HashMap<>();
 		operations.clear();
-		main.setStateType(InputState.MOVE);
-		main.analyzing = false;
 		index = current;
-		if(main.hud.raised)
-			main.hud.hide();
+		if(this.equals(main.currentScript)){
+			main.setStateType(InputState.MOVE);
+			main.analyzing = false;
+			if(main.hud.raised)
+				main.hud.hide();
 
-		if(main.tempSong && main.getSong().looping)
-			main.removeTempSong();
+			if(main.tempSong && main.getSong().looping)
+				main.removeTempSong();
 
-		main.getCam().removeFocus();
-		main.currentScript = null;
-		main.hud.changeFace(null);
+			main.getCam().removeFocus();
+			main.currentScript = null;
+			main.hud.changeFace(null);
 
-		for (Entity d : main.getObjects()){
-			if (d instanceof Mob)
-				((Mob) d).resetState();
-		}
+			for (Entity d : main.getObjects()){
+				if (d instanceof Mob)
+					((Mob) d).resetState();
+			}
 
-		switch(type){
-		case ATTACKED:
-			if(owner instanceof Mob){
-				Mob o = (Mob) owner;
-				switch(o.getAttackType()){
-				case ENGAGE:
-					o.fight(main.character);
-					break;
-				case HIT_ONCE:
-					o.attack(main.character.getPosition());
-					break;
-				case RANDOM:
-					double chance = Math.random();
-					if(chance>.8d)
+			switch(type){
+			case ATTACKED:
+				if(owner instanceof Mob){
+					Mob o = (Mob) owner;
+					switch(o.getAttackType()){
+					case ENGAGE:
 						o.fight(main.character);
-					else if(chance>.5d)
+						break;
+					case HIT_ONCE:
 						o.attack(main.character.getPosition());
-					break;
-				default:
-					break;
+						break;
+					case RANDOM:
+						double chance = Math.random();
+						if(chance>.8d)
+							o.fight(main.character);
+						else if(chance>.5d)
+							o.attack(main.character.getPosition());
+						break;
+					default:
+						break;
+					}
 				}
+
+				break;
+			case DIALOGUE:
+				break;
+			case DISCOVER:
+				if(owner instanceof Mob){
+					Mob o = (Mob) owner;
+					switch(o.getResponseType()){
+					case ATTACK:
+						o.setState(AIState.FIGHTING);
+						break;
+					case FOLLOW:
+						o.follow(main.character);
+						break;
+					case EVADE:
+						o.evade(main.character);
+						break;
+					default:
+						break;
+					}
+				}
+				break;
+			case EVENT:
+				break;
+			default:
+				break;
 			}
 
-			break;
-		case DIALOGUE:
-			break;
-		case DISCOVER:
-			if(owner instanceof Mob){
-				Mob o = (Mob) owner;
-				switch(o.getResponseType()){
-				case ATTACK:
-					o.setState(AIState.FIGHTING);
-					break;
-				case FOLLOW:
-					o.follow(main.character);
-					break;
-				case EVADE:
-					o.evade(main.character);
-					break;
-				default:
-					break;
-				}
-			}
-			break;
-		case EVENT:
-			break;
-		default:
-			break;
+			//redisplay speechbubble
+			if(owner!=null)
+				if (main.character.getInteractable() == owner)
+					new SpeechBubble(owner, owner.getPixelPosition().x + 6, owner.rh + 5  +
+							owner.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
+		} else if(this.equals(main.loadScript)){
+			main.loading = false;
+			main.loadScript=null;
 		}
-
-		//redisplay speechbubble
-		if (main.character.getInteractable() == owner)
-			new SpeechBubble(owner, owner.getPixelPosition().x + 6, owner.rh + 5  +
-					owner.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
 	}
 
 	public void stopEventBGM(){
@@ -974,7 +1064,7 @@ public class Script implements Serializable {
 
 	private void loadScript(String path) {
 		try{
-			BufferedReader br = new BufferedReader(new FileReader("assets/scripts/" + path + ".txt"));
+			BufferedReader br = new BufferedReader(new FileReader(path));
 			try {
 				source = new Array<>();
 				String line = br.readLine();
@@ -1006,6 +1096,7 @@ public class Script implements Serializable {
 	//retrieve all the indicies for every operation used in script
 	private void findIndicies(){
 		subScripts = new LinkedHashMap<String, Pair<Integer, Integer>>();
+		checkpoints = new HashMap<>();
 		String line;
 		Pair<Integer, Integer> bounds, b;
 		int end = source.size-1;
@@ -1063,17 +1154,21 @@ public class Script implements Serializable {
 				}
 			} if(line.toLowerCase().startsWith("if"))
 				conditions.put(i, findBounds("if", i, end));
-			if(line.toLowerCase().startsWith("elseif"))
-				conditions.put(i, findBounds("elseif", i, end));
+//			if(line.toLowerCase().startsWith("elseif"))
+//				conditions.put(i, findBounds("elseif", i, end));
+			if(line.toLowerCase().trim().startsWith("checkpoint")){
+				addCheckpoint(firstArg(line), i);
+				source.set(i, "#" + source.get(i));
+			}
+			
 		}
 
-
-//		if(ID.equals("superTutorial")){
-//				System.out.println("\nID: "+ID);
-//				System.out.println("scripts:    "+subScripts);
-//				System.out.println("conditions: "+conditions);
-//				System.out.println("choices:    "+choiceIndicies);
-//		}
+		//debug output
+//		System.out.println("\nID: "+ID);
+//		System.out.println("scripts:    "+subScripts);
+//		System.out.println("conditions: "+conditions);
+//		System.out.println("choices:    "+choiceIndicies);
+//		System.out.println("checkpoints:    "+checkpoints);
 	}
 
 	private Pair<Integer, Integer> findBounds(String type, int start, int end){
@@ -1160,7 +1255,7 @@ public class Script implements Serializable {
 
 	private String removeCommand(String line){
 		if(line.indexOf("(")==-1) return line;
-		return line.substring(line.indexOf("(")+1, line.length() - 1);
+		return line.substring(line.indexOf("(")+1, line.trim().length() - 1);
 	}
 
 	//return everything inside (), seperated by commas
@@ -1185,35 +1280,45 @@ public class Script implements Serializable {
 
 	private Entity findObject(String objectName){
 		Entity object = null;
-
-		if(Vars.isNumeric(objectName)){
-			for(Entity d : main.getObjects())
-				if (d.getSceneID() == Integer.parseInt(objectName)) return d;
-		} else switch(objectName) {
-		case "player":
-			object = main.character;
-			break;
-		case "partner":
-			if(main.player.getPartner().getName() != null)
-				object = main.player.getPartner();
-			break;
-		case "narrator":
-			object = main.narrator;
-			break;
-		case "this":
-			object = owner;
-			break;
-		default:
-			for(Entity d : main.getObjects()){
-				if(d instanceof Mob){
-					if (((Mob)d).getName().toLowerCase().equals(objectName.toLowerCase()))
-						return d;
-				} else
-					if (d.ID.toLowerCase().equals(objectName.toLowerCase()))
-						return d;
+		try{
+			if(Vars.isNumeric(objectName)){
+				for(Entity d : main.getObjects())
+					if (d.getSceneID() == Integer.parseInt(objectName)) return d;
+			} else switch(objectName) {
+			case "player":
+				object = main.character;
+				break;
+			case "partner":
+				if(main.player.getPartner().getName() != null)
+					object = main.player.getPartner();
+				break;
+			case "narrator":
+				object = main.narrator;
+				break;
+			case "this":
+				object = owner;
+				break;
+			default:
+				for(Entity d : main.getObjects()){
+					if(d instanceof Mob){
+						if (((Mob)d).getName().toLowerCase().equals(objectName.toLowerCase())){
+							object = d;
+							break;
+						}
+					} else
+						if (d.ID.toLowerCase().equals(objectName.toLowerCase())){
+							object = d;
+							break;
+						}
 			}
 		}
+		
+//		System.out.println("fO ::::: Arg: "+objectName+"\tResult: "+object+"\tNULL: "+(object==null));
 		return object;
+		} catch (Exception e) {
+			//most likely occurs if a float is passed as an argument
+			return null;
+		}
 	}
 	
 	private Path findPath(String pathName){
@@ -1222,13 +1327,15 @@ public class Script implements Serializable {
 	}
 	
 	// create a vector from an array of arguments starting from given index
+	//units in pixels
 	private Vector2 parseTiledVector(String[] args, int index){
 		if(index+1>=args.length)
 			return null;
 		
 		try{
-			int x = Integer.parseInt(args[index].trim()) * Vars.TILE_SIZE;
-			int y =	main.getScene().height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
+			float x = Float.parseFloat(args[index].trim()) * Vars.TILE_SIZE;
+			float y =	main.getScene().height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
+			System.out.println("Parse Vec: "+x+", "+y);
 			Vector2 v = new Vector2(x, y);
 			return v;
 		} catch(Exception e){ }
@@ -1244,7 +1351,13 @@ public class Script implements Serializable {
 				Operation o = new Operation("choice", op.getBounds());
 				operations.add(o);
 				index = o.start;
-				main.setStateType(InputState.LISTEN);
+				
+				if(o.start==-1 || o.end==-1){
+					System.out.println("Choice handling improperly set for \""+choice+"\" for setChoice at Line: "+(index+1)+"\tScript: "+ID);
+					operations.pop();
+					index = operations.peek().end + 1;
+				} else 
+					main.setStateType(InputState.LISTEN);
 			} else {
 				System.out.println("No handling for choice \""+choice+"\" found for setChoice at Line: "+(index+1)+"\tScript: "+ID);
 				index = operations.peek().end + 1;
@@ -1413,7 +1526,7 @@ public class Script implements Serializable {
 			txt = getSubstitutions(txt);
 			return Vars.formatDialog(txt, true);
 		} catch(Exception e){
-e.printStackTrace();
+			e.printStackTrace();
 			System.out.println("Missing bracket pair to initialize text; Line: "+(index+1)+"\tScript: "+ID);
 		}
 		
@@ -1642,7 +1755,7 @@ e.printStackTrace();
 
 						}
 					} else {
-						System.out.println("No variable  locally or globally called \""+target+"\"; Line: "+(index+1)+"\tScript: "+ID);
+						System.out.println("No variable locally or globally called \""+target+"\"; Line: "+(index+1)+"\tScript: "+ID);
 					}
 				}
 			} catch (Exception e) {
@@ -1753,8 +1866,101 @@ e.printStackTrace();
 			index = checkpoints.get(name);
 	}
 
-	public void spawn(Entity e){
-		main.addObject(e);
+	//spawn an NPC into the game
+	public void spawn(String line){
+		String[] args = args(line);
+		Vector2 loc = null;
+		
+		loc = parseTiledVector(args, 3);
+		if(loc!=null){
+			short layer = Vars.BIT_LAYER3;
+			int sceneID = -1;
+			Entity e = null;
+			if(args.length==6)
+				if(Vars.isNumeric(args[5].trim())){
+					sceneID = Integer.parseInt(args[5].trim());
+				} else {
+					try{
+						Field f = Vars.class.getField("BIT_"+lastArg(line).toUpperCase());
+						layer = f.getShort(f);
+					} catch(Exception er){
+						System.out.println("Error finding layer \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
+					}
+				}
+			
+			//find mob from save data
+			//TODO simplify this
+			
+			//sceneID is not given
+			boolean copied = false;
+			Entity e1 = null;
+			if(sceneID==-1)
+				for(int i : Entity.idToEntity.keySet()){
+					e1 = Entity.idToEntity.get(i);
+					if(e1 instanceof Mob)
+						if(e1.ID.equals(args[1].trim()) && ((Mob)e1).getName().equals(args[2].trim())){
+							copied = true;
+							break;
+						}
+			}
+			
+			if(!copied){
+				boolean found=false;
+				if(Entity.idToEntity.containsKey(sceneID)){
+					//sceneID already exists
+					Entity temp = Entity.idToEntity.get(sceneID);
+					
+					if(temp instanceof Mob){ 
+						if(((Mob)temp).getName().equals(args[2].trim()) && temp.ID.equals( args[1].trim())
+								){
+							e = pullEntity(sceneID, loc);
+							found = true;
+						}
+					} else
+						if(temp.ID.equals(args[1].trim())){
+							e = pullEntity(sceneID, loc);
+							found = true;
+						}
+				} 
+				
+				if (!found) {
+					//create new mob if not found;
+					e = new Mob(args[2].trim(), args[1].trim(), sceneID, loc.x, loc.y, layer);
+					((Mob)e).setDefaultState(AIState.FACEPLAYER);
+					e.setDialogueScript("generic_1");
+				}
+			} else {
+				Entity.idToEntity.remove(e1.getSceneID());
+				Set<Integer> set = Scene.sceneToEntityIds.get(e1.getCurrentScene().ID);
+				set.remove(e1.getSceneID());
+				set = Scene.sceneToEntityIds.get(main.getScene().ID);
+				set.add(e1.getSceneID());
+				
+				e = ((Mob) e1).copy();
+				e.setPosition(new Vector2(loc.x, loc.y));
+				if(e1.equals(main.character))
+					main.setCharacter((Mob) e);
+				System.out.println("medic!! ");
+			}
+			
+			main.addObject(e);
+		} else
+			System.out.println("Cannot spawn \""+args[2]+"\" at given location; Line: "+(index+1)+"\tScript: "+ID);
+	}
+	
+	public Entity pullEntity(int sceneID, Vector2 loc){
+		Entity temp = Entity.idToEntity.get(sceneID);
+		Entity e;
+		Entity.idToEntity.remove(sceneID);
+		
+		Set<Integer> set = Scene.sceneToEntityIds.get(temp.getCurrentScene().ID);
+		set.remove(sceneID);
+		set = Scene.sceneToEntityIds.get(main.getScene().ID);
+		set.add(sceneID);
+
+		e = temp.copy();
+		e.setPosition(new Vector2(loc.x, loc.y));
+		return e;
 	}
 	
 	public String toString(){
@@ -1875,6 +2081,11 @@ e.printStackTrace();
 		this.index = this.current = val.getInt("current");
 		this.currentName = val.getString("currentName");
 		
+		for (JsonValue child = val.getChild("localVars"); child != null; child = child.next()) {
+			Object obj = json.fromJson(Object.class, child.toString());
+			this.localVars.put(child.name(), obj);
+		}		
+		
 		loadScript(this.ID);
 		if (source != null) {
 			findIndicies();
@@ -1889,5 +2100,6 @@ e.printStackTrace();
 		json.writeValue("type", this.type);
 		json.writeValue("current", this.current);
 		json.writeValue("currentName", this.currentName);
+		json.writeValue("localVars", this.localVars);
 	}
 }

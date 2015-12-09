@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.SerializationException;
 
 import entities.Projectile.ProjectileType;
 import handlers.FadingSpriteBatch;
@@ -112,8 +111,8 @@ public class Mob extends Entity {
 	protected static final float DEFAULT_ATTACK_DELAY = .5f;
 	protected static final float DEFAULT_ATTACK_RANGE = 20;
 	protected static final float DEFAULT_VISION_RANGE = 10*Vars.TILE_SIZE;
-	protected static final float DEFAULT_AIM_THRESHOLD = 1.5f;
-	protected static final float DEFAULT_COOLDOWN = 3f;
+	protected static final float DEFAULT_AIM_THRESHOLD = /*1.5*/0;
+	protected static final float DEFAULT_COOLDOWN = /*3f*/0;
 	protected static final double DEFAULT_STRENGTH = 1;
 	protected static final double DAMAGE_THRESHOLD = 4;
 	protected static final int INTERACTION_SPACE = 17;
@@ -212,23 +211,25 @@ public class Mob extends Entity {
 		goalPosition = new Vector2((float) (((Math.random() * 21)+this.x)/PPM), this.y);
 		
 		this.sceneID = sceneID;
-		if (!Entity.idToEntity.containsKey(this.sceneID)) {
-			Entity.idToEntity.put(this.sceneID, this);
-		} else {
-			Entity e = Entity.idToEntity.get(sceneID);
-			boolean conflict = true;
-			String error = e.ID;
-			
-			if(e instanceof Mob)
-				if(this.getName().equals(((Mob) e).getName()) && ID.equals(e.ID)){
-					conflict = false;
-					Entity.idToEntity.put(sceneID, this);
-				} else
-					error = "("+((Mob)e).getName() + ", "+e.ID+")";
-			
-			if(conflict)
-				System.out.println("Created mob with ID "+this.sceneID+" ("+ this.name +", "+ID+") when " +
-						error + " already exists");
+		if(sceneID>=0){
+			if (!Entity.idToEntity.containsKey(this.sceneID)) {
+				Entity.idToEntity.put(this.sceneID, this);
+			} else {
+				Entity e = Entity.idToEntity.get(sceneID);
+				boolean conflict = true;
+				String error = e.ID;
+
+				if(e instanceof Mob)
+					if(this.getName().equals(((Mob) e).getName()) && ID.equals(e.ID)){
+						conflict = false;
+						Entity.idToEntity.put(sceneID, this);
+					} else
+						error = "("+((Mob)e).getName() + ", "+e.ID+")";
+
+				if(conflict)
+					System.out.println("Created mob with ID "+this.sceneID+" ("+ this.name +", "+ID+") when " +
+							error + " already exists");
+			}
 		}
 	}
 
@@ -244,6 +245,7 @@ public class Mob extends Entity {
 		attackables = new Array<>();
 		discovered = new Array<>();
 		contacts = new Array<>();
+		followers = new Array<>();
 		flamable = true;
 		isAttackable = true;
 		destructable = true;
@@ -446,6 +448,7 @@ public class Mob extends Entity {
 			setAnimation(action);
 			return;
 		}
+		
 		if (isNotAvailable(action)) return;
 		this.action = action;
 		int aI = animationIndicies.get(action);
@@ -467,7 +470,8 @@ public class Mob extends Entity {
 				sprites[i] = tmp.get(i);
 			}
 			
-			animation.setAction(sprites, actionLengths[aI], isFacingLeft(), aI, Vars.ACTION_ANIMATION_RATE, false);
+			animation.setAction(sprites, actionLengths[aI], isFacingLeft(), aI, Vars.ACTION_ANIMATION_RATE, false, true);
+			animation.backward = true;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -484,7 +488,7 @@ public class Mob extends Entity {
 
 		try{
 			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[aI];
-			animation.setAction(sprites, i, isFacingLeft(), aI, delay, repeat);
+			animation.setAction(sprites, i, isFacingLeft(), aI, delay, repeat, false);
 		} catch(Exception e) { }
 	}
 
@@ -636,7 +640,10 @@ public class Mob extends Entity {
 
 	public void setDiscoverScript(String ID){ 
 		if(ID==null)return;
-		discoverScript = new Script(ID, ScriptType.DISCOVER, main, this);
+		if(ID.equals("none") || ID.equals("null") || ID.equals("empty"))
+			discoverScript = null;
+		else
+			discoverScript = new Script(ID, ScriptType.DISCOVER, main, this);
 	}
 	
 	public void moveToPath(){
@@ -1001,8 +1008,10 @@ public class Mob extends Entity {
 						freeze();
 				}
 
-				if(health<=0)
+				if(health<=0){
+					if(health<0)health = 0;
 					die();
+				}
 				else if(val<=DAMAGE_THRESHOLD)
 					setAnimation(Anim.FLINCHING);
 				else {
@@ -1032,6 +1041,7 @@ public class Mob extends Entity {
 				}
 
 				if(health<=0){
+					if(health<0)health = 0;
 					if(owner.equals(main.character) && this.iff!=IFFTag.FRIENDLY)
 						owner.experience+= .15f/owner.level;
 					die();
@@ -1047,6 +1057,10 @@ public class Mob extends Entity {
 		if(owner.equals(main.character)){
 				if(state!=AIState.ATTACKING){
 					Script script = attackScript;
+					
+					if(type!=DamageType.PHYSICAL)
+						script = supAttackScript;
+					
 					if(script!=null)
 						main.triggerScript(script);
 					else
@@ -1102,16 +1116,6 @@ public class Mob extends Entity {
 		setTransAnimation(Anim.DIE_TRANS, Anim.DEAD);
 	}
 
-	/**
-	 * must only be used for copying data
-	 * @param health
-	 * @param maxHealth
-	 */
-	public void resetHealth(double health, double maxHealth){
-		this.health = health;
-		this.maxHealth = maxHealth;
-	}
-
 	//create the mob in its last saved position
 	public void respawn(){
 		if (respawnPoint!=null){
@@ -1137,6 +1141,11 @@ public class Mob extends Entity {
 	public void setGoal(float gx) { 
 		this.goalPosition = new Vector2((float) gx/PPM + getPosition().x, getPosition().y); 
 //		if(path==null)
+		doAction(ScriptAI.MOVE);
+	}
+	
+	public void setGoal(Vector2 goal){
+		goalPosition = goal;
 		doAction(ScriptAI.MOVE);
 	}
 
@@ -1371,13 +1380,15 @@ public class Mob extends Entity {
 		case RUN:
 			run();
 		case MOVE:
+			//TODO
 			if(goalPosition==null && path==null)
 				return;
-
+//			System.out.print((int)getPixelPosition().x+" :: "+(int)(goalPosition.x*PPM));
+//			System.out.println("\t" + (int)(getPixelPosition().x/16f)+" :: "+(int)(goalPosition.x*PPM/16f));
 			if(isReachable()){
-				float dx = (goalPosition.x - getPosition().x)* PPM ;
+				float dx = goalPosition.x*PPM - getPixelPosition().x;
 
-				if(Math.abs(dx) > 1){
+				if(Math.abs(dx) > 10){
 					if (dx > 0) right();
 					else left();
 				} else {
@@ -1393,7 +1404,8 @@ public class Mob extends Entity {
 							path = null;
 						else
 							goalPosition = path.getCurrent();
-					}
+					} else 
+						finishAction();
 				}
 			} else {
 				//path cannot be completed
@@ -1943,13 +1955,17 @@ public class Mob extends Entity {
 			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
 			break;
 		case FIRE:
-//			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
+			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
 			break;
 		case ICE:
 			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
 			break;
 		case ROCK:
-//			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
+			if(main.getScene().outside){
+				main.getCam().shake(1.5f);
+				dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
+			}else
+				main.playSound("bad1");
 			break;
 		default:
 			break;
@@ -2067,6 +2083,8 @@ public class Mob extends Entity {
 	public void setGround(String type){ this.groundType = type; }
 	public Warp getWarp(){ return warp; }
 	public void setWarp(Warp warp){ this.warp = warp; }
+	public boolean aiming(){ return aiming; }
+	public boolean aimSounded(){ return aimSounded; }
 
 	public void spawn(Vector2 location){
 		setPosition(location);
@@ -2181,18 +2199,29 @@ public class Mob extends Entity {
 
 
 	public Mob copy(){
-		Mob n = new Mob(name, ID, sceneID, 0, 0, layer);
+		Mob n = new Mob(name, ID, sceneID, x, y, layer);
 
 		n.resetHealth(health, maxHealth);
 		n.setDefaultState(defaultState);
 
 		if(script!=null)
-			n.setAttackScript(script.ID);
+			n.setDialogueScript(script.ID);
 		if(discoverScript!=null)
-			n.setAttackScript(discoverScript.ID);
+			n.setDiscoverScript(discoverScript.ID);
 		if(attackScript!=null)
 			n.setAttackScript(attackScript.ID);
-
+		if(supAttackScript!=null)
+			n.setSupAttackScript(supAttackScript.ID);
+		
+		n.level = level;
+		n.strength = strength;
+		n.resistance = resistance;
+		n.attackRange = attackRange;
+		n.visionRange = visionRange;
+		n.flamable = flamable;
+		n.setDestructability(destructable);
+		n.nickName = nickName;
+		
 		return n;
 	}
 	
@@ -2226,8 +2255,6 @@ public class Mob extends Entity {
 		//other stuff that typically happens in constructor
 		Texture texture = Game.res.getTexture(ID + "face");
 		if (texture != null) face = TextureRegion.split(texture, 64, 64)[0];
-		texture = Game.res.getTexture("healthBar");
-		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
 		determineGender();
 		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
 		goalPosition = new Vector2((float) (((Math.random() * 21)+x)/PPM), y);

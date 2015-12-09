@@ -11,6 +11,7 @@ public class Animation {
 	public boolean transitioning, controlled;
 	public int currentFrame;
 	public int actionIndex, nextID;
+	public boolean backward;
 
 	private float time;
 	private float defaultDelay;
@@ -59,13 +60,14 @@ public class Animation {
 		timesPlayed = 0;
 	}
 
-	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, boolean controlled){
-		setAction(frames, length, direction, ID, Vars.ACTION_ANIMATION_RATE, controlled);
+	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, boolean controlled, boolean backward){
+		setAction(frames, length, direction, ID, Vars.ACTION_ANIMATION_RATE, controlled, backward);
 	}
 
-	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, float delay, boolean controlled) {
-		if (actionIndex == ID && actionIndex != Mob.animationIndicies.get(Anim.JUMPING)) return;
+	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, float delay, boolean controlled, boolean backward) {
+		if (actionIndex == ID && actionIndex != Mob.animationIndicies.get(Anim.JUMPING) && backward==this.backward) return;
 
+		this.backward=backward;
 		if(!add(frames))
 			return;
 		
@@ -115,6 +117,7 @@ public class Animation {
 	public void removeTop(){
 		if(frames == null) return;
 		if (frames.size <= 1) return;
+		backward = false;
 		frames.pop();
 
 		actionIndex = nextID;
@@ -126,6 +129,7 @@ public class Animation {
 	public void removeAction(){
 		if(frames == null) return;
 		if (frames.size <= 1) return;
+		backward = false;
 
 		while (frames.size > 1) {
 			frames.pop();

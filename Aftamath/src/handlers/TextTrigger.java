@@ -1,10 +1,11 @@
-package entities;
+package handlers;
 
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import entities.Entity;
+import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
-import handlers.Vars;
 
 //simple class that spawns a speechbubble overhead when collided with
 public class TextTrigger extends Entity {

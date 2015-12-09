@@ -1,0 +1,5 @@
+Script Main
+setEvent(GoodBar, {Player used their powers for good in a bar full of convicts.})
+#setEvent(EvilBar, {Player used their powers for evil in a bar full of convicts.})
+value(set, player.niceness, 0)
+done

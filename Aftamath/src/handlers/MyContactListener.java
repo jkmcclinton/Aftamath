@@ -15,7 +15,6 @@ import entities.Projectile;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
-import entities.TextTrigger;
 import entities.Warp;
 import main.Main;
 
@@ -31,7 +30,8 @@ public class MyContactListener implements ContactListener {
 		//objects that cannot be stood ontop of
 		unstandable.addAll("wall", "foot", "interact", "attack", "center", "vision", 
 				"tiledobject", "refocusTrigger", "texttrigger");
-		unHittable.addAll("warp", "eventTrigger", "texttrigger", "refocusTrigger", "damageField");
+		unHittable.addAll("warp", "eventTrigger", "texttrigger", "refocusTrigger", "damageField",
+				"foot", "interact", "attack", "center", "vision","tiledobject");
 	}
 
 	public MyContactListener(Main p){
@@ -163,11 +163,11 @@ public class MyContactListener implements ContactListener {
 				}else ((RefocusTrigger) entB).trigger();
 		} if(typeA.equals("eventTrigger") && entB instanceof Mob && !unstandable.contains(typeB, false)){
 			if (main.character.equals((Mob) entB))
-				if(!((EventTrigger) entA).triggered)
+//				if(!((EventTrigger) entA).triggered)
 					((EventTrigger) entA).checkEvent();
 		} if(typeB.equals("eventTrigger") && entA instanceof Mob && !unstandable.contains(typeA, false)){
 			if (main.character.equals((Mob) entA))
-				if(!((EventTrigger) entB).triggered)
+//				if(!((EventTrigger) entB).triggered)
 					((EventTrigger) entB).checkEvent();
 		}
 

@@ -4,7 +4,9 @@ import static handlers.Vars.PPM;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 
@@ -16,6 +18,7 @@ public class Projectile extends Entity {
 	protected BodyType bodyType;
 	protected ProjectileType type;
 	protected KillType killType;
+	protected String shape;
 	protected Vector2 velocity;
 	protected Mob owner;
 	protected DamageType damageType;
@@ -43,6 +46,7 @@ public class Projectile extends Entity {
 		this.layer = Vars.BIT_BATTLE;
 		this.owner = owner;
 		this.killType = KillType.ON_IMPACT;
+		this.shape = "box";
 		bodyType = BodyType.KinematicBody;
 		
 		setDimensions();
@@ -70,6 +74,7 @@ public class Projectile extends Entity {
 //		Vector2 vel = body.getLinearVelocity();
 //		float angle = (float)(Math.atan(vel.y/vel.x));
 //		sb.draw(animation.getFrame(), loc.x, loc.y, loc.x+rw, loc.y+rh, width, height, 1, 1, angle);
+		
 	}
 
 	//handling for when projectile collides with something
@@ -100,7 +105,7 @@ public class Projectile extends Entity {
 		}
 
 		if(owner.equals(target)) return;
-		playCollideSound();
+		if(!(target instanceof Ground)) playCollideSound();
 		if(impacted) return;
 		
 		//apply damage to object
@@ -215,6 +220,7 @@ public class Projectile extends Entity {
 			damageType = DamageType.ELECTRO;
 			bodyType = BodyType.DynamicBody;
 			killType = KillType.BOUNCE;
+			shape = "circle";
 			damageVal = 1.1f;
 			speed = 3.5f;
 			restitution = .75f;
@@ -223,8 +229,9 @@ public class Projectile extends Entity {
 			damageType = DamageType.ROCK;
 			bodyType = BodyType.DynamicBody;
 			killType = KillType.BOUNCE;
+			shape = "circle";
 			damageVal = 1.1f;
-			restitution = .1f;
+			restitution = .01f;
 			speed = 1.5f;
 			isSensor = false;
 			break;
@@ -242,20 +249,26 @@ public class Projectile extends Entity {
 		init = true;
 		
 		//hitbox
+		if(this.shape.equals("circle")){
+			CircleShape shape = new CircleShape();
+			shape.setRadius((rw)/PPM);
+			fdef.shape = shape;
+		}else{
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((rw)/PPM, (rh)/PPM);
+			shape.setAsBox((rw)/PPM, (rh)/PPM);
+			fdef.shape = shape;
+		}
+		
 		bdef.position.set(x/PPM, y/PPM);
 		bdef.type = bodyType;
 		bdef.bullet = true;
 		body = world.createBody(bdef);
 		body.setUserData(this);
-		fdef.shape = shape;
 		fdef.isSensor = isSensor;
 		fdef.restitution = restitution;
 		fdef.filter.maskBits = (short) Vars.BIT_GROUND | Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3;
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData("projectile");
-		
 		body.setLinearVelocity(velocity);
 		
 		String sound;

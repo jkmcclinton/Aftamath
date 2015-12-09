@@ -1,0 +1,25 @@
+Script Main
+
+lockplayer
+face(this, player)
+setSpeaker(this)
+
+if(HeroTutVillain)
+	text(mad, {Don't you give me that look! I gave you a chance and you blew it!})
+	text(mad, {And you know what? You're worst than evil!})
+	text(mad, {You had the audacity to make me think you were on the side of good in the first place!})
+	text(mad, {At least the Flying Chick and the rest of her cohorts can't stand to even think about sneaking onto our side!})
+	
+	setSpeaker(narrator)
+	text(normal, {I think we get the point.})
+end
+if(RogueTutorial)
+	text(normal, {Someday, /player, you'll have to decide.})
+	text(normal, {Good or Evil, take your pick. Just know that if you choose incorrectly I will be there to end your reign of terror.})
+end
+if(VillainTut)
+	text(mad, {Dispicable.})
+	text(mad, {Leave or I will be forced to implore JUSTICE on you....})
+end
+
+done

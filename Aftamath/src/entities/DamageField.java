@@ -35,14 +35,21 @@ public class DamageField extends Entity {
 		init();
 		this.ID = image;
 		
+		int dx = 1;
+		if(owner.isFacingLeft()) {
+			facingLeft=true;
+			dx=-1;
+		}
+		
 		setDimensions();
 		loadSprite();
-		width += widthOffset;
-		int dx = 1;
-		if(owner.isFacingLeft()) dx=-1;
 		
+		width += widthOffset;
 		this.x = x + dx*rw;
 		this.y = y + rh;
+		
+		if(ID.equals("boulderFist"))
+			rw = 20;
 		
 		this.owner = owner;
 		this.damageType = damageType;
@@ -58,13 +65,14 @@ public class DamageField extends Entity {
 		lifeTime+=dt;
 		animation.update(dt);
 		
-		for(Entity e: victims.keySet()){
-			if(victims.get(e)<=0){
-				applyDamageEffect(e);
-				victims.put(e, (float) (2*e.resistance));
-			} else
-				victims.put(e, victims.get(e)-dt);
-		}
+		if(ID.equals("boulderFist") && lifeTime<=2*Vars.DT)
+			for(Entity e: victims.keySet()){
+				if(victims.get(e)<=0){
+					applyDamageEffect(e);
+					victims.put(e, (float) (2*e.resistance));
+				} else
+					victims.put(e, victims.get(e)-dt);
+			}
 
 		if(lifeTime>=duration){
 			main.addBodyToRemove(body);
@@ -74,6 +82,9 @@ public class DamageField extends Entity {
 	
 	public void render(FadingSpriteBatch sb){
 		switch(ID){
+		case "boulderFist":	
+			sb.draw(animation.getFrame(), getPixelPosition().x - width/2, getPixelPosition().y - rh - 2);
+			break;
 		default:	
 			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
 		}
@@ -98,12 +109,18 @@ public class DamageField extends Entity {
 			if(!e.burning)
 				e.ignite();
 			break;
+		case "boulderFist":
+			if(e.getBody()!=null)
+				e.getBody().applyForceToCenter(0f, 240f, true);
+			break;
 		}
 	}
 	
+	public Mob getOwner(){ return owner; }
+	
 	//once victim has been added, immediately damage on field's next update call
 	public void addVictim(Entity e){
-		if(e.destructable)
+		if(e.destructable && !owner.equals(e))
 			victims.put(e, 0f);
 	}
 	
@@ -134,7 +151,7 @@ public class DamageField extends Entity {
 			sound = "clap1";
 			break;
 		case ROCK:
-			sound = "shake3";
+			sound = "boulder";
 			break;
 		default:
 			sound = "chirp2";
@@ -184,8 +201,9 @@ public class DamageField extends Entity {
 			damageStrength = 1.1f;
 			break;
 		case "boulderFist":
-			//only lasts as long as it should
-			duration = animation.getFrames().size*animation.getSpeed();
+			//only lasts as long as the animation
+//			duration = animation.getFrames().size*animation.getSpeed();
+			duration = .45f;
 			damageStrength = 1.1f;
 			isSensor = false;
 			break;
@@ -203,6 +221,7 @@ public class DamageField extends Entity {
 		//define hitbox physics
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw)/PPM, (rh)/PPM);
+		
 		bdef.position.set(x/PPM, y/PPM);
 		bdef.type = BodyType.KinematicBody;
 		body = world.createBody(bdef);
@@ -222,7 +241,7 @@ public class DamageField extends Entity {
 		case "chillyWind":
 			sound = "air1"; break;
 		case "boulderFist":
-			sound = "crumbling"; break;
+			sound = "boulderFist"; break;
 		default:
 			sound = "";
 		}
