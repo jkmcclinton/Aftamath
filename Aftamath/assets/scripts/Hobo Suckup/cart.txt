@@ -1,0 +1,33 @@
+Script Main
+
+if(!talkedToHobo)
+	setSpeaker(player)
+	text(normal, {The needs of the human body...})
+else
+	if(!tookBread)
+		setSpeaker(player)
+		text(normal, {The needs of the human body...})
+		setFlag(sawBread)
+		setChoice(2:Take bread, 1:Don't take bread)
+			[choice Take bread]
+				text(normal, {I don't even care anymmore. Take that, capitalism!})
+				setFlag(tookBread)
+			end
+			[choice Don't take bread]
+				text(normal, {I don't want to steal. Maybe this is a test. Or I could wait.})
+			end
+		end
+	else
+		setSpeaker(narrator)
+		text(normal, {You already stole the bread. Do you really want to take more?})
+		setChoice(2:Take more bread, 1:Don't take bread)
+			[choice Take more bread]
+				text(normal, {Yes, down with capitalism!})
+			end
+			[choice Don't take bread]
+				text(normal, {I've already stolen enough.})
+			end
+		end
+	end
+end
+done
