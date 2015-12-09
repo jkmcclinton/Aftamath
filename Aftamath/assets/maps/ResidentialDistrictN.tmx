@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="60">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="62">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -184,7 +184,7 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="17" name="5" x="948" y="1552" width="16" height="16">
+  <object id="17" name="5" x="1072" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="5"/>
     <property name="NPC" value="girlfriend1"/>
@@ -195,7 +195,7 @@
     <property name="state" value="STATIONARY"/>
    </properties>
   </object>
-  <object id="18" name="6" x="408" y="1552" width="16" height="16">
+  <object id="18" name="6" x="448" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="6"/>
     <property name="NPC" value="logger"/>
@@ -227,7 +227,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="24" x="208" y="256" width="16" height="16">
+  <object id="24" x="368" y="1552" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
@@ -258,17 +258,7 @@
   <object id="29" x="240" y="1392" width="16" height="176">
    <properties>
     <property name="event" value=""/>
-    <property name="robbers1" value="!RobberIntro"/>
-   </properties>
-  </object>
-  <object id="43" name="10" x="1488" y="1552" width="16" height="16">
-   <properties>
-    <property name="ID" value="1000"/>
-    <property name="NPC" value="narrator1"/>
-    <property name="layer" value="back"/>
-    <property name="name" value="Narrator"/>
-    <property name="script" value="endOfDemo"/>
-    <property name="state" value="BLOCKPATH"/>
+    <property name="robbers1" value="RobberIntro"/>
    </properties>
   </object>
   <object id="44" name="5" x="1418" y="1552" width="16" height="16">
@@ -279,7 +269,6 @@
     <property name="layer" value="front"/>
     <property name="name" value="Villain"/>
     <property name="nickName" value="Some chick in tights"/>
-    <property name="powerType" value="ELECTRO"/>
     <property name="script" value="superGlare"/>
     <property name="state" value="STATIONARY"/>
    </properties>
@@ -289,8 +278,9 @@
     <property name="ID" value="26"/>
     <property name="NPC" value="hobo"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Jermaine"/>
-    <property name="script" value="generic_1"/>
+    <property name="name" value="Hobo"/>
+    <property name="nickName" value="Jermaine"/>
+    <property name="script" value="hobo2"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
@@ -302,7 +292,6 @@
     <property name="layer" value="front"/>
     <property name="name" value="Hero"/>
     <property name="nickName" value="Some guy in tights"/>
-    <property name="powerType" value="FIRE"/>
     <property name="script" value="superGlare"/>
     <property name="state" value="STATIONARY"/>
    </properties>
@@ -333,6 +322,22 @@
     <property name="avoidHalt" value=""/>
     <property name="event" value=""/>
     <property name="grimReaper1" value=""/>
+   </properties>
+  </object>
+  <object id="60" x="272" y="1392" width="80" height="176">
+   <properties>
+    <property name="event" value=""/>
+    <property name="hobo1" value="!Hobo1"/>
+   </properties>
+  </object>
+  <object id="61" name="2" x="400" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="55"/>
+    <property name="NPC" value="breadstand"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="AbandonedCart"/>
+    <property name="script" value="cart"/>
+    <property name="state" value="STATIONARY"/>
    </properties>
   </object>
  </objectgroup>
