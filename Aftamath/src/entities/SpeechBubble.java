@@ -127,7 +127,7 @@ public class SpeechBubble extends Entity {
 		
 		//destroy object if interaction has lost contact
 		if(body != null && main.character.getInteractable() != owner && ID.equals("speechBubble0")) 
-			main.addBodyToRemove(getBody());
+			main.removeBody(getBody());
 	}
 	
 	public void render(FadingSpriteBatch sb){

@@ -111,8 +111,8 @@ public class Mob extends Entity {
 	protected static final float DEFAULT_ATTACK_DELAY = .5f;
 	protected static final float DEFAULT_ATTACK_RANGE = 20;
 	protected static final float DEFAULT_VISION_RANGE = 10*Vars.TILE_SIZE;
-	protected static final float DEFAULT_AIM_THRESHOLD = /*1.5*/0;
-	protected static final float DEFAULT_COOLDOWN = /*3f*/0;
+	protected static final float DEFAULT_AIM_THRESHOLD = .8f;
+	protected static final float DEFAULT_COOLDOWN = 3f;
 	protected static final double DEFAULT_STRENGTH = 1;
 	protected static final double DAMAGE_THRESHOLD = 4;
 	protected static final int INTERACTION_SPACE = 17;
@@ -1130,7 +1130,7 @@ public class Mob extends Entity {
 				main.getB2dCam().resetZoom();
 			}
 			
-			main.addBodyToRemove(body);
+			main.removeBody(body);
 			body.setUserData(this.copy());
 			create();
 		}
@@ -1816,7 +1816,7 @@ public class Mob extends Entity {
 	public boolean useWarp(){
 		//if(canWarp)
 		if(warp == null) return false;
-		main.addBodyToRemove(getBody());
+		main.removeBody(getBody());
 		setPosition(warp.getLink().getWarpLoc());
 //		Scene s = warp.getLink().owner;
 		//save location in new level
@@ -2065,6 +2065,14 @@ public class Mob extends Entity {
 	public void setPowerType(DamageType type){
 		level = 1;
 		this.powerType = type;
+	}
+	
+	public void setPowerType(String type){
+		try{
+			setPowerType(DamageType.valueOf(type.toUpperCase()));
+		} catch(Exception e){
+			System.out.println("\""+type+"\" is and invalid power type");
+		}
 	}
 
 	public void setPositioningFocus(Entity e){ positioningFocus = e; }

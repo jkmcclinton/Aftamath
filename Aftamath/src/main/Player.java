@@ -63,7 +63,7 @@ public class Player implements Serializable {
 		double rnd = Math.random()*(DamageType.values().length-2)+1;
 		int type = (int) rnd;
 		DamageType dT = DamageType.values()[type];
-		dT=DamageType.ROCK;
+//		dT=DamageType.ROCK;
 		
 		main.character.setPowerType(dT);
 		if(typeCounter.containsKey(dT))

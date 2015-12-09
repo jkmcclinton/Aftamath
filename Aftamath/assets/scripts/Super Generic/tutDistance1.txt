@@ -11,7 +11,7 @@ else
 	text(mad, {Where are hell do you think you're going? Get your but back over here})
 end
 	
-move(player, 45, 78)
+move(player, 61, 78)
 done
 
 

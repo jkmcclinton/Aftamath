@@ -1,4 +1,4 @@
-Script Main
+ Script Main
 lockplayer
 face(player, this)
 face(this, player)

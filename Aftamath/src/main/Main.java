@@ -217,7 +217,7 @@ public class Main extends GameState {
 				handleWeather();
 			}
 
-			if(currentScript != null &&analyzing && !waiting) 
+			if(currentScript != null &&analyzing && !waiting &&!warping) 
 				currentScript.update();
 
 			if (waiting){
@@ -276,7 +276,7 @@ public class Main extends GameState {
 							//Game Over
 							//System.out.println("die"); 
 						} else {
-							addBodyToRemove(e.getBody());
+							removeBody(e.getBody());
 						}
 					}
 				}
@@ -549,11 +549,10 @@ public class Main extends GameState {
 		}
 
 		if(MyInput.isPressed(Input.DEBUG_CENTER)) {
-//			random=true;
-//			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
-//			changeSong(new Song(Game.SONG_LIST.get(current)));
-			//			dayTime+=1.5f;
-			cam.shake();
+			random=true;
+			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
+			changeSong(new Song(Game.SONG_LIST.get(current)));
+//			dayTime+=1.5f;
 		}
 
 		if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
@@ -904,7 +903,7 @@ public class Main extends GameState {
 
 						//delete speechBubbles from world
 						for (SpeechBubble b : choices)
-							addBodyToRemove(b.getBody()); 
+							removeBody(b.getBody()); 
 					}
 				}
 
@@ -1131,11 +1130,29 @@ public class Main extends GameState {
 		warped = false;
 		this.warp = warp;
 		nextScene = warp.getNextScene();
-		//		scene.saveLevel();
 
 		sb.fade();
 		if(nextScene.newSong)
 			changeSong(nextScene.DEFAULT_SONG[dayState]);
+	}
+	
+	private Vector2 location;
+	public void initTeleport(Vector2 loc, String level){
+		if(Game.LEVEL_NAMES.contains(level, false)){
+			warping = true;
+			warped = false;
+			warp = null;
+
+			location = loc;
+			nextScene = new Scene(world, this, level);
+			nextScene.setRayHandler(rayHandler);
+
+			sb.fade();
+			if(nextScene.newSong)
+				changeSong(nextScene.DEFAULT_SONG[dayState]);
+		} else {
+			System.out.println("\""+level+"\" is an invalid level name");
+		}
 	}
 
 	public void warp(){
@@ -1145,13 +1162,21 @@ public class Main extends GameState {
 		destroyBodies();
 		scene = nextScene;
 		scene.create();
-		Vector2 w = warp.getLink().getWarpLoc();
-		w.y+=character.rh;
-		createPlayer(w);
-		initEntities();
+		if(warp!=null){
+			Vector2 w = warp.getLink().getWarpLoc();
+			
+			w.y+=character.rh;
+			createPlayer(w);
+			if(warp.getLink().warpID==1 && !character.isFacingLeft()) character.setDirection(true);
+			if(warp.getLink().warpID==0 && !character.isFacingLeft()) character.setDirection(false);
+		
+		} else {
+			location.y+=character.rh;
+			createPlayer(location);
+			location = null;
+		}
 
-		if(warp.getLink().warpID==1 && !character.isFacingLeft()) character.setDirection(true);
-		if(warp.getLink().warpID==0 && !character.isFacingLeft()) character.setDirection(false);
+		initEntities();
 		cam.setBounds(Vars.TILE_SIZE*4, (scene.width-Vars.TILE_SIZE*4), 0, scene.height);
 		b2dCam.setBounds((Vars.TILE_SIZE*4)/PPM, (scene.width-Vars.TILE_SIZE*4)/PPM, 0, scene.height/PPM);
 
@@ -1231,7 +1256,7 @@ public class Main extends GameState {
 		return object;
 	}
 
-	public void addBodyToRemove(Body b){  bodiesToRemove.add(b);  }
+	public void removeBody(Body b){  bodiesToRemove.add(b);  }
 	public ArrayList<Path> getPaths() {return paths; }
 	public Path getPath(String pathName){
 		for(Path p : paths){
@@ -1287,17 +1312,10 @@ public class Main extends GameState {
 
 	//precreates all existing warps across entire game and puts them to hashtable
 	public void catalogueWarps(){
-		//collect names for valid levels
-		Array<String> levels = new Array<>();
-		FileHandle [] files = Gdx.files.internal("assets/maps").list();
-		for(FileHandle f:files)
-			if(f.extension().equals("tmx"))
-				levels.add(f.nameWithoutExtension());
-
 		Scene s;
 		Array<Warp> w;
 		// create warps from each level and add them to the hash
-		for(String l : levels){
+		for(String l : Game.LEVEL_NAMES){
 			s = new Scene(l);
 			w = s.createWarps();
 			for(Warp i : w) 
@@ -1393,7 +1411,6 @@ public class Main extends GameState {
 	}
 
 	public void triggerScript(Script script, EventTrigger tg){
-		System.out.println(analyzing+" aSS wipe");
 		if(currentScript!=null || analyzing){
 			System.out.println("Main already has script with ID: "+currentScript.ID);
 			return;
@@ -1406,7 +1423,7 @@ public class Main extends GameState {
 				analyzing = true;
 				for (Entity e : objects)
 					if (e instanceof SpeechBubble)
-						addBodyToRemove(e.getBody()); //remove talking speech bubble
+						removeBody(e.getBody()); //remove talking speech bubble
 				script.analyze();
 				if(currentScript==null)return;
 				if (currentScript.limitDistance) { //script can somehow become null at this point (threading issue?)
@@ -1416,7 +1433,8 @@ public class Main extends GameState {
 						if(character.getInteractable()!=null)
 							if(tg==null)
 								positionPlayer(character.getInteractable());
-							else if (tg.getHalt(currentScript.ID)) System.out.println("not positioning");
+							else if (tg.getHalt(currentScript.ID)) 
+								System.out.println("not positioning");
 //						do something
 				}
 			}

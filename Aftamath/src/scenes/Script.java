@@ -139,7 +139,7 @@ public class Script implements Serializable {
 			finish();
 			return;
 		}
-//		System.out.println("---"+(index+1)+"---- "+source.get(index));
+		System.out.println("---"+(index+1)+"---- "+source.get(index));
 
 		Operation o;
 		dialog = false;
@@ -348,7 +348,7 @@ public class Script implements Serializable {
 						if(e instanceof DamageField)
 							if(((DamageField)e).getOwner().equals(main.character)){
 								found = true;
-								main.addBodyToRemove(e.getBody());
+								main.removeBody(e.getBody());
 								((DamageField) e).finalize();;
 								break;
 							}
@@ -388,11 +388,15 @@ public class Script implements Serializable {
 			case "focus":
 			case "focuscamera":
 				obj = findObject(lastArg(line));
-
+				args = args(line);
 				if (obj != null) {
 					paused = true;
 					main.getCam().setFocus(obj);
 					activeObj = main.getCam();
+				} else if (args.length==2) {
+					loc = parseTiledVector(args, 0);
+					if(loc!=null)
+						main.getCam().setFocus(loc);
 				}
 				break;
 			case "forcefollow":
@@ -459,7 +463,7 @@ public class Script implements Serializable {
 				paused = true;
 				main.hud.hide();
 
-				main.addBodyToRemove(main.character.getBody());
+				main.removeBody(main.character.getBody());
 				main.character = new Mob(main.character.getName(), 
 						String.valueOf(getVariable("playergender")) + "player" + getVariable("playertype"),
 						Vars.PLAYER_SCENE_ID, main.getScene().getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
@@ -513,7 +517,7 @@ public class Script implements Serializable {
 						float dx = target.getPosition().x - obj.getPosition().x;
 						float a = (Math.abs(dx)/dx), max = 3*Vars.TILE_SIZE/Vars.PPM;
 						loc = new Vector2(target.getPosition().x - a*max, target.getPosition().y*Vars.PPM);
-						System.out.println("Move to Entity: "+(int)(loc.x*Vars.PPM));
+//						System.out.println("Move to Entity: "+(int)(loc.x*Vars.PPM));
 					}
 
 					// is targ a tile vector?
@@ -551,7 +555,7 @@ public class Script implements Serializable {
 			case "removeObject":
 				obj = findObject(firstArg(line));
 				if (obj!= null)
-					main.addBodyToRemove(obj.getBody());
+					main.removeBody(obj.getBody());
 				else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
@@ -759,9 +763,11 @@ public class Script implements Serializable {
 			case "setnickname":
 				obj = findObject(firstArg(line));
 				if(obj!=null){
-					if(obj instanceof Mob)
-						((Mob) obj).setNickName(lastArg(line));
-					else
+					if(obj instanceof Mob){
+						String s = firstArg(line);
+						if(s.equals("none") || s.equals("null") || s.equals("empty"))
+						((Mob) obj).setNickName(null);
+					}else
 						System.out.println("\""+firstArg(line)+"\" cannot have a nickname because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
 				} else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to change nickname; Line: "+(index+1)+"\tScript: "+ID);
@@ -885,11 +891,64 @@ public class Script implements Serializable {
 			case "stopeventmusic":
 				stopEventBGM();
 				break;
+			case"teleport":
+				//teleport(objectName, levelName, x, y)
+				//teleport(objectName, levelName, warp)
+				args = args(line);
+				obj = findObject(firstArg(line));
+				if(obj!=null){
+					String level = args[1];
+					if(Game.LEVEL_NAMES.contains(level, false)){
+					if(args.length==3){ //teleport object to warp
+						//TODO
+						System.out.println("Sorry, but teleporting using warps is disabled!"+(index+1)+"\tScript: "+ID);
+					} if(args.length==4){ //teleport object to tile vector
+						loc = parseTiledVector(args, 2, new Scene(level));
+						if(loc==null){
+							System.out.println("Could not parse a tile vector for teleportation; Line: "+(index+1)+"\tScript: "+ID);
+							break;
+						}
+						
+						loc.y-=Vars.TILE_SIZE;
+						System.out.println("See my ass for details");
+						if(obj.equals(main.character))
+							main.initTeleport(loc, level);
+						else {
+							int sceneID = obj.getSceneID();
+							Entity.idToEntity.remove(sceneID);
+							
+							Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
+							set.remove(sceneID);
+							set = Scene.sceneToEntityIds.get(main.getScene().ID);
+							set.add(sceneID);
+
+							obj.setPosition(new Vector2(loc.x, loc.y));
+							main.removeBody(obj.getBody());
+						}
+					}
+					}
+					else
+						System.out.println("Invalid level name \""+args[1]+"\" to teleport; Line: "+(index+1)+"\tScript: "+ID);
+				}
+				else
+					System.out.println("Could not find \""+firstArg(line)+"\" to teleport; Line: "+(index+1)+"\tScript: "+ID);
+				
+				break;
 			case "text":
 				text(line);
 				break;
 			case "toggleStats":
 				main.hud.showStats = Boolean.parseBoolean(firstArg(line));
+				break;
+			case "triggerScript":
+				System.out.println("triggering: "+firstArg(line));
+				if(!this.equals(main.loadScript)){
+					String s= firstArg(line);
+					if(s.contains("{")&&s.contains("}"))
+						s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
+					main.triggerScript(s);
+				} else
+					System.out.println("Only Level Scripts can use the \"triggerScript\" command; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "wait":
 				time = 0;
@@ -1272,9 +1331,11 @@ public class Script implements Serializable {
 		}
 
 		String[] a = tmp.split(",");
-		for(int i =0;i<a.length;i++)
+		for(int i =0;i<a.length;i++){
 			if(a[i].trim().equals("&str&"))
 				a[i]=str;
+			a[i] = a[i].trim();
+		}
 		return a;
 	}
 
@@ -1329,13 +1390,17 @@ public class Script implements Serializable {
 	// create a vector from an array of arguments starting from given index
 	//units in pixels
 	private Vector2 parseTiledVector(String[] args, int index){
+		return parseTiledVector(args, index, main.getScene());
+	}
+	
+	private Vector2 parseTiledVector(String[] args, int index, Scene scene){
 		if(index+1>=args.length)
 			return null;
 		
 		try{
 			float x = Float.parseFloat(args[index].trim()) * Vars.TILE_SIZE;
-			float y =	main.getScene().height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
-			System.out.println("Parse Vec: "+x+", "+y);
+			float y =	scene.height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
+			System.out.println("Parsed Vec: "+x+", "+y);
 			Vector2 v = new Vector2(x, y);
 			return v;
 		} catch(Exception e){ }
@@ -1593,8 +1658,11 @@ public class Script implements Serializable {
 							break;
 						case "power":
 						case "level":
-							if(object instanceof Mob)
+							if(object instanceof Mob){
 								((Mob)object).levelUp();
+								if(object.equals(main.character))
+									main.playSound("musical1");//TODO
+							}
 							break;
 						default:
 							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object +

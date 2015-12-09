@@ -61,7 +61,7 @@ public class Projectile extends Entity {
 	public void update(float dt){
 		totKillTime+=dt;
 		if(totKillTime>=killTime && killType.equals(KillType.TIMED))
-			main.addBodyToRemove(getBody());
+			main.removeBody(getBody());
 		
 		if(body.getLinearVelocity().x < 0 && !isFacingLeft()) changeDirection();
 		else if(body.getLinearVelocity().x > 0 && isFacingLeft()) changeDirection();
@@ -94,11 +94,11 @@ public class Projectile extends Entity {
 		//conditions for removing projectile
 		switch(killType){
 		case ON_IMPACT:
-			main.addBodyToRemove(getBody());
+			main.removeBody(getBody());
 			break;
 		case BOUNCE:
 			if(target.destructable)
-				main.addBodyToRemove(getBody());
+				main.removeBody(getBody());
 			break;
 		default:
 			break;

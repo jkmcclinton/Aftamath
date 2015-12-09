@@ -75,7 +75,7 @@ public class DamageField extends Entity {
 			}
 
 		if(lifeTime>=duration){
-			main.addBodyToRemove(body);
+			main.removeBody(body);
 			finalize();
 		}
 	}

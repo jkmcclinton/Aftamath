@@ -28,7 +28,7 @@ text(normal, {What will our new Player 1 do, I wonder?})
 setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
   [choice Flee]
     value(set, desc, {Fled from a gang of ne'er-do-wells})
-    move(player, fleeFromRobbers, true)
+    move(player, 27, 97, false)
     say(Trevon, {Ay! Get cho ass back ova heer!})
     wait(1)
     say(Jose, {We got dem guns doh!}
@@ -64,8 +64,8 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
     value(set, player.money, 0)
     
     #gangsters run off screen
-    move(Trevon, moveRobberLeft, true)
-    move(Jose, moveRobberLeft1, true)
+    move(Trevon, 0, 97, false)
+    move(Jose, 0, 97, false)
     remove(Trevon)
     remove(Jose)
 
@@ -82,7 +82,39 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
     text(normal, {Alright, so I'll explain how to fight. Kill your enemies with LSHIFT.})
     text(normal, {You aren't much right now, so all you can do is punch people senseless. ~Maybe if you had a gun or something....})
 
-    #engage battle!
+	
+	hidedialog
+	wait(.5)
+	text(normal, {...})
+	text(normal, {.......})
+	text(sad, {Nothing's happening.})
+	text(sad, {One second.})
+	
+	hidedialog
+	wait(.5)
+	text(mad, {Dammit, Jenkins! ~WHY~ is the fighting mechanic ~STILL ~BROKEN!?!?})
+	
+	setSpeaker(player)
+	setNickName(player, Jenkins)
+	text(normal, {Uh.... ~Sorry ma'am...})
+	text(normal, {I'll get right to it....})
+	
+	setNickName(player, null)
+	setSpeaker(narrator)
+	text(mad, {What the hell? ~That was your one and ONLY job!})
+	text(mad, {And what did you do?})
+	text(mad, {Nothing! ~Absolutely nothing!})
+	text(mad, {It's like I'm running a train with no wheels here! ~This is pointless!})
+	
+	hidedialog
+	wait(.5)
+	text(normal, {Sorry, I'm back.})
+	text(normal, {Since you can't kill those those guys, I gues I'll have to.})
+	remove(Trevon)
+	remove(Jose)
+	
+	text(normal, {Hopefully sometime in the distant future you'll be able to fight people.})
+	text(normal, {Once a certain dunderhead learns to do his job})
   end
 
   [choice Comply]
@@ -107,8 +139,8 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
     text(happy, {Thanks bruh! We'll rememba dis!})
     
     #gangsters run off screen
-    move(Trevon, moveRobberLeft, true)
-    move(Jose, moveRobberLeft1, true)
+    move(Trevon, 0, 97, false)
+    move(Jose, 0, 97, false)
     remove(Trevon)
     remove(Jose)
 
@@ -122,7 +154,7 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
     value(set, desc, {Tested out super cool, super awesome, SUPA POWERS})
     setSpeaker(player)
     text(mad, {Beat it, punks!})
-    #attack(player, Jose)
+    attack(player, Jose)
     playSound(girlScream)
     setSpeaker(narrator)
     text(happy, {That was probably your best option. ~But it obviously wasn't enough to kill.})
@@ -134,7 +166,12 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
     remove(Jose)
 
     text(normal, {SUPA-powers are what make this city weird. But, not everybody has the gift. Hell, your powers haven't even been realized yet.})
-    text(normal, {In a real battle, you should be able use (enter key here) to use your special ability.})
+    text(normal, {In a real battle, you should be able use (footnote 2) to use your special ability.})
+	
+	setSpeaker(null)
+	text(normal, {(footnote 2): See my ass for details.})
+	
+	setSpeaker(narrator)
     text(normal, {I'll give you a little extra experience to help you out some.})
     value(add, player.level, 1)
     text(normal, {Hear that? You just leveled up! Do that enough times and you can become a SUPA hero!})

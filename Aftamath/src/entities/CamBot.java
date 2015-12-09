@@ -49,25 +49,25 @@ public class CamBot extends Mob {
 	
 	public void climb(){
 		y+=1*speed;
-		main.addBodyToRemove(body);
+		main.removeBody(body);
 		create();
 	}
 	
 	public void descend(){
 		y-=1*speed;
-		main.addBodyToRemove(body);
+		main.removeBody(body);
 		create();
 	}
 	
 	public void left(){
 		x-=1*speed;
-		main.addBodyToRemove(body);
+		main.removeBody(body);
 		create();
 	}
 	
 	public void right(){
 		x+=1*speed;
-		main.addBodyToRemove(body);
+		main.removeBody(body);
 		create();
 	}
 	

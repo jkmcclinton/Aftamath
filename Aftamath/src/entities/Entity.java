@@ -220,7 +220,7 @@ public class Entity implements Serializable {
 	public void changeLayer(short layer){
 		this.layer = layer;
 		if(body!=null){
-			main.addBodyToRemove(body);
+			main.removeBody(body);
 			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 			fdef.filter.categoryBits = layer;
 			create();

@@ -66,11 +66,11 @@ if([player.niceness < 0])
 	text(flirty, {Hmm... I just got an idea...})
 
 	#enter Hero
-	spawn(NPC, hero1, Hero, 12, 78, 12)
+	spawn(NPC, hero1, Hero, 40, 78, 12)
 	face(Villain, Hero)
 	face(player, Hero)
 	face(Hero, Villain)
-	move(Hero, 27, 28)
+	move(Hero, 47, 28)
 	
 	setSpeaker(Hero)
 	eventMusic(Tension and Excitement)
@@ -88,9 +88,9 @@ if([player.niceness < 0])
 	end
 	
 	#hero runs to player
-	move(Hero, Player)
-	#villain shoots hero
+	move(Hero, Villain)
 	#doAction(Villain, shoot, Hero)
+	attack(Villain, Hero)
 	
 	setSpeaker(Villain)
 	text(mad, {Hands off. ~This rookie's mine.})
@@ -190,11 +190,11 @@ else
 	text(normal, {That's right! You earned yourself something positively GRAND!})
 
 	#enter Villain
-	spawn(NPC, villain1, Villain, 12, 78)
+	spawn(NPC, villain1, Villain, 40, 78)
 	face(Hero, Villain)
 	face(player, Villain)
 	face(Villain, Hero)
-	move(Villain, 27, 28)
+	move(Villain, 47, 28)
 
 	setSpeaker(Villain)
 	eventMusic(Tension and Excitement)
@@ -262,7 +262,6 @@ else
 			setSpeaker(Hero, true)
 			text(sad, {/player/c! ~WHY?!})
 			text(sad, {I had so much hope for you!})
-		
 		
 			setSpeaker(Villain)
 			text(sad, {Come on punk, let's blow this dump.})

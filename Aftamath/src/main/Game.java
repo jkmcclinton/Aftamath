@@ -58,6 +58,7 @@ public class Game implements ApplicationListener {
 		res.loadTextures();
 		res.loadMusic();
 		res.loadScriptList(Gdx.files.internal("assets/scripts"));
+		res.loadLevelNames();
 
 		cam = new Camera();
 		cam.setToOrtho(false, width/zoom, height/zoom);
@@ -132,6 +133,7 @@ public class Game implements ApplicationListener {
 
 	//Contains all the titles for songs
 	public static final Array<String> SONG_LIST = new Array<>();
+	public static Array<String> LEVEL_NAMES = new Array<>();
 
 	public static class Assets {
 
@@ -149,6 +151,15 @@ public class Game implements ApplicationListener {
 			for(FileHandle f:songs)
 				if(f.extension().equals("mp3")&&!f.name().contains("Intro"))
 					SONG_LIST.add(f.nameWithoutExtension());
+		}
+		
+		public void loadLevelNames(){
+
+			//collect names for valid levels
+			FileHandle [] files = Gdx.files.internal("assets/maps").list();
+			for(FileHandle f:files)
+				if(f.extension().equals("tmx"))
+					LEVEL_NAMES.add(f.nameWithoutExtension());
 		}
 		
 		public void loadScriptList(FileHandle begin){

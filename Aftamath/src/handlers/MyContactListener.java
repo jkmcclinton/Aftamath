@@ -101,17 +101,19 @@ public class MyContactListener implements ContactListener {
 					else; //move the Mob to that Level
 				} else {
 					if (entB.equals(main.character)){
-						if(((Warp)entA).getLink().owner.outside && ((Warp)entA).owner.outside){
-							String message = "To " + ((Warp)entA).getLink().locTitle;
-							(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y
-									+ entA.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
-						} else
-							new SpeechBubble(entA, entA.getPixelPosition().x, entA.rh +
-									entA.getPixelPosition().y, "arrow");
+						if(((Warp)entA).getLink()!=null){
+							if(((Warp)entA).getLink().owner.outside && ((Warp)entA).owner.outside){
+								String message = "To " + ((Warp)entA).getLink().locTitle;
+								(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y
+										+ entA.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
+							} else
+								new SpeechBubble(entA, entA.getPixelPosition().x, entA.rh +
+										entA.getPixelPosition().y, "arrow");
+						}
+						Mob m = (Mob) entB;
+						m.canWarp = true;
+						m.setWarp((Warp) entA);
 					}
-					Mob m = (Mob) entB;
-					m.canWarp = true;
-					m.setWarp((Warp) entA);
 				}
 			}
 		} if(typeB.equals("warp") && typeA.equals("foot")){
@@ -122,19 +124,21 @@ public class MyContactListener implements ContactListener {
 					else; //move the Mob to that Level
 				} else {
 					if (entA.equals(main.character)){
-						if(((Warp)entB).getLink().owner.outside && ((Warp)entB).owner.outside){
-							String message = "To " + ((Warp)entB).getLink().locTitle;
-							(new SpeechBubble(entB, entB.getPixelPosition().x, entB.getPixelPosition().y
-									+ entB.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
-						} else
-							new SpeechBubble(entB, entB.getPixelPosition().x, entB.rh +
-									entB.getPixelPosition().y, "arrow");
+						if(((Warp)entB).getLink()!=null){
+							if(((Warp)entB).getLink().owner.outside && ((Warp)entB).owner.outside){
+								String message = "To " + ((Warp)entB).getLink().locTitle;
+								(new SpeechBubble(entB, entB.getPixelPosition().x, entB.getPixelPosition().y
+										+ entB.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
+							} else
+								new SpeechBubble(entB, entB.getPixelPosition().x, entB.rh +
+										entB.getPixelPosition().y, "arrow");
+						}
+						Mob m = (Mob) entA;
+						m.canWarp = true;
+						m.setWarp((Warp) entB);
+						if(((Warp)entB).instant && entA.equals(main.character))
+							main.initWarp(((Warp)entB));
 					}
-					Mob m = (Mob) entA;
-					m.canWarp = true;
-					m.setWarp((Warp) entB);
-					if(((Warp)entB).instant && entA.equals(main.character))
-						main.initWarp(((Warp)entB));
 				}
 			}
 		} if(typeA.equals("texttrigger") && typeB.equals("foot")){
@@ -227,7 +231,7 @@ public class MyContactListener implements ContactListener {
 				for(Entity e:main.getObjects())
 					if(e instanceof SpeechBubble)
 						if(((SpeechBubble)e).getOwner().equals(entA))
-							main.addBodyToRemove(e.getBody());
+							main.removeBody(e.getBody());
 		} if(typeB.equals("warp") && typeA.equals("foot")){
 			Mob m = (Mob) entA;
 			if(m.getWarp()!=null)
@@ -240,17 +244,17 @@ public class MyContactListener implements ContactListener {
 				for(Entity e:main.getObjects())
 					if(e instanceof SpeechBubble)
 						if(((SpeechBubble)e).getOwner().equals(entB))
-							main.addBodyToRemove(e.getBody());
+							main.removeBody(e.getBody());
 		} if(typeA.equals("texttrigger") && typeB.equals("foot") && entB.equals(main.character)){
 			for(Entity e:main.getObjects())
 				if(e instanceof SpeechBubble)
 					if(((SpeechBubble)e).getOwner().equals(entA))
-						main.addBodyToRemove(e.getBody());
+						main.removeBody(e.getBody());
 		} if(typeB.equals("texttrigger") && typeA.equals("foot") && entA.equals(main.character)){
 			for(Entity e:main.getObjects())
 				if(e instanceof SpeechBubble)
 					if(((SpeechBubble)e).getOwner().equals(entB))
-						main.addBodyToRemove(e.getBody());
+						main.removeBody(e.getBody());
 		}
 
 //		System.out.println("end: " + fbUD + " : " + faUD);

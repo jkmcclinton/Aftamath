@@ -10,7 +10,7 @@ else
 	text(mad, {Where are hell do you think you're going? Get your but back over here!})
 end
 	
-move(player, 29.5, 78)
+move(player, 47.5, 78)
 done
 
 

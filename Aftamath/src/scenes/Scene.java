@@ -493,6 +493,7 @@ public class Scene {
 						String dType = object.getProperties().get("onSight", String.class);
 						String aType = object.getProperties().get("onAttacked", String.class);
 						String pathName = object.getProperties().get("path", String.class);
+						String powerType = object.getProperties().get("powerType", String.class);
 
 						if(l!=null)
 							if (l.toLowerCase().equals("back")) l = "3";
@@ -533,6 +534,7 @@ public class Scene {
 								e.setDiscoverScript(dScript);
 								e.setResponseType(dType);
 								e.setAttackType(aType);
+								e.setPowerType(powerType);
 								e.active = true;
 								entities.add(e);
 								
