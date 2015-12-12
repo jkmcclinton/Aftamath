@@ -3,16 +3,14 @@ package handlers;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Anim2 {
-	TextureRegion[] primaryFrames, transFrames;
-	final TextureRegion[] baseFrames;
-	float primaryDelay, transDelay, baseDelay;
-	int priority;
-	int type;
-	LoopBehavior loopBehavior; 
-	int currentIndex;
-	float time;
-	float totTime;
-	float resetTime;
+	private TextureRegion[] primaryFrames, transFrames, baseFrames;
+	private float primaryDelay, transDelay, baseDelay;
+	public int priority, type, timesPlayed;
+	private LoopBehavior loopBehavior; 
+	private int currentIndex;
+	private float time;
+	private float totTime;
+	private float resetTime;
 	boolean backwards;
 
 	public enum LoopBehavior {
@@ -27,6 +25,8 @@ public class Anim2 {
 	public Anim2(TextureRegion[] baseFrames) {
 		this(baseFrames, 0);
 	}
+
+	public Anim2() {}
 
 	public void update(float dt) {
 		TextureRegion[] frames = transFrames; 
@@ -47,27 +47,32 @@ public class Anim2 {
 			if (backwards) currentIndex--;
 			else currentIndex++;
 	
+			//reached end of animation
 			if (currentIndex == -1 || currentIndex == frames.length) {
+				//remove transition loop
 				if (transFrames != null) {
 					transFrames = null;
 					transDelay = 0;
 					if (backwards && primaryFrames != null) currentIndex = primaryFrames.length - 1;
 					else currentIndex = 0;
 				}
+				//remove primary loop
 				else if (primaryFrames != null) {
 					switch (loopBehavior) {
 					case ONCE:
 						removePrimaryFrames();
 						break;
 					case TIMED:
-						if (totTime >= resetTime) {
+						if (totTime >= resetTime)
 							removePrimaryFrames();
-						} else {
-							currentIndex = backwards ? frames.length - 1 : 0; 
+						else {
+							currentIndex = backwards ? frames.length - 1 : 0;
+							timesPlayed++;
 						}
 						break;
 					case CONTINUOUS:
 						currentIndex = backwards ? frames.length - 1 : 0;
+						timesPlayed++;
 						break;
 					}
 				}
@@ -78,14 +83,13 @@ public class Anim2 {
 		}
 	}
 
+	/**get the image at the current index of the animation*/
 	public TextureRegion getFrame() {
 		TextureRegion[] frames = transFrames; 
-		if (transFrames == null) {
+		if (transFrames == null)
 			frames = primaryFrames;
-		}
-		if (primaryFrames == null) {
+		if (primaryFrames == null)
 			frames = baseFrames;
-		}
 		return frames[currentIndex]; 
 	}
 
@@ -95,9 +99,14 @@ public class Anim2 {
 			this.primaryFrames = frames;
 			this.loopBehavior = loop;
 			this.resetTime = resetTime;
-			if (backwards) currentIndex = frames.length - 1;
-			else currentIndex = 0;
-			if (direction) flip(true);
+			
+			if (backwards) 
+				currentIndex = frames.length - 1;
+			else 
+				currentIndex = 0;
+			if (direction) 
+				flip(true);
+			timesPlayed = 0;
 		}
 	}
 
@@ -133,8 +142,17 @@ public class Anim2 {
 		priority = 0;
 		type = 0;
 		currentIndex = 0;
+		timesPlayed = 0;
+	}
+	
+	/**return the animation to its default loop of images*/
+	public void reset(){
+		removePrimaryFrames();
+		transFrames = null;
 	}
 
+	/**Horizontally flip all images in animations to match the direction it should currently
+	 * be facing*/
 	public void flip(boolean flip) {
 		if (transFrames != null) {
 			for (TextureRegion t: transFrames) {
@@ -155,6 +173,18 @@ public class Anim2 {
 				t.flip(true, false);
 			}
 		}
+	}
+
+
+	public void setPrimarySpeed(float delay) { this.primaryDelay = delay; }
+	public float getPrimarySpeed() { return primaryDelay; }
+	public int getTimesPlayed() { return timesPlayed; }
+	public int getDefaultLength() { return baseFrames.length; }
+	public int getIndex(){
+		if(!backwards)
+			return currentIndex;
+		else
+			return primaryFrames.length - currentIndex - 1;
 	}
 
 }

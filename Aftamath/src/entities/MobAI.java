@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import entities.Mob2.Anim;
+import handlers.Anim2.LoopBehavior;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 import main.Main;
@@ -20,7 +21,7 @@ public class MobAI {
 	}
 
 	public static enum ResetType {
-		ON_ANIM_END, ON_SCRIPT_END, ON_AI_COMPLETE, ON_LEVEL_CHANGE, NEVER;
+		ON_ANIM_END, ON_SCRIPT_END, ON_AI_COMPLETE, ON_LEVEL_CHANGE, ON_TIME, NEVER;
 	}
 
 	public final Mob2 owner;
@@ -31,27 +32,36 @@ public class MobAI {
 	public Path path;
 
 	private final Main main; 
-
 	private Vector2 goalPosition, prevLocation;
 	private float inactiveWait, inactiveTime, doTime, doDelay, time;
+	private float actionTime;
 	private boolean reached, locked, attacked;
 
 	private static final int IDLE_LIMIT = 500;
-
-	public MobAI(Mob2 owner, AIType type, ResetType resetType) {
-		this(owner, type, resetType, -1);
+	
+	public MobAI(Mob2 owner, AIType type){
+		this(owner, type, ResetType.ON_AI_COMPLETE);
 	}
 
-	public MobAI(Mob2 owner, AIType type, ResetType resetType, float resetTime) {
+	//initializing timed stuff
+	public MobAI(Mob2 owner, AIType type, float resetTime) {
 		this.owner = owner;
 		this.type = type;
-		this.resetType = resetType;
+		this.resetType = ResetType.ON_TIME;
 		this.resetTime = resetTime;
 		this.main = owner.main;
 	}
 
-	public void act(float dt) {
+	//initializing nontimed AIs
+	public MobAI(Mob2 owner, AIType type, ResetType resetType) {
+		this.owner = owner;
+		this.type = type;
+		this.resetType = resetType;
+		this.resetTime = -1;
+		this.main = owner.main;
+	}
 
+	public void act(float dt) {
 		float dx, dy;
 		switch (type){
 		//walk to random locations within a radius, then wait a random amount of time
@@ -146,7 +156,7 @@ public class MobAI {
 			}
 			break;
 		case FIGHTING:
-			owner.fightAI();
+			fightAI();
 			break;
 
 			// evade target if target is spotted
@@ -199,12 +209,12 @@ public class MobAI {
 			break;
 		case DANCING:
 			if(owner.getAnimationAction()!=Anim.DANCE)
-				owner.setAnimation(Anim.DANCE, true);
+				owner.setAnimation(Anim.DANCE, LoopBehavior.CONTINUOUS);
 			break;
 		case TIMEDFIGHT:
 			time-=Vars.DT;
 			if(time>=0)
-				owner.fightAI();
+				fightAI();
 			else
 				owner.resetState();
 			break;
@@ -266,14 +276,16 @@ public class MobAI {
 					} else {
 						owner.AIfocus.faceObject(owner);
 						if(owner.AIfocus instanceof Mob)
-							((Mob)owner.AIfocus).setTransAnimation(Anim.EMBRACE, Anim.HUGGING, true);
-						owner.setTransAnimation(Anim.EMBRACE, Anim.HUGGING, true);
+							((Mob2)owner.AIfocus).setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
+									Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
+						owner.setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
+								Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
 					}
 				} else if (owner.getAnimationAction()==Anim.HUGGING){
-					if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
-						if(owner.AIfocus instanceof Mob)
-							((Mob)owner.AIfocus).setAnimation(true, Anim.EMBRACE);
-						owner.setAnimation(true, Anim.EMBRACE);
+					if(owner.animation.getPrimarySpeed() * owner.animation.getTimesPlayed() >= 2){
+						if(owner.AIfocus instanceof Mob2)
+							((Mob2)owner.AIfocus).setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+						owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 						owner.controlledPT2 =true;
 					}
 				} else if (owner.controlledPT2){
@@ -294,11 +306,11 @@ public class MobAI {
 						else owner.left();
 					} else {
 						owner.AIfocus.faceObject(owner);
-						owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, true);
+						owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
 					}
 				} else if (owner.getAnimationAction()==Anim.KISSING){
-					if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
-						owner.setAnimation(true, Anim.ENGAGE_KISS);
+					if(owner.animation.getPrimarySpeed() * owner.animation.getTimesPlayed() >= 2){
+						owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 						owner.controlledPT2 =true;
 					}
 				} else if (owner.controlledPT2){
@@ -364,7 +376,7 @@ public class MobAI {
 			
 			if(owner.health == owner.maxHealth && !owner.controlledPT2){
 				owner.controlledPT2=true;
-				owner.setAnimation(true, Anim.LIE_DOWN);
+				owner.setAnimation(Anim.LIE_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 			}
 			
 			if(owner.controlledPT2 && owner.getAnimationAction()!=Anim.LIE_DOWN){
@@ -377,9 +389,9 @@ public class MobAI {
 		case SNOOZE:
 			if(!owner.controlledPT2)
 				if(owner.getAnimationAction()!=Anim.SNOOZING && owner.getAnimationAction()!=Anim.GET_DOWN)
-					if(owner.animation.getTimesPlayed() * owner.animation.getSpeed() >= 3){
+					if(owner.animation.getTimesPlayed() * owner.animation.getPrimarySpeed() >= 3){
 						owner.controlledPT2 = true;
-						owner.setAnimation(true, Anim.GET_DOWN);
+						owner.wake();
 					}
 			break;
 		case LOSEAIM:
@@ -420,13 +432,10 @@ public class MobAI {
 		Anim anim = null;
 		switch(type){
 		case AIM:
-			if(owner.actionTime<=Vars.DT){
-				owner.aiming = false;
-				owner.setAnimation(true, Anim.AIM_TRANS);
-			}else if(!owner.aiming){
-				owner.aiming = true;
-				owner.setTransAnimation(Anim.AIM_TRANS, Anim.AIMING, true);
-			}
+			if(actionTime<=Vars.DT)
+				owner.unAim();
+			else if(!owner.aiming)
+				aim();
 			break;
 		case ATTACK:
 			anim = Anim.ATTACKING;
@@ -436,7 +445,7 @@ public class MobAI {
 			break;
 		case FLAIL:
 			if(!owner.controlledPT2){
-				owner.setAnimation(Anim.ON_FIRE, true);
+				owner.setAnimation(Anim.ON_FIRE, LoopBehavior.CONTINUOUS);
 				owner.controlledPT2 = true;
 			} else {
 				if(owner.ctrlReached){
@@ -460,18 +469,18 @@ public class MobAI {
 						owner.ctrlReached = true;
 				}
 
-				if(owner.actionTime<=Vars.DT)
+				if(actionTime<=Vars.DT)
 					owner.animation.removeAction();
 			}
 			break;
 		case FLY:
 			break;
 		case HUG:
-			if(owner.actionTime<=Vars.DT)
-				owner.setAnimation(true, Anim.EMBRACE);
+			if(actionTime<=Vars.DT)
+				owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 			else if(!owner.controlledPT2){
 				owner.controlledPT2 = true;
-				owner.setTransAnimation(Anim.EMBRACE, Anim.HUGGING, true);
+				owner.setTransAnimation(Anim.EMBRACE, Anim.HUGGING, LoopBehavior.CONTINUOUS);
 			}
 			break;
 		case IDLE:
@@ -481,19 +490,19 @@ public class MobAI {
 			owner.jump();
 			break;
 		case KISS:
-			if(owner.actionTime<=Vars.DT)
-				owner.setAnimation(true, Anim.ENGAGE_KISS);
+			if(actionTime<=Vars.DT)
+				owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 			else if(!owner.controlledPT2){
 				owner.controlledPT2 = true;
-				owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, true);
+				owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
 			}
 			break;
 		case PUNCH:
 			anim = Anim.PUNCHING;
 			break;
 		case SNOOZE:
-			if(owner.actionTime<=Vars.DT)
-				owner.setAnimation(true, Anim.GET_DOWN);
+			if(actionTime<=Vars.DT)
+				owner.setAnimation(Anim.GET_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 			else if(!owner.controlledPT2){
 				owner.controlledPT2 = true;
 				owner.setTransAnimation(Anim.GET_DOWN, Anim.SNOOZING);			
@@ -506,11 +515,11 @@ public class MobAI {
 			anim = Anim.SPECIAL2;
 			break;
 		case SPECIAL3:
-			if(owner.actionTime<=Vars.DT)
-				owner.setAnimation(true, Anim.SPECIAL3);
+			if(actionTime<=Vars.DT)
+				owner.setAnimation(Anim.SPECIAL3, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 			else if(!owner.controlledPT2){
 				owner.controlledPT2 = true;
-				owner.setTransAnimation(Anim.SPECIAL3, Anim.HUGGING, true);
+				owner.setTransAnimation(Anim.SPECIAL3, Anim.HUGGING, LoopBehavior.CONTINUOUS);
 			}
 			break;
 		default:
@@ -518,14 +527,69 @@ public class MobAI {
 		}
 		
 		if(anim!=null)
-			owner.setAnimation(anim);
+			owner.setAnimation(anim, LoopBehavior.ONCE);
 		
-		if(owner.actionTime<=Vars.DT)
+		if(actionTime<=Vars.DT)
 			finish();
 // end doTimedAction
 
 		checkFinished();
 	}
+	// attack focus if in range
+	// if not in range, get close to object
+	// otherwise evade hostile mobs or projectiles
+	// if no hostile mobs or projectiles in sight, search vicinity
+	public void fightAI(){
+//		System.out.println("FIGHTING");
+		float dx, dy;
+		if(!attacked){
+//			System.out.println("!attacked");
+			if(owner.attackFocus!=null && doTime>=doDelay){
+				//System.out.println("attackFocus!=null && doTime>=doDelay");
+				dx = owner.attackFocus.getPosition().x - owner.getPosition().x;
+				dy = owner.attackFocus.getPosition().x - owner.getPosition().x;
+				float d = (float) Math.sqrt(dx*dx + dy+dy);
+
+				if(Math.abs(d)>owner.attackRange){
+					if(dx-1>0) owner.right();
+					if(dx+1<0) owner.left();
+				} else {
+					owner.attack();
+					attacked = true;
+					doDelay = (float) (Math.random()*3);
+					doTime = 0;
+				}
+			} /*else
+				System.out.println(doTime+":"+doDelay);*/
+		} else {
+			if(reached) inactiveWait++;
+			if(inactiveTime >= inactiveWait && reached) {
+				reached = false;
+				attacked = false;
+			}
+			if(!reached){
+				if (!owner.canMove()) {
+					goalPosition = new Vector2((float) (((Math.random() * 6)+owner.x)/PPM), owner.y);
+					inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
+					inactiveTime = 0;
+					reached = true;
+				}
+				else {
+					dx = (goalPosition.x - owner.getPosition().x) * PPM ;
+					if(dx < 1 && dx > -1){
+						goalPosition = new Vector2((float) (((Math.random() * 6)+owner.x)/PPM), owner.y);
+						inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
+						inactiveTime = 0;
+						reached = true;
+					} else {
+						if(dx < 1) owner.left();
+						if(dx > -1) owner.right();
+					}
+				}
+			}
+		}
+	}
+
 
 	public void begin(){
 		switch(type){
@@ -537,37 +601,36 @@ public class MobAI {
 			owner.setTransAnimation(Anim.AIM_TRANS, Anim.AIMING);
 			break;
 		case LOSEAIM:
-			owner.aiming = false;
-			owner.setAnimation(true, Anim.AIM_TRANS);
+			owner.unAim();
 			break;
 		case ATTACK:
-			owner.setAnimation(Anim.ATTACKING);
+			owner.setAnimation(Anim.ATTACKING, LoopBehavior.ONCE);
 			break;
 		case PUNCH:
-			owner.setAnimation(Anim.PUNCHING);
+			owner.setAnimation(Anim.PUNCHING, LoopBehavior.ONCE);
 			break;
 		case DANCE:
-			if(owner.actionTime>0)
-				owner.setAnimation(Anim.DANCE, true);
-			else owner.setAnimation(Anim.DANCE);
+			if(actionTime>0)
+				owner.setAnimation(Anim.DANCE, LoopBehavior.CONTINUOUS);
+			else owner.setAnimation(Anim.DANCE, LoopBehavior.ONCE);
 			break;
 		case FLAIL:
-			owner.setAnimation(Anim.ON_FIRE, true);
+			owner.setAnimation(Anim.ON_FIRE, LoopBehavior.CONTINUOUS);
 			break;
 		case FLY:
 			//flying related mechanics
 			
 			//flying = true;
 			owner.body.setType(BodyType.KinematicBody);
-			owner.setAnimation(Anim.SWIMMING);
+			owner.setAnimation(Anim.SWIMMING, LoopBehavior.CONTINUOUS);
 			break;
 		case IDLE:
-			if(owner.actionTime>0)
-				owner.setAnimation(Anim.IDLE, true);
-			else owner.setAnimation(Anim.IDLE);
+			if(actionTime>0)
+				owner.setAnimation(Anim.IDLE, LoopBehavior.CONTINUOUS);
+			else owner.setAnimation(Anim.IDLE, LoopBehavior.ONCE);
 			break;
 		case SLEEPING:
-			owner.setTransAnimation(Anim.LIE_DOWN, Anim.SLEEPING, true);
+			owner.setTransAnimation(Anim.LIE_DOWN, Anim.SLEEPING, LoopBehavior.CONTINUOUS);
 			if(main.character.equals(this)/* && !sleepSpell*/){
 				main.getSpriteBatch().fade();
 				
@@ -582,13 +645,33 @@ public class MobAI {
 		}
 	}
 
-	public void finish() {
-		
+
+	//conclude any controlled actions for mob
+	private void finish(){
+		goalPosition = null;
+		owner.controlled = false;
+//		controlledPT2 = false;
+//		controlledAction = null;
+		actionTime = 0;
+		ctrlRepeat = -1;
 	}
 
 	public void checkFinished() {
 		switch (resetType) {
 		case ON_ANIM_END:
+			break;
+		case NEVER:
+			break;
+		case ON_AI_COMPLETE:
+			break;
+		case ON_LEVEL_CHANGE:
+			break;
+		case ON_SCRIPT_END:
+			break;
+		case ON_TIME:
+			break;
+		default:
+			break;
 			
 		}
 	}
