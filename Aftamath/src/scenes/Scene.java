@@ -43,7 +43,6 @@ import entities.Ground;
 import entities.Mob;
 import entities.Path;
 import entities.SpeechBubble;
-import entities.TextTrigger;
 import entities.Warp;
 import handlers.Camera;
 import handlers.Evaluator;
@@ -51,6 +50,7 @@ import handlers.EventTrigger;
 import handlers.FadingSpriteBatch;
 import handlers.Pair;
 import handlers.PositionalAudio;
+import handlers.TextTrigger;
 import handlers.Vars;
 import main.Game;
 import main.Main;
@@ -240,7 +240,7 @@ public class Scene {
 			
 			while(it.hasNext()){
 				script = it.next();
-				if(!Game.SCRIPT_LIST.contains(script, false))
+				if(Game.res.getScript(script)==null)
 					continue;
 				condition = prop.get(script, String.class);
 				conditionalScripts.put(new Script(script, ScriptType.SCENE, m, null),
@@ -248,7 +248,6 @@ public class Scene {
 			}
 		
 		loadScript = new Script(this.ID, ScriptType.SCENE, m, null);
-		if(loadScript.source!=null) main.triggerScript(loadScript);
 		tmr = new OrthogonalTiledMapRenderer(tileMap, m.getSpriteBatch());
 	}
 	
@@ -417,6 +416,7 @@ public class Scene {
 			}
 		}
 		
+		Ground g;
 		for (int y = 0; y < ground.getHeight(); y++)
 			for(int x = 0; x < ground.getWidth(); x++){
 				Cell cell = ground.getCell(x, y);
@@ -429,8 +429,9 @@ public class Scene {
 				String type = "";
 				if(cell.getTile().getProperties().get("type")!=null)
 					type = cell.getTile().getProperties().get("type", String.class);
-				new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
+				g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
 						(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
+				g.setGameState(main);
 				
 				cell = fg.getCell(x, y);
 				if (cell != null) {
@@ -483,22 +484,36 @@ public class Scene {
 						String ID = object.getProperties().get("NPC", String.class);		//name used for art file
 						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
 						String name = object.getProperties().get("name", String.class);		//character name
+						String nickName = object.getProperties().get("nickName", String.class);
 						String state = object.getProperties().get("state", String.class);	//AI state
 						String script = object.getProperties().get("script", String.class);
 						String aScript = object.getProperties().get("attackScript", String.class);
+						String sScript = object.getProperties().get("supSttackScript", String.class);
 						String dScript = object.getProperties().get("discoverScript", String.class);
 						String dType = object.getProperties().get("onSight", String.class);
 						String aType = object.getProperties().get("onAttacked", String.class);
 						String pathName = object.getProperties().get("path", String.class);
+						String powerType = object.getProperties().get("powerType", String.class);
 
-						if(l!=null)
-							if (l.toLowerCase().equals("back")) l = "3";
-							else l = "1";
+						if(l!=null) {
+							if (l.toLowerCase().equals("back")) {
+								l = "3";
+							} else if (l.toLowerCase().equals("player")) {
+								l = "2";
+							} else {
+								l = "1";
+							}
+						}
 						else l = "1";
 
 						try {
-							Field f = Vars.class.getField("BIT_LAYER"+l);
-							short lyr = f.getShort(f);
+							short lyr;
+							if (l.equals("2")) {	//TODO refactor
+								lyr = Vars.BIT_PLAYER_LAYER;
+							} else {
+								Field f = Vars.class.getField("BIT_LAYER"+l);
+								lyr = f.getShort(f);
+							}
 							ID = ID.toLowerCase();
 							int sceneIDParsed = Integer.parseInt(sceneID);
 
@@ -526,14 +541,19 @@ public class Scene {
 								e.setDefaultState(state);
 								e.setDialogueScript(script);
 								e.setAttackScript(aScript);
+								e.setSupAttackScript(sScript);
 								e.setDiscoverScript(dScript);
 								e.setResponseType(dType);
 								e.setAttackType(aType);
+								e.setPowerType(powerType);
 								e.active = true;
 								entities.add(e);
 								
 								if(pathName!=null)
 									pathsToAdd.put(e, pathName);
+								
+								if(nickName!=null)
+									e.setNickName(nickName);
 								
 								if(sceneIDParsed>=0)
 									Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
@@ -577,24 +597,29 @@ public class Scene {
 					if(object.getProperties().get("event")!=null){
 						Iterator<String> it = object.getProperties().getKeys();
 						EventTrigger et = new EventTrigger(main, rect.x, rect.y, rect.width, rect.height);
-						String script, condition, halt;
-//						String spawnSet = object.getProperties().get("", String.class);
-						if(object.getProperties().get("retriggerable", String.class)!=null)
-							et.setRetriggerable(true);
-						halt = object.getProperties().get("event", String.class);
-						if(!halt.isEmpty())
-							et.setHalt(halt);
+						String script, condition, s;
 						
 						while(it.hasNext()){
 							script = it.next();
 							if(script.equals("x") || script.equals("y") || script.equals("event")
-									|| script.equals("retriggerable"))
+									|| script.equals("retriggerable") || script.equals("avoidHalt"))
 								continue;
-//							et.addEvent("", script);
-							et.setScript(script);
 							condition = object.getProperties().get(script, String.class);
-//							et.addCondition(script, condition);
-							et.setCondition(condition);
+							et.addEvent(script, condition);
+						}
+						
+						if((s = object.getProperties().get("retriggerable", String.class))!=null){
+							if(!s.isEmpty()){
+								for(String sc : s.split(","))
+									et.setRetriggerable(sc, true);
+							} else
+								et.setRetriggerable(true);
+						} if((s = object.getProperties().get("avoidHalt", String.class))!=null){
+							if(!s.isEmpty()){
+								for(String sc : s.split(","))
+									et.setHalt(sc, false);
+							} else
+								et.setHalt(false);
 						}
 					}
 				} else if(object instanceof PolylineMapObject){

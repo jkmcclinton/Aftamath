@@ -1,0 +1,11 @@
+Script Main
+lockplayer
+face(Villain, Hero)
+face(Hero, Villain)
+
+setSpeaker(Hero)
+text(mad, {(glare)...})
+
+setSpeaker(Villain)
+text(mad, {(glare)...})
+done

@@ -1,0 +1,40 @@
+Script Main
+lockplayer
+setFlag(Hobo1, true)
+face(player, Hobo)
+face(Hobo, player)
+setSpeaker(narrator)
+text(normal, {His eyes are bugged out at you})
+setChoice(1:Offer him money, 2:Talk to him)
+	[choice Offer him money]
+		setSpeaker(player)
+		text(normal, {Here's somthing to keep you going sir.})
+		setSpeaker(Hobo)
+		text(mad, {The onlyl hunger I feel is my hunger for revolution!})
+		text(mad, {Damn Capitalism!})
+	end
+	[choice Talk to him]
+		setSpeaker(player)
+		text(normal, {Why are you staring at me?})
+		setSpeaker(Hobo)
+		text(normal, {Do you trust me? Can you make me trust that you'll trust me?})
+		setSpeaker(player)
+		text(normal, {Well-})
+		setSpeaker(Hobo)
+		text(normal, {A good answer. But it'll take more than that to gain my trust.})
+		setSpeaker(player)
+		text(normal, {But-})
+		setSpeaker(Hobo)
+		text(normal, {Get me bread. Only then will I grant you the power to change the world!})
+		setSpeaker(narrator)
+		text(happy, {Quest unlocked: Raise your Baguettes!})
+		setSpeaker(player)
+		text(normal, {A quest?!})
+		setSpeaker(narrator)
+		text(normal, {Just kidding. Although... he doesn't seem like a normal person. I suggest you do it. No harm done.})
+		text(normal, {Of course, it's your life.})
+		setFlag(talkedToHobo, true)
+	end
+end
+setDialog(Hobo, hobo2)
+done

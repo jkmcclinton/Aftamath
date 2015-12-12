@@ -75,7 +75,7 @@ public class SpeechBubble extends Entity {
 		maxWidth = message.length() * font[0].getRegionWidth();
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("speechBubble"), width, height)[ID];
 		setDefaultAnimation(sprites[sprites.length - 1]);
-		animation.setAction(sprites, sprites.length, false, 1, Vars.ACTION_ANIMATION_RATE, false);
+		animation.setAction(sprites, sprites.length, false, 1, Vars.ACTION_ANIMATION_RATE, false, false);
 	}
 	
 	public SpeechBubble(Entity d, float x, float y, String ID){
@@ -94,7 +94,7 @@ public class SpeechBubble extends Entity {
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture(ID), width, height)[0];
 		setDefaultAnimation(sprites, Vars.ACTION_ANIMATION_RATE*2);
 		animation.setAction(TextureRegion.split(texture, width, height)[1], determineLength(ID), 
-				false, 1, Vars.ACTION_ANIMATION_RATE/2, false);
+				false, 1, Vars.ACTION_ANIMATION_RATE/2, false, false);
 	}
 
 	public void update(float dt){
@@ -127,7 +127,7 @@ public class SpeechBubble extends Entity {
 		
 		//destroy object if interaction has lost contact
 		if(body != null && main.character.getInteractable() != owner && ID.equals("speechBubble0")) 
-			main.addBodyToRemove(getBody());
+			main.removeBody(getBody());
 	}
 	
 	public void render(FadingSpriteBatch sb){

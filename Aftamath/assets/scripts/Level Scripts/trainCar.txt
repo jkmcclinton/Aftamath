@@ -1,0 +1,22 @@
+Script Main
+
+if([trainLoc = {Business}])
+	setWarp(Subway, 0, Business District, 2)
+	#spawn(barrier, Subway, all the way at the left of the level, 0)
+	#Can't get to the sewers from here
+	#spawn in different people
+end
+if([trainLoc = {Downtown})
+	setWarp(Subway, 0, Central Station, 3)
+	#spawn in different people
+end
+if([trainLoc = {Municpal})
+	setWarp(Subway, 0, Municpal District, 2)
+	#spawn in different people
+end
+if([trainLoc = {Commercial})
+	setWarp(Subway, 0, Commercial District NW, 2)
+	#spawn in different people
+end
+
+done

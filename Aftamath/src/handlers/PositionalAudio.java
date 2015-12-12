@@ -15,10 +15,14 @@ public class PositionalAudio {
 	
 	public PositionalAudio(Vector2 location, String src, GameState gs){
 		this.location = location;
-		sound = Gdx.audio.newMusic(new FileHandle("res/sounds/"+src+".wav"));
+		sound = Gdx.audio.newMusic(new FileHandle("assets/sounds/"+src+".wav"));
 		sound.setLooping(true);
 		gs.playSound(location, sound);
 		if(gs instanceof Main)
 			((Main) gs).addSound(this);
+	}
+	
+	public void stop(){
+		sound.stop();
 	}
 }

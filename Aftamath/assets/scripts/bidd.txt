@@ -1,8 +1,0 @@
-Script Main
-lockplayer
-setSpeaker(this)
-facePlayer(this)
-
-text(normal, {I'm the CEO of the most ridiculously powerful company in the world.})
-text(normal, {I don't have time to chat to losers like you.})
-done

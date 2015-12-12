@@ -1,8 +1,0 @@
-Script Main
-lockplayer
-faceplayer(this)
-
-setSpeaker(narrator)
-text(normal, {You don't want to go that way. Trust me.})
-text(normal, {It's nothing but void.})
-done

@@ -18,6 +18,7 @@ public class Ground extends Entity{
 		this.x = x;
 		this.y = y;
 		this.world = world;
+		this.invulnerable = true;
 		create();
 		
 		this.type = type;

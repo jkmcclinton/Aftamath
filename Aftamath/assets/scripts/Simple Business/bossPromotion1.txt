@@ -1,0 +1,32 @@
+Script Main
+lockplayer
+
+if(SBDidMenialLabor)
+	setSpeaker(this)
+	text(happy, {Hello, worker. We have watched your progression throughout your 5000 milliseconds of arduous work and decision making.})
+	text(happy, {Here is your reward.})
+	value(add, player.money, 17)
+	setSpeaker(player)
+	text(happy, {Why, thank you.})
+	setSpeaker(this)
+	text(normal, {We would like to promote you to an office job, worker. How does that sound, worker?})
+	setSpeaker(player)
+	text(mad, {How about a job description?})
+	setSpeaker(this)
+	text(normal, {I guarantee you, worker, it's as easy as building these microchips.})
+	setSpeaker(player)
+	text(normal, {Well...all right. Lead on.})
+	setSpeaker(this)
+	text(happy, {I shall now proceed to change your title in the database from "worker" to "new colleague."})
+	text(normal, {We will send you additional materials in the near future, new colleague.})
+	move(this, 49, 78)
+	remove(this)
+	setSpeaker(player)
+	text(sad, {Well...this is a little underwhelming.})
+	setFlag(SBReceivedPromotion1, true)
+else
+	setSpeaker(this)
+	text(mad, {Who are you? A nobody, that's who!})
+end
+
+done

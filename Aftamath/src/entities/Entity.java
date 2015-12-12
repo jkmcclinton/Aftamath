@@ -5,15 +5,6 @@ import static handlers.Vars.PPM;
 import java.util.HashMap;
 import java.util.Map;
 
-import handlers.Animation;
-import handlers.FadingSpriteBatch;
-import handlers.JsonSerializer;
-import handlers.Vars;
-import main.Game;
-import main.Main;
-import scenes.Script;
-import scenes.Script.ScriptType;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -31,6 +22,16 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
 
+import handlers.Animation;
+import handlers.FadingSpriteBatch;
+import handlers.JsonSerializer;
+import handlers.Vars;
+import main.Game;
+import main.Main;
+import scenes.Scene;
+import scenes.Script;
+import scenes.Script.ScriptType;
+
 public class Entity implements Serializable {
 	
 	//global mapping of IDs (in Tiled, custom prop "ID") to an Entity reference
@@ -39,10 +40,9 @@ public class Entity implements Serializable {
 	public String ID;
 	public Animation animation;
 	public boolean isInteractable, isAttackable, dead, controlled;
-	public boolean burning, flamable, frozen, init, active;
+	public boolean burning, flamable, frozen, init, active, destructable;
 	public float x, y;
 	public int height, width, rw, rh;
-	public Object o;
 
 	//damage constants
 	public static final float MAX_BURN_TIME = 10f; // in seconds
@@ -52,18 +52,20 @@ public class Entity implements Serializable {
 	public static final float RESISTANT = 1/2f;
 	public static final float VERY_RESISTANT = 1/5f;
 	
-	protected double health, maxHealth, resistance = 1;
-	protected boolean invulnerable;
+	protected double health;
+	protected double maxHealth;
+	protected double resistance = 1;
 	protected int sceneID;
 	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
 	protected float invulnerableTime;
 	protected Vector2 goalPosition;
 	protected Texture texture;
-	private boolean facingLeft;
+	protected boolean facingLeft, invulnerable;
 	protected World world;
 	protected Main main;
+	protected Scene currentScene;
 	protected Body body;
-	protected Script script, attackScript;
+	protected Script script, attackScript, supAttackScript;
 	protected BodyDef bdef = new BodyDef();
 	protected FixtureDef fdef = new FixtureDef();
 	protected MassData mdat = new MassData();
@@ -86,15 +88,8 @@ public class Entity implements Serializable {
 		this.init();
 	} 
 	
-	//TODO consolidate these constructors if possible
 	public Entity (float x, float y, String ID) {
-		this.init();
-		this.ID = ID;
-		this.x = x;
-		this.y = y;
-		
-		setDimensions();
-		loadSprite();
+		this(x, y, -1, -1, ID);
 	}
 	
 	public Entity(float x, float y, int width, int height, String ID) {
@@ -103,12 +98,17 @@ public class Entity implements Serializable {
 		this.x = x;
 		this.y = y;
 		
-		setDimensions(width, height);
+		if(width>-1)
+			setDimensions(width, height);
+		else
+			setDimensions();
 		loadSprite();
 	}
 
-	private void init() {
+	protected void init() {
 		isAttackable = false;
+		destructable = false;
+		invulnerable = true;
 		this.health = maxHealth = DEFAULT_MAX_HEALTH;
 		followers = new Array<>();
 		origLayer = Vars.BIT_LAYER1;
@@ -145,7 +145,7 @@ public class Entity implements Serializable {
 			burnTime+=dt;
 			burnDelay+=dt;
 			if(burnDelay>= 3){
-				damage(maxHealth/(2*DEFAULT_MAX_HEALTH), DamageType.FIRE);
+				damage(getMaxHealth()/(2*DEFAULT_MAX_HEALTH), DamageType.FIRE);
 				burnDelay = 0;
 			} if(burnTime >= totBurnLength){
 				burning = false;
@@ -180,25 +180,47 @@ public class Entity implements Serializable {
 	public void setGameState(Main gs){
 		this.main = gs;
 		this.world = gs.getWorld();
+		this.currentScene = main.getScene();
 		if (script != null) script.setPlayState(gs);
 	}
 	
 	public Main getGameState(){return main;}
 	public void setDialogueScript(String ID){  
 		if(ID==null)return;
-		script = new Script(ID, ScriptType.DIALOGUE, main, this);
-		isInteractable = true;
+		
+		if(ID.equals("none") || ID.equals("null") || ID.equals("empty")){
+			script = null;
+			isInteractable = false;
+		} else {
+			script = new Script(ID, ScriptType.DIALOGUE, main, this);
+			isInteractable = true;
+		}
 	}
 
 	public void setAttackScript(String ID){  
 		if(ID==null)return;
+		
+		if(ID.equals("none") || ID.equals("null") || ID.equals("empty")){
+			attackScript = null;
+		} else {
 		attackScript = new Script(ID, ScriptType.ATTACKED, main, this);
+		if(supAttackScript==null)
+			supAttackScript = new Script(ID, ScriptType.ATTACKED, main, this);
+		}
+	}
+	
+	public void setSupAttackScript(String ID){
+		if(ID==null)return;
+		if(ID.equals("none") || ID.equals("null") || ID.equals("empty"))
+			supAttackScript = null;
+		else
+			supAttackScript = new Script(ID, ScriptType.ATTACKED, main, this);
 	}
 	
 	public void changeLayer(short layer){
 		this.layer = layer;
 		if(body!=null){
-			main.addBodyToRemove(body);
+			main.removeBody(body);
 			fdef.filter.maskBits = (short) (layer | Vars.BIT_GROUND | Vars.BIT_BATTLE);
 			fdef.filter.categoryBits = layer;
 			create();
@@ -210,7 +232,7 @@ public class Entity implements Serializable {
 	}
 	
 	public short getLayer(){ return layer; }
-	
+	public Scene getCurrentScene(){ return currentScene; }
 	public int getSceneID(){ return sceneID; }
 	public void setSceneID(int ID){ sceneID = ID; }
 	public void setPosition(Vector2 location){
@@ -220,13 +242,16 @@ public class Entity implements Serializable {
 	
 	public Vector2 getPosition(){ return body.getPosition(); }
 	public Vector2 getPixelPosition(){ 
-		if(body!=null)
+		if(body!=null) {
 			return new Vector2(body.getPosition().x*Vars.PPM, body.getPosition().y*Vars.PPM);
-		else
+		}
+		else {
 			return new Vector2(x, y);
+		}
 	}
 	
 	public Body getBody() { return body; }
+	public void setBody(Body b) { this.body = b; } 
 
 	public Script getScript() { return script; }
 	public String toString(){ return ID; }
@@ -272,10 +297,12 @@ public class Entity implements Serializable {
 	}
 	
 	public void damage (double val, DamageType type){
+		if(!destructable) return;
 		if(!dead)
 			if(!invulnerable){
+				if(main==null) return; //possibility for things like the ground that don't need constant updating
 				main.playSound(getPosition(), "damage");
-				health -= val*resistance;
+				health = getHealth() - val*resistance;
 				
 				if(type==DamageType.FIRE){
 					double chance = Math.random();
@@ -290,11 +317,14 @@ public class Entity implements Serializable {
 						freeze();
 				}
 				
-				if(health<=0)
+				if(getHealth()<=0){
+					if(health<0)health = 0;
 					die();
+				}
 				else;
 					//shake
 			}
+		main.addHealthBar(this);
 	}
 	
 	public void die(){
@@ -372,6 +402,30 @@ public class Entity implements Serializable {
 		}
 	}
 	
+	public double getMaxHealth() { 	return maxHealth; }
+	public void setMaxHealth(double val) {
+		if(health>=maxHealth) 
+			health = val; 
+		this.maxHealth = val; 
+	}
+
+	/** Sets both health and max health
+	 * must only be used for copying data
+	 * @param health
+	 * @param maxHealth
+	 */
+	public void resetHealth(double health, double maxHealth){
+		this.health = health;
+		this.maxHealth = maxHealth;
+	}
+	
+	public double getHealth() { return health; }
+	public boolean isVulnerable(){ return !invulnerable; }
+	public void setDestructability(boolean val){
+		destructable = val;
+		invulnerable = !val;
+	}
+
 	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
 	public void removeFollower(Mob m){ followers.removeValue(m, true); }
 	public Array<Mob> getFollowers(){ return followers; }
@@ -393,10 +447,9 @@ public class Entity implements Serializable {
 			if(e.getBody()==null || getBody()==null)
 				return super.equals(o);
 			if(e.ID!=null && e.animation!=null){
-				if(e.ID.equals(ID) && this.getClass().equals(o.getClass()) && 
-						e.getPosition().equals(getPosition()) && e.isFacingLeft()==isFacingLeft() && 
-						e.animation.equals(animation))
-					return true;
+				return  e.ID.equals(ID) && this.getClass().equals(o.getClass()) && 
+						e.getPosition().equals(getPosition()) && e.facingLeft==e.isFacingLeft() && 
+						e.animation.equals(animation) && e.currentScene.equals(currentScene);
 			} else
 				return super.equals(o);
 		}
@@ -438,12 +491,34 @@ public class Entity implements Serializable {
 		fdef.filter.maskBits = (short) (Vars.BIT_HALFGROUND | Vars.BIT_GROUND);
 		body.createFixture(fdef).setUserData("center");
 	}
+	
+	public Entity copy(){
+		Entity n = new Entity(x, y+getHeight(ID)/2f, ID);;
+
+		n.resetHealth(health, maxHealth);
+
+		if(script!=null)
+			n.setDialogueScript(script.ID);
+		if(attackScript!=null)
+			n.setAttackScript(attackScript.ID);
+		if(supAttackScript!=null)
+			n.setSupAttackScript(supAttackScript.ID);
+		
+		n.resistance = resistance;
+		n.flamable = flamable;
+		n.setDestructability(destructable);
+		
+		return n;
+	}
 
 	@Override
 	public void read(Json json, JsonValue val) {
 		this.ID = val.getString("ID");
 		this.sceneID = val.getInt("sceneID");
-		o = val.get("location");
+		float posX = val.getFloat("posX");
+		float posY = val.getFloat("posY");
+		Vector2 pos = new Vector2(posX, posY);
+		this.setPosition(pos);
 		this.health = val.getDouble("health");
 		this.burning = val.getBoolean("burning");
 		this.frozen = val.getBoolean("frozen");
@@ -457,11 +532,13 @@ public class Entity implements Serializable {
 		try {
 			this.script = json.fromJson(Script.class, val.get("script").toString());
 			this.script.setOwner(this);
+			this.script.setMainRef(this.main);
 		} catch (SerializationException | NullPointerException e) {}
 		
 		try {
 			this.attackScript = json.fromJson(Script.class, val.get("attackScript").toString());
-			this.script.setOwner(this);
+			this.attackScript.setOwner(this);
+			this.attackScript.setMainRef(this.main);
 		} catch (SerializationException | NullPointerException e) {}
 		
 		Array<Integer> mobRef = new Array<Integer>();
@@ -481,8 +558,10 @@ public class Entity implements Serializable {
 	public void write(Json json) {
 		json.writeValue("ID", this.ID);
 		json.writeValue("sceneID", this.sceneID);
-		json.writeValue("location", this.getPixelPosition());
-		json.writeValue("health", this.health);
+		Vector2 pos = this.getPixelPosition();
+		json.writeValue("posX", pos.x);
+		json.writeValue("posY", pos.y);			
+		json.writeValue("health", this.getHealth());
 		json.writeValue("burning", this.burning);
 		json.writeValue("frozen", this.frozen);
 		json.writeValue("burnTime", this.burnTime);

@@ -1,0 +1,6 @@
+Script Main
+lockplayer
+
+setSpeaker(narrator)
+text(normal, {Your /partnert isn't here at the moment. Bummer.})
+done

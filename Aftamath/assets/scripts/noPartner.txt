@@ -1,6 +1,0 @@
-Script Main
-lockplayer
-
-setSpeaker(narrator)
-text(normal, {You ain't got nobody to follow you!})
-done

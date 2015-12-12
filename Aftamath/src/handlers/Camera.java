@@ -131,7 +131,7 @@ public class Camera extends OrthographicCamera{
 			}
 		}
 
-		if(shaking) applyShake(dt);
+		if(shaking && !character.getGameState().paused) applyShake(dt);
 		update();
 	}
 	
@@ -152,6 +152,7 @@ public class Camera extends OrthographicCamera{
 	}
 	
 	public void shake(float maxAmp){
+		if(amplitude >= maxAmp) return;
 		amplitude = maxAmp;
 		shakeTime = 0;
 		shaking = true;

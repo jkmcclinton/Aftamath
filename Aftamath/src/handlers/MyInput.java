@@ -23,6 +23,7 @@ public class MyInput {
 	 INTERACT,
 	 USE,
 	 ATTACK,
+	 SPECIAL,
 	 RUN,
 	 PAUSE,
 	 ENTER,

@@ -1,0 +1,3 @@
+Script Main	
+	remove(Grim Reaper)
+done

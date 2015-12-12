@@ -1,0 +1,148 @@
+Script Main
+lockplayer
+face(player, this)
+face(this, player)
+if(talkedToHobo)
+	setScript(Second)
+	goto(SecondStart)
+end
+setSpeaker(narrator)
+text(normal, {His eyes are bugged out at you})
+setChoice(1:Offer him money, 2:Talk to him)
+	[choice Offer him money]
+		setSpeaker(player)
+		text(normal, {Here's somthing to keep you going sir.})
+		setSpeaker(this)
+		text(mad, {The only hunger I feel is my hunger for revolution!})
+		text(mad, {Damn Capitalism!})
+	end
+	[choice Talk to him]
+		setSpeaker(player)
+		text(normal, {Why are you staring at me?})
+		setSpeaker(this)
+		text(normal, {Do you trust me? Can you make me trust that you'll trust me?})
+		setSpeaker(player)
+		text(normal, {Well-})
+		setSpeaker(this)
+		text(normal, {A good answer. But it'll take more than that to gain my trust.})
+		setSpeaker(player)
+		text(normal, {But-})
+		setSpeaker(this)
+		text(normal, {Get me bread. Only then will I grant you the power to change the world!})
+		setSpeaker(narrator)
+		text(happy, {Quest unlocked: Raise your Baguettes!})
+		setSpeaker(player)
+		text(normal, {A quest?!})
+		setSpeaker(narrator)
+		text(normal, {Just kidding. Although... he doesn't seem like a normal person. I suggest you do it. No harm done.})
+		text(normal, {Of course, it's your life.})
+		setFlag(talkedToHobo, true)
+		setScript(Second)
+	end
+end
+done
+
+
+Script Second
+checkpoint(SecondStart)
+setSpeaker(this)
+text(normal, {Did you get it?})
+if(!sawBread)
+	setChoice(1:Not yet)
+		[choice Not yet]
+			text(normal, {Bread, okay?})
+		end
+	end
+else
+	if(!tookBread)
+		setChoice(3:Well..., 1:Not yet)
+			[choice Not yet]
+				text(normal, {Bread, okay?})
+			end
+			[choice Well...]
+				setSpeaker(player)
+				text(normal, {This is a test, isn't it?})
+				text(normal, {No, I did not get the bread. I won't steal from anyone, especially not from people who work hard.})
+				setSpeaker(this)
+				text(mad, {Cut the bullshit and get me bread!})
+				setSpeaker(narrator)
+				text(normal, {Is this really a quest of trust?})
+			end
+		end
+	else
+		setChoice(3:Give him the bread, 1:Not yet)
+			[choice Not yet]
+				text(normal, {Bread, okay?})
+			end
+			[choice Give him the bread]
+				text(normal, {I'm impressed.})
+				setSpeaker(narrator)
+				text(normal, {You just helped a socialist hobo})
+				setSpeaker(this)
+				text(normal, {You placed what was morally right before what was socially right.})
+				setSpeaker(player)
+				text(normal, {I didn't want to hear that from a homeless man.})
+				setSpeaker(this)
+				text(normal, {Here's what you do want to hear.})
+				text(normal, {There is a secret underground society of people who think the same way we do. Who are tired of owing people things that they have already taken from us. Our freedom.})
+				
+				text(mad, {WE WILL ROB THEM OF THEIR SUPERIORITY FOR THE SAKE OF A FAIRER AMERICA! THE BROTHERHOOD WILL LIVE TO HOLD ANOTHER BOTTLE!})
+				text(normal, {Of course, sisters are welcome too.})
+				setSpeaker(player)
+				text(normal, {Of what?})
+				setSpeaker(this)
+				text(normal, {Never you mind.})
+				setScript(Third)
+				goto(ThirdStart)
+			end
+		end
+	end
+end
+done
+
+
+Script Third
+checkpoint(ThirdStart)
+text(normal, {Are you in?})
+setChoice(1:Not now, 2:Yes)
+	[choice Not now]
+		text(normal, {...To think I trusted you...})
+	end
+	[choice Yes]
+		setSpeaker(player)
+		text(normal, {Meh, ok.})
+		setSpeaker(this)
+		text(normal, {It is good to see you share our fiery passion, my comrade.})
+		text(normal, {But we have an initiation. You may choose to do this with someone, but ultimately, you are responsible for your actions.})
+		text(normal, {})
+		text(normal, {Steal a microchip from the CEO of that big building over there.})
+		setSpeaker(player)
+		text(normal, {"Big Business?"})
+		setSpeaker(this)
+		text(normal, {Yes, and then make your way back here.})
+		text(normal, {And remember. You do not talk about THE BROTHERHOOD. You DO NOT talk about THE BROTHERHOOD.})
+		text(normal, {I await your return.})
+		setSpeaker(narrator)
+		text(normal, {Well, it seems you have found yourself a nice hole to bury yourself in.})
+		setSpeaker(player)
+		text(normal, {There's no going back after this.})
+		setSpeaker(narrator)
+		text(normal, {Cheer up, you won't be alone.})
+		setSpeaker(player)
+		text(normal, {No, I mean I feel like I should say that to someone, like it's important.})
+		setSpeaker(narrator)
+		text(normal, {Don't get melancholy. You'll still have tons of choices.})
+		setFlag(microchipQuestStarted)
+		setScript(Fourth)
+	end
+end
+done
+
+
+Script Fourth
+if(!microchipQuestFinished)
+	setSpeaker(this)
+	text(normal, {In case you forgot, your task is to steal a microchip from the CEO of that big building over there.})
+	text(normal, {I await your return.})
+end
+done

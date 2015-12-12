@@ -1,0 +1,36 @@
+Script Main
+lockplayer
+
+setSpeaker(this)
+text(normal, {Greetings. I am the Human-Looking Robotic Mail Service.})
+text(normal, {There is 1 new message for /player.~ Outputting contents now...})
+text(normal, {Congratulations! You have been offered the honor to work for the number one business on its way to greatness!})
+text(normal, {We have a job for everyone, as long as your cooperation is 100%! Interview and/or resume not required!})
+
+setChoice(2:Go, 4:Don't go)
+	[choice Go]
+		#doAction(player, jump)
+		setSpeaker(player)
+		text(happy, {Money!!})
+		setSpeaker(this)
+		text(normal, {Sending affirmative response to sender.~ Outputting instructions now...})
+		text(normal, {Please report to the factory for your assignment.})
+		setFlag(SBAgreedWork, true)
+		setScript(RepeatResponse)
+	end
+	[choice Don't go]
+		setSpeaker(player)
+		text(sad, {This looks too shady. There's no information about the actual business...})
+		setSpeaker(narrator)
+		text(mad, {Game over, buddy. If you don't get money, you won't eat. If you don't eat, you'll die. Too bad!})
+		endGame
+	end
+end
+#setResponse(this, ignore)
+done
+
+Script RepeatResponse
+lockplayer
+setSpeaker(this)
+text(normal, {Please report to the factory for your assignment.})
+done

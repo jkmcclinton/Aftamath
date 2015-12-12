@@ -58,6 +58,7 @@ public class Game implements ApplicationListener {
 		res.loadTextures();
 		res.loadMusic();
 		res.loadScriptList(Gdx.files.internal("assets/scripts"));
+		res.loadLevelNames();
 
 		cam = new Camera();
 		cam.setToOrtho(false, width/zoom, height/zoom);
@@ -132,14 +133,16 @@ public class Game implements ApplicationListener {
 
 	//Contains all the titles for songs
 	public static final Array<String> SONG_LIST = new Array<>();
-	public static final Array<String> SCRIPT_LIST = new Array<>();
+	public static Array<String> LEVEL_NAMES = new Array<>();
 
 	public static class Assets {
 
 		private HashMap<String, Texture> textures;
+		private HashMap<String, String> SCRIPT_LIST;
 
 		public Assets() {
 			textures = new HashMap<>();
+			SCRIPT_LIST = new HashMap<>();
 		}
 
 		public void loadMusic(){
@@ -150,6 +153,15 @@ public class Game implements ApplicationListener {
 					SONG_LIST.add(f.nameWithoutExtension());
 		}
 		
+		public void loadLevelNames(){
+
+			//collect names for valid levels
+			FileHandle [] files = Gdx.files.internal("assets/maps").list();
+			for(FileHandle f:files)
+				if(f.extension().equals("tmx"))
+					LEVEL_NAMES.add(f.nameWithoutExtension());
+		}
+		
 		public void loadScriptList(FileHandle begin){
 			FileHandle[] newHandles = begin.list();
 			for (FileHandle f : newHandles) {
@@ -157,7 +169,7 @@ public class Game implements ApplicationListener {
 					loadScriptList(f);
 				else {
 					if(f.extension().equals("txt"))
-						SCRIPT_LIST.add(f.nameWithoutExtension());
+						SCRIPT_LIST.put(f.nameWithoutExtension(), f.path());
 				}
 			}
 		}
@@ -174,7 +186,7 @@ public class Game implements ApplicationListener {
 				if(f.extension().equals("png")){
 					key = f.nameWithoutExtension();
 					tex =  new Texture(Gdx.files.internal(f.path()));
-
+//System.out.println(key);
 					textures.put(key, tex);
 				}
 			}
@@ -193,6 +205,10 @@ public class Game implements ApplicationListener {
 
 		public Texture getTexture(String key){
 			return textures.get(key);
+		}
+		
+		public String getScript(String key){
+			return SCRIPT_LIST.get(key);
 		}
 
 		public void disposeTexture(String key){

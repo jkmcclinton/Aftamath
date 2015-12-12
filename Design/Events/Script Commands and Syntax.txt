@@ -93,6 +93,7 @@ I've tried my best to add print statements to help you debug your script.
 	  setSpeaker
 	  setScript
 	~ setState
+	  setVulnerability
 	~ showStats
 	~ spawn
 	  statUpdate
@@ -216,8 +217,9 @@ input:
 	NOTE: use this sparingly!
 face/faceObject:
 	makes a mob face a specific object; does not affect non-Mob objects
+	if no targetName is given, the object faces the opposite direction
 	NPCs will have their state set to FACEOBJECT
-	face(objectName, focus objectName)
+	face(objectName, targetName)
 forcefollow:
 	toggles whether or not the player's partner is forced to follow the player
 	if the player doesn't have a partner, this does nothing
@@ -291,14 +293,11 @@ setAttackType:
 	setAttackType(objectName, attackType)
 
 	see attack type list
-~setChoice:
+setChoice:
 	creates a choice situation with the specified types of choices;
 	minimum of 2 choices, maximum of 5 choices
 	MUST be ended with an "endChoice" command
 	setChoice(type# 1:message, type# 2:message, ... type# 5:message)
-
-	choice types: YesNo, 1(simple), 2(exciting), 3(curious), 4(cowardly), 5(power), 
-        ~6(abbreviation)
 
 	NOTE: anything directly after a "setChoice" command will not be processed, unless it
 		is a "choice" or "endChoice" command
@@ -362,6 +361,10 @@ setScript:
 	setState(objectName, stateType)
 
 	see AI state list
+setVul:
+setVulnerability:
+	set the vulnerability of the given mob. Value must be boolean
+	setVulnerability(objectName, value)
 ~showStats:
 	shows money, health, and, if the player is a super hero, power
 	showStats(statType1, statType2, statType3)
@@ -480,6 +483,15 @@ stat types:
 	health
 	money
 	power/level (includes power type)
+
+choice types: 
+	YesNo, 
+	1(simple)
+	2(exciting)
+	3(curious)
+	4(cowardly)
+	5(power) 
+       	6(abbreviation)
 	
 action Types:
 	~fly

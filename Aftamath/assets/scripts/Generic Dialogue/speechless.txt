@@ -1,0 +1,6 @@
+Script 1
+lockplayer
+faceplayer
+SetSpeaker this
+text "....
+done

@@ -122,7 +122,7 @@ public class TextBox extends Entity {
 				if(innerHeight<1) innerHeight = 1;
 				
 				if(innerWidth==1 && innerWidth==1){
-					main.addBodyToRemove(getBody());
+					main.removeBody(getBody());
 					sizingState = 0;
 				}
 			}

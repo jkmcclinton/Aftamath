@@ -1,0 +1,60 @@
+Script Main
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+declare(talkedToGrim, global, integer, 0)
+value(add, talkedToGrim, 1)
+
+if([player.money <= 0])
+	setScript(Soul)
+end
+
+if([talkedToGrim = 1])
+	text(normal, {...})
+end
+if([talkedToGrim = 2])
+	text(normal, {.....})
+end
+if([talkedToGrim = 3])
+	text(normal, {.........})
+end
+if([talkedToGrim = 4])
+	text(normal, {Give me your soul...})
+	setScript(Soul)
+end
+
+done
+
+Script Soul
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+text(normal, {...})
+
+if([player.money > 0])
+	text(normal, {I WILL have your soul...~/lEventually...})
+else
+	eventMusic(Incinerated Lands)
+	text(normal, {I can give you insurmountable richesss.../lYou simply have to give me your soul...})
+	setChoice(yesno)
+		[Choice yes]
+			text(normal, {Excellent.......})
+			value(set, player.money, 9999999999.89)
+			setEvent(gaveSoul, {Willingly gave soul to get money})
+			setScript(Money)
+		end
+		
+		[Choice no]
+			text(normal, {That's too bad...})
+		end
+	end
+end
+done
+
+Script Money
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+text(normal, {Pleasure doing business with you...})
+done

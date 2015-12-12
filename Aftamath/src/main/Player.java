@@ -22,7 +22,6 @@ public class Player implements Serializable {
 	private double money, goalMoney;
 	private House home;
 	private Mob myPartner;
-	//private String nickName;
 	private Main main;
 	private double relationship;
 	private double bravery;
@@ -53,16 +52,26 @@ public class Player implements Serializable {
 		typeCounter = new HashMap<>();			
 	}
 	
+	public void doRandomPower(){
+		doRandomPower(main.character.target());
+	}
+	
 	//make the player do some random SUPA power
 	//if the player has done this enough times, the most common power will become their permanent power
 	//if they don't have one already
 	public void doRandomPower(Vector2 target){
-		int type = (int) Math.random()*(DamageType.values().length-1);
+		double rnd = Math.random()*(DamageType.values().length-2)+1;
+		int type = (int) rnd;
 		DamageType dT = DamageType.values()[type];
+//		dT=DamageType.ROCK;
 		
 		main.character.setPowerType(dT);
-		typeCounter.put(dT, typeCounter.get(dT)+1);
+		if(typeCounter.containsKey(dT))
+			typeCounter.put(dT, typeCounter.get(dT)+1);
+		else
+			typeCounter.put(dT, 1);
 		
+//		System.out.println(typeCounter);
 		int max = 0, c;
 		for(DamageType d : typeCounter.keySet()){
 			c = typeCounter.get(d);

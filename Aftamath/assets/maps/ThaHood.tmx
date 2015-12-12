@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="5">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="6">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -205,6 +205,16 @@
     <property name="layer" value="front"/>
     <property name="name" value="Doctor Disco"/>
     <property name="script" value="disco"/>
+    <property name="state" value="faceplayer"/>
+   </properties>
+  </object>
+  <object id="5" name="1" x="528" y="1248" width="16" height="16">
+   <properties>
+    <property name="ID" value="110"/>
+    <property name="NPC" value="femaleplayer4"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="HLRMS-110"/>
+    <property name="script" value="getMail"/>
     <property name="state" value="faceplayer"/>
    </properties>
   </object>

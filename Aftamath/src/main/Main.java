@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -60,10 +63,10 @@ public class Main extends GameState {
 	public HUD hud;
 	public History history;
 	public Evaluator evaluator;
-	public Script currentScript;
+	public Script currentScript, loadScript;
 	public InputState stateType, prevStateType;
 	public int currentEmotion, dayState;
-	public boolean paused, analyzing, choosing, waiting;
+	public boolean paused, analyzing, loading, choosing, waiting;
 	public boolean warping, warped; //for changing between scenes
 	public boolean speaking; //are letters currently being drawn individually
 	public float dayTime, weatherTime, waitTime, totalWait, clockTime, playTime, keyIndexTime;
@@ -76,11 +79,13 @@ public class Main extends GameState {
 	private World world;
 	private Scene scene, nextScene;
 	private Color drawOverlay;
+	private Texture pixel;
 	private Array<Body> bodiesToRemove;
 	private ArrayList<Entity> objects/*, UIobjects, UItoRemove*/;
 	private ArrayList<Path> paths;
 	private ArrayList<PositionalAudio> sounds;
 	private Hashtable<String, Warp> warps;
+	private HashMap<Entity, Float> healthBars;
 	private Box2DDebugRenderer b2dr;
 	private InputState beforePause;
 	private RayHandler rayHandler;
@@ -121,7 +126,7 @@ public class Main extends GameState {
 			rayHandling = false, 
 			render 		= true, 
 			dbtrender 	= false,
-			debugging   = true,
+			debugging   = false,
 			random;
 	//	private float ambient = .5f;
 	//	private int colorIndex;
@@ -139,9 +144,11 @@ public class Main extends GameState {
 
 	public void create(){
 		bodiesToRemove = new Array<>();
+		healthBars = new HashMap<>();
 		history = new History();
 		currentScript = null;
 		evaluator = new Evaluator(this);
+		pixel = Game.res.getTexture("pixel");
 
 		stateType = prevStateType = InputState.MOVE;
 		currentEmotion = Mob.NORMAL;
@@ -193,6 +200,8 @@ public class Main extends GameState {
 			if(keyIndexTime>=1)
 				keyIndexTime = 0;
 		}
+			if(loadScript!=null &&loading)
+				loadScript.update();
 
 		if (!paused){
 			speakTime += dt;
@@ -208,7 +217,7 @@ public class Main extends GameState {
 				handleWeather();
 			}
 
-			if(currentScript != null &&analyzing && !waiting) 
+			if(currentScript != null &&analyzing && !waiting &&!warping) 
 				currentScript.update();
 
 			if (waiting){
@@ -225,7 +234,7 @@ public class Main extends GameState {
 			for(PositionalAudio s : sounds)
 				updateSound(s.location, s.sound);
 
-			if(currentScript != null){
+			if(currentScript != null && currentScript.getOwner()!=null){
 				float dx = character.getPosition().x - currentScript.getOwner().getPosition().x;
 
 				//if player gets too far from whatever they're talking to
@@ -237,7 +246,22 @@ public class Main extends GameState {
 					setStateType(InputState.MOVE);
 				}
 			}
+			
+			//update health bars and their times
+			Array<Entity> toRemove = new Array<>();
+			for(Entity e: healthBars.keySet()){
+				float time = healthBars.get(e);
+				
+				if(time-dt<=0)
+					toRemove.add(e);
+				else
+					healthBars.put(e, time-dt);
+			}
+			
+			for(Entity e: toRemove)
+				healthBars.remove(e);
 
+			//find bodies that are out of bounds
 			for (Entity e : objects){
 				if (!(e instanceof Ground)) {
 					if(!e.init && e.getBody()==null)
@@ -252,14 +276,15 @@ public class Main extends GameState {
 							//Game Over
 							//System.out.println("die"); 
 						} else {
-							bodiesToRemove.add(e.getBody());
+							removeBody(e.getBody());
 						}
 					}
 				}
 			}
 
+			//apply removal of deleted bodies
 			for (Body b : bodiesToRemove){
-				if (b != null) 
+				if (b != null) {
 					if (b.getUserData() != null){
 						Object e = b.getUserData();
 						if(cam.getFocus().equals(e))
@@ -269,6 +294,7 @@ public class Main extends GameState {
 							addObject((Entity) e);
 						world.destroyBody(b);
 					}
+				}
 			}
 
 			bodiesToRemove.clear();
@@ -411,7 +437,9 @@ public class Main extends GameState {
 				}
 				e.render(sb);
 			}
+			drawHealthBars(sb);
 			sb.end();
+
 
 			scene.renderFG(sb);
 
@@ -462,8 +490,22 @@ public class Main extends GameState {
 
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
-		debugText+="/l"+character.o;
 		
+		if(currentScript!=null){
+			debugText+= "/lIndex: "+(currentScript.index);
+			debugText+= "/lActiveObj: "+(currentScript.getActiveObject());
+			debugText+= "/lPaused: "+(currentScript.paused);
+		}
+		
+//		Entity e = findObject(objectName);
+//		if(e!=null){
+//			debugText+="/lObject: "+e;
+//		}
+		
+		float t = ((int)(character.aimTime*100))/100f;
+		debugText+="/l/la: "+character.aiming()+"    s: "+character.aimSounded()+"    t: "+t;
+		t = ((int)(character.powerCoolDown*100))/100f;
+		debugText+="/lC: "+t;
 
 		sb.begin();
 		drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
@@ -507,11 +549,10 @@ public class Main extends GameState {
 		}
 
 		if(MyInput.isPressed(Input.DEBUG_CENTER)) {
-//			random=true;
-//			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
-//			changeSong(new Song(Game.SONG_LIST.get(current)));
-			//			dayTime+=1.5f;
-			cam.shake();
+			random=true;
+			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
+			changeSong(new Song(Game.SONG_LIST.get(current)));
+//			dayTime+=1.5f;
 		}
 
 		if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
@@ -647,17 +688,13 @@ public class Main extends GameState {
 				}
 
 				break;
-				//			case LOCKED:
-				//				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
-				//				break;
 			case MOVE:
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 				if(/*cam.focusing||*/warping||quitting||character.dead||waiting||character.frozen) return;
 				if(MyInput.isPressed(Input.JUMP)) character.jump();
 				if(MyInput.isDown(Input.UP)) {
 					if(character.canWarp && character.isOnGround() && !character.snoozing && 
-							!character.getWarp().instant) {
-					}
+							!character.getWarp().instant) { }
 					else if(character.canClimb) character.climb();
 					else {
 						Vector2 f = new Vector2(character.getPixelPosition().x, 
@@ -676,7 +713,6 @@ public class Main extends GameState {
 					}
 				}
 
-
 				if(MyInput.isDown(Input.DOWN)) 
 					if(character.canClimb)
 						character.descend();
@@ -688,11 +724,30 @@ public class Main extends GameState {
 
 				if(MyInput.isDown(Input.LEFT)) character.left();
 				if(MyInput.isDown(Input.RIGHT)) character.right();
-				if(MyInput.isDown(Input.RUN)) {character.run();}
+				if(MyInput.isDown(Input.RUN)) character.run();
+				
+				if(MyInput.isDown(Input.SPECIAL)) {
+					character.aim();
+					if(MyInput.isDown(Input.LEFT)&&!character.isFacingLeft()) 
+						character.changeDirection();
+					if(MyInput.isDown(Input.RIGHT)&&character.isFacingLeft()) 
+						character.changeDirection();
+					
+				}
 				if(MyInput.isPressed(Input.ATTACK)) {
-					character.attack();
+					if(MyInput.isDown(Input.SPECIAL)){
+						if(character.sees()){
+							player.doRandomPower(character.target());
+						} else 
+							player.doRandomPower();
+					} else
+						character.attack();
 				}
 
+				if(MyInput.isUp(Input.SPECIAL) && (character.getAnimationAction().equals(Anim.AIMING) ||
+						character.getAnimationAction().equals(Anim.AIM_TRANS) || character.getAnimationAction().equals(Anim.ATTACKING)))
+					character.unAim();
+					
 				if(MyInput.isUp(Input.UP) && (character.getAnimationAction().equals(Anim.LOOKING_UP)
 						|| character.getAnimationAction().equals(Anim.LOOK_UP))){
 					character.setAnimation(true, Anim.LOOK_UP);
@@ -848,7 +903,7 @@ public class Main extends GameState {
 
 						//delete speechBubbles from world
 						for (SpeechBubble b : choices)
-							bodiesToRemove.add(b.getBody()); 
+							removeBody(b.getBody()); 
 					}
 				}
 
@@ -859,6 +914,8 @@ public class Main extends GameState {
 		}
 	}
 
+	
+	//trigger the necessary scripts for making the partner follow
 	private void partnerFollow(){
 		if(player.getPartner()!=null){
 			if(player.getPartner().getName() != null){
@@ -1073,11 +1130,29 @@ public class Main extends GameState {
 		warped = false;
 		this.warp = warp;
 		nextScene = warp.getNextScene();
-		//		scene.saveLevel();
 
 		sb.fade();
 		if(nextScene.newSong)
 			changeSong(nextScene.DEFAULT_SONG[dayState]);
+	}
+	
+	private Vector2 location;
+	public void initTeleport(Vector2 loc, String level){
+		if(Game.LEVEL_NAMES.contains(level, false)){
+			warping = true;
+			warped = false;
+			warp = null;
+
+			location = loc;
+			nextScene = new Scene(world, this, level);
+			nextScene.setRayHandler(rayHandler);
+
+			sb.fade();
+			if(nextScene.newSong)
+				changeSong(nextScene.DEFAULT_SONG[dayState]);
+		} else {
+			System.out.println("\""+level+"\" is an invalid level name");
+		}
 	}
 
 	public void warp(){
@@ -1087,13 +1162,21 @@ public class Main extends GameState {
 		destroyBodies();
 		scene = nextScene;
 		scene.create();
-		Vector2 w = warp.getLink().getWarpLoc();
-		w.y+=character.rh;
-		createPlayer(w);
-		initEntities();
+		if(warp!=null){
+			Vector2 w = warp.getLink().getWarpLoc();
+			
+			w.y+=character.rh;
+			createPlayer(w);
+			if(warp.getLink().warpID==1 && !character.isFacingLeft()) character.setDirection(true);
+			if(warp.getLink().warpID==0 && !character.isFacingLeft()) character.setDirection(false);
+		
+		} else {
+			location.y+=character.rh;
+			createPlayer(location);
+			location = null;
+		}
 
-		if(warp.getLink().warpID==1 && !character.isFacingLeft()) character.setDirection(true);
-		if(warp.getLink().warpID==0 && !character.isFacingLeft()) character.setDirection(false);
+		initEntities();
 		cam.setBounds(Vars.TILE_SIZE*4, (scene.width-Vars.TILE_SIZE*4), 0, scene.height);
 		b2dCam.setBounds((Vars.TILE_SIZE*4)/PPM, (scene.width-Vars.TILE_SIZE*4)/PPM, 0, scene.height/PPM);
 
@@ -1127,6 +1210,14 @@ public class Main extends GameState {
 	public SpeechBubble[] getChoices(){ return choices; }
 
 	public void addSound(PositionalAudio s){ sounds.add(s); }
+	public void removeSound(PositionalAudio s){ sounds.remove(s); }
+	
+	public void setCharacter(Mob e){
+		character = e;
+		cam.setCharacter(e);
+		b2dCam.setCharacter(e);
+	}
+	
 	public void addObject(Entity e){ 
 		if(!exists(e)){
 			objects.add(e); 
@@ -1165,7 +1256,7 @@ public class Main extends GameState {
 		return object;
 	}
 
-	public void addBodyToRemove(Body b){ bodiesToRemove.add(b); }
+	public void removeBody(Body b){  bodiesToRemove.add(b);  }
 	public ArrayList<Path> getPaths() {return paths; }
 	public Path getPath(String pathName){
 		for(Path p : paths){
@@ -1176,15 +1267,11 @@ public class Main extends GameState {
 	}
 
 	public void load()	{
-		narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 		player = new Player(this);
 		
 		if(!gameFile.equals("newgame")){
 			JsonSerializer.loadGameState(gameFile);
 
-			//TODO load recent scene from gameFile
-			scene= new Scene(world,this,"Residential District N");
-			
 			scene.setRayHandler(rayHandler);
 			setSong(scene.DEFAULT_SONG[dayState]);
 			music.pause();
@@ -1192,21 +1279,22 @@ public class Main extends GameState {
 
 			narrator = (Mob)Entity.idToEntity.get(Vars.NARRATOR_SCENE_ID);
 			character = (Mob)Entity.idToEntity.get(Vars.PLAYER_SCENE_ID);
-			createPlayer(null);	//TODO get Mob respawnpoint serialize working
+			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
-			scene= new Scene(world,this,"Residential District N");
+			scene= new Scene(world,this,"Residential District N");scene= new Scene(world,this,"Residential District N");
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
 			scene.create();
-			
+
+			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
 				character = new Mob("TestName", "femaleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 			} else {
-				//Jay: this spawns a camBot at it's special location to take the place of 
+				
+				//this spawns a camBot at its special location to take the place of 
 				//the player before it has been created by the introduction
-
 				if(scene.getCBSP()!=null)
 					createEmptyPlayer(scene.getCBSP());
 				else
@@ -1224,17 +1312,10 @@ public class Main extends GameState {
 
 	//precreates all existing warps across entire game and puts them to hashtable
 	public void catalogueWarps(){
-		//collect names for valid levels
-		Array<String> levels = new Array<>();
-		FileHandle [] files = Gdx.files.internal("assets/maps").list();
-		for(FileHandle f:files)
-			if(f.extension().equals("tmx"))
-				levels.add(f.nameWithoutExtension());
-
 		Scene s;
 		Array<Warp> w;
 		// create warps from each level and add them to the hash
-		for(String l : levels){
+		for(String l : Game.LEVEL_NAMES){
 			s = new Scene(l);
 			w = s.createWarps();
 			for(Warp i : w) 
@@ -1255,21 +1336,21 @@ public class Main extends GameState {
 	//sceneIDs should NOT be used to directly access the entity from scripts, 
 	//as the number represents chronologically how many mobs have been created 
 	//since the game started
-	public int createSceneID(){
-		//get highest value of sceneID from file
-		if(gameFile!=null){
-			return 0;
-		} else {
-			//get Highest Value from entities in the scene currently 
-			int max = 0;
-			for(Entity e: objects){
-				if(max<e.getSceneID())
-					max = e.getSceneID();
-			}
-
-			return max + 1;
-		}
-	}
+//	public int createSceneID(){
+//		//get highest value of sceneID from file
+//		if(gameFile!=null){
+//			return 0;
+//		} else {
+//			//get Highest Value from entities in the scene currently 
+//			int max = 0;
+//			for(Entity e: objects){
+//				if(max<e.getSceneID())
+//					max = e.getSceneID();
+//			}
+//
+//			return max + 1;
+//		}
+//	}
 
 	public void createPlayer(Vector2 location){
 //		String gender = character.getGender();
@@ -1330,25 +1411,39 @@ public class Main extends GameState {
 	}
 
 	public void triggerScript(Script script, EventTrigger tg){
-		currentScript = script;
-
-		if (analyzing) return;
-		if (currentScript != null) {
-			analyzing = true;
-			for (Entity e : objects)
-				if (e instanceof SpeechBubble)
-					addBodyToRemove(e.getBody()); //remove talking speech bubble
-			script.analyze();
-			if (currentScript.limitDistance) { //script can somehow become null at this point (threading issue?)
-				setStateType(InputState.MOVELISTEN);
-			} else {
-				if(character.getInteractable()!=null)
-					if(tg==null)
-						positionPlayer(character.getInteractable());
-					else if (tg.halt) System.out.println("not positioning");
-//						do something
-			}
+		if(currentScript!=null || analyzing){
+			System.out.println("Main already has script with ID: "+currentScript.ID);
+			return;
 		}
+		
+		if (script != null) 
+			if(script.source!=null){
+				if(character.aiming()) character.unAim();
+				currentScript = script;
+				analyzing = true;
+				for (Entity e : objects)
+					if (e instanceof SpeechBubble)
+						removeBody(e.getBody()); //remove talking speech bubble
+				script.analyze();
+				if(currentScript==null)return;
+				if (currentScript.limitDistance) { //script can somehow become null at this point (threading issue?)
+					setStateType(InputState.MOVELISTEN);
+				} else {
+					if(character!=null)
+						if(character.getInteractable()!=null)
+							if(tg==null)
+								positionPlayer(character.getInteractable());
+							else if (tg.getHalt(currentScript.ID)) 
+								System.out.println("not positioning");
+//						do something
+				}
+			}
+	}
+	
+	public void doLoadScript(Script script){
+		loadScript = script;
+		loading = true;
+		loadScript.analyze();
 	}
 
 	//add all of the scene's entities on init and create them
@@ -1372,6 +1467,8 @@ public class Main extends GameState {
 		}
 
 		sortObjects();
+		if(scene.loadScript.source!=null) 
+			doLoadScript(scene.loadScript);
 	}
 
 	public Mob getMob(String name) {
@@ -1385,10 +1482,28 @@ public class Main extends GameState {
 	}
 
 	public void destroyBodies(){
+		//record last position of entity so it can be saved
+		for (Entity e : objects) {
+			Vector2 lastPos = e.getBody().getPosition();
+			lastPos.x *= Vars.PPM;
+			lastPos.y *= Vars.PPM;
+			if (e instanceof Mob) {
+				lastPos.y -= ((Mob)e).rh;	//this offset allows entity to be spawned from right location
+			}
+			e.setPosition(lastPos);
+		}
+
+		//destroy all the bodies
 		Array<Body> tmp = new Array<Body>();
 		world.getBodies(tmp);
-		for(Body b : tmp)
+		for(Body b : tmp) {
 			world.destroyBody(b);
+		}
+				
+		//invalidate references to the destroyed bodies
+		for (Entity e : objects) {
+			e.setBody(null);
+		}
 	}
 
 	public void removeAllObjects(){
@@ -1404,8 +1519,7 @@ public class Main extends GameState {
 
 	}
 	
-	public void setScene(Scene s){ scene = s;
-	System.out.println(scene.ID); }
+	public void setScene(Scene s){ scene = s; System.out.println(scene.ID); }
 	public Scene getScene(){ return scene; }
 	public World getWorld(){ return world; }
 	public HUD getHud() { return hud; }
@@ -1440,9 +1554,33 @@ public class Main extends GameState {
 
 	public void printObjects() {
 		for(Entity e:objects){
-			//			debugText+="/l"+e.ID;
+//			debugText+="/l"+e.ID;
 			System.out.println(e);
 		}
+	}
+	
+	public void drawHealthBars(SpriteBatch sb){
+		Color tint = sb.getColor();
+		for(Entity e: healthBars.keySet()){
+			for(int i = 0; i < e.getMaxHealth(); i++){
+				if(i<=e.getHealth())
+					if(e.frozen)
+						sb.setColor(Color.CYAN);
+					else
+						sb.setColor(Color.RED);
+				else
+					sb.setColor(Color.GRAY);
+//				sb.draw(pixel, e.getPixelPosition().x + i - e.rw, e.getPixelPosition().y + e.rh + 5);
+				sb.draw(pixel, e.getPixelPosition().x + i - (int)(e.getMaxHealth()/2f), e.getPixelPosition().y + e.rh + 5);
+			}
+
+			sb.setColor(tint);
+		}
+	}
+	
+	public void addHealthBar(Entity e){
+		if(!e.equals(character) || !e.destructable)
+			healthBars.put(e, 3f);
 	}
 
 	public ArrayList<Entity> getObjects(){ return objects;	}
