@@ -121,9 +121,9 @@ public class JsonSerializer {
 		playerRefLst.clear();
 	}
 	
-	public static void pushMobRef(Mob orig, int attackFocus, int aiFocus, int interactable) {
+	public static void pushMobRef(Mob mob2, int attackFocus, int aiFocus, int interactable) {
 		MobRef ref = new MobRef();
-		ref.orig = orig;
+		ref.orig = mob2;
 		ref.attackFocus = attackFocus;
 		ref.aiFocus = aiFocus;
 		ref.interactable = interactable;

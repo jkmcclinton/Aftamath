@@ -23,7 +23,7 @@ import entities.DamageField;
 import entities.Entity;
 import entities.Entity.DamageType;
 import entities.Mob;
-import entities.Mob.AIState;
+import entities.MobAI.ResetType;
 import entities.Path;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
@@ -148,7 +148,7 @@ public class Script implements Serializable {
 		
 		String line = source.get(index);
 		String command;//, s;
-		String[] tmp, args;
+		String[] tmp, args = args(line);
 		Entity obj = null;
 		Entity target=null;
 		Vector2 loc = null;
@@ -260,32 +260,74 @@ public class Script implements Serializable {
 				}
 				break;
 			case "doaction":
+				//doAction(objectName, actionType, [wait])
+				//doAction(objectName, actionType, target, [wait])
+				//doAction(objectName, actionType, time, [wait])
+				//doAction(objectName, actionType, target, time, [wait])
+				//doAction(objectName, actionType, target, resetType, [wait])
+
 				obj = findObject(firstArg(line));
-				if (obj != null){
+				if(obj!=null){
 					if(obj instanceof Mob){
-						args = args(line);
-						((Mob) obj).doAction(args[1]);
-						if(args.length<3)
-							if(obj.controlled)
-								activeObj = obj;
-					}else
-						obj.doAction(convertToNum(line));
-				} else
-					System.out.println("Cannot find \""+firstArg(line)+"\" to perform action; Line: "+(index+1)+"\tScript: "+ID);
-				break;
-			case "dotimedaction":
-				obj = findObject(firstArg(line));
-				if (obj != null) { 
-					if(obj instanceof Mob){
-						float f = convertToNum(line);
-						args = args(line);
-						((Mob) obj).doTimedAction(args[1], f);
-						if(args.length<4)
-							if(obj.controlled)
-								activeObj = obj;
-					}
+						Mob m = (Mob) obj;
+						if(args.length>=2 && args.length<=5){
+							String actionType = args[1];
+							String resetType = ResetType.ON_AI_COMPLETE.toString();
+							boolean wait = true;
+							float time = -1;
+
+							switch(args.length){
+							case 3:
+								if(Vars.isBoolean(args[2]))
+									wait = Boolean.parseBoolean(args[2]);
+								else {
+									if(Vars.isNumeric(args[2])){
+										time = Float.parseFloat(args[2]);
+										resetType = ResetType.ON_TIME.toString();
+									} else 
+										target = findObject(args[2]);
+								}
+								break;
+							case 4:
+								if(Vars.isBoolean(args[3])){
+									wait = Boolean.parseBoolean(args[3]);
+									if(Vars.isNumeric(args[2])){
+										time = Float.parseFloat(args[2]);
+										resetType = ResetType.ON_TIME.toString();
+									} else 
+										target = findObject(args[2]);
+								} else {
+									target = findObject(args[2]);
+									if(Vars.isNumeric(args[3])){
+										time = Float.parseFloat(args[3]);
+										resetType = ResetType.ON_TIME.toString();
+									} else resetType = args[3];
+								}
+								break;
+							case 5:
+								if(Vars.isBoolean(args[4])){
+									wait = Boolean.parseBoolean(args[4]);
+								}
+								target = findObject(args[2]);
+								if(Vars.isNumeric(args[3])){
+									time = Float.parseFloat(args[3]);
+									resetType = ResetType.ON_TIME.toString();
+								} else resetType = args[3];
+								break;
+							} 
+							
+							System.out.println("ac: "+actionType+"\tt: "+target+"\tdt: "+time+"\trt: "+resetType+"\tw: "+wait);
+							m.setState(actionType, target, time, resetType);
+							if(wait){
+								m.controlled = true;
+							}
+						} else
+							System.out.println("Insufficient number of arguments; Line: "+(index+1)+"\tScript: "+ID);
+					} else
+						System.out.println("\""+firstArg(line)+" cannot perform an action because it is not a mob; Line: "+(index+1)+"\tScript: "+ID);
 				} else
 					System.out.println("Cannot find \""+firstArg(line)+" to perform action; Line: "+(index+1)+"\tScript: "+ID);
+
 				break;
 			case "else":
 				index = operations.peek().end;
@@ -388,7 +430,6 @@ public class Script implements Serializable {
 			case "focus":
 			case "focuscamera":
 				obj = findObject(lastArg(line));
-				args = args(line);
 				if (obj != null) {
 					paused = true;
 					main.getCam().setFocus(obj);
@@ -415,7 +456,7 @@ public class Script implements Serializable {
 				target = findObject(lastArg(line));
 				if (obj != null && target != null){
 					if (obj instanceof Mob){
-						((Mob) obj).setState(AIState.FOLLOWING, target);
+						((Mob) obj).setState("FOLLOWING", target);
 					}else obj.faceObject(target);
 				}
 				break;
@@ -484,8 +525,7 @@ public class Script implements Serializable {
 			case "moveobject":
 //				move(objectName, x, y, [wait]) //accepts Tile Location
 //				move(objectName, pathName, [wait]) //accepts a path
-//				move(objectName, targetName, [wait]) //accepts a mob
-				args = args(line);
+//				move(objectName, targetName, [wait]) //accepts a Mob
 				loc = null;
 				boolean wait = true;
 //				Entity targ = null;
@@ -511,7 +551,7 @@ public class Script implements Serializable {
 						break;
 					}
 
-					//is target a mob?
+					//is target a Mob?
 					target = findObject(args[1].trim());
 					if(target != null){
 						float dx = target.getPosition().x - obj.getPosition().x;
@@ -532,9 +572,9 @@ public class Script implements Serializable {
 					if(loc != null)
 						if(obj instanceof Mob){
 							if(wait) activeObj = obj;
-							((Mob) obj).setGoal(loc);
+							((Mob) obj).setState("MOVE", loc);
 						} else
-							System.out.println("Cannot move \""+middleArg(line)+"\" because it is not a mob; Line: "+(index+1)+"\tScript: "+ID);
+							System.out.println("Cannot move \""+middleArg(line)+"\" because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
 				}
 				catch (ArrayIndexOutOfBoundsException e){
 					System.out.println("Insufficient arguments provided; Line: "+(index+1)+"\tScript: "+ID);
@@ -559,10 +599,13 @@ public class Script implements Serializable {
 				break;
 			case "remove":
 			case "removeObject":
+				//remove object from existance
 				obj = findObject(firstArg(line));
-				if (obj!= null)
+				if (obj!= null){
 					main.removeBody(obj.getBody());
-				else
+					Entity.idToEntity.remove(obj.getSceneID());
+					Scene.sceneToEntityIds.remove(obj.getSceneID());
+				}else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "removepartner":
@@ -573,6 +616,13 @@ public class Script implements Serializable {
 				if (obj != null){
 					if(obj instanceof Mob)
 						((Mob) obj).resetState();
+				}
+				break;
+			case "restore":
+				obj = findObject(lastArg(line));
+				if (obj != null){
+//					if(obj instanceof Mob)
+						obj.restore();
 				}
 				break;
 			case "return":
@@ -663,10 +713,10 @@ public class Script implements Serializable {
 				break;
 			case "setdefaultstate":
 				obj = findObject(firstArg(line));
-				if(obj!=null){
+
+				if(obj!=null)
 					if(obj instanceof Mob)
-						((Mob)obj).setDefaultState(lastArg(line));
-				}
+						((Mob) obj).setDefaultState(lastArg(line));
 				break;
 			case "setdialog":
 			case "setdialogue":
@@ -693,7 +743,7 @@ public class Script implements Serializable {
 							s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
 						obj.setDialogueScript(s);
 					} else
-						System.out.println("Cannot set a discover script for \"" + firstArg(line)+ "\" because it is not a mob; Line: "+(index+1)+"\tScript: "+ID);
+						System.out.println("Cannot set a discover script for \"" + firstArg(line)+ "\" because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
 				}else
 					System.out.println("Cannot find object \"" + firstArg(line)+ "\" to set a discover script; Line: "+(index+1)+"\tScript: "+ID);
 
@@ -809,13 +859,6 @@ public class Script implements Serializable {
 				}
 
 				break;
-			case "setstate":
-				obj = findObject(firstArg(line));
-
-				if(obj!=null)
-					if(obj instanceof Mob)
-						((Mob) obj).setState(lastArg(line));
-				break;
 			case "setsupattackscript":
 			case "setsuperattackscript":
 				obj = findObject(firstArg(line));
@@ -850,7 +893,6 @@ public class Script implements Serializable {
 				break;
 			case "spawn":
 				//spawn(NPC, image, name, x, y, layer)
-				args = args(line);
 				if(args[0].equals("NPC") && args.length>=5){
 					spawn(line);
 				} else
@@ -901,7 +943,6 @@ public class Script implements Serializable {
 			case"teleport":
 				//teleport(objectName, levelName, x, y)
 				//teleport(objectName, levelName, warp)
-				args = args(line);
 				obj = findObject(firstArg(line));
 				if(obj!=null){
 					String level = args[1];
@@ -1040,6 +1081,7 @@ public class Script implements Serializable {
 
 			for (Entity d : main.getObjects()){
 				if (d instanceof Mob)
+					if(((Mob)d).getCurrentState().resetType.equals(ResetType.ON_SCRIPT_END))
 					((Mob) d).resetState();
 			}
 
@@ -1074,7 +1116,7 @@ public class Script implements Serializable {
 					Mob o = (Mob) owner;
 					switch(o.getResponseType()){
 					case ATTACK:
-						o.setState(AIState.FIGHTING);
+						o.fight(main.character);;
 						break;
 					case FOLLOW:
 						o.follow(main.character);
@@ -1965,7 +2007,7 @@ public class Script implements Serializable {
 					}
 				}
 			
-			//find mob from save data
+			//find Mob from save data
 			//TODO simplify this
 			
 			//sceneID is not given
@@ -2001,9 +2043,9 @@ public class Script implements Serializable {
 				} 
 				
 				if (!found) {
-					//create new mob if not found;
+					//create new Mob if not found;
 					e = new Mob(args[2].trim(), args[1].trim(), sceneID, loc.x, loc.y, layer);
-					((Mob)e).setDefaultState(AIState.FACEPLAYER);
+					((Mob)e).setState("FACEPLAYER", null, -1, ResetType.NEVER.toString());
 					e.setDialogueScript("generic_1");
 				}
 			} else {

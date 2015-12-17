@@ -42,7 +42,7 @@ public class Projectile extends Entity {
 		super(x,y,getID(type));
 		
 		this.type = type;
-		this.animation.setSpeed(ANIM_RATE);
+		this.animation.setBaseDelay(ANIM_RATE);
 		this.layer = Vars.BIT_BATTLE;
 		this.owner = owner;
 		this.killType = KillType.ON_IMPACT;

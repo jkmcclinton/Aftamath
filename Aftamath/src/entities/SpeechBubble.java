@@ -75,7 +75,7 @@ public class SpeechBubble extends Entity {
 		maxWidth = message.length() * font[0].getRegionWidth();
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("speechBubble"), width, height)[ID];
 		setDefaultAnimation(sprites[sprites.length - 1]);
-		animation.setAction(sprites, sprites.length, false, 1, Vars.ACTION_ANIMATION_RATE, false, false);
+		animation.setFrames(sprites, Vars.ACTION_ANIMATION_RATE, 1, 1, false);
 	}
 	
 	public SpeechBubble(Entity d, float x, float y, String ID){
@@ -93,8 +93,8 @@ public class SpeechBubble extends Entity {
 		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text5.png")), 7, 9 )[0];
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture(ID), width, height)[0];
 		setDefaultAnimation(sprites, Vars.ACTION_ANIMATION_RATE*2);
-		animation.setAction(TextureRegion.split(texture, width, height)[1], determineLength(ID), 
-				false, 1, Vars.ACTION_ANIMATION_RATE/2, false, false);
+		animation.setFrames(TextureRegion.split(texture, width, height)[1],
+				Vars.ACTION_ANIMATION_RATE/2f,1, determineLength(ID), false);
 	}
 
 	public void update(float dt){

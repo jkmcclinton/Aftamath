@@ -28,14 +28,16 @@ import entities.CamBot;
 import entities.Entity;
 import entities.Ground;
 import entities.HUD;
-import entities.Mob;
-import entities.Mob.AIState;
 import entities.Mob.Anim;
+import entities.Mob;
+import entities.MobAI.AIType;
+import entities.MobAI.ResetType;
 import entities.Path;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
 import entities.Warp;
+import handlers.Animation.LoopBehavior;
 import handlers.Camera;
 import handlers.Evaluator;
 import handlers.EventTrigger;
@@ -125,8 +127,8 @@ public class Main extends GameState {
 	public boolean dbRender 	= false, 
 			rayHandling = false, 
 			render 		= true, 
-			dbtrender 	= false,
-			debugging   = false,
+			dbtrender 	= true,
+			debugging   = true,
 			random;
 	//	private float ambient = .5f;
 	//	private int colorIndex;
@@ -178,7 +180,7 @@ public class Main extends GameState {
 
 		cam.reset();
 		b2dCam.reset();
-		catalogueWarps();
+//		catalogueWarps();
 		load();
 
 		speakTime = 0;
@@ -408,10 +410,8 @@ public class Main extends GameState {
 //			rayHandler.setAmbientLight(ambient);
 		}
 
-		if(!random)
-			if(!tempSong)
-				if(!scene.DEFAULT_SONG[dayState].equals(music))
-					changeSong(scene.DEFAULT_SONG[dayState]);
+		if(!random && !tempSong && !scene.DEFAULT_SONG[dayState].equals(music))
+			changeSong(scene.DEFAULT_SONG[dayState]);
 	}
 
 	public void render() {
@@ -481,35 +481,37 @@ public class Main extends GameState {
 	//everything that needs to be displayed constantly for debug tracking is
 	//right here
 	public void updateDebugText() {
-//		debugText= "next: "+nextSong+"     "+music;
-		debugText= Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
+//		debugText+= "next: "+nextSong+"     "+music;
+		debugText+= "/l"+Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
 		debugText += "/lLevel: " + scene.title;
 		debugText += "/lSong: " + music;
 		debugText+= "/lState: "+(stateType);
-//		debugText+="/lATTACKABLES: "+character.getAttackables();
+//		debugText+="/lInteractable: "+character.getInteractable();
 
-		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM) + 
-				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
+		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM/Vars.TILE_SIZE) + 
+				"    y: " + ((int) (character.getPosition().y*PPM/Vars.TILE_SIZE) - character.height);
 		
-		if(currentScript!=null){
-			debugText+= "/lIndex: "+(currentScript.index);
-			debugText+= "/lActiveObj: "+(currentScript.getActiveObject());
-			debugText+= "/lPaused: "+(currentScript.paused);
-		}
-		
-//		Entity e = findObject(objectName);
-//		if(e!=null){
-//			debugText+="/lObject: "+e;
+//		if(currentScript!=null){
+//			debugText+= "/lIndex: "+(currentScript.index);
+//			debugText+= "/lActiveObj: "+(currentScript.getActiveObject());
+//			debugText+= "/lPaused: "+(currentScript.paused);
 //		}
 		
-		float t = ((int)(character.aimTime*100))/100f;
-		debugText+="/l/la: "+character.aiming()+"    s: "+character.aimSounded()+"    t: "+t;
-		t = ((int)(character.powerCoolDown*100))/100f;
-		debugText+="/lC: "+t;
+		Entity e = findObject("TEST");
+		if(e!=null){
+			if(e instanceof Mob)
+			debugText+="/lCurrentState: "+((Mob)e).getCurrentState();
+		}
+		
+//		float t = ((int)(character.aimTime*100))/100f;
+//		debugText+="/l/la: "+character.aiming()+"    s: "+character.aimSounded()+"    t: "+t;
+//		t = ((int)(character.powerCoolDown*100))/100f;
+//		debugText+="/lC: "+t;
 
 		sb.begin();
 		drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
 		sb.end();
+		debugText="";
 	}
 
 	public void handleInput() {
@@ -736,27 +738,28 @@ public class Main extends GameState {
 				}
 				if(MyInput.isPressed(Input.ATTACK)) {
 					if(MyInput.isDown(Input.SPECIAL)){
-						if(character.sees()){
+						if(character.seesSomething()){
 							player.doRandomPower(character.target());
-						} else 
+						} else {
 							player.doRandomPower();
+						}
 					} else
-						character.attack();
+						character.punch();
 				}
 
-				if(MyInput.isUp(Input.SPECIAL) && (character.getAnimationAction().equals(Anim.AIMING) ||
-						character.getAnimationAction().equals(Anim.AIM_TRANS) || character.getAnimationAction().equals(Anim.ATTACKING)))
+				if(MyInput.isUp(Input.SPECIAL) && (character.getAction().equals(Anim.AIMING) ||
+						character.getAction().equals(Anim.AIM_TRANS) || character.getAction().equals(Anim.ATTACKING)))
 					character.unAim();
 					
-				if(MyInput.isUp(Input.UP) && (character.getAnimationAction().equals(Anim.LOOKING_UP)
-						|| character.getAnimationAction().equals(Anim.LOOK_UP))){
-					character.setAnimation(true, Anim.LOOK_UP);
+				if(MyInput.isUp(Input.UP) && (character.getAction().equals(Anim.LOOKING_UP)
+						|| character.getAction().equals(Anim.LOOK_UP))){
+					character.setAnimation(Anim.LOOK_UP, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 					cam.removeFocus();
 					b2dCam.removeFocus();
 				}
 
-				if(MyInput.isUp(Input.DOWN) && (character.getAnimationAction().equals(Anim.DUCKING)
-						|| character.getAnimationAction().equals(Anim.DUCK))){
+				if(MyInput.isUp(Input.DOWN) && (character.getAction().equals(Anim.DUCKING)
+						|| character.getAction().equals(Anim.DUCK))){
 					character.unDuck();
 				}
 
@@ -821,15 +824,15 @@ public class Main extends GameState {
 					}
 				}
 
-				if(MyInput.isUp(Input.UP) && (character.getAnimationAction().equals(Anim.LOOKING_UP)
-						|| character.getAnimationAction().equals(Anim.LOOK_UP))){
-					character.setAnimation(true, Anim.LOOK_UP);
+				if(MyInput.isUp(Input.UP) && (character.getAction().equals(Anim.LOOKING_UP)
+						|| character.getAction().equals(Anim.LOOK_UP))){
+					character.setAnimation(Anim.LOOK_UP, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 					cam.removeFocus();
 					b2dCam.removeFocus();
 				}
-				if(MyInput.isUp(Input.DOWN) && (character.getAnimationAction().equals(Anim.DUCKING)
-						|| character.getAnimationAction().equals(Anim.DUCK))){
-					character.setAnimation(true, Anim.DUCK);
+				if(MyInput.isUp(Input.DOWN) && (character.getAction().equals(Anim.DUCKING)
+						|| character.getAction().equals(Anim.DUCK))){
+					character.setAnimation(Anim.DUCK, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 				}
 				break;
 			case LISTEN:
@@ -924,7 +927,7 @@ public class Main extends GameState {
 
 					if (player.stopPartnerDisabled) {
 						triggerScript("toggleFollowDisabled");
-					} else if(player.getPartner().getState() == AIState.FOLLOWING) {
+					} else if(player.getPartner().getState().type == AIType.FOLLOWING) {
 						triggerScript("stopFollower");
 						player.getPartner().stay();
 					} else {
@@ -1256,7 +1259,7 @@ public class Main extends GameState {
 		return object;
 	}
 
-	public void removeBody(Body b){  bodiesToRemove.add(b);  }
+	public void removeBody(Body b){ bodiesToRemove.add(b);  }
 	public ArrayList<Path> getPaths() {return paths; }
 	public Path getPath(String pathName){
 		for(Path p : paths){
@@ -1282,14 +1285,15 @@ public class Main extends GameState {
 			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
-			scene= new Scene(world,this,"Residential District N");scene= new Scene(world,this,"Residential District N");
+			scene= new Scene(world,this,"Church");
+//			scene= new Scene(world,this,"Residential District N");
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
 			scene.create();
 
 			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
-				character = new Mob("TestName", "femaleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+				character = new Mob("TestName", "gangster1", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 			} else {
 				
@@ -1489,6 +1493,8 @@ public class Main extends GameState {
 			lastPos.y *= Vars.PPM;
 			if (e instanceof Mob) {
 				lastPos.y -= ((Mob)e).rh;	//this offset allows entity to be spawned from right location
+				if(((Mob)e).getCurrentState().resetType.equals(ResetType.ON_LEVEL_CHANGE))
+					((Mob)e).resetState();
 			}
 			e.setPosition(lastPos);
 		}
@@ -1570,7 +1576,6 @@ public class Main extends GameState {
 						sb.setColor(Color.RED);
 				else
 					sb.setColor(Color.GRAY);
-//				sb.draw(pixel, e.getPixelPosition().x + i - e.rw, e.getPixelPosition().y + e.rh + 5);
 				sb.draw(pixel, e.getPixelPosition().x + i - (int)(e.getMaxHealth()/2f), e.getPixelPosition().y + e.rh + 5);
 			}
 

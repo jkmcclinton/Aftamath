@@ -36,6 +36,7 @@ public class Game implements ApplicationListener {
 	public static final float DEFAULT_ZOOM = 3f;
 	public static final int MAX_INPUT_LENGTH = 20;
 
+	public static Assets res = new Assets();
 	public static float musicVolume = 1f;
 	public static float soundVolume = .75f;
 	public Stack<Song> song;
@@ -46,13 +47,11 @@ public class Game implements ApplicationListener {
 	private OrthographicCamera hudCam;
 	private static float zoom = 3;
 	private static String input = "";
-
 	private GameStateManager gsm;
 
-	public static Assets res = new Assets();
 
 	public void create() {
-		//Texture.setEnforcePotImages(false);
+//		Texture.setEnforcePotImages(false);
 		Gdx.input.setInputProcessor(new MyInputProcessor());
 
 		res.loadTextures();
@@ -74,6 +73,7 @@ public class Game implements ApplicationListener {
 		gsm.update(STEP);
 		gsm.render();
 		MyInput.update();
+//		System.out.println("managed textures: "+Texture.getNumManagedTextures());
 	}
 
 	public void update() {}
@@ -83,13 +83,13 @@ public class Game implements ApplicationListener {
 	}
 
 	public void pause() {
-		//		GameState gs = ((GameState) gsm.getStates().peek());
-		//		gs.pause();
+//		GameState gs = ((GameState) gsm.getStates().peek());
+//		gs.pause();
 	}
 
 	public void resume() {
-		//		GameState gs = ((GameState) gsm.getStates().peek());
-		//		gs.resume();
+//		GameState gs = ((GameState) gsm.getStates().peek());
+//		gs.resume();
 	}
 
 	public static String getInput(){ return input; }

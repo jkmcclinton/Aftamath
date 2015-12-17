@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import handlers.Animation;
+import handlers.AnimOld;
 import handlers.Vars;
 import main.Game;
 import main.Main;
@@ -24,12 +24,13 @@ public class HUD {
 	private float splashTime, locationTime;
 	private boolean top;
 	private OrthographicCamera cam;
-	private Mob character, speaker;
+	private Mob character;
+	private Mob speaker;
 	private Main main;
 	private Texture textures, splashOverlay;
 	private TextureRegion[] hearts, cubeFrames, btnHighFrames, emotions;
 	private TextureRegion cash, /*faceHud,*/ textHud, pauseHud, inputBGLeft, inputBGMid, inputBGRight;
-	private Animation cube, buttonHigh;
+	private AnimOld cube, buttonHigh;
 	private String[] speakText; //amount of text already displaying
 	private String splash;
 //	private float rotf;
@@ -65,13 +66,13 @@ public class HUD {
 		cubeFrames = new TextureRegion[10];
 		for (int i = 0; i < cubeFrames.length; i++)
 			cubeFrames[i] = new TextureRegion(textures, i * 11 + 192, 78, 11, 11);
-		cube = new Animation();
+		cube = new AnimOld();
 		cube.setFrames(cubeFrames, .09f, false);
 		
 		btnHighFrames = new TextureRegion[9];
 		for (int i = 0; i < btnHighFrames.length; i++)
 			btnHighFrames[i] = new TextureRegion(textures, 0, i * 18 + 361, 238, 11);
-		buttonHigh = new Animation();
+		buttonHigh = new AnimOld();
 		buttonHigh.setFrames(btnHighFrames, .1f, false);
 		
 		inputBGLeft = new TextureRegion(textures, 302, 78, 6, 18);
@@ -245,8 +246,8 @@ public class HUD {
 		}
 	}
 	
-	public void changeFace(Mob face){
-		this.speaker = face;
+	public void changeFace(Mob speaker2){
+		this.speaker = speaker2;
 	}
 	
 	public void removeFace(){

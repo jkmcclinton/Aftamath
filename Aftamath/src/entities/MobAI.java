@@ -5,8 +5,8 @@ import static handlers.Vars.PPM;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-import entities.Mob2.Anim;
-import handlers.Anim2.LoopBehavior;
+import entities.Mob.Anim;
+import handlers.Animation.LoopBehavior;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 import main.Main;
@@ -14,9 +14,8 @@ import main.Main;
 public class MobAI {
 	public static enum AIType {
 		STATIONARY, IDLEWALK, FOLLOWING, FACEPLAYER, FACEOBJECT, FIGHTING,
-		EVADING, EVADING_ALL, DANCING, BLOCKPATH, TIMEDFIGHT, PATH, PATH_PAUSE,
-		// merged
-		MOVE, RUN, JUMP, FLY, SLEEPING, FLAIL, IDLE, AIM, LOSEAIM, PUNCH, ATTACK, HUG, 
+		EVADING, EVADING_ALL, DANCING, BLOCKPATH, /*TIMEDFIGHT,*/ PATH, PATH_PAUSE,
+		MOVE, RUN, JUMP, FLY, SLEEPING, FLAIL, IDLE, AIM, LOSEAIM, PUNCH, SHOOT, ATTACK, HUG, 
 		KISS, SNOOZE, DANCE, SPECIAL1, SPECIAL2, SPECIAL3, STOP
 	}
 
@@ -24,27 +23,29 @@ public class MobAI {
 		ON_ANIM_END, ON_SCRIPT_END, ON_AI_COMPLETE, ON_LEVEL_CHANGE, ON_TIME, NEVER;
 	}
 
-	public final Mob2 owner;
+	public final Mob owner;
+	public Entity focus;
 	public final AIType type;
 	public final ResetType resetType;
 	public final float resetTime;
 	public boolean finished = false;
 	public Path path;
-
+	
+	private int ctrlRepeat = -1;
 	private final Main main; 
-	private Vector2 goalPosition, prevLocation;
+	private Vector2 goalPosition/*, prevLocation*/;
 	private float inactiveWait, inactiveTime, doTime, doDelay, time;
 	private float actionTime;
-	private boolean reached, locked, attacked;
+	private boolean reached, /*locked,*/ attacked, AIPhase2;
 
 	private static final int IDLE_LIMIT = 500;
 	
-	public MobAI(Mob2 owner, AIType type){
+	public MobAI(Mob owner, AIType type){
 		this(owner, type, ResetType.ON_AI_COMPLETE);
 	}
 
 	//initializing timed stuff
-	public MobAI(Mob2 owner, AIType type, float resetTime) {
+	public MobAI(Mob owner, AIType type, float resetTime) {
 		this.owner = owner;
 		this.type = type;
 		this.resetType = ResetType.ON_TIME;
@@ -53,16 +54,26 @@ public class MobAI {
 	}
 
 	//initializing nontimed AIs
-	public MobAI(Mob2 owner, AIType type, ResetType resetType) {
+	public MobAI(Mob owner, AIType type, ResetType resetType) {
 		this.owner = owner;
 		this.type = type;
 		this.resetType = resetType;
 		this.resetTime = -1;
 		this.main = owner.main;
 	}
+	
+	public void update(float dt){
+		time+=dt;
+		if(resetType.equals(ResetType.ON_TIME) && time>=resetTime){
+			owner.resetState();
+		} else if(!finished){
+			act(dt);
+		}
+	}
 
 	public void act(float dt) {
-		float dx, dy;
+		float dx;
+		Anim remove = null, anim = null;
 		switch (type){
 		//walk to random locations within a radius, then wait a random amount of time
 		case IDLEWALK:
@@ -70,15 +81,15 @@ public class MobAI {
 			if(inactiveTime >= inactiveWait && reached) reached = false;
 			else if (!reached){
 				if (!owner.canMove()) {
-					goalPosition = new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y);
+					setGoal(new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y));
 					inactiveWait = (float)(Math.random() * IDLE_LIMIT + 100);
 					inactiveTime = 0;
 					reached = true;
 				}
 				else {
-					dx = (goalPosition.x - owner.body.getPosition().x) * PPM ;
+					dx = (getGoal().x - owner.body.getPosition().x) * PPM ;
 					if(dx < 1 && dx > -1){
-						goalPosition = new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y);
+						setGoal(new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y));
 						inactiveWait = (float)(Math.random() * IDLE_LIMIT + 100);
 						inactiveTime = 0;
 						reached = true;
@@ -93,41 +104,18 @@ public class MobAI {
 			owner.facePlayer();
 			break;
 		case FACEOBJECT:
-			owner.faceObject(owner.focus);
+			owner.faceObject(focus);
 			break;
 			//stay close behind the target
 		case FOLLOWING:
 			owner.facePlayer();
 			dx = main.character.getPosition().x - owner.body.getPosition().x;
 
-			float m = Entity.MAX_DISTANCE * (main.character.getFollowerIndex(owner)+1);
+			float m = Entity.MAX_DISTANCE * (main.character.getFollowingIndex(owner)+1);
 			
 			if(dx > m/PPM) owner.right();
 			else if (dx < -1 * m/PPM) owner.left();
 			break;
-			//attack focus once, then return to previous action
-//		case ATTACKING:
-//			if(!attacked){
-//				if(attackFocus!=null){
-//					dx = attackFocus.getPosition().x - getPosition().x;
-//					dy = attackFocus.getPosition().x - getPosition().x;
-//					float d = (float) Math.sqrt(dx*dx + dy+dy);
-//
-//					if(Math.abs(d)>attackRange){
-//						if(dx <= -1) left();
-//						if(dx >= 1) right();
-//					} else{
-//						attack();
-//						attacked = true;
-//					}
-//				} else {
-//					attack();
-//					attacked = true;
-//					state = defaultState;
-//				}
-//			}
-//			break;
-
 		case PATH:
 			if (!isReachable()) {
 				path.stepIndex();
@@ -135,18 +123,18 @@ public class MobAI {
 					path = null;
 					owner.setState("STATIONARY");
 				} else {
-					goalPosition = path.getCurrent();
+					setGoal(path.getCurrent());
 				}
 			}
 			else {
-				dx = (goalPosition.x - owner.body.getPosition().x*PPM) ;
+				dx = (getGoal().x - owner.body.getPosition().x*PPM) ;
 				if(dx < 1 && dx > -1){
 					path.stepIndex();
 					if(path.completed){
 						path = null;
 						owner.setState("STATIONARY");
 					} else {
-						goalPosition = path.getCurrent();
+						setGoal(path.getCurrent());
 						reached = true;
 					}
 				} else {
@@ -164,7 +152,7 @@ public class MobAI {
 		case EVADING_ALL:
 		case EVADING:
 			if(!reached){
-				dx = (goalPosition.x - owner.body.getPosition().x) * PPM ;
+				dx = (getGoal().x - owner.body.getPosition().x) * PPM ;
 				if(dx < 1 && dx > -1){
 					reached = true;
 				} else {
@@ -180,14 +168,14 @@ public class MobAI {
 						found = true;
 					}
 				} else if(type == AIType.EVADING)
-					if(owner.discovered.contains(owner.focus, true)){
-						dx = (owner.focus.getPixelPosition().x - owner.getPixelPosition().x);
+					if(owner.discovered.contains(focus, true)){
+						dx = (focus.getPixelPosition().x - owner.getPixelPosition().x);
 					}
 
 				if(found)
 					if(Math.abs(dx) <= owner.visionRange){
 						float gx = -1*(dx/Math.abs(dx))*(owner.visionRange*3)/PPM + owner.getPosition().x;
-						goalPosition = new Vector2(gx, owner.y);
+						setGoal(new Vector2(gx, owner.y));
 						reached = false;
 					}
 					else {
@@ -208,31 +196,17 @@ public class MobAI {
 			owner.facePlayer();
 			break;
 		case DANCING:
-			if(owner.getAnimationAction()!=Anim.DANCE)
+			if(owner.getAction()!=Anim.DANCE)
 				owner.setAnimation(Anim.DANCE, LoopBehavior.CONTINUOUS);
 			break;
-		case TIMEDFIGHT:
-			time-=Vars.DT;
-			if(time>=0)
-				fightAI();
-			else
-				owner.resetState();
-			break;
-		default:
-			break;
-		}
-
-		// doAction
-		Anim remove=null;
-		switch(type){
 		case RUN:
 			owner.run();
 		case MOVE:
-			if(goalPosition==null && path==null)
+			if(getGoal()==null && path==null)
 				return;
 
 			if(isReachable()){
-				dx = (goalPosition.x - owner.getPosition().x)* PPM ;
+				dx = (getGoal().x - owner.getPosition().x)* PPM ;
 
 				if(Math.abs(dx) > 1){
 					if (dx > 0) owner.right();
@@ -249,7 +223,7 @@ public class MobAI {
 						if (path.completed)
 							path = null;
 						else
-							goalPosition = path.getCurrent();
+							setGoal(path.getCurrent());
 					}
 				}
 			} else {
@@ -264,10 +238,17 @@ public class MobAI {
 		// if the object is a mob, make it hug back
 		// wait for the animation to loop for 2 seconds before making both objects release
 		case HUG:
-			if(owner.AIfocus==null)
+			if(owner.AIfocus==null){
 				finish();
-			else {
-				if(owner.getAnimationAction()!=Anim.HUGGING && owner.getAnimationAction()!=Anim.EMBRACE){
+			} else if (resetType.equals(ResetType.ON_TIME)){
+				if(actionTime<=Vars.DT)
+					owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+				else if(!AIPhase2){
+					AIPhase2 = true;
+					owner.setTransAnimation(Anim.EMBRACE, Anim.HUGGING, LoopBehavior.CONTINUOUS);
+				}
+			} else {
+				if(owner.getAction()!=Anim.HUGGING && owner.getAction()!=Anim.EMBRACE){
 					dx = (owner.AIfocus.getPosition().x - owner.getPosition().x) * PPM;
 				
 					if(Math.abs(dx) > 1){
@@ -276,46 +257,55 @@ public class MobAI {
 					} else {
 						owner.AIfocus.faceObject(owner);
 						if(owner.AIfocus instanceof Mob)
-							((Mob2)owner.AIfocus).setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
+							((Mob)owner.AIfocus).setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
 									Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
 						owner.setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
 								Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
 					}
-				} else if (owner.getAnimationAction()==Anim.HUGGING){
-					if(owner.animation.getPrimarySpeed() * owner.animation.getTimesPlayed() >= 2){
-						if(owner.AIfocus instanceof Mob2)
-							((Mob2)owner.AIfocus).setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+				} else if (owner.getAction()==Anim.HUGGING){
+					if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
+						if(owner.AIfocus instanceof Mob)
+							((Mob)owner.AIfocus).setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 						owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-						owner.controlledPT2 =true;
+						AIPhase2 =true;
 					}
-				} else if (owner.controlledPT2){
-					if(owner.getAnimationAction()!=Anim.EMBRACE)
+				} else if (AIPhase2){
+					if(owner.getAction()!=Anim.EMBRACE)
 						finish();
 				}
 			}
 			break;
 		case KISS:
-			if(owner.AIfocus==null)
-				finish();
-			else {
-				if(owner.getAnimationAction()!=Anim.KISSING && owner.getAnimationAction()!=Anim.ENGAGE_KISS){
-					dx = (owner.AIfocus.getPosition().x - owner.getPosition().x) * PPM;
-					
-					if(Math.abs(dx) > 1){
-						if (dx > 0) owner.right();
-						else owner.left();
-					} else {
-						owner.AIfocus.faceObject(owner);
-						owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
+			if(resetType.equals(ResetType.ON_TIME)){
+				if(actionTime<=Vars.DT)
+					owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+				else if(!AIPhase2){
+					AIPhase2 = true;
+					owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
+				}
+			} else {
+				if(owner.AIfocus==null)
+					finish();
+				else {
+					if(owner.getAction()!=Anim.KISSING && owner.getAction()!=Anim.ENGAGE_KISS){
+						dx = (owner.AIfocus.getPosition().x - owner.getPosition().x) * PPM;
+
+						if(Math.abs(dx) > 1){
+							if (dx > 0) owner.right();
+							else owner.left();
+						} else {
+							owner.AIfocus.faceObject(owner);
+							owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
+						}
+					} else if (owner.getAction()==Anim.KISSING){
+						if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
+							owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+							AIPhase2 =true;
+						}
+					} else if (AIPhase2){
+						if(owner.getAction()!=Anim.ENGAGE_KISS)
+							finish();
 					}
-				} else if (owner.getAnimationAction()==Anim.KISSING){
-					if(owner.animation.getPrimarySpeed() * owner.animation.getTimesPlayed() >= 2){
-						owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-						owner.controlledPT2 =true;
-					}
-				} else if (owner.controlledPT2){
-					if(owner.getAnimationAction()!=Anim.ENGAGE_KISS)
-						finish();
 				}
 			}
 			break;
@@ -324,141 +314,57 @@ public class MobAI {
 				finish();
 			break;
 		// run around back and forth flailing for a few seconds
-		// repeated a random # of times
+			// repeated a random # of times
 		case FLAIL:
-			owner.maxSpeed = Mob2.RUN_SPEED;
-			
-			if(owner.ctrlRepeat==-1)
-				owner.ctrlRepeat = (int) (Math.random()*2) + 2;
-			
-			if(owner.ctrlReached){
-				goalPosition = new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
-						Vars.TILE_SIZE, owner.getPosition().y);
-				float d = 1;
-				if(!owner.isFacingLeft()) d = -1;
-				
-				goalPosition = new Vector2(d * goalPosition.x, goalPosition.y);
-				owner.ctrlReached = false;
-				owner.ctrlRepeat--;
-			} else {
-				if(isReachable()){
-					if(goalPosition==null)
-						goalPosition = new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
-								Vars.TILE_SIZE, owner.getPosition().y);
-					dx = (goalPosition.x - owner.getPosition().x)* PPM ;
+			owner.maxSpeed = Mob.RUN_SPEED;
+			if(resetType.equals(ResetType.ON_TIME)){
+				if(!AIPhase2){
+					owner.setAnimation(Anim.ON_FIRE, LoopBehavior.CONTINUOUS);
+					AIPhase2 = true;
+				} else {
+					if(owner.ctrlReached){
+						setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
+								Vars.TILE_SIZE, owner.getPosition().y));
+						float d = 1;
+						if(!owner.facingLeft) d = -1;
 
-					if(Math.abs(dx) > 1){
-						if (dx > 0) owner.right();
-						else owner.left();
-					} else 
-						owner.ctrlReached = true;
-				} else 
-					owner.ctrlReached = true;
-			}
-			
-			if(owner.ctrlRepeat == 0){
-				finish();
-				owner.animation.removeAction();
-			}
-			break;
-		case FLY:
-			break;
-		case SLEEPING:
-			owner.heal(1, false);
-			if(main.character.equals(owner)){
-				if(main.getSpriteBatch().getFadeType()==FadingSpriteBatch.FADE_IN &&
-						!owner.controlledPT2){
-//					if(!sleepSpell)
-					main.playSound("slept");
-					main.dayTime = (main.dayTime + Main.NOON_TIME) % Main.DAY_TIME;
-				}
-			}
-			
-			if(owner.health == owner.maxHealth && !owner.controlledPT2){
-				owner.controlledPT2=true;
-				owner.setAnimation(Anim.LIE_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-			}
-			
-			if(owner.controlledPT2 && owner.getAnimationAction()!=Anim.LIE_DOWN){
-				finish();
-				if(main.character.equals(this)){
-					//trigger any events
-				}
-			}
-			break;
-		case SNOOZE:
-			if(!owner.controlledPT2)
-				if(owner.getAnimationAction()!=Anim.SNOOZING && owner.getAnimationAction()!=Anim.GET_DOWN)
-					if(owner.animation.getTimesPlayed() * owner.animation.getPrimarySpeed() >= 3){
-						owner.controlledPT2 = true;
-						owner.wake();
+						setGoal(new Vector2(d * getGoal().x, getGoal().y));
+						owner.ctrlReached = false;
+					} else {
+						if(isReachable()){
+							dx = (getGoal().x - owner.getPosition().x)* PPM ;
+
+							if(Math.abs(dx) > 1){
+								if (dx > 0) owner.right();
+								else owner.left();
+							} else 
+								owner.ctrlReached = true;
+						} else 
+							owner.ctrlReached = true;
 					}
-			break;
-		case LOSEAIM:
-		case AIM:
-			remove = Anim.AIM_TRANS;
-			break;
-		case IDLE:
-			remove = Anim.IDLE;
-			break;
-		case DANCE:
-			remove = Anim.DANCE;
-			break;
-		case SPECIAL1:
-			remove = Anim.SPECIAL1;
-			break;
-		case SPECIAL2:
-			remove = Anim.SPECIAL2;
-			break;
-		case SPECIAL3:
-			remove = Anim.SPECIAL3;
-			break;
-		case ATTACK:
-			remove = Anim.ATTACKING;
-			break;
-		case PUNCH:
-			remove = Anim.PUNCHING;
-			break;
-		default:
-			break;
-		}
-		
-		if(remove!=null)
-			if(owner.getAnimationAction()!=remove)
-				finish();
 
+					if(actionTime<=Vars.DT)
+						owner.animation.reset();
+				}
+			}else{
+				if(ctrlRepeat==-1)
+					ctrlRepeat = (int) (Math.random()*2) + 2;
 
-// doTimedAction
-		Anim anim = null;
-		switch(type){
-		case AIM:
-			if(actionTime<=Vars.DT)
-				owner.unAim();
-			else if(!owner.aiming)
-				aim();
-			break;
-		case ATTACK:
-			anim = Anim.ATTACKING;
-			break;
-		case DANCE:
-			anim = Anim.DANCE;
-			break;
-		case FLAIL:
-			if(!owner.controlledPT2){
-				owner.setAnimation(Anim.ON_FIRE, LoopBehavior.CONTINUOUS);
-				owner.controlledPT2 = true;
-			} else {
 				if(owner.ctrlReached){
-					goalPosition = new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
-							Vars.TILE_SIZE, owner.getPosition().y);
+					setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
+							Vars.TILE_SIZE, owner.getPosition().y));
 					float d = 1;
-					if(!owner.facingLeft) d = -1;
+					if(!owner.isFacingLeft()) d = -1;
 
-					goalPosition = new Vector2(d * goalPosition.x, goalPosition.y);
+					setGoal(new Vector2(d * getGoal().x, getGoal().y));
 					owner.ctrlReached = false;
+					ctrlRepeat--;
 				} else {
 					if(isReachable()){
-						dx = (goalPosition.x - owner.getPosition().x)* PPM ;
+						if(getGoal()==null)
+							setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
+									Vars.TILE_SIZE, owner.getPosition().y));
+						dx = (getGoal().x - owner.getPosition().x)* PPM ;
 
 						if(Math.abs(dx) > 1){
 							if (dx > 0) owner.right();
@@ -469,85 +375,140 @@ public class MobAI {
 						owner.ctrlReached = true;
 				}
 
-				if(actionTime<=Vars.DT)
-					owner.animation.removeAction();
+				if(ctrlRepeat == 0){
+					finish();
+					owner.animation.reset();
+				}
 			}
 			break;
 		case FLY:
 			break;
-		case HUG:
-			if(actionTime<=Vars.DT)
-				owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-			else if(!owner.controlledPT2){
-				owner.controlledPT2 = true;
-				owner.setTransAnimation(Anim.EMBRACE, Anim.HUGGING, LoopBehavior.CONTINUOUS);
+		case SLEEPING:
+			owner.heal(1, false);
+			if(main.character.equals(owner)){
+				if(main.getSpriteBatch().getFadeType()==FadingSpriteBatch.FADE_IN &&
+						!AIPhase2){
+//					if(!sleepSpell)
+					main.playSound("slept");
+					main.dayTime = (main.dayTime + Main.NOON_TIME) % Main.DAY_TIME;
+				}
 			}
-			break;
-		case IDLE:
-			anim = Anim.IDLE;
-			break;
-		case JUMP:
-			owner.jump();
-			break;
-		case KISS:
-			if(actionTime<=Vars.DT)
-				owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-			else if(!owner.controlledPT2){
-				owner.controlledPT2 = true;
-				owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
+			
+			if(owner.health == owner.maxHealth && !AIPhase2){
+				AIPhase2=true;
+				owner.setAnimation(Anim.LIE_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 			}
-			break;
-		case PUNCH:
-			anim = Anim.PUNCHING;
+			
+			if(AIPhase2 && owner.getAction()!=Anim.LIE_DOWN){
+				finish();
+				if(main.character.equals(this)){
+					//trigger any events
+				}
+			}
 			break;
 		case SNOOZE:
-			if(actionTime<=Vars.DT)
-				owner.setAnimation(Anim.GET_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-			else if(!owner.controlledPT2){
-				owner.controlledPT2 = true;
-				owner.setTransAnimation(Anim.GET_DOWN, Anim.SNOOZING);			
+			if(resetType.equals(ResetType.ON_TIME)){
+				if(actionTime<=Vars.DT)
+					owner.setAnimation(Anim.GET_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+				else if(!AIPhase2){
+					AIPhase2 = true;
+					owner.setTransAnimation(Anim.GET_DOWN, Anim.SNOOZING);			
+				}
+				break;
+			} else {
+				if(!AIPhase2)
+					if(owner.getAction()!=Anim.SNOOZING && owner.getAction()!=Anim.GET_DOWN)
+						if(owner.animation.getTimesPlayed() * owner.animation.getSpeed() >= 3){
+							AIPhase2 = true;
+							owner.wake();
+						}
 			}
+			break;
+		case LOSEAIM:
+		case AIM:
+			if(resetType.equals(ResetType.ON_TIME)){
+				if(actionTime<=Vars.DT)
+					owner.unAim();
+				else if(!owner.aiming)
+					owner.aim();
+			} else
+				remove = Anim.AIM_TRANS;
+			break;
+		case IDLE:
+			if (resetType.equals(ResetType.ON_TIME)){
+				anim = Anim.IDLE;
+			} else
+				remove = Anim.IDLE;
+			break;
+		case DANCE:
+			if (resetType.equals(ResetType.ON_TIME)){
+				anim = Anim.DANCE;
+			} else
+				remove = Anim.DANCE;
 			break;
 		case SPECIAL1:
-			anim = Anim.SPECIAL1;
+			if (resetType.equals(ResetType.ON_TIME)){
+				anim = Anim.SPECIAL1;
+			} else
+				remove = Anim.SPECIAL1;
 			break;
 		case SPECIAL2:
-			anim = Anim.SPECIAL2;
+			if (resetType.equals(ResetType.ON_TIME)){
+				anim = Anim.SPECIAL2;
+			} else
+				remove = Anim.SPECIAL2;
 			break;
 		case SPECIAL3:
-			if(actionTime<=Vars.DT)
-				owner.setAnimation(Anim.SPECIAL3, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-			else if(!owner.controlledPT2){
-				owner.controlledPT2 = true;
-				owner.setTransAnimation(Anim.SPECIAL3, Anim.HUGGING, LoopBehavior.CONTINUOUS);
-			}
+			if (resetType.equals(ResetType.ON_TIME)){
+				if(actionTime<=Vars.DT)
+					owner.setAnimation(Anim.SPECIAL3, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+				else if(!AIPhase2){
+					AIPhase2 = true;
+					owner.setTransAnimation(Anim.SPECIAL3, Anim.HUGGING, LoopBehavior.CONTINUOUS);
+				}
+			} else
+				remove = Anim.SPECIAL3;
+			break;
+		case ATTACK:
+			if (resetType.equals(ResetType.ON_TIME)){
+				anim = Anim.ATTACKING;
+			} else
+				remove = Anim.ATTACKING;
+			break;
+		case PUNCH:
+			if (resetType.equals(ResetType.ON_TIME)){
+				anim = Anim.PUNCHING;
+			} else
+				remove = Anim.PUNCHING;
 			break;
 		default:
 			break;
 		}
+		
+		if(remove!=null)
+			if(owner.getAction()!=remove)
+				finish();
 		
 		if(anim!=null)
 			owner.setAnimation(anim, LoopBehavior.ONCE);
 		
 		if(actionTime<=Vars.DT)
 			finish();
-// end doTimedAction
-
-		checkFinished();
 	}
+	
 	// attack focus if in range
 	// if not in range, get close to object
 	// otherwise evade hostile mobs or projectiles
 	// if no hostile mobs or projectiles in sight, search vicinity
 	public void fightAI(){
-//		System.out.println("FIGHTING");
+//		System.out.println(owner.ID+": FIGHTING");
 		float dx, dy;
 		if(!attacked){
 //			System.out.println("!attacked");
 			if(owner.attackFocus!=null && doTime>=doDelay){
 				//System.out.println("attackFocus!=null && doTime>=doDelay");
 				dx = owner.attackFocus.getPosition().x - owner.getPosition().x;
-				dy = owner.attackFocus.getPosition().x - owner.getPosition().x;
+				dy = owner.attackFocus.getPosition().y - owner.getPosition().y;
 				float d = (float) Math.sqrt(dx*dx + dy+dy);
 
 				if(Math.abs(d)>owner.attackRange){
@@ -569,15 +530,15 @@ public class MobAI {
 			}
 			if(!reached){
 				if (!owner.canMove()) {
-					goalPosition = new Vector2((float) (((Math.random() * 6)+owner.x)/PPM), owner.y);
+					setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)/PPM), owner.y));
 					inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
 					inactiveTime = 0;
 					reached = true;
 				}
 				else {
-					dx = (goalPosition.x - owner.getPosition().x) * PPM ;
+					dx = (getGoal().x - owner.getPosition().x) * PPM ;
 					if(dx < 1 && dx > -1){
-						goalPosition = new Vector2((float) (((Math.random() * 6)+owner.x)/PPM), owner.y);
+						setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)/PPM), owner.y));
 						inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
 						inactiveTime = 0;
 						reached = true;
@@ -645,43 +606,38 @@ public class MobAI {
 		}
 	}
 
-
 	//conclude any controlled actions for mob
 	private void finish(){
-		goalPosition = null;
+		setGoal(null);
 		owner.controlled = false;
-//		controlledPT2 = false;
-//		controlledAction = null;
+		AIPhase2 = false;
 		actionTime = 0;
 		ctrlRepeat = -1;
-	}
-
-	public void checkFinished() {
-		switch (resetType) {
-		case ON_ANIM_END:
-			break;
-		case NEVER:
-			break;
-		case ON_AI_COMPLETE:
-			break;
-		case ON_LEVEL_CHANGE:
-			break;
-		case ON_SCRIPT_END:
-			break;
-		case ON_TIME:
-			break;
-		default:
-			break;
-			
-		}
+//		finished = true;
+		
 	}
 
 	//ensure the mob can reach its destination
-	public boolean isReachable(){
+	private boolean isReachable(){
 		if(!owner.canMove())
 			return false;
 		//goalPosisition;
 		return true;
+	}
+
+	public Vector2 getGoal() { return goalPosition; }
+	public void setGoal(Vector2 goalPosition) { this.goalPosition = goalPosition; }
+	
+	public boolean equals(Object o){
+		if(o instanceof MobAI){
+			MobAI m = (MobAI) o;
+			return type.equals(m.type) && resetType.equals(m.resetType) && resetTime==m.resetTime;
+		}
+		return false;
+	}
+	
+	public String toString(){
+		return "t: "+type+"    rt: "+resetType+"    t: "+time;
 	}
 
 }

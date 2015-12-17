@@ -1,5 +1,6 @@
 package entities;
 
+import entities.MobAI.ResetType;
 import handlers.Vars;
 import main.Main;
 
@@ -68,7 +69,7 @@ public class Spawner extends Entity {
 				int type = (int) (Math.random()*9) + 1;
 				
 				m = new Mob("", "civilian" + type, -1, x, y, lyr);
-				m.setDefaultState(spawnState);
+				m.setState(spawnState, null, -1, ResetType.NEVER.toString());
 				m.setDialogueScript(script.ID);
 				m.setAttackScript(attackScript.ID);
 				m.setDiscoverScript(dScript);
@@ -79,7 +80,7 @@ public class Spawner extends Entity {
 				break;
 			case NIGHTER:
 				m = new Mob("", "nighter"+nighterType, -1, x, y, lyr);
-				m.setDefaultState("followplayer");
+				m.setState("followplayer", null, -1, ResetType.NEVER.toString());
 				m.setDialogueScript("nighter"+nighterType);
 //				n.setAttackScript("");
 				m.setDiscoverScript("nighterSight"+nighterType);
@@ -90,7 +91,7 @@ public class Spawner extends Entity {
 				break;
 			case SPECIAL:
 				m = new Mob("", specialType, -1, x, y, lyr);
-				m.setDefaultState(spawnState);
+				m.setState(spawnState, null, -1, ResetType.NEVER.toString());
 				m.setDialogueScript(script.ID);
 				m.setAttackScript(attackScript.ID);
 				m.setDiscoverScript(dScript);

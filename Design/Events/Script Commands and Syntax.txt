@@ -54,7 +54,6 @@ I've tried my best to add print statements to help you debug your script.
 	  declare
 	~ doAction
 	  done
-	~ doTimedAction
 	  else
 	~ elseIf
 	  end
@@ -141,9 +140,13 @@ declare:
 	      so keep that in mind when you want to declare variables
 doAction:
 	makes the object do a temporary action animation
-	if the boolean [!wait] is included, then the parser will not wait until the mob to finish 
+	if the boolean [wait] is included and is false, then the parser will not wait until the mob to finish 
 		the action. By default, the script waits for the action to be completed
-	doAction(objectName, actionType, [!wait])
+	doAction(objectName, actionType, [wait])
+	doAction(objectName, actionType, target, [wait])
+	doAction(objectName, actionType, time, [wait])
+	doAction(objectName, actionType, target, time, [wait])
+	doAction(objectName, actionType, target, resetType, [wait])
 
 	see action type list
 done:
@@ -152,13 +155,6 @@ done:
 	lowers the dialog box
 	focuses camera on player
 	done
-doTimedAction:
-	makes the mob do a temporary action animation fo the given time in seconds
-	if the boolean [wait] is included (regardless of value), then the script will not wait until the 
-		mob to finish the action. By default, the script waits for the action to be completed
-	doTimedAction(objectName, actionType, timeSecs, [!wait])
-
-	see action type list
 else:
 	part of "if" and ~"elseIf" condition handling
 	else
@@ -494,21 +490,38 @@ choice types:
        	6(abbreviation)
 	
 action Types:
-	~fly
-	jump
-	idle
-	dance
-	hug
-	kiss
-	sleep
-	flail
-	flinch
-	aim
-	*punch-----------USE PUNCH COMMAND FOR ACTUAL EFFECT
-	*attack-----------USE ATTACK COMMAND FOR ACTUAL EFFECT
-	special1    \  
-	special2    -	depends on object type
-	special3    /
+*  - only for setState
+** - only to be used by the equivalent command
+
+	* STATIONARY
+	* IDLEWALK
+	**FOLLOWING
+	* FACEPLAYER
+	* FACEOBJECT
+	**FIGHTING
+	**EVADING
+	  EVADING_ALL
+	  DANCING
+	* BLOCKPATH
+	**MOVE
+	**RUN
+	  JUMP
+	  FLY
+	  SLEEPING
+	  FLAIL
+	  IDLE
+	  AIM
+	  LOSEAIM
+	  PUNCH
+	  ATTACK
+	  SHOOT
+	  HUG
+	  KISS
+	  SNOOZE
+	  special1    \  
+	  special2    -	depends on object type
+	  special3    /
+	  STOP
 
 AI states:
 	stationary

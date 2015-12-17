@@ -41,6 +41,7 @@ import entities.Barrier;
 import entities.Entity;
 import entities.Ground;
 import entities.Mob;
+import entities.MobAI.ResetType;
 import entities.Path;
 import entities.SpeechBubble;
 import entities.Warp;
@@ -538,7 +539,7 @@ public class Scene {
 							} else{
 								Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);
 								e.setGameState(main);
-								e.setDefaultState(state);
+								e.setState(state, null, -1, ResetType.NEVER.toString());
 								e.setDialogueScript(script);
 								e.setAttackScript(aScript);
 								e.setSupAttackScript(sScript);
@@ -658,7 +659,7 @@ public class Scene {
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 		
-		entities.addAll(createLinkWarps());
+//		entities.addAll(createLinkWarps());
 	}
 	
 	

@@ -1,18 +1,16 @@
 package main;
 
-import handlers.JsonSerializer;
-
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
-import entities.Entity;
-import entities.Mob;
 import entities.Entity.DamageType;
+import entities.Mob;
+import handlers.JsonSerializer;
 
 //contains all data related to the player
 public class Player implements Serializable {
@@ -29,7 +27,6 @@ public class Player implements Serializable {
 	private float N, B, L;
 	private String info;
 	private String partnerTitle;
-	
 	private HashMap<DamageType, Integer> typeCounter;
 	
 	//no-arg constructor used by serializer
@@ -88,13 +85,6 @@ public class Player implements Serializable {
 			main.character.setPowerType(dT);
 	}
 	
-	public void follow(Entity focus) {
-//		this.focus = focus;
-//		controlled = true;
-//		controlledAction = Action.WALKING;
-		
-	}
-	
 	//following methods are getters and setters
 	
 	public void goOut(Mob newPartner, String info){
@@ -107,14 +97,11 @@ public class Player implements Serializable {
 	}
 	
 	public void breakUp(){
-		//myPartner = new Mob();	//???
 		myPartner = null;
 		main.history.setFlag("hasPartner", false);
-//		relationship = 0;
-//		L = 0;
 	}
 	
-	public void setPartner(Mob partner) { this.myPartner = partner; }
+	public void setPartner(Mob mob2) { this.myPartner = mob2; }
 	public Mob getPartner(){ return myPartner; }
 	public void resetRelationship(double d){ relationship = d; }
 	public void setRelationship(double amount){ relationship += amount * L; }

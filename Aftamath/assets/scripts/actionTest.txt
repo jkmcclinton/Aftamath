@@ -1,0 +1,3 @@
+Script Main
+doAction(this, jump)
+done
