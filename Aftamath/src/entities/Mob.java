@@ -198,6 +198,7 @@ public class Mob extends Entity{
 		attackables = new Array<>();
 		discovered = new Array<>();
 		contacts = new Array<>();
+		followers = new Array<>();
 		flamable = true;
 		isAttackable = true;
 		destructable = true;
@@ -1339,7 +1340,7 @@ public class Mob extends Entity{
 		return new Vector2(getPixelPosition().x + x, getPixelPosition().y);
 	}
 
-	private final float w = (width-15)/2f;
+	private final float w = (width-30)/2f;
 	public void create(){
 		init = true;
 		bdef = new BodyDef();

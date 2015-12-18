@@ -1,26 +1,26 @@
   <0 - randomly spawned
  000 - player
  001 - gangster1; Darrius                              : room1_1
- 002 - 
- 003 - 
- 004 - 
+ 002 - femaleplayer2; TEST                             : Church
+ 003 - gangster2; TEST                                 : Church
+ 004 - girlfriend1; TEST                               : Church
  005 - girlfriend1; Sam                                : ResidentialDistrictN
  006 - logger; John                                    : ResidentialDistrictN
  007 - richGuy; Olivierre                              : ResidentialDistrictN
- 008 - 
+ 008 - girlfriend2; TEST                               : Church
  009 - oldlady1; Ms. Pancakes                          : ResidentialDistrictN
  010 - narrator1; Narrator                             : ResidentialDistrictN
- 011 - 
+ 011 - girlfriend3; TEST                               : Church
  012 - hero1; Hero; Some guy in tights                 : ResidentialDistrictN
  013 - doctordisco; Doctor Disco                       : ThaHood
- 014 - 
+ 014 - narrator1; TEST                                 : Church
  015 - villain1; Villain; Some chick in tights         : ResidentialDistrictN
- 016 - 
- 017 - 
- 018 - 
- 019 - 
- 020 - 
- 021 - 
+ 016 - oldlady1; TEST                                  : Church
+ 017 - boss1; TEST                                     : Church
+ 018 - richguy; TEST                                   : Church
+ 019 - hippie; TEST                                    : Church
+ 020 - cashier; TEST                                   : Church
+ 021 - burly1; TEST                                    : Church
  022 - 
  023 - 
  024 - 

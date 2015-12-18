@@ -124,12 +124,12 @@ public class Main extends GameState {
 	//public int debugX;
 	public float debugY = Game.height/4, debugX=Game.width/4;
 
-	public boolean dbRender 	= false, 
-			rayHandling = false, 
-			render 		= true, 
-			dbtrender 	= true,
-			debugging   = true,
-			random;
+	public static boolean dbRender 	= false, 
+						rayHandling = false, 
+						render 		= true, 
+						dbtrender 	= true,
+						debugging   = true,
+						random;
 	//	private float ambient = .5f;
 	//	private int colorIndex;
 	//	private PointLight tstLight;
@@ -180,7 +180,7 @@ public class Main extends GameState {
 
 		cam.reset();
 		b2dCam.reset();
-//		catalogueWarps();
+		catalogueWarps();
 		load();
 
 		speakTime = 0;
@@ -1465,6 +1465,7 @@ public class Main extends GameState {
 				objects.add(player.getPartner());
 
 		for (Entity d : objects){
+			if(d==null)continue;
 			d.setGameState(this);
 			if(!d.equals(character))
 				d.create();
@@ -1548,7 +1549,7 @@ public class Main extends GameState {
 		objects.removeAll(tmp);
 		objects.addAll(tmp);
 
-		//		printObjects();
+//		printObjects();
 	}
 
 	public boolean exists(Entity obj){
@@ -1558,6 +1559,7 @@ public class Main extends GameState {
 		return false;
 	}
 
+	public ArrayList<Entity> getObjects(){ return objects;	}
 	public void printObjects() {
 		for(Entity e:objects){
 //			debugText+="/l"+e.ID;
@@ -1587,8 +1589,6 @@ public class Main extends GameState {
 		if(!e.equals(character) || !e.destructable)
 			healthBars.put(e, 3f);
 	}
-
-	public ArrayList<Entity> getObjects(){ return objects;	}
 
 	public Color getColorOverlay(){
 		// should be dependant on time;

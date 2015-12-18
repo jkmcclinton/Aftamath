@@ -13,10 +13,10 @@ import main.Main;
 
 public class MobAI {
 	public static enum AIType {
-		STATIONARY, IDLEWALK, FOLLOWING, FACEPLAYER, FACEOBJECT, FIGHTING,
-		EVADING, EVADING_ALL, DANCING, BLOCKPATH, /*TIMEDFIGHT,*/ PATH, PATH_PAUSE,
-		MOVE, RUN, JUMP, FLY, SLEEPING, FLAIL, IDLE, AIM, LOSEAIM, PUNCH, SHOOT, ATTACK, HUG, 
-		KISS, SNOOZE, DANCE, SPECIAL1, SPECIAL2, SPECIAL3, STOP
+		AIM, ATTACK, BLOCKPATH, DANCING, IDLE, IDLEWALK, EVADING, EVADING_ALL, 
+		FACEOBJECT, FACEPLAYER, FIGHTING, FLAIL, FLY, FOLLOWING, HUG, JUMP, KISS, 
+		LOSEAIM, MOVE, RUN, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING, SNOOZE, 
+		SPECIAL1, SPECIAL2, SPECIAL3, STATIONARY, STOP
 	}
 
 	public static enum ResetType {
@@ -31,7 +31,7 @@ public class MobAI {
 	public boolean finished = false;
 	public Path path;
 	
-	private int ctrlRepeat = -1;
+	private int repeat = -1;
 	private final Main main; 
 	private Vector2 goalPosition/*, prevLocation*/;
 	private float inactiveWait, inactiveTime, doTime, doDelay, time;
@@ -71,429 +71,647 @@ public class MobAI {
 		}
 	}
 
+//	public void act(float dt) {
+//		float dx;
+//		Anim remove = null, anim = null;
+//		switch (type){
+//		//walk to random locations within a radius, then wait a random amount of time
+//		case IDLEWALK:
+//			if(reached) inactiveTime++;
+//			if(inactiveTime >= inactiveWait && reached) reached = false;
+//			else if (!reached){
+//				if (!owner.canMove()) {
+//					setGoal(new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y));
+//					inactiveWait = (float)(Math.random() * IDLE_LIMIT + 100);
+//					inactiveTime = 0;
+//					reached = true;
+//				}
+//				else {
+//					dx = (getGoal().x - owner.body.getPosition().x) * PPM ;
+//					if(dx < 1 && dx > -1){
+//						setGoal(new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y));
+//						inactiveWait = (float)(Math.random() * IDLE_LIMIT + 100);
+//						inactiveTime = 0;
+//						reached = true;
+//					} else {
+//						if(dx <= -1) owner.left();
+//						if(dx >= 1) owner.right();
+//					}
+//				}
+//			}
+//			break;
+//		case FACEPLAYER:
+//			owner.facePlayer();
+//			break;
+//		case FACEOBJECT:
+//			owner.faceObject(focus);
+//			break;
+//			//stay close behind the target
+//		case FOLLOWING:
+//			owner.facePlayer();
+//			dx = main.character.getPosition().x - owner.body.getPosition().x;
+//
+//			float m = Entity.MAX_DISTANCE * (main.character.getFollowingIndex(owner)+1);
+//			
+//			if(dx > m/PPM) owner.right();
+//			else if (dx < -1 * m/PPM) owner.left();
+//			break;
+//		case PATH:
+//			if (!isReachable()) {
+//				path.stepIndex();
+//				if(path.completed){
+//					path = null;
+//					owner.setState("STATIONARY");
+//				} else {
+//					setGoal(path.getCurrent());
+//				}
+//			}
+//			else {
+//				dx = (getGoal().x - owner.body.getPosition().x*PPM) ;
+//				if(dx < 1 && dx > -1){
+//					path.stepIndex();
+//					if(path.completed){
+//						path = null;
+//						owner.setState("STATIONARY");
+//					} else {
+//						setGoal(path.getCurrent());
+//						reached = true;
+//					}
+//				} else {
+//					if(dx <= -1) owner.left();
+//					if(dx >= 1) owner.right();
+//				}
+//			}
+//			break;
+//		case FIGHTING:
+//			fightAI();
+//			break;
+//
+//			// evade target if target is spotted
+//			// if target not spotted, search vicinity
+//		case EVADING_ALL:
+//		case EVADING:
+//			if(!reached){
+//				dx = (getGoal().x - owner.body.getPosition().x) * PPM ;
+//				if(dx < 1 && dx > -1){
+//					reached = true;
+//				} else {
+//					if(dx <= -1) owner.left();
+//					if(dx >= 1) owner.right();
+//				}
+//			} else {
+//				boolean found = false; dx =0;
+//
+//				if(type == AIType.EVADING_ALL) {
+//					if(owner.discovered.size>0){
+//						dx = (owner.discovered.get(0).getPixelPosition().x - owner.getPixelPosition().x);
+//						found = true;
+//					}
+//				} else if(type == AIType.EVADING)
+//					if(owner.discovered.contains(focus, true)){
+//						dx = (focus.getPixelPosition().x - owner.getPixelPosition().x);
+//					}
+//
+//				if(found)
+//					if(Math.abs(dx) <= owner.visionRange){
+//						float gx = -1*(dx/Math.abs(dx))*(owner.visionRange*3)/PPM + owner.getPosition().x;
+//						setGoal(new Vector2(gx, owner.y));
+//						reached = false;
+//					}
+//					else {
+//						//idle
+//					}
+//			}
+//			break;
+//			// stand around and look in random directions
+//		case STATIONARY:
+//			if(doTime >= doDelay){
+//				doTime = 0;
+//				doDelay = (float)(Math.random()*6) + 1;
+//				
+//				owner.changeDirection();
+//			}
+//			break;
+//		case BLOCKPATH:
+//			owner.facePlayer();
+//			break;
+//		case DANCING:
+//			if(owner.getAction()!=Anim.DANCE)
+//				owner.setAnimation(Anim.DANCE, LoopBehavior.CONTINUOUS);
+//			break;
+//		case RUN:
+//			owner.run();
+//		case MOVE:
+//			if(getGoal()==null && path==null)
+//				return;
+//
+//			if(isReachable()){
+//				dx = (getGoal().x - owner.getPosition().x)* PPM ;
+//
+//				if(Math.abs(dx) > 1){
+//					if (dx > 0) owner.right();
+//					else owner.left();
+//				} else {
+//					// handling when the mob engages conversation
+//					if (owner.positioning) {
+//						owner.positioning = false;
+//						if(owner.positioningFocus!=null)
+//							owner.faceObject(owner.positioningFocus);
+//						finish();
+//					} else if(path!=null){
+//						path.stepIndex();
+//						if (path.completed)
+//							path = null;
+//						else
+//							setGoal(path.getCurrent());
+//					}
+//				}
+//			} else {
+//				//path cannot be completed
+//				if(path!=null) {
+//					path = null;
+//				}
+//				finish();
+//			}
+//			break;
+//		// go to the focus object and hug it
+//		// if the object is a mob, make it hug back
+//		// wait for the animation to loop for 2 seconds before making both objects release
+//		case HUG:
+//			if(owner.AIfocus==null){
+//				finish();
+//			} else if (resetType.equals(ResetType.ON_TIME)){
+//				if(actionTime<=Vars.DT)
+//					owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//				else if(!AIPhase2){
+//					AIPhase2 = true;
+//					owner.setTransAnimation(Anim.EMBRACE, Anim.HUGGING, LoopBehavior.CONTINUOUS);
+//				}
+//			} else {
+//				if(owner.getAction()!=Anim.HUGGING && owner.getAction()!=Anim.EMBRACE){
+//					dx = (owner.AIfocus.getPosition().x - owner.getPosition().x) * PPM;
+//				
+//					if(Math.abs(dx) > 1){
+//						if (dx > 0) owner.right();
+//						else owner.left();
+//					} else {
+//						owner.AIfocus.faceObject(owner);
+//						if(owner.AIfocus instanceof Mob)
+//							((Mob)owner.AIfocus).setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
+//									Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
+//						owner.setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
+//								Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
+//					}
+//				} else if (owner.getAction()==Anim.HUGGING){
+//					if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
+//						if(owner.AIfocus instanceof Mob)
+//							((Mob)owner.AIfocus).setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//						owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//						AIPhase2 =true;
+//					}
+//				} else if (AIPhase2){
+//					if(owner.getAction()!=Anim.EMBRACE)
+//						finish();
+//				}
+//			}
+//			break;
+//		case KISS:
+//			if(resetType.equals(ResetType.ON_TIME)){
+//				if(actionTime<=Vars.DT)
+//					owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//				else if(!AIPhase2){
+//					AIPhase2 = true;
+//					owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
+//				}
+//			} else {
+//				if(owner.AIfocus==null)
+//					finish();
+//				else {
+//					if(owner.getAction()!=Anim.KISSING && owner.getAction()!=Anim.ENGAGE_KISS){
+//						dx = (owner.AIfocus.getPosition().x - owner.getPosition().x) * PPM;
+//
+//						if(Math.abs(dx) > 1){
+//							if (dx > 0) owner.right();
+//							else owner.left();
+//						} else {
+//							owner.AIfocus.faceObject(owner);
+//							owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
+//						}
+//					} else if (owner.getAction()==Anim.KISSING){
+//						if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
+//							owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//							AIPhase2 =true;
+//						}
+//					} else if (AIPhase2){
+//						if(owner.getAction()!=Anim.ENGAGE_KISS)
+//							finish();
+//					}
+//				}
+//			}
+//			break;
+//		case JUMP:
+//			if(owner.isOnGround())
+//				finish();
+//			break;
+//		// run around back and forth flailing for a few seconds
+//			// repeated a random # of times
+//		case FLAIL:
+//			owner.maxSpeed = Mob.RUN_SPEED;
+//			if(resetType.equals(ResetType.ON_TIME)){
+//				if(!AIPhase2){
+//					owner.setAnimation(Anim.ON_FIRE, LoopBehavior.CONTINUOUS);
+//					AIPhase2 = true;
+//				} else {
+//					if(owner.ctrlReached){
+//						setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
+//								Vars.TILE_SIZE, owner.getPosition().y));
+//						float d = 1;
+//						if(!owner.facingLeft) d = -1;
+//
+//						setGoal(new Vector2(d * getGoal().x, getGoal().y));
+//						owner.ctrlReached = false;
+//					} else {
+//						if(isReachable()){
+//							dx = (getGoal().x - owner.getPosition().x)* PPM ;
+//
+//							if(Math.abs(dx) > 1){
+//								if (dx > 0) owner.right();
+//								else owner.left();
+//							} else 
+//								owner.ctrlReached = true;
+//						} else 
+//							owner.ctrlReached = true;
+//					}
+//
+//					if(actionTime<=Vars.DT)
+//						owner.animation.reset();
+//				}
+//			}else{
+//				if(repeat==-1)
+//					repeat = (int) (Math.random()*2) + 2;
+//
+//				if(owner.ctrlReached){
+//					setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
+//							Vars.TILE_SIZE, owner.getPosition().y));
+//					float d = 1;
+//					if(!owner.isFacingLeft()) d = -1;
+//
+//					setGoal(new Vector2(d * getGoal().x, getGoal().y));
+//					owner.ctrlReached = false;
+//					repeat--;
+//				} else {
+//					if(isReachable()){
+//						if(getGoal()==null)
+//							setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
+//									Vars.TILE_SIZE, owner.getPosition().y));
+//						dx = (getGoal().x - owner.getPosition().x)* PPM ;
+//
+//						if(Math.abs(dx) > 1){
+//							if (dx > 0) owner.right();
+//							else owner.left();
+//						} else 
+//							owner.ctrlReached = true;
+//					} else 
+//						owner.ctrlReached = true;
+//				}
+//
+//				if(repeat == 0){
+//					finish();
+//					owner.animation.reset();
+//				}
+//			}
+//			break;
+//		case FLY:
+//			break;
+//		case SLEEPING:
+//			owner.heal(1, false);
+//			if(main.character.equals(owner)){
+//				if(main.getSpriteBatch().getFadeType()==FadingSpriteBatch.FADE_IN &&
+//						!AIPhase2){
+////					if(!sleepSpell)
+//					main.playSound("slept");
+//					main.dayTime = (main.dayTime + Main.NOON_TIME) % Main.DAY_TIME;
+//				}
+//			}
+//			
+//			if(owner.health == owner.maxHealth && !AIPhase2){
+//				AIPhase2=true;
+//				owner.setAnimation(Anim.LIE_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//			}
+//			
+//			if(AIPhase2 && owner.getAction()!=Anim.LIE_DOWN){
+//				finish();
+//				if(main.character.equals(this)){
+//					//trigger any events
+//				}
+//			}
+//			break;
+//		case SNOOZE:
+//			if(resetType.equals(ResetType.ON_TIME)){
+//				if(actionTime<=Vars.DT)
+//					owner.setAnimation(Anim.GET_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//				else if(!AIPhase2){
+//					AIPhase2 = true;
+//					owner.setTransAnimation(Anim.GET_DOWN, Anim.SNOOZING);			
+//				}
+//				break;
+//			} else {
+//				if(!AIPhase2)
+//					if(owner.getAction()!=Anim.SNOOZING && owner.getAction()!=Anim.GET_DOWN)
+//						if(owner.animation.getTimesPlayed() * owner.animation.getSpeed() >= 3){
+//							AIPhase2 = true;
+//							owner.wake();
+//						}
+//			}
+//			break;
+//		case LOSEAIM:
+//		case AIM:
+//			if(resetType.equals(ResetType.ON_TIME)){
+//				if(actionTime<=Vars.DT)
+//					owner.unAim();
+//				else if(!owner.aiming)
+//					owner.aim();
+//			} else
+//				remove = Anim.AIM_TRANS;
+//			break;
+//		case IDLE:
+//			if (resetType.equals(ResetType.ON_TIME)){
+//				anim = Anim.IDLE;
+//			} else
+//				remove = Anim.IDLE;
+//			break;
+//		case DANCE:
+//			if (resetType.equals(ResetType.ON_TIME)){
+//				anim = Anim.DANCE;
+//			} else
+//				remove = Anim.DANCE;
+//			break;
+//		case SPECIAL1:
+//			if (resetType.equals(ResetType.ON_TIME)){
+//				anim = Anim.SPECIAL1;
+//			} else
+//				remove = Anim.SPECIAL1;
+//			break;
+//		case SPECIAL2:
+//			if (resetType.equals(ResetType.ON_TIME)){
+//				anim = Anim.SPECIAL2;
+//			} else
+//				remove = Anim.SPECIAL2;
+//			break;
+//		case SPECIAL3:
+//			if (resetType.equals(ResetType.ON_TIME)){
+//				if(actionTime<=Vars.DT)
+//					owner.setAnimation(Anim.SPECIAL3, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+//				else if(!AIPhase2){
+//					AIPhase2 = true;
+//					owner.setTransAnimation(Anim.SPECIAL3, Anim.HUGGING, LoopBehavior.CONTINUOUS);
+//				}
+//			} else
+//				remove = Anim.SPECIAL3;
+//			break;
+//		case ATTACK:
+//			if (resetType.equals(ResetType.ON_TIME)){
+//				anim = Anim.ATTACKING;
+//			} else
+//				remove = Anim.ATTACKING;
+//			break;
+//		case PUNCH:
+//			if (resetType.equals(ResetType.ON_TIME)){
+//				anim = Anim.PUNCHING;
+//			} else
+//				remove = Anim.PUNCHING;
+//			break;
+//		default:
+//			break;
+//		}
+//		
+//		if(remove!=null)
+//			if(owner.getAction()!=remove)
+//				finish();
+//		
+//		if(anim!=null)
+//			owner.setAnimation(anim, LoopBehavior.ONCE);
+//		
+//		if(actionTime<=Vars.DT)
+//			finish();
+//	}
+	
+
 	public void act(float dt) {
-		float dx;
-		Anim remove = null, anim = null;
-		switch (type){
-		//walk to random locations within a radius, then wait a random amount of time
-		case IDLEWALK:
-			if(reached) inactiveTime++;
-			if(inactiveTime >= inactiveWait && reached) reached = false;
-			else if (!reached){
-				if (!owner.canMove()) {
-					setGoal(new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y));
-					inactiveWait = (float)(Math.random() * IDLE_LIMIT + 100);
-					inactiveTime = 0;
-					reached = true;
-				}
-				else {
-					dx = (getGoal().x - owner.body.getPosition().x) * PPM ;
-					if(dx < 1 && dx > -1){
-						setGoal(new Vector2((float)(((Math.random()*6)+owner.x)/PPM), owner.y));
-						inactiveWait = (float)(Math.random() * IDLE_LIMIT + 100);
-						inactiveTime = 0;
-						reached = true;
-					} else {
-						if(dx <= -1) owner.left();
-						if(dx >= 1) owner.right();
-					}
-				}
-			}
-			break;
-		case FACEPLAYER:
-			owner.facePlayer();
-			break;
-		case FACEOBJECT:
-			owner.faceObject(focus);
-			break;
-			//stay close behind the target
-		case FOLLOWING:
-			owner.facePlayer();
-			dx = main.character.getPosition().x - owner.body.getPosition().x;
-
-			float m = Entity.MAX_DISTANCE * (main.character.getFollowingIndex(owner)+1);
-			
-			if(dx > m/PPM) owner.right();
-			else if (dx < -1 * m/PPM) owner.left();
-			break;
-		case PATH:
-			if (!isReachable()) {
-				path.stepIndex();
-				if(path.completed){
-					path = null;
-					owner.setState("STATIONARY");
-				} else {
-					setGoal(path.getCurrent());
-				}
-			}
-			else {
-				dx = (getGoal().x - owner.body.getPosition().x*PPM) ;
-				if(dx < 1 && dx > -1){
-					path.stepIndex();
-					if(path.completed){
-						path = null;
-						owner.setState("STATIONARY");
-					} else {
-						setGoal(path.getCurrent());
-						reached = true;
-					}
-				} else {
-					if(dx <= -1) owner.left();
-					if(dx >= 1) owner.right();
-				}
-			}
-			break;
-		case FIGHTING:
-			fightAI();
-			break;
-
-			// evade target if target is spotted
-			// if target not spotted, search vicinity
-		case EVADING_ALL:
-		case EVADING:
-			if(!reached){
-				dx = (getGoal().x - owner.body.getPosition().x) * PPM ;
-				if(dx < 1 && dx > -1){
-					reached = true;
-				} else {
-					if(dx <= -1) owner.left();
-					if(dx >= 1) owner.right();
-				}
-			} else {
-				boolean found = false; dx =0;
-
-				if(type == AIType.EVADING_ALL) {
-					if(owner.discovered.size>0){
-						dx = (owner.discovered.get(0).getPixelPosition().x - owner.getPixelPosition().x);
-						found = true;
-					}
-				} else if(type == AIType.EVADING)
-					if(owner.discovered.contains(focus, true)){
-						dx = (focus.getPixelPosition().x - owner.getPixelPosition().x);
-					}
-
-				if(found)
-					if(Math.abs(dx) <= owner.visionRange){
-						float gx = -1*(dx/Math.abs(dx))*(owner.visionRange*3)/PPM + owner.getPosition().x;
-						setGoal(new Vector2(gx, owner.y));
-						reached = false;
-					}
-					else {
-						//idle
-					}
-			}
-			break;
-			// stand around and look in random directions
-		case STATIONARY:
-			if(doTime >= doDelay){
-				doTime = 0;
-				doDelay = (float)(Math.random()*6) + 1;
-				
-				owner.changeDirection();
-			}
-			break;
-		case BLOCKPATH:
-			owner.facePlayer();
-			break;
-		case DANCING:
-			if(owner.getAction()!=Anim.DANCE)
-				owner.setAnimation(Anim.DANCE, LoopBehavior.CONTINUOUS);
-			break;
-		case RUN:
-			owner.run();
-		case MOVE:
-			if(getGoal()==null && path==null)
-				return;
-
-			if(isReachable()){
-				dx = (getGoal().x - owner.getPosition().x)* PPM ;
-
-				if(Math.abs(dx) > 1){
-					if (dx > 0) owner.right();
-					else owner.left();
-				} else {
-					// handling when the mob engages conversation
-					if (owner.positioning) {
-						owner.positioning = false;
-						if(owner.positioningFocus!=null)
-							owner.faceObject(owner.positioningFocus);
-						finish();
-					} else if(path!=null){
-						path.stepIndex();
-						if (path.completed)
-							path = null;
-						else
-							setGoal(path.getCurrent());
-					}
-				}
-			} else {
-				//path cannot be completed
-				if(path!=null) {
-					path = null;
-				}
-				finish();
-			}
-			break;
-		// go to the focus object and hug it
-		// if the object is a mob, make it hug back
-		// wait for the animation to loop for 2 seconds before making both objects release
-		case HUG:
-			if(owner.AIfocus==null){
-				finish();
-			} else if (resetType.equals(ResetType.ON_TIME)){
-				if(actionTime<=Vars.DT)
-					owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-				else if(!AIPhase2){
-					AIPhase2 = true;
-					owner.setTransAnimation(Anim.EMBRACE, Anim.HUGGING, LoopBehavior.CONTINUOUS);
-				}
-			} else {
-				if(owner.getAction()!=Anim.HUGGING && owner.getAction()!=Anim.EMBRACE){
-					dx = (owner.AIfocus.getPosition().x - owner.getPosition().x) * PPM;
-				
-					if(Math.abs(dx) > 1){
-						if (dx > 0) owner.right();
-						else owner.left();
-					} else {
-						owner.AIfocus.faceObject(owner);
-						if(owner.AIfocus instanceof Mob)
-							((Mob)owner.AIfocus).setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
-									Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
-						owner.setTransAnimation(Anim.EMBRACE, Vars.ACTION_ANIMATION_RATE,
-								Anim.HUGGING, Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
-					}
-				} else if (owner.getAction()==Anim.HUGGING){
-					if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
-						if(owner.AIfocus instanceof Mob)
-							((Mob)owner.AIfocus).setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-						owner.setAnimation(Anim.EMBRACE, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-						AIPhase2 =true;
-					}
-				} else if (AIPhase2){
-					if(owner.getAction()!=Anim.EMBRACE)
-						finish();
-				}
-			}
-			break;
-		case KISS:
-			if(resetType.equals(ResetType.ON_TIME)){
-				if(actionTime<=Vars.DT)
-					owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-				else if(!AIPhase2){
-					AIPhase2 = true;
-					owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
-				}
-			} else {
-				if(owner.AIfocus==null)
-					finish();
-				else {
-					if(owner.getAction()!=Anim.KISSING && owner.getAction()!=Anim.ENGAGE_KISS){
-						dx = (owner.AIfocus.getPosition().x - owner.getPosition().x) * PPM;
-
-						if(Math.abs(dx) > 1){
-							if (dx > 0) owner.right();
-							else owner.left();
-						} else {
-							owner.AIfocus.faceObject(owner);
-							owner.setTransAnimation(Anim.ENGAGE_KISS, Anim.KISSING, LoopBehavior.CONTINUOUS);
-						}
-					} else if (owner.getAction()==Anim.KISSING){
-						if(owner.animation.getSpeed() * owner.animation.getTimesPlayed() >= 2){
-							owner.setAnimation(Anim.ENGAGE_KISS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-							AIPhase2 =true;
-						}
-					} else if (AIPhase2){
-						if(owner.getAction()!=Anim.ENGAGE_KISS)
-							finish();
-					}
-				}
-			}
-			break;
-		case JUMP:
-			if(owner.isOnGround())
-				finish();
-			break;
-		// run around back and forth flailing for a few seconds
-			// repeated a random # of times
-		case FLAIL:
-			owner.maxSpeed = Mob.RUN_SPEED;
-			if(resetType.equals(ResetType.ON_TIME)){
-				if(!AIPhase2){
-					owner.setAnimation(Anim.ON_FIRE, LoopBehavior.CONTINUOUS);
-					AIPhase2 = true;
-				} else {
-					if(owner.ctrlReached){
-						setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
-								Vars.TILE_SIZE, owner.getPosition().y));
-						float d = 1;
-						if(!owner.facingLeft) d = -1;
-
-						setGoal(new Vector2(d * getGoal().x, getGoal().y));
-						owner.ctrlReached = false;
-					} else {
-						if(isReachable()){
-							dx = (getGoal().x - owner.getPosition().x)* PPM ;
-
-							if(Math.abs(dx) > 1){
-								if (dx > 0) owner.right();
-								else owner.left();
-							} else 
-								owner.ctrlReached = true;
-						} else 
-							owner.ctrlReached = true;
-					}
-
-					if(actionTime<=Vars.DT)
-						owner.animation.reset();
-				}
-			}else{
-				if(ctrlRepeat==-1)
-					ctrlRepeat = (int) (Math.random()*2) + 2;
-
-				if(owner.ctrlReached){
-					setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
-							Vars.TILE_SIZE, owner.getPosition().y));
-					float d = 1;
-					if(!owner.isFacingLeft()) d = -1;
-
-					setGoal(new Vector2(d * getGoal().x, getGoal().y));
-					owner.ctrlReached = false;
-					ctrlRepeat--;
-				} else {
-					if(isReachable()){
-						if(getGoal()==null)
-							setGoal(new Vector2(owner.getPosition().x + (float) Math.random()*(2f*Vars.TILE_SIZE)+
-									Vars.TILE_SIZE, owner.getPosition().y));
-						dx = (getGoal().x - owner.getPosition().x)* PPM ;
-
-						if(Math.abs(dx) > 1){
-							if (dx > 0) owner.right();
-							else owner.left();
-						} else 
-							owner.ctrlReached = true;
-					} else 
-						owner.ctrlReached = true;
-				}
-
-				if(ctrlRepeat == 0){
-					finish();
-					owner.animation.reset();
-				}
-			}
-			break;
-		case FLY:
-			break;
-		case SLEEPING:
-			owner.heal(1, false);
-			if(main.character.equals(owner)){
-				if(main.getSpriteBatch().getFadeType()==FadingSpriteBatch.FADE_IN &&
-						!AIPhase2){
-//					if(!sleepSpell)
-					main.playSound("slept");
-					main.dayTime = (main.dayTime + Main.NOON_TIME) % Main.DAY_TIME;
-				}
-			}
-			
-			if(owner.health == owner.maxHealth && !AIPhase2){
-				AIPhase2=true;
-				owner.setAnimation(Anim.LIE_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-			}
-			
-			if(AIPhase2 && owner.getAction()!=Anim.LIE_DOWN){
-				finish();
-				if(main.character.equals(this)){
-					//trigger any events
-				}
-			}
-			break;
-		case SNOOZE:
-			if(resetType.equals(ResetType.ON_TIME)){
-				if(actionTime<=Vars.DT)
-					owner.setAnimation(Anim.GET_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-				else if(!AIPhase2){
-					AIPhase2 = true;
-					owner.setTransAnimation(Anim.GET_DOWN, Anim.SNOOZING);			
-				}
-				break;
-			} else {
-				if(!AIPhase2)
-					if(owner.getAction()!=Anim.SNOOZING && owner.getAction()!=Anim.GET_DOWN)
-						if(owner.animation.getTimesPlayed() * owner.animation.getSpeed() >= 3){
-							AIPhase2 = true;
-							owner.wake();
-						}
-			}
-			break;
-		case LOSEAIM:
+		switch(type){
 		case AIM:
-			if(resetType.equals(ResetType.ON_TIME)){
-				if(actionTime<=Vars.DT)
-					owner.unAim();
-				else if(!owner.aiming)
-					owner.aim();
-			} else
-				remove = Anim.AIM_TRANS;
-			break;
-		case IDLE:
 			if (resetType.equals(ResetType.ON_TIME)){
-				anim = Anim.IDLE;
-			} else
-				remove = Anim.IDLE;
-			break;
-		case DANCE:
-			if (resetType.equals(ResetType.ON_TIME)){
-				anim = Anim.DANCE;
-			} else
-				remove = Anim.DANCE;
-			break;
-		case SPECIAL1:
-			if (resetType.equals(ResetType.ON_TIME)){
-				anim = Anim.SPECIAL1;
-			} else
-				remove = Anim.SPECIAL1;
-			break;
-		case SPECIAL2:
-			if (resetType.equals(ResetType.ON_TIME)){
-				anim = Anim.SPECIAL2;
-			} else
-				remove = Anim.SPECIAL2;
-			break;
-		case SPECIAL3:
-			if (resetType.equals(ResetType.ON_TIME)){
-				if(actionTime<=Vars.DT)
-					owner.setAnimation(Anim.SPECIAL3, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
-				else if(!AIPhase2){
-					AIPhase2 = true;
-					owner.setTransAnimation(Anim.SPECIAL3, Anim.HUGGING, LoopBehavior.CONTINUOUS);
-				}
-			} else
-				remove = Anim.SPECIAL3;
+				
+			} else {
+				
+			}
 			break;
 		case ATTACK:
 			if (resetType.equals(ResetType.ON_TIME)){
-				anim = Anim.ATTACKING;
-			} else
-				remove = Anim.ATTACKING;
+				
+			} else {
+				
+			}
+			break;
+		case BLOCKPATH:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case DANCING:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case EVADING:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case EVADING_ALL:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case FACEOBJECT:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case FACEPLAYER:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case FIGHTING:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case FLAIL:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case FLY:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case FOLLOWING:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case HUG:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case IDLE:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case IDLEWALK:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case JUMP:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case KISS:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case LOSEAIM:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case MOVE:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case PATH:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case PATH_PAUSE:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
 			break;
 		case PUNCH:
 			if (resetType.equals(ResetType.ON_TIME)){
-				anim = Anim.PUNCHING;
-			} else
-				remove = Anim.PUNCHING;
+				
+			} else {
+				
+			}
 			break;
-		default:
+		case RUN:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case SHOOT:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case SLEEPING:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case SNOOZE:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case SPECIAL1:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case SPECIAL2:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case SPECIAL3:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case STATIONARY:
+			if (resetType.equals(ResetType.ON_TIME)){
+				
+			} else {
+				
+			}
+			break;
+		case STOP:
 			break;
 		}
-		
-		if(remove!=null)
-			if(owner.getAction()!=remove)
-				finish();
-		
-		if(anim!=null)
-			owner.setAnimation(anim, LoopBehavior.ONCE);
-		
-		if(actionTime<=Vars.DT)
-			finish();
 	}
 	
 	// attack focus if in range
@@ -551,7 +769,6 @@ public class MobAI {
 		}
 	}
 
-
 	public void begin(){
 		switch(type){
 		case JUMP:
@@ -570,7 +787,7 @@ public class MobAI {
 		case PUNCH:
 			owner.setAnimation(Anim.PUNCHING, LoopBehavior.ONCE);
 			break;
-		case DANCE:
+		case DANCING:
 			if(actionTime>0)
 				owner.setAnimation(Anim.DANCE, LoopBehavior.CONTINUOUS);
 			else owner.setAnimation(Anim.DANCE, LoopBehavior.ONCE);
@@ -580,7 +797,7 @@ public class MobAI {
 			break;
 		case FLY:
 			//flying related mechanics
-			
+
 			//flying = true;
 			owner.body.setType(BodyType.KinematicBody);
 			owner.setAnimation(Anim.SWIMMING, LoopBehavior.CONTINUOUS);
@@ -594,7 +811,7 @@ public class MobAI {
 			owner.setTransAnimation(Anim.LIE_DOWN, Anim.SLEEPING, LoopBehavior.CONTINUOUS);
 			if(main.character.equals(this)/* && !sleepSpell*/){
 				main.getSpriteBatch().fade();
-				
+
 				main.saveGame();
 			}
 			break;
@@ -612,7 +829,7 @@ public class MobAI {
 		owner.controlled = false;
 		AIPhase2 = false;
 		actionTime = 0;
-		ctrlRepeat = -1;
+		repeat = -1;
 //		finished = true;
 		
 	}

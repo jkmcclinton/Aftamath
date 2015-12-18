@@ -101,7 +101,7 @@ public class Title extends GameState {
 		sb.begin();
 			sb.draw(bgImage, (Game.width/2 - bgImage.getWidth())/2, (Game.height/2 - bgImage.getHeight())/2);
 			drawTitle(sb);
-			drawOptions(sb);
+//			drawOptions(sb);
 		sb.end();
 
 		if(dbtrender) updateDebugText();
