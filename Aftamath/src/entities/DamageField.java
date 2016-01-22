@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
+import entities.Mob.IFFTag;
 import handlers.FadingSpriteBatch;
 import handlers.PositionalAudio;
 import handlers.Vars;
@@ -41,6 +42,8 @@ public class DamageField extends Entity {
 			facingLeft=true;
 			dx=-1;
 		}
+		if(owner.ducking)
+			dx=0;
 		
 		setDimensions();
 		loadSprite();
@@ -105,9 +108,11 @@ public class DamageField extends Entity {
 	
 	//cause damage to the given entity
 	public void applyDamageEffect(Entity e){
-		if(e instanceof Mob)
-			((Mob) e).damage(damageStrength, damageType, owner);
-		else
+		if(e instanceof Mob){
+			if(((Mob)e).getIFF()!=IFFTag.FRIENDLY)
+				((Mob) e).damage(damageStrength, damageType, owner);
+			else main.addHealthBar(e);
+		} else
 			e.damage(damageStrength, damageType);
 		playDamageSound(e);
 		
@@ -121,7 +126,7 @@ public class DamageField extends Entity {
 			if(!e.burning)
 				e.ignite();
 			break;
-		case "boulderFist":
+		case "boulderFist": //send flying upward
 			if(e.getBody()!=null)
 				e.getBody().applyForceToCenter(0f, 240f, true);
 			break;

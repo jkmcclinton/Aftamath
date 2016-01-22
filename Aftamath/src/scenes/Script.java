@@ -318,8 +318,9 @@ public class Script implements Serializable {
 							
 							System.out.println("ac: "+actionType+"\tt: "+target+"\tdt: "+time+"\trt: "+resetType+"\tw: "+wait);
 							m.setState(actionType, target, time, resetType);
-							if(wait){
-								m.controlled = true;
+							m.controlled = true;
+							if(wait && !resetType.toUpperCase().equals("NEVER")){
+								activeObj = m;
 							}
 						} else
 							System.out.println("Insufficient number of arguments; Line: "+(index+1)+"\tScript: "+ID);
@@ -366,11 +367,15 @@ public class Script implements Serializable {
 				target = findObject(lastArg(line));
 
 				if (obj != null){
-					if(target!=null)
-						obj.faceObject(target);
-					else
-						obj.changeDirection();
-				}
+					if(obj instanceof Mob){
+						if(target!=null)
+							((Mob)obj).watchObject(target);
+						else
+							obj.changeDirection();
+					} else
+						System.out.println("\""+firstArg(line)+"\" cannot face an object because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
+				} else
+					System.out.println("Could not find \""+firstArg(line)+"\" to face object \"" + lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "fanfare":
 				if(!Game.SONG_LIST.contains(firstArg(line), false))
@@ -456,9 +461,11 @@ public class Script implements Serializable {
 				target = findObject(lastArg(line));
 				if (obj != null && target != null){
 					if (obj instanceof Mob){
-						((Mob) obj).setState("FOLLOWING", target);
-					}else obj.faceObject(target);
-				}
+						if(!((Mob) obj).setState("FOLLOWING", target))
+							System.out.println("Could not make \""+obj+"\" follow \""+target+"\"; Line: "+(index+1)+"\tScript: "+ID);
+					} else obj.faceObject(target);
+				} else
+					System.out.println("Could not make \""+obj+"\" follow \""+target+"\" because one of them cannot be found; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "freeze":
 				obj = findObject(firstArg(line));
@@ -473,6 +480,7 @@ public class Script implements Serializable {
 				System.out.println("Inventory system not yet implemented. Sorry!");
 				break;
 			case "hidestats":
+				System.out.println("Hiding stats has not yet implemented. Sorry!");
 				break;
 			case "hidedialog":
 				main.hud.hide();
@@ -534,7 +542,7 @@ public class Script implements Serializable {
 					wait = Boolean.parseBoolean(lastArg(line));
 				
 				try{
-					//is object exist in the map?
+					//does object exist in the map?
 					obj = findObject(args[0]);
 					if(obj==null){
 						System.out.println("Cannot find \""+firstArg(line)+"\" to move to a location; Line: "+(index+1)+"\tScript: "+ID);
@@ -555,19 +563,14 @@ public class Script implements Serializable {
 					target = findObject(args[1].trim());
 					if(target != null){
 						float dx = target.getPosition().x - obj.getPosition().x;
-						float a = (Math.abs(dx)/dx), max = 3*Vars.TILE_SIZE/Vars.PPM;
-						loc = new Vector2(target.getPosition().x - a*max, target.getPosition().y*Vars.PPM);
+						float a = (Math.abs(dx)/dx), d = 3*Vars.TILE_SIZE;
+						loc = new Vector2(target.getPixelPosition().x - a*d, target.getPixelPosition().y);
 //						System.out.println("Move to Entity: "+(int)(loc.x*Vars.PPM));
 					}
 
 					// is targ a tile vector?
-					if(target==null){
+					if(target==null)
 						loc = parseTiledVector(args, 1);
-						
-						//convert to meters
-						if(loc!=null)
-							loc = new Vector2(loc.x/Vars.PPM, loc.y/Vars.PPM);
-					}
 
 					if(loc != null)
 						if(obj instanceof Mob){
@@ -660,7 +663,7 @@ public class Script implements Serializable {
 
 				TextBox t = new TextBox(obj, msg, selfKill);
 				if(obj instanceof Mob)
-					((Mob) obj).facePlayer();
+					((Mob) obj).watchPlayer();
 
 				if(!selfKill){
 					paused = forcedPause = dialog = true;

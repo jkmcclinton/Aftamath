@@ -482,63 +482,49 @@ stat types:
 
 choice types: 
 	YesNo, 
-	1(simple)
-	2(exciting)
-	3(curious)
-	4(cowardly)
-	5(power) 
+	1(simple)	...
+	2(exciting)	!
+	3(curious)	?
+	4(cowardly)	<-
+	5(power) 	*
        	6(abbreviation)
 	
 action Types:
-*  - only for setState
-** - only to be used by the equivalent command
 
-	* STATIONARY
-	* IDLEWALK
-	**FOLLOWING
-	* FACEPLAYER
-	* FACEOBJECT
-	**FIGHTING
-	**EVADING
-	  EVADING_ALL
-	  DANCING
-	* BLOCKPATH
-	**MOVE
-	**RUN
-	  JUMP
-	  FLY
-	  SLEEPING
-	  FLAIL
-	  IDLE
-	  AIM
-	  LOSEAIM
-	  PUNCH
-	  ATTACK
-	  SHOOT
-	  HUG
-	  KISS
-	  SNOOZE
+	  STATIONARY - look around idlely in one location
+	  IDLEWALK - walk around a general area
+	X~IDLEFLY - fly around a general vicinity 
+	  EVADING_ALL - evade all objects on sight
+	  DANCING - dance stationary
+	  BLOCKPATH  - collide w/ player to prevent passage
+	  JUMP - jump
+	  DUCK - duck
+	X~FLY
+	  FACERIGHT - face right
+	  FACELEFT - face left
+	  FLAIL - no description needed
+	  IDLE - do idle animation
+	  AIM - aim at an object
+	  LOSEAIM - stop aiming at an object
+	  PATH - walk along a path
+	X~FLYPATH - fly along a path
+	  PUNCH -do punch animation
+	  HUG - hug an object (and make it hug back)
+	  KISS - kiss an object
+	  SNOOZE - do snoozing animation
 	  special1    \  
 	  special2    -	depends on object type
 	  special3    /
 	  STOP
 
-AI states:
-	stationary
-	idlewalk - walk around a general area
-	~idlefly - fly around a general vicinity 
-	~walkpath - walk along a path
-	~flypath - fly along a path
-	following - follow close behind an object
-	faceplayer - always face the player
-	faceobject - always face a certain object
-	attacking - attack once
-	fighting - fight to death
-	~timedFight - fight until health below certain value or time expires
-	evading - evade a certain object on sight
-	evading_all - evade all objects on sight
-	dancing - dance stationary
-	blockpath - collide w/ player to prevent passage
+	X~fighting - fight to death
+	X~timedFight - fight until health below certain value or time expires
+AI reset types:
+	ON_ANIM_END
+	ON_SCRIPT_END
+	ON_AI_COMPLETE
+	ON_LEVEL_CHANGE
+	NEVER
 
 NPC responseTypes:
 	follow

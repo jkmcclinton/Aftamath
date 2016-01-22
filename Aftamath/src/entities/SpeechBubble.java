@@ -1,9 +1,6 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.FadingSpriteBatch;
-import handlers.Vars;
-import main.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,6 +8,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+
+import handlers.Animation.LoopBehavior;
+import handlers.FadingSpriteBatch;
+import handlers.Vars;
+import main.Game;
 
 public class SpeechBubble extends Entity {
 
@@ -75,7 +77,7 @@ public class SpeechBubble extends Entity {
 		maxWidth = message.length() * font[0].getRegionWidth();
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("speechBubble"), width, height)[ID];
 		setDefaultAnimation(sprites[sprites.length - 1]);
-		animation.setFrames(sprites, Vars.ACTION_ANIMATION_RATE, 1, 1, false);
+		animation.setFrames(sprites, Vars.ACTION_ANIMATION_RATE, 1, 1, LoopBehavior.ONCE, false);
 	}
 	
 	public SpeechBubble(Entity d, float x, float y, String ID){
@@ -94,7 +96,7 @@ public class SpeechBubble extends Entity {
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture(ID), width, height)[0];
 		setDefaultAnimation(sprites, Vars.ACTION_ANIMATION_RATE*2);
 		animation.setFrames(TextureRegion.split(texture, width, height)[1],
-				Vars.ACTION_ANIMATION_RATE/2f,1, determineLength(ID), false);
+				Vars.ACTION_ANIMATION_RATE/2f,1, determineLength(ID), LoopBehavior.ONCE, false);
 	}
 
 	public void update(float dt){

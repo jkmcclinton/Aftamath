@@ -1,3 +1,15 @@
 Script Main
-doAction(this, jump)
+lockplayer
+#SetSpeaker(this)
+#text(normal, {Hello!})
+#hideDialog
+
+#turn of Script
+#doAction(this, kiss, TEST3, on_ai_complete, false)
+
+#timed
+doAction(this, hug, TEST3, 7, false)
+
+#default state
+#doAction(this, kiss, 3, never, false)
 done

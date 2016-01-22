@@ -41,8 +41,6 @@ public class Animation {
 			frames = baseFrames;
 			delay = baseDelay;
 		}
-
-//		printDebug(frames, delay);
 			
 		time += dt;
 		totTime += dt;
@@ -67,6 +65,7 @@ public class Animation {
 						removePrimaryFrames();
 						break;
 					case TIMED:
+						System.out.println(totTime+" :: "+resetTime);
 						if (totTime >= resetTime)
 							removePrimaryFrames();
 						else {
@@ -99,15 +98,12 @@ public class Animation {
 	
 	public void printDebug(TextureRegion[] frames, float delay){
 		String s;
-		int i = type;
-		if(transFrames!=null)
-			i = transType;
-		if(owner.equals(owner.getGameState().character)){
-			s =Mob.getAnimName(i) + " "+ (currentIndex+1) +"/"
-					+frames.length+"\t:: " + (int)(time*1000) + "\tms :: " + (int)(delay*1000) + " ms\t:: " + backwards;
+		s =loopBehavior + " "+Mob.getAnimName(type) + "("+ (currentIndex+1) +"/"+frames.length+")\t:: ";
+		if(transFrames!=null)	
+			s+=Mob.getAnimName(transType) + "("+ (currentIndex+1) +"/"+frames.length+")";
+		else
+			s+="_____(0/0)";
 			System.out.println(s);
-//			Main.debugText+="/l"+s;
-		}
 	}
 
 	public void setFrames(TextureRegion[] frames, float delay, int priority, int type,
@@ -128,19 +124,20 @@ public class Animation {
 				currentIndex = frames.length - 1;
 			else 
 				currentIndex = 0;
+			
 			if (owner.isFacingLeft()) 
 				flip(true);
 			timesPlayed = 0;
 		}
 	}
 
-	public void setFrames(TextureRegion[] frames, float delay, int priority, int type) {
-		setFrames(frames, delay, priority, type, LoopBehavior.ONCE, 0, false);
+	public void setFrames(TextureRegion[] frames, float delay, int priority, int type, LoopBehavior loop) {
+		setFrames(frames, delay, priority, type, loop, 0, false);
 	}
 
-	public void setFrames(TextureRegion[] frames, float delay, int priority, int type, 
+	public void setFrames(TextureRegion[] frames, float delay, int priority, int type, LoopBehavior loop, 
 			boolean backwards) {
-		setFrames(frames, delay, priority, type, LoopBehavior.ONCE, 0, backwards);
+		setFrames(frames, delay, priority, type, loop, 0, backwards);
 	}
 
 	public void setWithTransition(TextureRegion[] transFrames, float transDelay, int transType,
@@ -180,6 +177,7 @@ public class Animation {
 		primaryDelay = 0;
 		priority = 0;
 		type = 0;
+		loopBehavior = null;
 		currentIndex = 0;
 		timesPlayed = 0;
 		resetTime = 0;
@@ -230,6 +228,13 @@ public class Animation {
 		} if(f==null) d=baseDelay;
 		
 		return d; 
+	}
+	
+	public int getCurrentType(){
+		int i = type;
+		if(transFrames!=null)
+			i = transType;
+		return i;
 	}
 	
 	public int getTimesPlayed() { return timesPlayed; }

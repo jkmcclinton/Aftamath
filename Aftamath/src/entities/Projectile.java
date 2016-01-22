@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
+import entities.Mob.IFFTag;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 
@@ -118,8 +119,11 @@ public class Projectile extends Entity {
 		
 		//apply damage to object
 		impacted = true;
-		if (target instanceof Mob){
-			((Mob) target).damage(damageVal, damageType, owner);
+
+		if(target instanceof Mob){
+			if(((Mob)target).getIFF()!=IFFTag.FRIENDLY)
+				((Mob) target).damage(damageVal, damageType, owner);
+			else main.addHealthBar(target);
 			
 			if(damageType.equals(DamageType.ROCK) && target.equals(main.character))
 				main.getCam().shake();

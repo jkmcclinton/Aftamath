@@ -214,14 +214,17 @@ public class Camera extends OrthographicCamera{
 	}
 
 	public void removeFocus(){ 
+		if(tmpFocus==null && focus==character) return;
 		tmpFocus = null;
 		focus = character;
 		focusing = false;
 		moving = true;
 
 		if(wasCharacterFacingLeft!=null)
-			if (wasCharacterFacingLeft != character.getDirection())
+			if (wasCharacterFacingLeft != character.getDirection()){
 				character.changeDirection();
+				wasCharacterFacingLeft = null;
+			}
 	}
 
 	public Entity getFocus() {return focus;}

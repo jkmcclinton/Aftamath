@@ -28,8 +28,8 @@ import entities.CamBot;
 import entities.Entity;
 import entities.Ground;
 import entities.HUD;
-import entities.Mob.Anim;
 import entities.Mob;
+import entities.Mob.Anim;
 import entities.MobAI.AIType;
 import entities.MobAI.ResetType;
 import entities.Path;
@@ -37,7 +37,6 @@ import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
 import entities.Warp;
-import handlers.Animation.LoopBehavior;
 import handlers.Camera;
 import handlers.Evaluator;
 import handlers.EventTrigger;
@@ -180,7 +179,7 @@ public class Main extends GameState {
 
 		cam.reset();
 		b2dCam.reset();
-		catalogueWarps();
+//		catalogueWarps();
 		load();
 
 		speakTime = 0;
@@ -485,11 +484,14 @@ public class Main extends GameState {
 		debugText+= "/l"+Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
 		debugText += "/lLevel: " + scene.title;
 		debugText += "/lSong: " + music;
-		debugText+= "/lState: "+(stateType);
+//		debugText+= "/lState: "+(stateType);
 //		debugText+="/lInteractable: "+character.getInteractable();
 
-		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM/Vars.TILE_SIZE) + 
-				"    y: " + ((int) (character.getPosition().y*PPM/Vars.TILE_SIZE) - character.height);
+		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM  /*/Vars.TILE_SIZE*/) + 
+				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
+//		debugText+="/l"+Mob.getAnimName(character.animation.getCurrentType());
+//		debugText+="/lducking: "+character.ducking;
+		//debugText+="/lcontacts "+character.contacts;
 		
 //		if(currentScript!=null){
 //			debugText+= "/lIndex: "+(currentScript.index);
@@ -499,8 +501,11 @@ public class Main extends GameState {
 		
 		Entity e = findObject("TEST");
 		if(e!=null){
+			debugText+="/l/l"+e;
 			if(e instanceof Mob)
 			debugText+="/lCurrentState: "+((Mob)e).getCurrentState();
+			debugText+="/lfoc:"+((Mob)e).getCurrentState().focus;
+//			debugText+="/ldiscovered: "+((Mob)e).getDiscovered();
 		}
 		
 //		float t = ((int)(character.aimTime*100))/100f;
@@ -692,7 +697,7 @@ public class Main extends GameState {
 				break;
 			case MOVE:
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
-				if(/*cam.focusing||*/warping||quitting||character.dead||waiting||character.frozen) return;
+				if(/*cam.focusing||*/warping||quitting||waiting||character.dead||character.frozen) return;
 				if(MyInput.isPressed(Input.JUMP)) character.jump();
 				if(MyInput.isDown(Input.UP)) {
 					if(character.canWarp && character.isOnGround() && !character.snoozing && 
@@ -732,12 +737,13 @@ public class Main extends GameState {
 					character.aim();
 					if(MyInput.isDown(Input.LEFT)&&!character.isFacingLeft()) 
 						character.changeDirection();
-					if(MyInput.isDown(Input.RIGHT)&&character.isFacingLeft()) 
+					else if(MyInput.isDown(Input.RIGHT)&&character.isFacingLeft()) 
 						character.changeDirection();
 					
 				}
 				if(MyInput.isPressed(Input.ATTACK)) {
-					if(MyInput.isDown(Input.SPECIAL)){
+					if(MyInput.isDown(Input.SPECIAL) || (MyInput.isDown(Input.DOWN)
+							&& MyInput.isDown(Input.SPECIAL))){
 						if(character.seesSomething()){
 							player.doRandomPower(character.target());
 						} else {
@@ -753,7 +759,7 @@ public class Main extends GameState {
 					
 				if(MyInput.isUp(Input.UP) && (character.getAction().equals(Anim.LOOKING_UP)
 						|| character.getAction().equals(Anim.LOOK_UP))){
-					character.setAnimation(Anim.LOOK_UP, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+					character.unLookUp();
 					cam.removeFocus();
 					b2dCam.removeFocus();
 				}
@@ -826,13 +832,13 @@ public class Main extends GameState {
 
 				if(MyInput.isUp(Input.UP) && (character.getAction().equals(Anim.LOOKING_UP)
 						|| character.getAction().equals(Anim.LOOK_UP))){
-					character.setAnimation(Anim.LOOK_UP, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+					character.unLookUp();
 					cam.removeFocus();
 					b2dCam.removeFocus();
 				}
 				if(MyInput.isUp(Input.DOWN) && (character.getAction().equals(Anim.DUCKING)
 						|| character.getAction().equals(Anim.DUCK))){
-					character.setAnimation(Anim.DUCK, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+					character.unDuck();
 				}
 				break;
 			case LISTEN:
@@ -1182,7 +1188,7 @@ public class Main extends GameState {
 		initEntities();
 		cam.setBounds(Vars.TILE_SIZE*4, (scene.width-Vars.TILE_SIZE*4), 0, scene.height);
 		b2dCam.setBounds((Vars.TILE_SIZE*4)/PPM, (scene.width-Vars.TILE_SIZE*4)/PPM, 0, scene.height/PPM);
-
+		cam.removeFocus();
 		warped = true;
 	}
 
@@ -1456,7 +1462,7 @@ public class Main extends GameState {
 		objects.addAll(scene.getInitEntities());
 		objects.add(character);
 		paths.addAll(scene.getInitPaths());
-		scene.applyPaths();
+		scene.applyRefs();
 
 		//this should be changed to happen when the game checks if the player's
 		//partner was last saved on the same level (part of global mobs)
@@ -1505,11 +1511,10 @@ public class Main extends GameState {
 		world.getBodies(tmp);
 		for(Body b : tmp) {
 			world.destroyBody(b);
-		}
-				
-		//invalidate references to the destroyed bodies
-		for (Entity e : objects) {
-			e.setBody(null);
+			//invalidate references to the destroyed bodies
+			if(b!=null)
+				if(b.getUserData() instanceof Entity)
+					((Entity) b.getUserData()).setBody(null);
 		}
 	}
 
