@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
+import entities.Mob.IFFTag;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 
@@ -42,7 +43,7 @@ public class Projectile extends Entity {
 		super(x,y,getID(type));
 		
 		this.type = type;
-		this.animation.setSpeed(ANIM_RATE);
+		this.animation.setBaseDelay(ANIM_RATE);
 		this.layer = Vars.BIT_BATTLE;
 		this.owner = owner;
 		this.killType = KillType.ON_IMPACT;
@@ -69,12 +70,19 @@ public class Projectile extends Entity {
 	}
 	
 	public void render(FadingSpriteBatch sb){
-		sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
+		switch(damageType){
+		case ELECTRO:
+		case ROCK:	sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y-rh/4 - 1);
+			break;
+		default:	sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y);
+			break;
+		
+		}
+	
 //		Vector2 loc = new Vector2(getPixelPosition().x - rw, getPixelPosition().y);
 //		Vector2 vel = body.getLinearVelocity();
 //		float angle = (float)(Math.atan(vel.y/vel.x));
 //		sb.draw(animation.getFrame(), loc.x, loc.y, loc.x+rw, loc.y+rh, width, height, 1, 1, angle);
-		
 	}
 
 	//handling for when projectile collides with something
@@ -92,26 +100,30 @@ public class Projectile extends Entity {
 		}
 
 		//conditions for removing projectile
+		if(owner.equals(target)) return;
 		switch(killType){
 		case ON_IMPACT:
-			main.removeBody(getBody());
+			kill();
 			break;
 		case BOUNCE:
-			if(target.destructable)
-				main.removeBody(getBody());
+			if(target.destructable){
+				kill();
+			}
 			break;
 		default:
 			break;
 		}
 
-		if(owner.equals(target)) return;
 		if(!(target instanceof Ground)) playCollideSound();
 		if(impacted) return;
 		
 		//apply damage to object
 		impacted = true;
-		if (target instanceof Mob){
-			((Mob) target).damage(damageVal, damageType, owner);
+
+		if(target instanceof Mob){
+			if(((Mob)target).getIFF()!=IFFTag.FRIENDLY)
+				((Mob) target).damage(damageVal, damageType, owner);
+			else main.addHealthBar(target);
 			
 			if(damageType.equals(DamageType.ROCK) && target.equals(main.character))
 				main.getCam().shake();
@@ -119,10 +131,12 @@ public class Projectile extends Entity {
 			//apply recoil for sensor type bodies
 			if(killType.equals(KillType.ON_IMPACT))
 				target.getBody().applyForceToCenter(speed, 0.5f, true);
-		} else {
+		} else 
 			target.damage(getDamageVal(), damageType);
-		}
-
+	}
+	
+	public void kill(){
+		main.removeBody(getBody());
 	}
 	
 	// give sound effect to collision based on damage type

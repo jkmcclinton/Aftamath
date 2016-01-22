@@ -23,8 +23,10 @@ public class GameStateManager {
 	public GameStateManager(Game game) {
 		this.game = game;
 		gameStates = new ArrayDeque<GameState>();
-		pushState(TITLE);
-		//pushState(MAIN);
+		if(Main.debugging)
+			pushState(MAIN);
+		else
+			pushState(TITLE);
 		gameStates.peek().create();
 	}
 

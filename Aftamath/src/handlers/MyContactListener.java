@@ -52,21 +52,38 @@ public class MyContactListener implements ContactListener {
 			((TextBox) entA).add(entB);
 		} if(typeB.equals("foot") && !unstandable.contains(typeA, false) && 
 				!fb.getBody().getUserData().equals(typeA) && !(entA instanceof EventTrigger)) {
-			if(entA instanceof Ground){
+			if(entA instanceof Ground)
 				((Mob) entB).setGround(((Ground) entA).getType());
-			}
-			((Mob) entB).contacts.add(entA);
+			if(!((Mob)entB).contacts.contains(entA, false))
+				((Mob) entB).contacts.add(entA);
 		} if(typeA.equals("foot") && !unstandable.contains(typeB, false) && 
 				!fa.getBody().getUserData().equals(typeB) && !(entB instanceof EventTrigger)) {
-			((Mob) entA).contacts.add(entB);
+			if(entB instanceof Ground)
+				((Mob) entA).setGround(((Ground) entB).getType());
+			if(!((Mob)entA).contacts.contains(entB, false))
+				((Mob) entA).contacts.add(entB);
 		} if(typeB.equals("projectile") && !unHittable.contains(typeA, false)) {
 			((Projectile) entB).impact(entA);
 		} if(typeA.equals("projectile") && !unHittable.contains(typeB, false)) {
 			((Projectile) entA).impact(entB);
-		} if(typeB.equals("damageField") && !unHittable.contains(typeA, false)) {
-			((DamageField) entB).addVictim(entA);
-		} if(typeA.equals("damageField") && !unHittable.contains(typeB, false)) {
-			((DamageField) entA).addVictim(entB);
+		} if(typeB.equals("damageField")){
+			if(((DamageField)entB).ID.equals("boulderFist") && typeA.equals("foot")){
+				((Mob)entA).setGround("rock");
+				if(!((Mob)entA).contacts.contains(entB, false))
+					((Mob) entA).contacts.add(entB);
+			}
+			
+			if(!unHittable.contains(typeA, false))
+				((DamageField) entB).addVictim(entA);
+		} if(typeA.equals("damageField")){
+			if(((DamageField)entA).ID.equals("boulderFist") && typeB.equals("foot")){
+				((Mob)entB).setGround("rock");
+				if(!((Mob)entB).contacts.contains(entA, false))
+					((Mob) entB).contacts.add(entA);
+			}
+			
+			if(!unHittable.contains(typeA, false))
+				((DamageField) entB).addVictim(entA);
 		} if(typeA.equals("reaper") && typeB.indexOf("player") != -1){
 			((Mob) entB).damage(.1d);
 		} if(typeB.equals("reaper") && typeA.indexOf("player") != -1){
@@ -89,9 +106,11 @@ public class MyContactListener implements ContactListener {
 			((Mob) entA).addAttackable(entB);
 		}if(typeB.equals("attack") && !fa.isSensor() && entA.isAttackable){ 
 			((Mob) entB).addAttackable(entA);
-		}if(typeA.equals("vision")){ 
-			((Mob) entA).discover(entB);
+		}if(typeA.equals("vision")){
+			if(!fb.isSensor())
+				((Mob) entA).discover(entB);
 		}if(typeB.equals("vision")){ 
+			if(!fa.isSensor())
 			((Mob) entB).discover(entA);
 		}if(typeA.equals("warp") && typeB.equals("foot")){
 			if(((Warp) entA).conditionsMet()) {
@@ -194,8 +213,7 @@ public class MyContactListener implements ContactListener {
 			((TextBox) entA).remove(entB);
 		} if(typeB.equals("foot") && !unstandable.contains(typeA, true) && 
 				!fb.getBody().getUserData().equals(typeA)) {
-			if(entB.equals(main.character))
-				((Mob) entB).contacts.removeValue(entA, false);
+			((Mob) entB).contacts.removeValue(entA, false);
 		} if(typeA.equals("foot") && !unstandable.contains(typeB, true) && 
 				!fa.getBody().getUserData().equals(typeB)) {
 			((Mob) entA).contacts.removeValue(entB, false);

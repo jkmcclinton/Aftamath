@@ -1,220 +1,248 @@
 package handlers;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
 
+import entities.Entity;
 import entities.Mob;
-import entities.Mob.Anim;
+import entities.MobAI.ResetType;
 
 public class Animation {
-
-	public boolean transitioning, controlled;
-	public int currentFrame;
-	public int actionIndex, nextID;
-	public boolean backward;
-
-	private float time;
-	private float defaultDelay;
-	private float delay;
-	private int timesPlayed;
-	private Array<TextureRegion[]> frames;
-	private int actionLength, nextActionLength;
 	
-	public Animation(){}
-
-	public Animation(TextureRegion[] frames){
-		this(frames, 1/12f);
-	}
-
-	public Animation(TextureRegion[] frames, float delay){
-		setFrames(frames, delay, false);
-	}
+	public int priority, type, transType, timesPlayed;
 	
-	public void setFrames(TextureRegion[] frames, boolean flip) {
-		setFrames(frames, Vars.ANIMATION_RATE, flip);
+	private TextureRegion[] primaryFrames, transFrames, baseFrames;
+	private float primaryDelay, transDelay, baseDelay;
+	private float time, totTime, resetTime;
+	private int currentIndex;
+	private LoopBehavior loopBehavior; 
+	private Entity owner;
+	boolean backwards;
+
+	public enum LoopBehavior {
+		TIMED, ONCE, CONTINUOUS;
 	}
 
-	public void setFrames(TextureRegion[] frames, float delay, boolean flip){
-		this.frames = new Array<>();
-		add(frames);
-		this.defaultDelay = delay;
-		this.delay = defaultDelay;
-		actionIndex = 0;
-
-		time = 0;
-		currentFrame = 0;
-		timesPlayed = 0;
-
-		if (flip) flip(flip);
+	public void initFrames(TextureRegion[] baseFrames, float baseDelay, boolean direction) {
+		this.baseFrames = baseFrames;
+		this.baseDelay = baseDelay;
+		if(direction) flip(true);
 	}
 
-	public void setFrames(TextureRegion frames, float delay){
-		this.frames = new Array<>();
-		TextureRegion[] tmp = {frames};
-		add(tmp);
-		this.delay = delay;
-		actionIndex = 0;
+	public Animation(Entity owner) {this.owner = owner; }
 
-		time = 0;
-		currentFrame = 0;
-		timesPlayed = 0;
-	}
-
-	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, boolean controlled, boolean backward){
-		setAction(frames, length, direction, ID, Vars.ACTION_ANIMATION_RATE, controlled, backward);
-	}
-
-	public void setAction(TextureRegion[] frames, int length, boolean direction, int ID, float delay, boolean controlled, boolean backward) {
-		if (actionIndex == ID && actionIndex != Mob.animationIndicies.get(Anim.JUMPING) && backward==this.backward) return;
-
-		this.backward=backward;
-		if(!add(frames))
-			return;
-		
-		this.controlled = controlled;
-		setActionLength(length);
-		actionIndex = ID;
-		this.delay = delay;
-		transitioning = false;
-
-		if (direction) flipAction(true);
-
-		time = 0;
-		currentFrame = 0;
-		timesPlayed = 0;
-	}
-
-	public void setTransitionAction(TextureRegion[] frames, int transLength, boolean direction, int transID,
-			TextureRegion[] transFrames, int length, int ID, boolean looping){
-		if(actionIndex == ID){
-			return;
+	public void update(float dt) {
+		TextureRegion[] frames = transFrames; 
+		float delay = transDelay;
+		if (frames == null) {
+			frames = primaryFrames;
+			delay = primaryDelay;
 		}
-
-		removeAction();
-		transitioning = true;
-		controlled = true;
-		
-		if(!add(frames))
-			return;
-		if(!looping)
-			this.delay = Vars.ACTION_ANIMATION_RATE;
-		else
-			this.delay = Vars.ANIMATION_RATE;
-		nextActionLength = length;
-		nextID = ID;
-		
-		add(transFrames);
-		setActionLength(transLength);
-		actionIndex = transID;
-
-		if (direction) flipAction(true);
-
-		time = 0;
-		currentFrame = 0;
-		timesPlayed = 0;
-	}
-
-	public void removeTop(){
-		if(frames == null) return;
-		if (frames.size <= 1) return;
-		backward = false;
-		frames.pop();
-
-		actionIndex = nextID;
-		timesPlayed = 0;
-		currentFrame = 0;
-		setActionLength(nextActionLength);
-	}
-
-	public void removeAction(){
-		if(frames == null) return;
-		if (frames.size <= 1) return;
-		backward = false;
-
-		while (frames.size > 1) {
-			frames.pop();
+		if (frames == null) {
+			frames = baseFrames;
+			delay = baseDelay;
 		}
-
-		timesPlayed = 0;
-		currentFrame = 0;
-		setActionLength(0);
-		actionIndex = 0;
-		delay = defaultDelay;
-		transitioning = false;
-	}
-
-	public void flip (boolean flip){
-		for (int i = 0; i<frames.size; i++){
-			TextureRegion[] flipped = frames.get(i).clone();
-			for(TextureRegion t : flipped){
-				if(t.isFlipX()!=flip) t.flip(true, false);
-			}
-
-			frames.set(i, flipped);
-		}
-	}
-
-	public void flipAction(boolean flip){
-		TextureRegion[] first = frames.get(0).clone();
-		Array<TextureRegion[]> tmp = new Array<TextureRegion[]>();
-		tmp.add(first);
-
-		int i = 1;
-		while (i < frames.size){
-			TextureRegion[] flipped = frames.get(i).clone();
-			for (TextureRegion t : flipped){
-				if(t.isFlipX()!=flip) t.flip(true, false);
-			}
-			i++;
-			tmp.add(flipped);
-		}
-
-		frames = new Array<TextureRegion[]>();
-		frames.addAll(tmp);
-	}
-
-	public void update(float dt){
-		if(delay <= 0) return;
+			
 		time += dt;
-		while(frames.size >= 1 && time >= delay){
-			step();
-		}
-	}
-
-	private void step(){
-		time -= delay;
-		currentFrame++;
-		if((frames.size == 1 && currentFrame == frames.peek().length) || (frames.size > 1 && currentFrame == getActionLength())){
-			currentFrame = 0;
-			timesPlayed++;
-			if(timesPlayed > 0 ) {
-				if (transitioning){
-					if(frames.size > 2)
-						removeTop();
-					else if(!controlled)
-						removeAction();
-				} else if (frames.size > 1 && !controlled)
-					removeAction();
+		totTime += dt;
+		if (time >= delay) {
+			time = 0;
+			if (backwards) currentIndex--;
+			else currentIndex++;
+	
+			//reached end of animation
+			if ((backwards&&currentIndex == -1) || (!backwards&&currentIndex == frames.length)) {
+				//remove transition loop
+				if (transFrames != null) {
+					transFrames = null;
+					transDelay = 0;
+					if (backwards && primaryFrames != null) currentIndex = primaryFrames.length - 1;
+					else currentIndex = 0;
+				}
+				//remove primary loop
+				else if (primaryFrames != null) {
+					switch (loopBehavior) {
+					case ONCE:
+						removePrimaryFrames();
+						break;
+					case TIMED:
+						System.out.println(totTime+" :: "+resetTime);
+						if (totTime >= resetTime)
+							removePrimaryFrames();
+						else {
+							currentIndex = backwards ? frames.length - 1 : 0;
+							timesPlayed++;
+						}
+						break;
+					case CONTINUOUS:
+						currentIndex = backwards ? frames.length - 1 : 0;
+						timesPlayed++;
+						break;
+					}
+				}
+				else
+					//continue base loop
+					currentIndex = 0;
 			}
 		}
 	}
+
+	/**get the image at the current index of the animation*/
+	public TextureRegion getFrame() {
+		TextureRegion[] frames = transFrames; 
+		if (frames == null)
+			frames = primaryFrames;
+		if (frames == null)
+			frames = baseFrames;
+		return frames[currentIndex]; 
+	}
 	
-	private boolean add(TextureRegion[] frames){
-//		if(this.frames.size>=2 && !transitioning)
-//			return false;
-		this.frames.add(frames);
-		return true;
+	public void printDebug(TextureRegion[] frames, float delay){
+		String s;
+		s =loopBehavior + " "+Mob.getAnimName(type) + "("+ (currentIndex+1) +"/"+frames.length+")\t:: ";
+		if(transFrames!=null)	
+			s+=Mob.getAnimName(transType) + "("+ (currentIndex+1) +"/"+frames.length+")";
+		else
+			s+="_____(0/0)";
+			System.out.println(s);
 	}
 
-	public TextureRegion getFrame() {	return frames.peek()[currentFrame];  }
+	public void setFrames(TextureRegion[] frames, float delay, int priority, int type,
+			LoopBehavior loop, float resetTime, boolean backwards) {
+		if ((priority >= this.priority && type != this.type) || 
+				backwards !=this.backwards) {
+			this.primaryFrames = frames;
+			this.loopBehavior = loop;
+			this.resetTime = resetTime;
+			this.priority = priority;
+			this.type = type;
+			this.primaryDelay = delay;
+			this.backwards = backwards;
+			totTime = 0;
+			time = 0;
+			
+			if (backwards) 
+				currentIndex = frames.length - 1;
+			else 
+				currentIndex = 0;
+			
+			if (owner.isFacingLeft()) 
+				flip(true);
+			timesPlayed = 0;
+		}
+	}
+
+	public void setFrames(TextureRegion[] frames, float delay, int priority, int type, LoopBehavior loop) {
+		setFrames(frames, delay, priority, type, loop, 0, false);
+	}
+
+	public void setFrames(TextureRegion[] frames, float delay, int priority, int type, LoopBehavior loop, 
+			boolean backwards) {
+		setFrames(frames, delay, priority, type, loop, 0, backwards);
+	}
+
+	public void setWithTransition(TextureRegion[] transFrames, float transDelay, int transType,
+			TextureRegion[] primaryFrames, float primaryDelay, int priority, int type) {
+		setWithTransition(transFrames, transDelay, transType, primaryFrames, primaryDelay, priority, type,
+				LoopBehavior.CONTINUOUS, 0);
+	}
+
+	public void setWithTransition(TextureRegion[] transFrames, float transDelay, int transType, 
+			TextureRegion[] primaryFrames, float primaryDelay, int priority, int type, 
+			LoopBehavior loop, float resetTime) {
+		if (priority >= this.priority && type != this.type) {
+			setFrames(primaryFrames, primaryDelay, priority, type, loop, resetTime, false);
+			currentIndex = 0;
+			this.transFrames = transFrames;
+			this.transDelay = transDelay;
+			this.transType = transType;
+
+			if (owner.isFacingLeft()) 
+				flip(true);
+		}
+	}
+
+	public void addTransition(TextureRegion[] transFrames, float transDelay, int transType, boolean direction) {
+			this.transFrames = transFrames;
+			this.transDelay = transDelay;
+			this.transType = transType;
+			currentIndex = 0;
+			totTime = 0;
+			time = 0;
+			if (owner.isFacingLeft()) 
+				flip(true);
+	}
+
+	private void removePrimaryFrames() {
+		primaryFrames = null;
+		primaryDelay = 0;
+		priority = 0;
+		type = 0;
+		loopBehavior = null;
+		currentIndex = 0;
+		timesPlayed = 0;
+		resetTime = 0;
+		backwards = false;
+		
+		if(owner instanceof Mob)
+			if(((Mob)owner).getCurrentState().resetType.equals(ResetType.ON_ANIM_END))
+				((Mob) owner).resetState();
+	}
+	
+	/**return the animation to its default loop of images*/
+	public void reset(){
+		removePrimaryFrames();
+		transFrames = null;
+	}
+
+	/**Horizontally flip all images in animations to match the direction it should currently
+	 * be facing*/
+	public void flip(boolean flip) {
+		if (transFrames != null) {
+			for (TextureRegion t: transFrames) {
+				if (t.isFlipX() != flip) {
+					t.flip(true, false);
+				}
+			}
+		}
+		if (primaryFrames != null) {
+			for (TextureRegion t: primaryFrames) {
+				if (t.isFlipX() != flip) {
+					t.flip(true, false);
+				}
+			}
+		}
+		for (TextureRegion t: baseFrames) {
+			if (t.isFlipX() != flip) {
+				t.flip(true, false);
+			}
+		}
+	}
+
+	public void setBaseDelay(float delay) { this.baseDelay = delay; }
+	public float getSpeed() {
+		TextureRegion[] f = transFrames;
+		float d = transDelay;
+		if(f==null){
+			f=primaryFrames;
+			d=primaryDelay;
+		} if(f==null) d=baseDelay;
+		
+		return d; 
+	}
+	
+	public int getCurrentType(){
+		int i = type;
+		if(transFrames!=null)
+			i = transType;
+		return i;
+	}
+	
 	public int getTimesPlayed() { return timesPlayed; }
-	public Array<TextureRegion[]> getFrames(){return frames; }
-	public void setSpeed(float delay) { this.delay = delay; }
-	public float getSpeed() { return delay; }
-	public int getSize() { return frames.size; }
-	public int getDefaultLength() { return frames.get(0).length; }
-	public int getIndex() { return currentFrame; }
-	public int getActionLength() { return actionLength; }
-	public void setActionLength(int l){ actionLength = l; }
-	public float getDelay(){ return delay; }
+	public int getDefaultLength() { return baseFrames.length; }
+	public int getIndex(){
+		if(!backwards)
+			return currentIndex;
+		else
+			return primaryFrames.length - currentIndex - 1;
+	}
 }

@@ -1,16 +1,17 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.Animation;
-import handlers.FadingSpriteBatch;
-import handlers.Vars;
-import main.Game;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
+
+import handlers.Animation;
+import handlers.FadingSpriteBatch;
+import handlers.Vars;
+import main.Game;
 
 public class TextBox extends Entity {
 	
@@ -40,7 +41,7 @@ public class TextBox extends Entity {
 		isAttackable = false;
 		selfKill = kill;
 		
-		animation = new Animation();
+		animation = new Animation(this);
 		this.msgSrc = Vars.formatDialog(message, false);
 		text = msgSrc.split("/l");
 		setGameState(owner.getGameState());

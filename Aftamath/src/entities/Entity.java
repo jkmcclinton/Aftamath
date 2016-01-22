@@ -58,7 +58,6 @@ public class Entity implements Serializable {
 	protected int sceneID;
 	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
 	protected float invulnerableTime;
-	protected Vector2 goalPosition;
 	protected Texture texture;
 	protected boolean facingLeft, invulnerable;
 	protected World world;
@@ -115,7 +114,7 @@ public class Entity implements Serializable {
 	}
 	
 	public void loadSprite() {
-		animation = new Animation();
+		animation = new Animation(this);
 		texture = Game.res.getTexture(ID);
 		
 		if (texture != null){
@@ -174,7 +173,7 @@ public class Entity implements Serializable {
 	}
 	
 	public void setDefaultAnimation(TextureRegion[] reg, float delay){
-		animation.setFrames(reg, delay, isFacingLeft());
+		animation.initFrames(reg, delay, facingLeft);
 	}
 	
 	public void setGameState(Main gs){
@@ -409,6 +408,29 @@ public class Entity implements Serializable {
 		this.maxHealth = val; 
 	}
 
+	public void heal(double healVal){
+		heal(healVal, true);
+	}
+	
+	public void heal(double healVal, boolean playSound){
+		health += healVal;
+		if (health > maxHealth) 
+			health = maxHealth;
+		if (playSound)
+			main.playSound(getPosition(), "heal");
+	}
+
+	/**restore health to max and make invulnerable for 5 seconds*/
+	public void restore(){
+		heal(maxHealth);
+		makeInvulnerable(5);
+	}
+
+	public void makeInvulnerable(float t){
+		invulnerableTime = t;
+		invulnerable = true;
+	}
+
 	/** Sets both health and max health
 	 * must only be used for copying data
 	 * @param health
@@ -426,12 +448,16 @@ public class Entity implements Serializable {
 		invulnerable = !val;
 	}
 
-	public void addFollower(Mob m){ if (!followers.contains(m, true)) followers.add(m); }
 	public void removeFollower(Mob m){ followers.removeValue(m, true); }
+	public void addFollower(Mob m){ 
+		if (!followers.contains(m, true)) 
+			followers.add(m); 
+	}
+	
 	public Array<Mob> getFollowers(){ return followers; }
-	public int getFollowerIndex(Mob m) {
+	public int getFollowingIndex(Mob owner) {
 		Main.debugText = "" + followers; 
-		return followers.indexOf(m, true) + 1; 
+		return followers.indexOf(owner, true) + 1; 
 	}
 
 	public int compareTo(Entity e){
@@ -580,5 +606,16 @@ public class Entity implements Serializable {
 		json.writeValue("script", this.script);
 		json.writeValue("attackScript", this.attackScript);
 	}
+	
+//	public void finalize(){
+//		try {
+//			super.finalize();
+//			System.out.println("FINALIZING");
+//			if(texture!=null)
+//				texture.dispose();
+//		} catch (Throwable e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 }

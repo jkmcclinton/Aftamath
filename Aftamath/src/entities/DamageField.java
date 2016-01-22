@@ -4,10 +4,12 @@ import static handlers.Vars.PPM;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
+import entities.Mob.IFFTag;
 import handlers.FadingSpriteBatch;
 import handlers.PositionalAudio;
 import handlers.Vars;
@@ -40,6 +42,8 @@ public class DamageField extends Entity {
 			facingLeft=true;
 			dx=-1;
 		}
+		if(owner.ducking)
+			dx=0;
 		
 		setDimensions();
 		loadSprite();
@@ -53,7 +57,7 @@ public class DamageField extends Entity {
 		
 		this.owner = owner;
 		this.damageType = damageType;
-		this.animation.setSpeed(ANIM_RATE);
+		this.animation.setBaseDelay(ANIM_RATE);
 		this.layer = Vars.BIT_BATTLE;
 		this.victims = new HashMap<>();
 		
@@ -65,7 +69,8 @@ public class DamageField extends Entity {
 		lifeTime+=dt;
 		animation.update(dt);
 		
-		if(ID.equals("boulderFist") && lifeTime<=2*Vars.DT)
+		if((ID.equals("boulderFist") && lifeTime>=1.5f*ANIM_RATE && 
+				lifeTime<=3*ANIM_RATE) || !ID.equals("boulderFist"))
 			for(Entity e: victims.keySet()){
 				if(victims.get(e)<=0){
 					applyDamageEffect(e);
@@ -73,6 +78,16 @@ public class DamageField extends Entity {
 				} else
 					victims.put(e, victims.get(e)-dt);
 			}
+		
+		//make body do shit
+		switch(ID){
+		case"boulderFist":
+			if(body.getPosition().y*PPM>=y)
+				body.setLinearVelocity(new Vector2(0, 0));
+			break;
+		default:
+			//do nothing special
+		}
 
 		if(lifeTime>=duration){
 			main.removeBody(body);
@@ -83,7 +98,7 @@ public class DamageField extends Entity {
 	public void render(FadingSpriteBatch sb){
 		switch(ID){
 		case "boulderFist":	
-			sb.draw(animation.getFrame(), getPixelPosition().x - width/2, getPixelPosition().y - rh - 2);
+			sb.draw(animation.getFrame(), x - width/2, y - rh - 2);
 			break;
 		default:	
 			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
@@ -93,9 +108,11 @@ public class DamageField extends Entity {
 	
 	//cause damage to the given entity
 	public void applyDamageEffect(Entity e){
-		if(e instanceof Mob)
-			((Mob) e).damage(damageStrength, damageType, owner);
-		else
+		if(e instanceof Mob){
+			if(((Mob)e).getIFF()!=IFFTag.FRIENDLY)
+				((Mob) e).damage(damageStrength, damageType, owner);
+			else main.addHealthBar(e);
+		} else
 			e.damage(damageStrength, damageType);
 		playDamageSound(e);
 		
@@ -109,7 +126,7 @@ public class DamageField extends Entity {
 			if(!e.burning)
 				e.ignite();
 			break;
-		case "boulderFist":
+		case "boulderFist": //send flying upward
 			if(e.getBody()!=null)
 				e.getBody().applyForceToCenter(0f, 240f, true);
 			break;
@@ -217,12 +234,23 @@ public class DamageField extends Entity {
 	
 	public void create(){
 		init = true;
+		String sound;
+		float yOff=0;
+
+		//initial body shit
+		switch(ID){
+		case"boulderFist":
+			yOff = -1.2f*height;
+			break;
+		default:
+			//do nothing special
+		}
 		
 		//define hitbox physics
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox((rw)/PPM, (rh)/PPM);
 		
-		bdef.position.set(x/PPM, y/PPM);
+		bdef.position.set(x/PPM, (y+yOff)/PPM);
 		bdef.type = BodyType.KinematicBody;
 		body = world.createBody(bdef);
 		body.setUserData(this);
@@ -232,16 +260,22 @@ public class DamageField extends Entity {
 		fdef.filter.categoryBits = layer;
 		body.createFixture(fdef).setUserData("damageField");
 		
-		String sound;
+		//make body do shit
+		//determine sound for creation and initial offset
 		switch(ID){
 		case "electricField":
-			sound = "sparking"; break;
+			sound = "sparking"; 
+			break;
 		case "fireyField":
-			sound = "crackling"; break;
+			sound = "crackling";
+			break;
 		case "chillyWind":
-			sound = "air1"; break;
+			sound = "air1"; 
+			break;
 		case "boulderFist":
-			sound = "boulderFist"; break;
+			sound = "boulderFist"; 
+			body.setLinearVelocity(new Vector2(0, 2f));
+			break;
 		default:
 			sound = "";
 		}

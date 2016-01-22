@@ -304,7 +304,7 @@
     <property name="warp" value="WentToBar"/>
    </properties>
   </object>
-  <object id="57" x="32" y="52" width="16" height="1516">
+  <object id="57" x="44" y="52" width="16" height="1516">
    <properties>
     <property name="ID" value="3"/>
     <property name="barrier" value=""/>
