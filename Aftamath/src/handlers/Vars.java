@@ -39,9 +39,8 @@ public class Vars {
 	
 	public static final int PLAYER_SCENE_ID = 0;
 	public static final int NARRATOR_SCENE_ID = 1000;
-	
 	public static final Array<Color> DEFAULT_COLOR_LIST = new Array<Color>();
-	public static final Array<String> MALES = new Array<String>(new String[] {"narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
+	public static final Array<String> MALES = new Array<String>(new String[] {"doctordisco","narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
 					"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2","maleplayer1","maleplayer2","maleplayer3","maleplayer4",
 					"bballer","boss1","boss2","cashier","hero1","hero2", "villain1", "villain2","biker1","bot1","policeman1",
 					"policeman2","civilian1","civilian2","civilian3","civilian4"});

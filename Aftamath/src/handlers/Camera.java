@@ -1,12 +1,11 @@
 package handlers;
 
-import scenes.Scene;
-
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 
 import entities.Entity;
 import entities.Mob;
+import scenes.Scene;
 
 public class Camera extends OrthographicCamera{
 
@@ -215,14 +214,17 @@ public class Camera extends OrthographicCamera{
 	}
 
 	public void removeFocus(){ 
+		if(tmpFocus==null && focus==character) return;
 		tmpFocus = null;
 		focus = character;
 		focusing = false;
 		moving = true;
 
 		if(wasCharacterFacingLeft!=null)
-			if (wasCharacterFacingLeft != character.getDirection())
+			if (wasCharacterFacingLeft != character.getDirection()){
 				character.changeDirection();
+				wasCharacterFacingLeft = null;
+			}
 	}
 
 	public Entity getFocus() {return focus;}
@@ -297,7 +299,7 @@ public class Camera extends OrthographicCamera{
 	public void setDefaultZoom(float zoom){ defaultZoom = zoom; }
 	public void setTrigger(RefocusTrigger trigger){ this.trigger = trigger; }
 	public RefocusTrigger getTrigger(){ return trigger; }
-	public void setCharacter(Mob mob) { this.character = mob; }  //set camera focus to the character
+	public void setCharacter(Mob character) { this.character = character; }  //set camera focus to the character
 	public Mob getCharacter(){ return character; }
 
 	public float getDefaultZoom() { return defaultZoom; }

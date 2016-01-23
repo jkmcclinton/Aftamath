@@ -41,6 +41,7 @@ import entities.Barrier;
 import entities.Entity;
 import entities.Ground;
 import entities.Mob;
+import entities.MobAI.ResetType;
 import entities.Path;
 import entities.SpeechBubble;
 import entities.Warp;
@@ -78,6 +79,7 @@ public class Scene {
 	private ArrayList<Path> paths;
 	private HashMap<Script, Pair<String, Boolean>> conditionalScripts;
 	private HashMap<Mob, String> pathsToAdd;
+	private HashMap<Mob, String> fociToAdd;
 	private TiledMap tileMap;
 	private Texture background, midground, foreground, clouds, sky, grad, sun, moon;
 	private World world;
@@ -130,6 +132,7 @@ public class Scene {
 		lights = new ArrayList<>();
 		paths = new ArrayList<>();
 		pathsToAdd = new HashMap<>();
+		fociToAdd = new HashMap<>();
 		conditionalScripts = new HashMap<>();
 		width = 1000;
 		height = 1000;
@@ -388,9 +391,11 @@ public class Scene {
 	}
 	
 	public ArrayList<Path> getInitPaths() { return paths;  }
-	public void applyPaths(){
+	public void applyRefs(){
 		for(Mob m :pathsToAdd.keySet())
 			m.moveToPath(pathsToAdd.get(m));
+		for(Mob m:fociToAdd.keySet())
+			m.getCurrentState().focus = main.findObject(fociToAdd.get(m));
 	}
 	
 	public ArrayList<Entity> getInitEntities() { return entities; }
@@ -486,6 +491,7 @@ public class Scene {
 						String name = object.getProperties().get("name", String.class);		//character name
 						String nickName = object.getProperties().get("nickName", String.class);
 						String state = object.getProperties().get("state", String.class);	//AI state
+						String focus = object.getProperties().get("focus", String.class);
 						String script = object.getProperties().get("script", String.class);
 						String aScript = object.getProperties().get("attackScript", String.class);
 						String sScript = object.getProperties().get("supSttackScript", String.class);
@@ -538,7 +544,7 @@ public class Scene {
 							} else{
 								Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);
 								e.setGameState(main);
-								e.setDefaultState(state);
+								e.setState(state, null, -1, ResetType.NEVER.toString());
 								e.setDialogueScript(script);
 								e.setAttackScript(aScript);
 								e.setSupAttackScript(sScript);
@@ -551,7 +557,8 @@ public class Scene {
 								
 								if(pathName!=null)
 									pathsToAdd.put(e, pathName);
-								
+								if(focus!=null) 
+									fociToAdd.put(e, focus);
 								if(nickName!=null)
 									e.setNickName(nickName);
 								
@@ -658,7 +665,7 @@ public class Scene {
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 		
-		entities.addAll(createLinkWarps());
+//		entities.addAll(createLinkWarps());
 	}
 	
 	
