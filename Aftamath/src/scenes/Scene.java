@@ -665,7 +665,7 @@ public class Scene {
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 		
-//		entities.addAll(createLinkWarps());
+		entities.addAll(createLinkWarps());
 	}
 	
 	

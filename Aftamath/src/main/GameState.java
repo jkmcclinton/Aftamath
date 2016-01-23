@@ -183,15 +183,18 @@ public abstract class GameState {
 		}
 	}
 
+	/**units in meters*/
 	public void playSound(float x, float y, Music s) {
 		playSound(new Vector2(x, y), s);
 	}
 
+	/**@param position units in meters*/
 	public void playSound(Vector2 position, Music sound) {
 		updateSound(position, sound);
 		sound.play();
 	}
 
+	/**@param position units in meters*/
 	public void playSound(Vector2 position, Sound sound, float pitch) {
 		position = new Vector2(position.x * Vars.PPM, position.y * Vars.PPM);
 		float dx = cam.position.x - position.x;
@@ -201,11 +204,11 @@ public abstract class GameState {
 		float pan;
 		float s = 21400, a = .3183f, f = 5;
 		float volume = (float) (Math.exp(-1 * (distance * distance) / (2 * s)) / // Gaussian
-																					// curve
+																				 // curve
 				(Math.sqrt((a * Math.PI) / (Game.soundVolume * Game.soundVolume))));
 		if (Math.abs(dx) > f)
 			pan = (float) -(2 / (1 + Math.exp(-(dx - f * dx / Math.abs(dx)) / 3.5)) - 1); // Logaritmic
-																							// curve
+																						  // curve
 		else
 			pan = 0;
 
@@ -221,11 +224,11 @@ public abstract class GameState {
 		float pan;
 		float s = 21400, a = .3183f, f = 5;
 		float volume = (float) (Math.exp(-1 * (distance * distance) / (2 * s)) / // Gaussian
-																					// curve
+																				 // curve
 				(Math.sqrt((a * Math.PI) / (Game.soundVolume * Game.soundVolume))));
 		if (Math.abs(dx) > f)
 			pan = (float) -(2 / (1 + Math.exp(-(dx - f * dx / Math.abs(dx)) / 3.5)) - 1); // Logaritmic
-																							// curve
+																						  // curve
 		else
 			pan = 0;
 
