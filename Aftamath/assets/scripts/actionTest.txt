@@ -4,11 +4,12 @@ lockplayer
 #text(normal, {Hello!})
 #hideDialog
 
-#turn of Script
-#doAction(this, kiss, TEST3, on_ai_complete, false)
+#turn of action
+#doAction(this, aim, TEST3, false)
+#doAction(TEST26, aim, this)
 
 #timed
-doAction(this, hug, TEST3, 7, false)
+doAction(this, kiss, TEST3, 5, false)
 
 #default state
 #doAction(this, kiss, 3, never, false)

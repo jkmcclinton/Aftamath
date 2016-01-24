@@ -9,7 +9,7 @@
   <property name="next" value="Commercial District NW"/>
   <property name="previous" value="Tha Hood"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
   <image source="tilesets/street.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -240,7 +240,7 @@
     <property name="layer" value="back"/>
     <property name="name" value="Narrator"/>
     <property name="script" value="intro"/>
-    <property name="state" value="STATIONARY"/>
+    <property name="state" value="FACELEFT"/>
    </properties>
   </object>
   <object id="27" x="192" y="272" width="48" height="16">
@@ -258,7 +258,7 @@
   <object id="29" x="240" y="1392" width="16" height="176">
    <properties>
     <property name="event" value=""/>
-    <property name="robbers1" value="RobberIntro"/>
+    <property name="robbers1" value="!RobberIntro"/>
    </properties>
   </object>
   <object id="44" name="5" x="1418" y="1552" width="16" height="16">
@@ -273,7 +273,7 @@
     <property name="state" value="STATIONARY"/>
    </properties>
   </object>
-  <object id="53" name="1" x="288" y="1552" width="16" height="16">
+  <object id="53" name="1" x="848" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="26"/>
     <property name="NPC" value="hobo"/>
@@ -324,7 +324,7 @@
     <property name="grimReaper1" value=""/>
    </properties>
   </object>
-  <object id="60" x="272" y="1392" width="80" height="176">
+  <object id="60" x="816" y="1392" width="80" height="176">
    <properties>
     <property name="event" value=""/>
     <property name="hobo1" value="!Hobo1"/>

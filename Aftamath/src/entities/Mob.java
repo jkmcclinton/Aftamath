@@ -438,9 +438,6 @@ public class Mob extends Entity{
 	
 	public void setTransAnimation(Anim transAnim, float transDelay, Anim primaryAnim, float primaryDelay,
 			LoopBehavior loop, float loopTime) {
-//		if (this.getAction() == transAnim)
-//			return;
-
 		int type = animationIndicies.get(primaryAnim);
 		int priority = actionPriorities[type];
 		int length = actionLengths[type];
@@ -1112,6 +1109,7 @@ public class Mob extends Entity{
 
 	public Script interact(){
 		if (interactable == null) return null;
+		if(snoozing) wake();
 		killVelocity();
 		interactable.killVelocity();
 		return interactable.getScript();

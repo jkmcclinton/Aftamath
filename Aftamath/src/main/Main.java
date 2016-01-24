@@ -179,7 +179,7 @@ public class Main extends GameState {
 
 		cam.reset();
 		b2dCam.reset();
-//		catalogueWarps();
+		catalogueWarps();
 		load();
 
 		speakTime = 0;
@@ -499,12 +499,13 @@ public class Main extends GameState {
 //			debugText+= "/lPaused: "+(currentScript.paused);
 //		}
 		
-		Entity e = findObject("TEST");
+		Entity e = findObject("Trevon");
 		if(e!=null){
 			debugText+="/l/l"+e;
 			if(e instanceof Mob)
 			debugText+="/lCurrentState: "+((Mob)e).getCurrentState();
 			debugText+="/lfoc:"+((Mob)e).getCurrentState().focus;
+			debugText+="/laimin:"+((Mob)e).aiming();
 //			debugText+="/ldiscovered: "+((Mob)e).getDiscovered();
 		}
 		
@@ -1291,8 +1292,8 @@ public class Main extends GameState {
 			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
-			scene= new Scene(world,this,"Church");
-//			scene= new Scene(world,this,"Residential District N");
+			if(debugging) scene= new Scene(world,this,"Church");
+			else scene= new Scene(world,this,"Residential District N");
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
 			scene.create();

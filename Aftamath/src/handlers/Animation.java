@@ -41,7 +41,10 @@ public class Animation {
 			frames = baseFrames;
 			delay = baseDelay;
 		}
-			
+
+//		if(owner.toString().contains("Trevon"))
+//			printDebug(frames, delay);
+		
 		time += dt;
 		totTime += dt;
 		if (time >= delay) {
@@ -237,6 +240,7 @@ public class Animation {
 		return i;
 	}
 	
+	public boolean hasTrans(){ return transFrames==null; }
 	public int getTimesPlayed() { return timesPlayed; }
 	public int getDefaultLength() { return baseFrames.length; }
 	public int getIndex(){

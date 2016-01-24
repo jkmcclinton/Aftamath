@@ -147,7 +147,7 @@ public class Script implements Serializable {
 			index = current;
 		
 		String line = source.get(index);
-		String command;//, s;
+		String command, s;
 		String[] tmp, args = args(line);
 		Entity obj = null;
 		Entity target=null;
@@ -174,7 +174,7 @@ public class Script implements Serializable {
 				break;
 			case "attack":
 				obj = findObject(firstArg(line));
-				if(countArgs(line)==2)
+				if(args.length==2)
 					target = findObject(lastArg(line));
 
 				if(obj != null)
@@ -584,8 +584,27 @@ public class Script implements Serializable {
 				}
 				break;
 			case"playsound":
-				if(countArgs(line)>1){
-					//find location
+				if(args.length>1){//is target a Mob?
+					target = findObject(args[1].trim());
+					if(target != null){
+						loc = target.getPosition();
+//						System.out.println("Move to Entity: "+(int)(loc.x*Vars.PPM));
+					}
+
+					// is targ a tile vector?
+					if(target==null){
+						loc = parseTiledVector(args, 1);
+						//convert to meters
+						if(loc!=null)
+							loc = new Vector2(loc.x/Vars.PPM, loc.y/Vars.PPM);
+					}
+					
+					if(loc!=null)
+						main.playSound(loc, firstArg(line));
+					else {
+						System.out.println("Cannot play sound at location with given arguments; Line: "+(index+1)+"\tScript: "+ID);
+						main.playSound(firstArg(line));
+					}
 				} else
 					main.playSound(firstArg(line));
 				break;
@@ -633,7 +652,7 @@ public class Script implements Serializable {
 				getCheckpoint(firstArg(line));
 				break;
 			case "say":
-				c = countArgs(line);
+				c = args.length;
 				String msg = getDialogue(index);
 				boolean selfKill = true;
 
@@ -677,7 +696,7 @@ public class Script implements Serializable {
 
 				if(obj!=null){
 					if(obj instanceof Mob){
-						String s= lastArg(line);
+						s= lastArg(line);
 						if(s.contains("{")&&s.contains("}"))
 							s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
 //						System.out.println("Set Ascript: "+s);
@@ -727,7 +746,7 @@ public class Script implements Serializable {
 				obj = findObject(firstArg(line));
 				
 				if(obj!=null){
-					String s = lastArg(line);
+					s = lastArg(line);
 					if(s.contains("{")&&s.contains("}"))
 						s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
 //					System.out.println("Set Tscript: "+s);
@@ -741,7 +760,7 @@ public class Script implements Serializable {
 				
 				if(obj!=null){
 					if(obj instanceof Mob){
-						String s = lastArg(line);
+						s = lastArg(line);
 						if(s.contains("{")&&s.contains("}"))
 							s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
 						obj.setDialogueScript(s);
@@ -824,7 +843,7 @@ public class Script implements Serializable {
 				obj = findObject(firstArg(line));
 				if(obj!=null){
 					if(obj instanceof Mob){
-						String s = firstArg(line);
+						s = firstArg(line);
 						if(s.equals("none") || s.equals("null") || s.equals("empty"))
 						((Mob) obj).setNickName(null);
 					}else
@@ -854,7 +873,7 @@ public class Script implements Serializable {
 							main.hud.changeFace((Mob) speaker);
 					}
 					else main.hud.changeFace(null);
-					if(countArgs(line) == 2)
+					if(args.length == 2)
 						main.getCam().setFocus(speaker);
 				} else {
 					System.out.println("Cannot find \""+firstArg(line)+"\" to set as speaker; Line: "+(index+1)+"\tScript: "+ID);
@@ -867,7 +886,7 @@ public class Script implements Serializable {
 				obj = findObject(firstArg(line));
 				
 				if(obj!=null){
-					String s = lastArg(line);
+					s = lastArg(line);
 					if(s.contains("{")&&s.contains("}"))
 						s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
 //					System.out.println("Set SAscript: "+s);
@@ -902,7 +921,18 @@ public class Script implements Serializable {
 					System.out.println("Error spawning \""+args[2]+"\" into level; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "splash":
-				main.getHud().setSplash(firstArg(line));
+				s = lastArg(line);
+				if (s.contains("{") && s.contains("}")) {
+					s = s.substring(s.indexOf("{") + 1, s.indexOf("}"));
+					s = getSubstitutions(s);
+				} else {
+					var = getVariable(s);
+					if(var==null)
+						var = main.history.getVariable(s);
+					if(var!=null)
+						s = String.valueOf(var);
+				}
+				main.getHud().setSplash(s);
 				break;
 			case "statupdate":
 				int nice, bravery, max;
@@ -910,7 +940,7 @@ public class Script implements Serializable {
 				float niceScale, braveScale;
 				tmp = args(line);
 
-				if(countArgs(line)==4) max = 4;
+				if(args.length==4) max = 4;
 				else {
 					if(tmp.length==1){
 						System.out.println("Invlaid number of arguments; Line: "+(index+1)+"\tScript: "+ID);
@@ -994,7 +1024,7 @@ public class Script implements Serializable {
 			case "triggerScript":
 				System.out.println("triggering: "+firstArg(line));
 				if(!this.equals(main.loadScript)){
-					String s= firstArg(line);
+					s= firstArg(line);
 					if(s.contains("{")&&s.contains("}"))
 						s = s.substring(s.indexOf("{")+1, s.indexOf("}"));
 					main.triggerScript(s);
@@ -1014,15 +1044,15 @@ public class Script implements Serializable {
 				String src = firstArg(line);
 				Vector2 position = null;
 
-				if(countArgs(line) == 1)
+				if(args.length == 1)
 					position = main.character.getPosition();
-				if(countArgs(line) == 2){
+				if(args.length == 2){
 					obj = findObject(lastArg(line));
 					if(obj!=null)
 						position = obj.getPosition();
 					else
 						System.out.println("Could not find object \""+lastArg(line)+"\" to play sound + \""+src+"; Line: "+(index+1)+"\tScript: "+ID);
-				}if(countArgs(line) == 3){
+				}if(args.length == 3){
 					try{
 						float x = Float.parseFloat(middleArg(line)),
 								y= Float.parseFloat(lastArg(line));
@@ -1360,10 +1390,6 @@ public class Script implements Serializable {
 		return (args[args.length-1]).trim();
 	}
 
-	private int countArgs(String line){
-		return args(line).length;
-	}
-
 	private String removeCommand(String line){
 		if(line.indexOf("(")==-1) return line;
 		return line.substring(line.indexOf("(")+1, line.trim().length() - 1);
@@ -1496,6 +1522,8 @@ public class Script implements Serializable {
 		}
 	}
 
+	//text({}, [pause])
+	//text(emotion, {}, [pause])
 	private void text(String line){
 		try{
 			ArrayDeque<Pair<String, Integer>> displayText = new ArrayDeque<>();
@@ -1503,21 +1531,26 @@ public class Script implements Serializable {
 
 			while(source.get(index).toLowerCase().trim().startsWith("text")&&index<source.size-1){
 				txt = getDialogue(index);
-
-				Field f;
-				try {
-					f = Mob.class.getField(firstArg(source.get(index)).toUpperCase());
-					int emotion = f.getInt(f);
+				int emotion = 0;
+				
+				if(args(source.get(index)).length ==1){
 					displayText.add(new Pair<>(txt, emotion));
-				} catch (NoSuchFieldException e) {
-					System.out.println("No such emotion \""+ firstArg(source.get(index)) +"\"; Line: "+(index+1)+"\tScript: "+ID);
-					displayText.add(new Pair<>(txt, 0));
-				};
+				} else {
+					Field f;
+					try {
+						f = Mob.class.getField(firstArg(source.get(index)).toUpperCase());
+						emotion = f.getInt(f);
+						displayText.add(new Pair<>(txt, emotion));
+					} catch (NoSuchFieldException e) {
+						System.out.println("No such emotion \""+ firstArg(source.get(index)) +"\"; Line: "+(index+1)+"\tScript: "+ID);
+						displayText.add(new Pair<>(txt, emotion));
+					};
+				}
 
 				index++;
 			}
 
-			if (countArgs(line) == 3)
+			if (args(line).length == 3)
 				dialog = true;
 			else
 				paused = dialog = true;

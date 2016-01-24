@@ -1,6 +1,10 @@
 package entities;
 
 import static handlers.Vars.PPM;
+import handlers.Animation.LoopBehavior;
+import handlers.FadingSpriteBatch;
+import handlers.Vars;
+import main.Main;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -8,10 +12,6 @@ import com.badlogic.gdx.utils.Array;
 
 import entities.Entity.DamageType;
 import entities.Mob.Anim;
-import handlers.Animation.LoopBehavior;
-import handlers.FadingSpriteBatch;
-import handlers.Vars;
-import main.Main;
 
 public class MobAI {
 	public static enum AIType {
@@ -39,7 +39,7 @@ public class MobAI {
 	public Path path;
 	
 	private int repeat = -1;
-	private final Main main; 
+	private Main main; 
 	private Vector2 goalPosition, retLoc;
 	private float inactiveWait, inactiveTime, doTime, doDelay, time;
 	private boolean reached, attacked, AIPhase2, canPosition;
@@ -49,6 +49,7 @@ public class MobAI {
 	private static final float IDLE_RANGE = 3.5f; //maximum idlewalk distance
 	private static final float FLAIL_RANGE = 8f; //maximum flail distance
 	private static final float DEFAULT_DURATION = 3; //length of time between events
+	private static final float POS_RANGE = 8; //maximum distance from return location before repositioning is active
 	
 	public MobAI(Mob owner, AIType type){
 		this(owner, type, ResetType.ON_AI_COMPLETE, null);
@@ -84,35 +85,36 @@ public class MobAI {
 		if(resetType.equals(ResetType.ON_TIME) && time>=resetTime){
 			owner.resetState();
 		} else {
-			if(!finished)
-				act(dt);
-			else
+			if(!finished){
+				if(main!=null)
+					act(dt);
+				else
+					this.main = owner.main;
+			}else
 				owner.resetState();
 		}
 	}
 
 	//apply AI 
 	public void act(float dt) {
-		float dx = retLoc.x - owner.getPixelPosition().x;
 		float max;
+		float dx = retLoc.x - owner.getPixelPosition().x;
 		Anim anim = null; //used for finding the final animation
 		Anim strictAnim = null; //used for keeping the animation with the current AI, though only for 1 parters
 		
 		switch(type){
 		case AIM:
 			canPosition = false;
+			
 			if(time>=Vars.ACTION_ANIMATION_RATE * 
-					Mob.actionLengths[Mob.animationIndicies.get(Anim.AIM_TRANS)]){
+					Mob.actionLengths[Mob.animationIndicies.get(Anim.AIM_TRANS)])
 				canPosition = true;
-
-				//do aiming animation if outside influences changed the animation
-				if(Math.abs(dx) < 2 && (
-						!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.AIMING) &&
-						!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.AIM_TRANS)))
-					owner.setAnimation(Anim.AIMING, LoopBehavior.CONTINUOUS);
-			} if(focus!=null){
+			//do aiming animation if outside influences changed the animation
+			if(Math.abs(dx) < POS_RANGE && !owner.aiming)
+				owner.aim();
+			if(focus!=null){
 				//watch focus if Mob doesn't need to reposisition
-				if((canPosition && Math.abs(dx) < 2) || !canPosition)
+				if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
 					owner.faceObject(focus);
 			}
 			
@@ -158,7 +160,7 @@ public class MobAI {
 			}
 			break;
 		case BLOCKPATH: //stand in place colliding w/ player, always face player
-			if(Math.abs(dx) < 2)
+			if(Math.abs(dx) < POS_RANGE)
 				owner.facePlayer();
 			if (resetType.equals(ResetType.ON_TIME)){
 				if(time>=resetTime-.5f)
@@ -260,23 +262,24 @@ public class MobAI {
 			}
 			break;
 		case FACEPLAYER:
-			focus = main.character;
+			if(main!=null)
+				focus = main.character;
 		case FACEOBJECT:
 			dx = retLoc.x - owner.getPixelPosition().x;
-			if((canPosition && Math.abs(dx) < 2) || !canPosition)
+			if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
 				owner.faceObject(focus);
 			if (resetType==ResetType.ON_ANIM_END || resetType==ResetType.ON_AI_COMPLETE)
 				finish();
 			break;
 		case FACELEFT:
 			dx = retLoc.x - owner.getPixelPosition().x;
-			if((canPosition && Math.abs(dx) < 2) || !canPosition)
+			if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
 				if(!owner.facingLeft)
 					owner.changeDirection();
 			break;
 		case FACERIGHT:
 			dx = retLoc.x - owner.getPixelPosition().x;
-			if((canPosition && Math.abs(dx) < 2) || !canPosition)
+			if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
 				if(owner.facingLeft)
 					owner.changeDirection();
 			break;
@@ -440,7 +443,7 @@ public class MobAI {
 					}
 				//has mob returned to original location?
 				} else {
-					if(Math.abs(dx) > 2 && resetType!=ResetType.NEVER
+					if(Math.abs(dx) > POS_RANGE && resetType!=ResetType.NEVER
 						&& resetType!=ResetType.ON_TIME)
 						finish();
 				}
@@ -491,7 +494,10 @@ public class MobAI {
 			if(!resetType.equals(ResetType.ON_AI_COMPLETE) && 
 					!resetType.equals(ResetType.ON_ANIM_END))
 				strictAnim = Anim.ATTACKING;
-			anim = Anim.ATTACKING;
+			if(owner.defaultState.type==AIType.AIM && !owner.animation.hasTrans()){
+				finish();
+			} else
+				anim = Anim.ATTACKING;
 			break;
 		case SLEEPING:
 			owner.heal(1, false);
@@ -549,13 +555,13 @@ public class MobAI {
 				canPosition = true;
 
 				//do aiming animation if outside influences changed the animation
-				if(Math.abs(dx) < 2 && (
+				if(Math.abs(dx) < POS_RANGE && (
 						!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.SPECIAL3) &&
 						!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.SPECIAL3_TRANS)))
 					owner.setAnimation(Anim.SPECIAL3, LoopBehavior.CONTINUOUS);
 			} if(focus!=null){
 				//watch focus if Mob doesn't need to reposisition
-				if((canPosition && Math.abs(dx) < 2) || !canPosition)
+				if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
 					owner.faceObject(focus);
 			}
 			
@@ -604,7 +610,6 @@ public class MobAI {
 		else if(Math.random()>=.5d)
 				side = -1;
 		d*=side;
-		System.out.println("distance: "+d);
 		goalPosition = new Vector2((owner.respawnPoint.x+d), owner.respawnPoint.y);
 		retLoc = goalPosition;
 		canPosition = false;
@@ -615,7 +620,9 @@ public class MobAI {
 	//relocate mob to original location
 	public void position(){
 		if(!canPosition) return;
-		moveToLoc(retLoc);
+		float dx = retLoc.x - owner.getPixelPosition().x;
+		if(Math.abs(dx)>= POS_RANGE)
+			moveToLoc(retLoc);
 	}
 	
 	//moves the owner to position on update, returns true when reached
@@ -703,6 +710,7 @@ public class MobAI {
 
 		switch(type){
 		case AIM:
+			data = owner.defaultState;
 			owner.aim();
 			inactiveWait = DEFAULT_DURATION;
 			break;
@@ -780,7 +788,17 @@ public class MobAI {
 		case PUNCH:
 			anim = Anim.PUNCHING;
 			break;
+		case SHOOT:
+			canPosition = false;
+			if(owner.defaultState.type==AIType.AIM){
+				owner.animation.reset();
+				owner.setTransAnimation(Anim.ATTACKING, Vars.ACTION_ANIMATION_RATE, Anim.AIMING, 
+						Vars.ANIMATION_RATE,LoopBehavior.CONTINUOUS, -1);
+			}else
+				anim = Anim.ATTACKING;
+			break;
 		case SLEEPING:
+			canPosition = false;
 			owner.setTransAnimation(Anim.LIE_DOWN, Anim.SLEEPING, LoopBehavior.CONTINUOUS);
 			if(main.character.equals(this)/* && !sleepSpell*/){
 				main.getSpriteBatch().fade();
@@ -822,20 +840,12 @@ public class MobAI {
 			}
 	}
 	
+	//do special things when the AI finished
 	public void close(){
 		switch(type){
-		case AIM:
-			owner.unAim();
-			break;
-		case ATTACK:
-			break;
 		case BLOCKPATH:
 			owner.changeLayer((short) data);
 			owner.setAnimation(Anim.WALKING, LoopBehavior.ONCE);
-			break;
-		case EVADING:
-			break;
-		case EVADING_ALL:
 			break;
 		case FIGHTING:
 			break;
@@ -845,40 +855,13 @@ public class MobAI {
 		case FLY:
 			break;
 		case FOLLOWING:
-			break;
-		case HUG:
-			break;
-		case IDLE:
-			break;
-		case IDLEWALK:
-			break;
-		case JUMP:
-			break;
-		case KISS:
+			focus.removeFollower(owner);
 			break;
 		case LOSEAIM:
-			break;
-		case MOVE:
-			break;
-		case PATH:
+			if(owner.defaultState.type==AIType.AIM)
+				owner.setDefaultState((MobAI) owner.defaultState.data);
 			break;
 		case PATH_PAUSE:
-			break;
-		case PUNCH:
-			break;
-		case RUN:
-			break;
-		case SHOOT:
-			break;
-		case SLEEPING:
-			break;
-		case SNOOZE:
-			break;
-		case SPECIAL1:
-			break;
-		case SPECIAL2:
-			break;
-		case SPECIAL3:
 			break;
 		default:
 			break;
@@ -923,5 +906,4 @@ public class MobAI {
 	public String toString(){
 		return "t: "+type+"    rt: "+resetType+"    t: "+time;
 	}
-
 }
