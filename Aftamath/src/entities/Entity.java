@@ -69,7 +69,7 @@ public class Entity implements Serializable {
 	protected FixtureDef fdef = new FixtureDef();
 	protected MassData mdat = new MassData();
 	protected short layer, origLayer;
-	protected Array<Mob> followers;
+	protected HashMap<Mob, Boolean> followers;
 	
 	static {
 		idToEntity = new HashMap<Integer, Entity>();
@@ -109,7 +109,7 @@ public class Entity implements Serializable {
 		destructable = false;
 		invulnerable = true;
 		this.health = maxHealth = DEFAULT_MAX_HEALTH;
-		followers = new Array<>();
+		followers = new HashMap<>();
 		origLayer = Vars.BIT_LAYER1;
 	}
 	
@@ -448,17 +448,20 @@ public class Entity implements Serializable {
 		invulnerable = !val;
 	}
 
-	public void removeFollower(Mob m){ followers.removeValue(m, true); }
-	public void addFollower(Mob m){ 
-		if (!followers.contains(m, true)) 
-			followers.add(m); 
+	public void removeFollower(Mob m){ 
+		followers.remove(m);
+		m.resetFollowIndex();
 	}
 	
-	public Array<Mob> getFollowers(){ return followers; }
-	public int getFollowingIndex(Mob owner) {
-		Main.debugText = "" + followers; 
-		return followers.indexOf(owner, true) + 1; 
+	public void addFollower(Mob m){ addFollower(m, false); }
+	public void addFollower(Mob m, boolean permanent){ 
+		if (!followers.containsKey(m)){
+			followers.put(m, permanent);
+			m.setFollowIndex(followers.size());
+		}
 	}
+	
+	public HashMap<Mob, Boolean> getFollowers(){ return followers; }
 
 	public int compareTo(Entity e){
 		if (layer < e.layer) return 1;
@@ -597,8 +600,9 @@ public class Entity implements Serializable {
 		json.writeValue("layer", this.layer);
 		json.writeValue("origLayer", this.origLayer);
 		
+		//TODO get this working with the distinction of 'follow permanence' 
 		Array<Integer> mobRef = new Array<Integer>();
-		for (Mob m : this.followers) {
+		for (Mob m : this.followers.keySet()) {
 			mobRef.add(m.sceneID);
 		}
 		json.writeValue("followers", mobRef);

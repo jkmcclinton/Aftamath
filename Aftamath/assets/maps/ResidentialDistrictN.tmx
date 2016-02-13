@@ -9,7 +9,7 @@
   <property name="next" value="Commercial District NW"/>
   <property name="previous" value="Tha Hood"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
   <image source="tilesets/street.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -184,10 +184,10 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="17" name="5" x="1072" y="1552" width="16" height="16">
+  <object id="17" name="5" x="1056" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="5"/>
-    <property name="NPC" value="girlfriend1"/>
+    <property name="NPC" value="girlfriend2"/>
     <property name="attckScript" value="onAttacked2"/>
     <property name="layer" value="front"/>
     <property name="name" value="Sam"/>
@@ -227,7 +227,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="24" x="208" y="256" width="16" height="16">
+  <object id="24" x="960" y="1552" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
@@ -270,7 +270,7 @@
     <property name="name" value="Villain"/>
     <property name="nickName" value="Some chick in tights"/>
     <property name="script" value="superGlare"/>
-    <property name="state" value="STATIONARY"/>
+    <property name="state" value="FACELEFT"/>
    </properties>
   </object>
   <object id="53" name="1" x="848" y="1552" width="16" height="16">
@@ -293,7 +293,7 @@
     <property name="name" value="Hero"/>
     <property name="nickName" value="Some guy in tights"/>
     <property name="script" value="superGlare"/>
-    <property name="state" value="STATIONARY"/>
+    <property name="state" value="FACERIGHT"/>
    </properties>
   </object>
   <object id="56" name="room1_1" x="640" y="1496" width="37" height="73">
@@ -304,7 +304,7 @@
     <property name="warp" value="WentToBar"/>
    </properties>
   </object>
-  <object id="57" x="44" y="52" width="16" height="1516">
+  <object id="57" x="47" y="52" width="16" height="1516">
    <properties>
     <property name="ID" value="3"/>
     <property name="barrier" value=""/>
@@ -324,7 +324,7 @@
     <property name="grimReaper1" value=""/>
    </properties>
   </object>
-  <object id="60" x="816" y="1392" width="80" height="176">
+  <object id="60" x="848" y="1392" width="80" height="176">
    <properties>
     <property name="event" value=""/>
     <property name="hobo1" value="!Hobo1"/>

@@ -412,7 +412,6 @@ public class Scene {
 		TiledMapTileLayer ground = (TiledMapTileLayer) tileMap.getLayers().get("ground");
 		TiledMapTileLayer fg = (TiledMapTileLayer) tileMap.getLayers().get("fg");
 		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
-//		TiledMapTileLayer bg2 = (TiledMapTileLayer) tileMap.getLayers().get("bg2");
 		
 		//add in entities loaded from save file
 		if (Scene.sceneToEntityIds.containsKey(this.ID)) {

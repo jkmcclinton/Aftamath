@@ -122,7 +122,7 @@ public class History implements Serializable {
 		case "BrokeAnOldLadyCurse": return Game.res.getTexture("girlfriend1face");
 		case "MetTheBadWitch": return Game.res.getTexture("witchface");
 		case "RobbedTwoGangsters": return Game.res.getTexture("gangster1face");
-		// TODO pass reference to Main to History if using Main's members
+		// TODO pass reference of Main to History if using Main's members
 		//case "FellFromNowhere": return Game.res.getTexture(character.ID+"base");
 		case "FoundTheNarrator": return Game.res.getTexture("narrator1face");
 		default:

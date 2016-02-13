@@ -189,7 +189,7 @@
    <properties>
     <property name="event" value=""/>
     <property name="retriggerable" value="tutDistance"/>
-    <property name="superTutIntro" value="!supTutIntro"/>
+    <property name="superTutIntro" value="!supTutIntro and PowerBar"/>
     <property name="tutDistance" value="inSupTut"/>
    </properties>
   </object>
@@ -219,7 +219,7 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="8" x="264" y="1088" width="16" height="176">
+  <object id="8" x="368" y="1088" width="16" height="176">
    <properties>
     <property name="There's A Bar" value="!goneInBar"/>
     <property name="event" value=""/>

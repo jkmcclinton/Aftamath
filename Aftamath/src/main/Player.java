@@ -3,7 +3,6 @@ package main;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -60,7 +59,6 @@ public class Player implements Serializable {
 		double rnd = Math.random()*(DamageType.values().length-2)+1;
 		int type = (int) rnd;
 		DamageType dT = DamageType.values()[type];
-		dT=DamageType.ROCK;
 		
 		main.character.setPowerType(dT);
 		if(typeCounter.containsKey(dT))
@@ -113,9 +111,9 @@ public class Player implements Serializable {
 	public String getPartnerTitle(){ return partnerTitle; }
 	public void setPartnerTitle(String title){ partnerTitle = title; }
 	
-	public void resetFollowers(Array <Mob> followers){
-		for(Mob m : followers)
-			main.character.getFollowers().add(m);
+	public void resetFollowers(HashMap <Mob, Boolean> followers){
+		for(Mob m : followers.keySet())
+			main.character.getFollowers().put(m, followers.get(m));
 	}
 	
 	public void addFunds(double amount){ goalMoney += amount; }

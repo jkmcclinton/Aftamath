@@ -19,6 +19,11 @@ doAction(Jose, aim, player, never)
 text({Dis a robry!/lPut cho hands up!})
 doAction(Trevon, shoot)
 playsound(pistol, Trevon)
+
+wait(.25)
+doAction(Jose, shoot)
+playsound(pistol, Jose)
+
 text(mad, {STICK 'EM UP!})
 setSpeaker(Jose)
 text(normal, {Yo we ain't messn around!})
@@ -60,6 +65,7 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
     setSpeaker(Trevon)
     text(mad, {Tch- u thot, bruh!})
     doAction(Trevon, shoot, false)
+	playsound(pistol, Trevon)
     kill(player)
     
     splash({WASTED})
@@ -79,7 +85,7 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
 
     text(normal, {Looks like you chose the wrong choice. ~Tough luck.})
     text(sad, {Fine, I'll bring you back. But you still have no money.})
-    #spawn(player)
+    respawn(player)
     text(normal, {So now you know: some choices have dire consequences. So next time don't be so stupid when making a decision.})
     text(normal, {Actually no - that's bad advice. ~I might get bored and decide to switch it up a little, so you never know what will happen.})
   end

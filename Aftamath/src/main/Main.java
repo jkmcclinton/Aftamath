@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.Array;
 import box2dLight.RayHandler;
 import entities.CamBot;
 import entities.Entity;
+import entities.Entity.DamageType;
 import entities.Ground;
 import entities.HUD;
 import entities.Mob;
@@ -121,12 +122,12 @@ public class Main extends GameState {
 	//use these for determining hard-coded values
 	//please, don't keep them as hard-coded
 	//public int debugX;
-	public float debugY = Game.height/4, debugX=Game.width/4;
+	public float debugY = Game.height/4, debugX=1;
 
 	public static boolean dbRender 	= false, 
 						rayHandling = false, 
 						render 		= true, 
-						dbtrender 	= true,
+						dbtrender 	= false,
 						debugging   = true,
 						random;
 	//	private float ambient = .5f;
@@ -161,7 +162,7 @@ public class Main extends GameState {
 //		speakTime=0;
 //		speakDelay = .025f;
 		speakText = null;
-//		dayTime = 3*NOON_TIME/2f;
+		dayTime = 3*NOON_TIME/2f;
 
 		objects = new ArrayList<>();
 		paths = new ArrayList<>();
@@ -201,8 +202,10 @@ public class Main extends GameState {
 			if(keyIndexTime>=1)
 				keyIndexTime = 0;
 		}
-			if(loadScript!=null &&loading)
-				loadScript.update();
+		
+		//update the level specific loading script
+		if(loadScript!=null &&loading)
+			loadScript.update();
 
 		if (!paused){
 			speakTime += dt;
@@ -212,12 +215,13 @@ public class Main extends GameState {
 			debugText = "";
 			player.updateMoney();
 
-//			handleDayCycle();
+			handleDayCycle();
 			if(scene.outside) {
 				weatherTime+=dt;
 				handleWeather();
 			}
 
+			
 			if(currentScript != null &&analyzing && !waiting &&!warping) 
 				currentScript.update();
 
@@ -232,6 +236,7 @@ public class Main extends GameState {
 			handleInput();
 			world.step(dt, 6, 2);
 
+			//update positional sounds
 			for(PositionalAudio s : sounds)
 				updateSound(s.location, s.sound);
 
@@ -300,6 +305,7 @@ public class Main extends GameState {
 
 			bodiesToRemove.clear();
 
+			//apply steps to transport to next level
 			if(warping){
 				if (sb.getFadeType() == FadingSpriteBatch.FADE_IN)
 					warp();
@@ -309,6 +315,7 @@ public class Main extends GameState {
 				}
 			}
 
+			//update song cross-fade
 			if(changingSong){
 				if(!music.fading){
 					music.dispose();
@@ -318,6 +325,7 @@ public class Main extends GameState {
 				}
 			}
 
+			//if the temporary fanfare/event music is finished, go to default song
 			if(tempSong)
 				if(!music.isPlaying())
 					removeTempSong();
@@ -335,12 +343,14 @@ public class Main extends GameState {
 			quit();
 	}
 
+	// TODO for handling random rain
 	public void handleWeather(){
 
 	}
 
 	// modify colors and sounds according to day time
 	public void handleDayCycle(){
+		//Day state boundaries
 		if(dayTime>NOON_TIME){
 			dayState = NOON;
 		}if(dayTime>NIGHT_TIME){
@@ -368,6 +378,7 @@ public class Main extends GameState {
 				i = DAY_TIME/12f;
 				drawOverlay = Vars.DAYLIGHT;
 
+				//complicated color overlay for sunset
 				if(t>NIGHT_TIME-i){
 					if(t>NIGHT_TIME-i)
 						drawOverlay = Vars.blendColors(t, NIGHT_TIME-i, NIGHT_TIME-i+i/4f, 
@@ -426,6 +437,8 @@ public class Main extends GameState {
 
 			sb.begin();
 
+			//render every object on-screen, 
+			//stopping at textboxes and speech bubbles
 			int i = -1;
 			Entity e;
 			for (int x = 0; x<objects.size(); x++){
@@ -442,6 +455,7 @@ public class Main extends GameState {
 
 			scene.renderFG(sb);
 
+			//speech bubbles get rendered on top of everything else
 			if(i>=0){
 				sb.begin();
 				for (int x = i; x<objects.size(); x++)
@@ -461,6 +475,7 @@ public class Main extends GameState {
 		if (dbRender) b2dr.render(world, b2dCam.combined);
 		hud.render(sb, currentEmotion);
 
+		//draw text input string
 		if(stateType == InputState.KEYBOARD){
 			sb.begin();
 			hud.drawInputBG(sb);
@@ -521,6 +536,9 @@ public class Main extends GameState {
 	}
 
 	public void handleInput() {
+		DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.ICE, DamageType.ROCK};
+		
+		
 		if(MyInput.isPressed(Input.DEBUG_UP)) {
 //			light += .1f; rayHandler.setAmbientLight(light);
 			player.addFunds(100d);
@@ -529,34 +547,27 @@ public class Main extends GameState {
 		if(MyInput.isPressed(Input.DEBUG_DOWN)){
 //			light -= .1f; rayHandler.setAmbientLight(light);
 			player.addFunds(-100d);
-		}
-
-		if(MyInput.isDown(Input.DEBUG_LEFT)) {
+		} if(MyInput.isDown(Input.DEBUG_LEFT)) {
 //			if(colorIndex>0) 
 //				colorIndex--; 
 //			rayHandler.setAmbientLight(Vars.COLORS.get(colorIndex)); 
 //			rayHandler.setAmbientLight(ambient);
-			debugX-=1;
-		}
-
-		if(MyInput.isDown(Input.DEBUG_RIGHT)) {
+		} if(MyInput.isDown(Input.DEBUG_RIGHT)) {
 //			if(colorIndex<Vars.COLORS.size -1) 
 //				colorIndex++; 
 //			rayHandler.setAmbientLight(Vars.COLORS.get(colorIndex)); 
 //			rayHandler.setAmbientLight(ambient);
 //			debugX+=.2f;
 //			System.out.println(debugX);
-			debugX+=1;
-		}
-
-		if (MyInput.isDown(Input.DEBUG_LEFT2)) {
-			debugY+=1;
-		}
-		if (MyInput.isDown(Input.DEBUG_RIGHT2)) {
-			debugY-=1;
-		}
-
-		if(MyInput.isPressed(Input.DEBUG_CENTER)) {
+		} if (MyInput.isPressed(Input.DEBUG_LEFT2)) {
+			debugX = debugX>0 ? debugX - 1 : dm.length-1;
+			character.setPowerType(dm[(int) debugX]);
+			System.out.println(debugX+"\t"+dm[(int) debugX]);
+		} if (MyInput.isPressed(Input.DEBUG_RIGHT2)) {
+			debugX = debugX<dm.length-1 ? debugX + 1 : 0;
+			character.setPowerType(dm[(int) debugX]);
+			System.out.println(debugX+"\t"+dm[(int) debugX]);
+		} if(MyInput.isPressed(Input.DEBUG_CENTER)) {
 			random=true;
 			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
 			changeSong(new Song(Game.SONG_LIST.get(current)));
@@ -591,6 +602,7 @@ public class Main extends GameState {
 					}
 				}
 
+				//following four functions navigate through the pause menu
 				if(buttonTime >= DELAY){
 					if(MyInput.isDown(Input.DOWN)){
 						if(menuIndex[1] < menuMaxY){
@@ -636,6 +648,7 @@ public class Main extends GameState {
 		} else{ 
 			switch (stateType){
 			case KEYBOARD:
+				//allows the player to input text 
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 				if(MyInput.isPressed(Input.CAPS)) MyInput.isCaps = !MyInput.isCaps;
 				if(buttonTime>=.15f){
@@ -669,6 +682,7 @@ public class Main extends GameState {
 				}
 				break;
 			case GENDERCHOICE:
+				//handling for changing what the player looks like
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 				int index = (int) currentScript.getVariable("playertype");
 
@@ -697,6 +711,7 @@ public class Main extends GameState {
 
 				break;
 			case MOVE:
+				//button input handling for general gameplay
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 				if(/*cam.focusing||*/warping||quitting||waiting||character.dead||character.frozen) return;
 				if(MyInput.isPressed(Input.JUMP)) character.jump();
@@ -746,9 +761,11 @@ public class Main extends GameState {
 					if(MyInput.isDown(Input.SPECIAL) || (MyInput.isDown(Input.DOWN)
 							&& MyInput.isDown(Input.SPECIAL))){
 						if(character.seesSomething()){
-							player.doRandomPower(character.target());
+//							player.doRandomPower(character.target());
+							character.powerAttack(character.target());
 						} else {
-							player.doRandomPower();
+//							player.doRandomPower();
+							character.powerAttack(character.target());
 						}
 					} else
 						character.punch();
@@ -1300,7 +1317,7 @@ public class Main extends GameState {
 
 			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
-				character = new Mob("TestName", "gangster1", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+				character = new Mob("I am a normal person with a name (YOU)", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 			} else {
 				
@@ -1313,6 +1330,7 @@ public class Main extends GameState {
 				
 				triggerScript("intro");
 			}
+			character.setPowerType("fire");
 		}
 
 		initEntities();
@@ -1337,31 +1355,9 @@ public class Main extends GameState {
 		Enumeration<Warp> e = warps.elements();
 		while(e.hasMoreElements()){
 			Warp i = e.nextElement();
-//			if(i.type==Warp.Type.LINK);
-//			System.out.print(i.locTitle+i.warpID+" :->: "+ i.next+i.getLinkID()+":\t");
 			i.setLink(warps.get(i.next + i.getLinkID()));
 		}
 	}
-
-	//basically a numerical representation of an entity
-	//sceneIDs should NOT be used to directly access the entity from scripts, 
-	//as the number represents chronologically how many mobs have been created 
-	//since the game started
-//	public int createSceneID(){
-//		//get highest value of sceneID from file
-//		if(gameFile!=null){
-//			return 0;
-//		} else {
-//			//get Highest Value from entities in the scene currently 
-//			int max = 0;
-//			for(Entity e: objects){
-//				if(max<e.getSceneID())
-//					max = e.getSceneID();
-//			}
-//
-//			return max + 1;
-//		}
-//	}
 
 	public void createPlayer(Vector2 location){
 //		String gender = character.getGender();
@@ -1465,11 +1461,19 @@ public class Main extends GameState {
 		paths.addAll(scene.getInitPaths());
 		scene.applyRefs();
 
-		//this should be changed to happen when the game checks if the player's
-		//partner was last saved on the same level (part of global mobs)
-		if(player.getPartner()!=null)
-			if (player.getPartner().getName() != null) 
-				objects.add(player.getPartner());
+		//pull permanent followers into the current level
+		HashMap<Mob, Boolean> f = character.getFollowers();
+		Array<Mob> toRemove = new Array<>();
+		for(Mob m : f.keySet())
+			if(f.get(m)){
+				Scene.sceneToEntityIds.get(m.getCurrentScene().ID).remove(m.getSceneID());
+				Scene.sceneToEntityIds.get(scene.ID).add(m.getSceneID());
+				m.setPosition(character.getPixelPosition());
+				objects.add(m);
+			} else
+				toRemove.add(m);
+		for(Mob m : toRemove)
+			f.remove(m);
 
 		for (Entity d : objects){
 			if(d==null)continue;

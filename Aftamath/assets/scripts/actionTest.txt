@@ -5,12 +5,16 @@ lockplayer
 #hideDialog
 
 #turn of action
-#doAction(this, aim, TEST3, false)
-#doAction(TEST26, aim, this)
+#doAction(this, idle, false)
 
 #timed
-doAction(this, kiss, TEST3, 5, false)
+#doAction(this, kiss, TEST3, 5, false)
 
 #default state
-#doAction(this, kiss, 3, never, false)
+#doAction(this, idle, null, never, false)
+
+declare(talked, global, Integer, 0)
+value(add, talked, 10)
+value(set, player.money, value)
+move(player, TEST3)
 done

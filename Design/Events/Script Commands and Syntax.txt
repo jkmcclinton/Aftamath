@@ -60,6 +60,8 @@ I've tried my best to add print statements to help you debug your script.
 	  endGame
 	  eventMusic
 	  fanfare
+	  follow
+	  forcefollow
 	~ giveItem
 	~ hasItem
 	  hideDialog
@@ -223,7 +225,9 @@ forcefollow:
 	forcefollow(true/false)
 follow:
 	makes the mob object follow the target
-	follow(objectName, focus objectName)
+	the optional parameter 'permanent' determines wether the Mob will continue
+	to follow the focus to the next level. By default the value is set to false.
+	follow(objectName, focus objectName, [permanent])
 resetState:
 	sets the NPC's state to its default state; does not affect non-NPC objects
 	this happens automatically when the script ends
@@ -430,22 +434,22 @@ object properties:
 	Note: some properties are limited to certain object types.
 	
 	location - Entities
-	name - Mobs
+	flamable - Entities
+	vulnerable - Entities
+	nickname - Mobs
 	health - Mobs
 	gender - Mobs
-	power/level - SuperMobs
-	powerType - SuperMobs
+	power/level - Mobs
+	powerType - Mobs
 	~money - Player *(possibly implement vendors?)
 	love/relationship - Player 
 	loveScale - Player 
-	*bravery - Player 
-	*braveryScale - Player 
-	*niceness - Player 
-	*nicenessScale - Player 
+	bravery - Player 
+	braveryScale - Player 
+	niceness - Player 
+	nicenessScale - Player 
 	house - Player 
 	hasPartner - Player
-
-	*use "updateStats" if you want to modify these values
 
 text delimiters:
 	/l - line
@@ -506,6 +510,7 @@ action Types:
 	  IDLE - do idle animation
 	  AIM - aim at an object
 	  LOSEAIM - stop aiming at an object
+	  LOOK_UP - look down? haha
 	  PATH - walk along a path
 	X~FLYPATH - fly along a path
 	  PUNCH -do punch animation

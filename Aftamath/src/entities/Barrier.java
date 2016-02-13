@@ -1,11 +1,13 @@
 package entities;
 
 import static handlers.Vars.PPM;
-import handlers.Vars;
 
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import java.util.HashMap;
+
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+
+import handlers.Vars;
 
 public class Barrier extends Entity {
 
@@ -17,7 +19,7 @@ public class Barrier extends Entity {
 		
 		setDimensions(width, height);
 		loadSprite();
-		followers = new Array<>();
+		followers = new HashMap<>();
 	}
 	
 	public void create(){

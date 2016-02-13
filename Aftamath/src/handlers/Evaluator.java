@@ -28,6 +28,8 @@ public class Evaluator {
 		if(origStatement.isEmpty()) return true;
 		this.script = script;
 		String statement = origStatement;
+		
+//		System.out.println(statement);
 			
 		//split by and/or operators
 		Array<String> arguments = new Array<>();
@@ -79,9 +81,10 @@ public class Evaluator {
 		
 		if(arguments.size%2!=1){
 			System.out.println("Invalid number of arguments; "+origStatement);
-			if(this.script!=null) System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
+			if(this.script!=null) 
+				System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
 		}
-		
+//		System.out.println("eval args: "+arguments);
 		String s; boolean not, result;
 		//evaluate individual arguments
 		for(int i = 0; i<arguments.size; i+=2){
@@ -93,7 +96,7 @@ public class Evaluator {
 			}
 			
 			//evaluate comparisons
-			if(s.contains("[")){
+			if(s.contains("[")){ // contains expressions of format [expression1 comparison expression2]
 				if(s.lastIndexOf("]")==-1){
 					System.out.println("Mismatch braces; "+origStatement);
 					if(this.script!=null) System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
@@ -103,7 +106,7 @@ public class Evaluator {
 				result = evaluateComparison(s.substring(s.indexOf("[")+1, 
 						s.lastIndexOf("]")));
 			//evaluate parentheticals by calling this method
-			} else if(s.contains("(")) {
+			} else if(s.contains("(")) { // contains format (boolean1 operator boolean2)
 				result = evaluate(s.substring(s.indexOf("(")+1, s.lastIndexOf(")")), script);
 			//evaluate boolean variables
 			} else{
@@ -113,13 +116,13 @@ public class Evaluator {
 					if(val.equals("null")) val = null;
 				}
 				
-				if(val==null||val.isEmpty()){
-					if(main.history.getFlag(s)!=null){
+				// determine if value is a flag or event
+				if(val==null||val.isEmpty())
+					if(main.history.getFlag(s)!=null)
 						val = String.valueOf(main.history.getFlag(s));
-					} else if(main.history.findEvent(s)){
+					else if(main.history.findEvent(s))
 						val = "true";
-					} 
-				}
+				
 				if(val!=null)
 					result = Boolean.parseBoolean(val);
 				else
@@ -129,20 +132,25 @@ public class Evaluator {
 			if(not) result = !result;
 			arguments.set(i, String.valueOf(result));
 		}
+//		System.out.println(arguments);
 		
 		//combine by operators from left to right
+		//[true, and, false] >> [false]
 		while(arguments.size>=3){
-			if(arguments.get(2).equals("or")){
-				arguments.set(1, String.valueOf(Boolean.parseBoolean(arguments.get(1)) ||
-						Boolean.parseBoolean(arguments.get(3))));
-			} else if(arguments.get(2).equals("and")){
-				arguments.set(1, String.valueOf(Boolean.parseBoolean(arguments.get(1)) &&
-						Boolean.parseBoolean(arguments.get(3))));
+			if(arguments.get(1).equals("or")){
+				arguments.set(0, String.valueOf(Boolean.parseBoolean(arguments.get(0)) ||
+						Boolean.parseBoolean(arguments.get(2))));
+			} else if(arguments.get(1).equals("and")){
+				arguments.set(0, String.valueOf(Boolean.parseBoolean(arguments.get(0)) &&
+						Boolean.parseBoolean(arguments.get(2))));
+			} else {
+				System.out.println("\""+arguments.get(0)+"\" is not a known logical operator");
 			}
-			
+
 			arguments.removeIndex(1);
 			arguments.removeIndex(1);
 		}
+//		System.out.println(arguments);
 		return Boolean.parseBoolean(arguments.get(0));
 	}
 	
@@ -234,8 +242,15 @@ public class Evaluator {
 				e.printStackTrace();
 				return false;
 			}
-		} else
+		} else {
+			System.out.println("No mathematical expression found in statement \"" + statement + "\"");
 			return false;
+		}
+	}
+	
+	public String evaluateExpression(String obj, Script script){
+		this.script = script;
+		return evaluateExpression(obj);
 	}
 	
 	//returns the solution to a set of mathematical operators
@@ -276,6 +291,7 @@ public class Evaluator {
 
 		//continuously evaluate operations until there aren't enough
 		//left to perform a single operation
+		//[1, +, 2] >> [3]
 		while(arguments.size>=3){
 			val = arguments.get(2);
 			switch(arguments.get(1)){
@@ -352,8 +368,13 @@ public class Evaluator {
 
 		return result;
 	}
+	
+	public String determineValue(String obj, Script script){
+		this.script = script;
+		return determineValue(obj, false);
+	}
 
-	//determine wether argument is and object property, variable, flag, or event
+	//determine whether argument is and object property, variable, flag, or event
 	//by default, if no object can be found it is automatically assumed to be an event
 	//should possibly change in the future;
 	private String determineValue(String obj, boolean boolPossible){
@@ -365,7 +386,7 @@ public class Evaluator {
 
 		if(Vars.isNumeric(obj))
 			property = obj;
-		//the object is a string and must be parsed out
+		//the object is a string and must be isolated
 		else if(obj.contains("{") && obj.contains("}"))
 			return getSubstitutions(obj.substring(obj.indexOf("{")+1, obj.lastIndexOf("{")));
 		//the value is an object's property

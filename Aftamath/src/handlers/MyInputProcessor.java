@@ -32,8 +32,8 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.NUMPAD_2 || k == Keys.J) MyInput.setKey(Input.DEBUG_DOWN, true);
 			if(k == Keys.NUMPAD_4) MyInput.setKey(Input.DEBUG_LEFT, true);
 			if(k == Keys.NUMPAD_6) MyInput.setKey(Input.DEBUG_RIGHT, true);
-			if(k == Keys.NUMPAD_7 || k == Keys.K) MyInput.setKey(Input.DEBUG_LEFT2, true);
-			if(k == Keys.NUMPAD_9 || k == Keys.I) MyInput.setKey(Input.DEBUG_RIGHT2, true);
+			if(k == Keys.NUMPAD_7 || k == Keys.LEFT_BRACKET) MyInput.setKey(Input.DEBUG_LEFT2, true);
+			if(k == Keys.NUMPAD_9 || k == Keys.RIGHT_BRACKET) MyInput.setKey(Input.DEBUG_RIGHT2, true);
 			if(k == Keys.M) MyInput.setKey(Input.DEBUG_CENTER, true);
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, true);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, true);
@@ -112,8 +112,8 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.NUMPAD_2 || k == Keys.J) MyInput.setKey(Input.DEBUG_DOWN, false);
 			if(k == Keys.NUMPAD_4) MyInput.setKey(Input.DEBUG_LEFT, false);
 			if(k == Keys.NUMPAD_6) MyInput.setKey(Input.DEBUG_RIGHT, false);
-			if(k == Keys.NUMPAD_7 || k == Keys.K) MyInput.setKey(Input.DEBUG_LEFT2, false);
-			if(k == Keys.NUMPAD_9 || k == Keys.I) MyInput.setKey(Input.DEBUG_RIGHT2, false);
+			if(k == Keys.NUMPAD_7 || k == Keys.LEFT_BRACKET) MyInput.setKey(Input.DEBUG_LEFT2, false);
+			if(k == Keys.NUMPAD_9 || k == Keys.RIGHT_BRACKET) MyInput.setKey(Input.DEBUG_RIGHT2, false);
 			if(k == Keys.M) MyInput.setKey(Input.DEBUG_CENTER, false);
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, false);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, false);

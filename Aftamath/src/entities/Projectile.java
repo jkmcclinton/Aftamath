@@ -14,7 +14,7 @@ import handlers.Vars;
 public class Projectile extends Entity {
 
 	//private Vector2 vector;
-	protected float damageVal, speed, restitution, killTime, totKillTime;
+	protected float damageVal, speed, restitution, killTime, totKillTime, gScale;
 	protected boolean impacted, isSensor = true;
 	protected BodyType bodyType;
 	protected ProjectileType type;
@@ -217,6 +217,7 @@ public class Projectile extends Entity {
 //	}
 	
 	private void instantiateType(){
+		gScale = 1;
 		switch(type){
 		case FIREBALL:
 			damageType = DamageType.FIRE;
@@ -247,6 +248,7 @@ public class Projectile extends Entity {
 			damageVal = 1.1f;
 			restitution = .01f;
 			speed = 1.5f;
+			gScale = .24f;
 			isSensor = false;
 			break;
 		default:
@@ -276,6 +278,7 @@ public class Projectile extends Entity {
 		bdef.position.set(x/PPM, y/PPM);
 		bdef.type = bodyType;
 		bdef.bullet = true;
+		bdef.gravityScale = gScale;
 		body = world.createBody(bdef);
 		body.setUserData(this);
 		fdef.isSensor = isSensor;

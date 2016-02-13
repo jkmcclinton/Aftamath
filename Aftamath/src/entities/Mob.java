@@ -58,7 +58,7 @@ public class Mob extends Entity{
 	public boolean ducking;
 	protected boolean ctrlReached;
 	protected boolean aimSounded=false;
-	protected int timesIdled;
+	protected int timesIdled, followIndex = -1;
 	protected TextureRegion[] face, healthBar;
 	protected Warp warp;
 	protected Array<Entity> attackables, discovered;
@@ -201,14 +201,14 @@ public class Mob extends Entity{
 		attackables = new Array<>();
 		discovered = new Array<>();
 		contacts = new Array<>();
-		followers = new Array<>();
+		followers = new HashMap<>();
 		flamable = true;
 		isAttackable = true;
 		destructable = true;
 		attackTime = attackDelay;
 		iff=IFFTag.FRIENDLY;
 		health = maxHealth = DEFAULT_MAX_HEALTH;
-		defaultState = new MobAI(this, AIType.STATIONARY);
+		defaultState = new MobAI(this, AIType.STATIONARY, null);
 		currentState = defaultState;
 		attackType = AttackType.NEVER;
 		responseType = SightResponse.IGNORE;
@@ -231,7 +231,7 @@ public class Mob extends Entity{
 			
 			if(aiming) {
 				aimTime+=dt;
-				if(aimTime>=aimMax && !aimSounded && powerCoolDown==0){
+				if(aimTime>=aimMax && !aimSounded && powerCoolDown==0 && this.equals(main.character)){
 //					main.playSound("jump4");
 					aimSounded = true;
 				}
@@ -266,14 +266,14 @@ public class Mob extends Entity{
 					}
 
 					currentState.update(dt);
-			}
+			} else if(controlled)
+				currentState.update(dt);
 
 			// idle player actions
 			if (getAction() == Anim.STANDING && main.currentScript==null) {
-//				animation.removeAction();
 				idleTime+=dt;
 				if(idleTime>=idleDelay){
-					timesIdled +=4;
+					timesIdled +=1;
 					idleTime = 0;
 					if(timesIdled >=4 && main.character.equals(this) && 
 							(main.stateType==InputState.MOVE || main.stateType==InputState.MOVELISTEN)){
@@ -380,6 +380,7 @@ public class Mob extends Entity{
 //		}
 	}
 
+	/**units in pixels*/
 	public void setPosition(Vector2 location){
 		if(location==null) return;
 		x=location.x;
@@ -547,6 +548,7 @@ public class Mob extends Entity{
 	}
 	
 	public void faceObject(Entity obj){
+		if (obj==null) return;
 		float dx = obj.getPosition().x - getPosition().x;
 		if(dx > 0 && facingLeft) changeDirection();
 		else if(dx < 0 && !facingLeft) changeDirection();
@@ -555,27 +557,29 @@ public class Mob extends Entity{
 	public void evade(){
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
-		currentState = new MobAI(this, AIType.EVADING_ALL);
+		currentState = new MobAI(this, AIType.EVADING_ALL, null);
 	}
 
 	public void evade(Entity focus){
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
-		currentState = new MobAI(this, AIType.EVADING);
-		currentState.focus = focus;
+		currentState = new MobAI(this, AIType.EVADING, focus);
 	}
 
 	public void follow(Entity focus){
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
-		currentState = new MobAI(this, AIType.FOLLOWING);
+		currentState = new MobAI(this, AIType.FOLLOWING, focus);
 		focus.addFollower(this);
 	}
+	
+	public void setFollowIndex(int index){ followIndex = index; }
+	public void resetFollowIndex(){ followIndex = -1; }
 
 	public void stay(){
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
-		currentState = new MobAI(this, AIType.FACEPLAYER);
+		currentState = new MobAI(this, AIType.FACEPLAYER, main.character);
 		main.character.removeFollower(this);
 	}
 
@@ -583,7 +587,7 @@ public class Mob extends Entity{
 		attackFocus = d;
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
-		currentState = new MobAI(this, AIType.FIGHTING);
+		currentState = new MobAI(this, AIType.FIGHTING, d);
 		iff = IFFTag.HOSTILE; 
 		doTime= (float) (Math.random()*3);
 		attacked = false;
@@ -843,6 +847,7 @@ public class Mob extends Entity{
 	public void resetState(){
 		currentState.close();
 		currentState = defaultState;
+		currentState.begin();
 		controlled = false;
 	}
 	
@@ -878,6 +883,8 @@ public class Mob extends Entity{
 		if(snoozing){
 			wake();
 		} else {
+//			if(lookingUp)
+//				unLookUp();
 			aiming = true;
 			setTransAnimation(Anim.AIM_TRANS, Vars.ACTION_ANIMATION_RATE, Anim.AIMING, 
 					Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
@@ -895,6 +902,8 @@ public class Mob extends Entity{
 			wake();
 			return;
 		}
+//		if(lookingUp)
+//		unLookUp();
 		ducking = true;
 		aiming = true;
 		setTransAnimation(Anim.DUCK, Anim.DUCKING);

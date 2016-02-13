@@ -179,7 +179,8 @@ public class Script implements Serializable {
 
 				if(obj != null)
 					if(obj instanceof Mob){
-						if(target!=null)
+						if(target!=null){
+							obj.faceObject(obj);
 							if(obj.equals(main.character))
 								if(((Mob) obj).getPowerType()==DamageType.PHYSICAL)
 									main.player.doRandomPower(target.getPosition());
@@ -187,13 +188,13 @@ public class Script implements Serializable {
 									((Mob) obj).attack(target.getPosition());
 							else
 								((Mob) obj).attack(target.getPosition());
-						else 
+						} else 
 							if(obj.equals(main.character)){
 								if(((Mob) obj).getPowerType()==DamageType.PHYSICAL)
 									main.player.doRandomPower();
 							} else
 								((Mob) obj).attack();
-					}
+						}
 					else
 						System.out.println("Cannot find \""+firstArg(line)+"\" to perform attack; "
 								+ "Line: "+(index+1)+"\tScript: "+ID);
@@ -224,6 +225,7 @@ public class Script implements Serializable {
 				try{
 					switch(type.toLowerCase()){
 					case"integer":
+						System.out.println("HEHRE");
 						if(scope.equalsIgnoreCase("local")) declareVariable(variableName, Integer.parseInt(value));
 						else if(scope.equalsIgnoreCase("global")) main.history.declareVariable(variableName, Integer.parseInt(value));
 						else System.out.println("Invalid scope \"" + scope +"\"; Line: "+(index+1)+"\tScript: "+ID);
@@ -457,12 +459,18 @@ public class Script implements Serializable {
 				}
 				break;
 			case "follow":
+				//follow(object, target, [permantent])
 				obj = findObject(firstArg(line));
 				target = findObject(lastArg(line));
 				if (obj != null && target != null){
 					if (obj instanceof Mob){
 						if(!((Mob) obj).setState("FOLLOWING", target))
 							System.out.println("Could not make \""+obj+"\" follow \""+target+"\"; Line: "+(index+1)+"\tScript: "+ID);
+						else {
+							if(args.length>2)
+								if(Vars.isBoolean(args[2]) && target.getFollowers().containsKey(obj))
+									target.getFollowers().put(((Mob)obj), Boolean.parseBoolean(args[2]));
+						}
 					} else obj.faceObject(target);
 				} else
 					System.out.println("Could not make \""+obj+"\" follow \""+target+"\" because one of them cannot be found; Line: "+(index+1)+"\tScript: "+ID);
@@ -520,6 +528,21 @@ public class Script implements Serializable {
 				main.addObject(main.character);
 
 				main.setStateType(InputState.GENDERCHOICE);
+				break;
+			case "kill":
+				obj= findObject(firstArg(line));
+				if(obj!=null)
+					if(obj instanceof Mob){
+						((Mob)obj).respawnPoint = obj.getPixelPosition();
+						((Mob)obj).die();
+				}
+					
+				break;
+			case "respawn":
+				obj= findObject(firstArg(line));
+				if(obj!=null)
+					if(obj instanceof Mob)
+						((Mob) obj).respawn();
 				break;
 			case "lockplayer":
 				main.setStateType(InputState.LISTEN);
@@ -626,7 +649,7 @@ public class Script implements Serializable {
 				if (obj!= null){
 					main.removeBody(obj.getBody());
 					Entity.idToEntity.remove(obj.getSceneID());
-					Scene.sceneToEntityIds.remove(obj.getSceneID());
+					Scene.sceneToEntityIds.get(main.getScene().ID).remove(obj.getSceneID());
 				}else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
@@ -843,9 +866,10 @@ public class Script implements Serializable {
 				obj = findObject(firstArg(line));
 				if(obj!=null){
 					if(obj instanceof Mob){
-						s = firstArg(line);
+						s = lastArg(line);
 						if(s.equals("none") || s.equals("null") || s.equals("empty"))
-						((Mob) obj).setNickName(null);
+							((Mob) obj).setNickName(null);
+						else ((Mob) obj).setNickName(s);
 					}else
 						System.out.println("\""+firstArg(line)+"\" cannot have a nickname because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
 				} else
@@ -1693,18 +1717,23 @@ public class Script implements Serializable {
 	}
 
 	private void changeValue(String line){
-		//		line = line.substring(line.indexOf(" ") + 1);
 		String function = firstArg(line);
 		String target = middleArg(line);
 		String value = lastArg(line);
-		// System.out.println("changeValue: " + function +"|"+ target +"|"+ value);
 		boolean successful = false;
 
-		//		System.out.println(function +":"+target+":"+value);
+//		System.out.println(function +":"+target+":"+value);
 
+		//value is formatted as a string
 		if (value.contains("{") && value.contains("}")) {
 			value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
 			value = getSubstitutions(value);
+		} else if(value.contains("[") && value.contains("}")){
+			if(value.contains("+")||value.contains("-")||value.contains("*")||value.contains("/"))
+				value = main.evaluator.evaluateExpression(value.substring(value.indexOf("[")+1, 
+						value.lastIndexOf("]")), this);
+			else
+				value = main.evaluator.determineValue(value, this);
 		} else {
 			Object var = getVariable(value);
 			if(var==null)
@@ -1754,6 +1783,7 @@ public class Script implements Serializable {
 						default:
 							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object +
 									"\"; Line: "+(index+1)+"\tScript: "+ID);
+							break;
 						}
 					} catch (Exception e) {
 						System.out.println("Could not add \"" + value +"\" to \"" + target + 
@@ -1763,10 +1793,16 @@ public class Script implements Serializable {
 				case "set":
 					try{
 						switch(target.toLowerCase()){
-						case "name":
-							if(object instanceof Mob){
-								((Mob)object).setName(value);
-								successful = true; 	}
+//						case "name":
+//							if(object instanceof Mob){
+//								((Mob)object).setName(value);
+//								successful = true; 	}
+//							break;
+						case "flamable":
+							if(Vars.isBoolean(value))
+								object.flamable = Boolean.parseBoolean(value);
+							else
+								System.out.println("\""+value+"\" is not a boolean; Line: "+(index+1)+"\tScript: "+ID);
 							break;
 						case "gender":
 							if(object instanceof Mob)
@@ -1807,6 +1843,10 @@ public class Script implements Serializable {
 							main.player.setNicenessScale(Float.parseFloat(value));
 							successful = true;
 							break;
+						case"nickname":
+							if(object instanceof Mob)
+								((Mob)object).setNickName(value);
+							break;
 						case "braveryscale":
 							main.player.setBraveryScale(Float.parseFloat(value));
 							successful = true;
@@ -1820,11 +1860,19 @@ public class Script implements Serializable {
 							}
 							successful = true;
 							break;
+						case "vulnerable":
+							if(Vars.isBoolean(value))
+								object.setDestructability(Boolean.parseBoolean(value));
+							else
+								System.out.println("\""+value+"\" is not a boolean; Line: "+(index+1)+"\tScript: "+ID);
+							break;
 						default:
 							System.out.println("\"" + target +"\" is an invalid property to modify for \"" + object + "\"; Line: "+(index+1)+"\tScript: "+ID);
 							successful = true;
+							break;
 						}
 					} catch (Exception e) {
+						e.printStackTrace();
 						System.out.println("Could not set \"" + value +"\" to \"" + target + "\"; Line: "+(index+1)+"\tScript: "+ID);
 						successful = true;
 					}

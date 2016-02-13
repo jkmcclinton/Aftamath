@@ -48,10 +48,12 @@ text(normal, {Don't look so run down. ~It's not like it's the end of the world.}
 wait(.3)
 hidedialog
 teleport(player, Bar, 12, 5)
+face(player, Jose)
 
-text(normal, {Jesus, it's sure is red in here})
+text(normal, {Jesus, it sure is red in here....})
+text({Who the hell drew this place to have so much red?})
 text(normal, {Anyway, go grab yourself a drink--})
-text(normal, {Wait, where's the bartender?})
+text(normal, {Wait, where the hell is the bartender?})
 
 hidedialog
 wait(.5)
@@ -62,7 +64,7 @@ face(player, Tough Guy)
 text(mad, {Those monsters!})
 face(player)
 
-text(normal, {Le Gasp! The door just locked itself by accident! ~Oh no!})
+text(normal, {Le Gasp! And the door just locked itself by accident! ~Oh no!})
 
 face(player, Jose)
 setspeaker(player)
@@ -72,6 +74,7 @@ setSpeaker(narrator)
 text(normal, {Yeah whatever, that's beside the point.})
 
 setSpeaker(Jose)
+face(Jose, player)
 text(happy, {Hey man, you came just in time!})
 text(normal, {We need someone else to play poker with. You're it.})
 
@@ -79,7 +82,6 @@ setSpeaker(narrator)
 text(normal, {What are you going to do now that you're cornered?})
 setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
 	[choice Find the bartender]
-		setEvent(GoodBar, {You used your powers for good in the Fat Cocktail})
 		value(add, player.niceness, p)
 		text(normal, {Hah.})
 		text(normal, {I'll be brief.})
@@ -90,6 +92,7 @@ setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
 	
 	[choice Arrest Them]
 		setEvent(GoodBar, {You used your powers for good in the Fat Cocktail})
+		setFlag(PowerBar, true)
 		setspeaker(player)
 		text(normal, {You fiends are under arrest for killing an innocent civilian!})
 		
@@ -115,6 +118,7 @@ setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
 	
 	[choice Play Poker]
 		setEvent(EvilBar, {You used your powers for evil in the Fat Cocktail})
+		setFlag(PowerBar, true)
 		value(set, player.niceness, -1)
 		
 		setSpeaker(player)
@@ -126,7 +130,7 @@ setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
 		wait(3)
 		setSpeaker(narrator)
 		text(normal, {...})
-		text(normal, {You lost. ~~Horribly.})
+		text(normal, {You lost. ~Horribly.})
 		
 		setspeaker(player)
 		text(normal, {DIE, DIE, DIE!!!})
@@ -160,7 +164,7 @@ setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
 	end
 	
 	[choice Leave]
-		setEvent(GoodBar, {You used your powers for good in the Fat Cocktail})
+		setFlag(PowerBar, true)
 		value(add, player.bravery, -1)
 		text(normal, {HAH!})
 		text(normal, {You thought.})

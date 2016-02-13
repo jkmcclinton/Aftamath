@@ -17,7 +17,7 @@ public class MobAI {
 	public static enum AIType {
 		AIM, ATTACK, BLOCKPATH, DANCING, DUCK, IDLE, IDLEWALK, EVADING, EVADING_ALL, 
 		FACELEFT, FACEOBJECT, FACEPLAYER, FACERIGHT, FIGHTING, FLAIL, FLY, FOLLOWING, 
-		HUG, JUMP, KISS, LOSEAIM, MOVE, RUN, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING,
+		HUG, JUMP, KISS, LOSEAIM, LOOK_UP, MOVE, RUN, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING,
 		SNOOZE, SPECIAL1, SPECIAL2, SPECIAL3, STATIONARY, STOP
 	}
 
@@ -51,8 +51,8 @@ public class MobAI {
 	private static final float DEFAULT_DURATION = 3; //length of time between events
 	private static final float POS_RANGE = 8; //maximum distance from return location before repositioning is active
 	
-	public MobAI(Mob owner, AIType type){
-		this(owner, type, ResetType.ON_AI_COMPLETE, null);
+	public MobAI(Mob owner, AIType type, Entity focus){
+		this(owner, type, ResetType.ON_AI_COMPLETE, focus);
 	}
 
 	//initializing timed stuff
@@ -323,7 +323,7 @@ public class MobAI {
 			owner.faceObject(focus);
 			dx = focus.getPosition().x - owner.body.getPosition().x;
 
-			float m = Entity.MAX_DISTANCE * (focus.getFollowingIndex(owner)+1);
+			float m = Entity.MAX_DISTANCE * (owner.followIndex+1);
 			
 			if(dx > m/PPM) owner.right();
 			else if (dx < -1 * m/PPM) owner.left();
@@ -449,6 +449,36 @@ public class MobAI {
 				}
 			}
 			break;
+		case LOOK_UP:
+			canPosition = false;
+
+			if(time>=Vars.ACTION_ANIMATION_RATE * 
+					Mob.actionLengths[Mob.animationIndicies.get(Anim.LOOK_UP)])
+				canPosition = true;
+			//do animation if outside influences changed it
+			if(Math.abs(dx) < POS_RANGE && (
+					!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.LOOKING_UP) &&
+					!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.LOOK_UP)))
+				owner.setAnimation(Anim.LOOKING_UP, LoopBehavior.CONTINUOUS);
+			if(focus!=null){
+				//watch focus if Mob doesn't need to reposisition
+				if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
+					owner.faceObject(focus);
+			}
+
+			if (resetType.equals(ResetType.ON_TIME)){
+				if(time>=resetTime-1){
+					owner.unLookUp();
+					finish();
+				}
+			} else if(resetType!=ResetType.NEVER){
+				inactiveTime += dt;
+				if(inactiveTime>=inactiveWait){
+					owner.unLookUp();
+					finish();
+				}
+			}
+			break;
 		case LOSEAIM:
 			owner.unAim();
 			finish();
@@ -554,7 +584,7 @@ public class MobAI {
 					Mob.actionLengths[Mob.animationIndicies.get(Anim.SPECIAL3_TRANS)]){
 				canPosition = true;
 
-				//do aiming animation if outside influences changed the animation
+				//do animation if outside influences changed it
 				if(Math.abs(dx) < POS_RANGE && (
 						!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.SPECIAL3) &&
 						!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.SPECIAL3_TRANS)))
@@ -751,6 +781,9 @@ public class MobAI {
 			reached = true;
 			canPosition = true;
 			break;
+		case FOLLOWING:
+			canPosition = false;
+			break;
 		case IDLE:
 			anim = Anim.IDLE;
 			break;
@@ -781,6 +814,10 @@ public class MobAI {
 		case JUMP:
 			canPosition = false;
 			owner.jump();
+			break;
+		case LOOK_UP:
+			owner.lookUp();
+			inactiveWait = DEFAULT_DURATION;
 			break;
 		case PATH:
 			canPosition = false;
