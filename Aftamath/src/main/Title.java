@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import handlers.AnimOld;
+import handlers.Animation;
 import handlers.GameStateManager;
 import handlers.MyInput;
 import handlers.MyInput.Input;
@@ -18,7 +18,7 @@ import scenes.Song;
 
 public class Title extends GameState {
 
-	private AnimOld title, btnHighlight;
+	private Animation title, btnHighlight;
 	private Texture bgImage, textures;
 	private float[] titleY = new float[2];
 	private boolean titleReached;
@@ -169,8 +169,9 @@ public class Title extends GameState {
 		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text4.png")), 14, 20 )[0];
 		
 		bgImage = new Texture(Gdx.files.internal("assets/images/titleBG.png"));
-		title = new AnimOld(TextureRegion.split(
-				new Texture(Gdx.files.internal("assets/images/title.png")), 205, 89)[0]);
+		title = new Animation(null);
+		title.initFrames(TextureRegion.split(new Texture(Gdx.files.internal("assets/images/title.png")), 205, 89)[0]
+				, Vars.ANIMATION_RATE, false);
 		titleYMax = Game.height/2 - title.getFrame().getRegionHeight() - 15;
 		titleY[1] = titleYMax;
 		titleWait = .9f;
@@ -179,8 +180,8 @@ public class Title extends GameState {
 		TextureRegion[] btnHighFrames = new TextureRegion[9];
 		for (int i = 0; i < btnHighFrames.length; i++)
 			btnHighFrames[i] = new TextureRegion(textures, 0, i * 18 + 361, 238, 18);
-		btnHighlight = new AnimOld();
-		btnHighlight.setFrames(btnHighFrames, .1f, false);
+		btnHighlight = new Animation(null);
+		btnHighlight.initFrames(btnHighFrames, .1f, false);
 		
 		menuOptions = new String[][] {{"Play", "Load Game", "Options", "Quit"}};
 		menuMaxY = menuOptions[0].length - 1;

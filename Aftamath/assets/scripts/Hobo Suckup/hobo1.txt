@@ -3,8 +3,8 @@ lockplayer
 setFlag(Hobo1, true)
 face(player, Hobo)
 face(Hobo, player)
-setSpeaker(narrator)
-text(normal, {His eyes are bugged out at you})
+setSpeaker(null)
+text(normal, {His eyes are bugged out at you...})
 setChoice(1:Offer him money, 2:Talk to him)
 	[choice Offer him money]
 		setSpeaker(player)

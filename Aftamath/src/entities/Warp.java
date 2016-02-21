@@ -1,11 +1,12 @@
 package entities;
 
-import handlers.Vars;
-import scenes.Scene;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+
+import handlers.TextTrigger;
+import handlers.Vars;
+import scenes.Scene;
 
 public class Warp extends Entity {
 
@@ -15,6 +16,7 @@ public class Warp extends Entity {
 	public int warpID;
 	public boolean instant;
 	public TransType transitionType;
+	private TextTrigger tt;
 	
 	private String condition;
 	private Vector2 warpLoc, offset;
@@ -76,6 +78,8 @@ public class Warp extends Entity {
 	
 	public Vector2 getOffset(){ return offset; }
 	public void setInstant(boolean instant){ this.instant = instant; }
+	public void setTextTrigger(TextTrigger tt){ this.tt = tt; }
+	public TextTrigger getTextTrigger(){ return tt; }
 
 	@Override
 	public void create() {

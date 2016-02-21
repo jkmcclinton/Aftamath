@@ -1,20 +1,7 @@
 Script Main
 lockplayer
-#SetSpeaker(this)
-#text(normal, {Hello!})
-#hideDialog
 
-#turn of action
-#doAction(this, idle, false)
+	#move(player, TEST3)
+	setWarp(0, HighRise, 0)
 
-#timed
-#doAction(this, kiss, TEST3, 5, false)
-
-#default state
-#doAction(this, idle, null, never, false)
-
-declare(talked, global, Integer, 0)
-value(add, talked, 10)
-value(set, player.money, value)
-move(player, TEST3)
 done

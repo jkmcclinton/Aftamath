@@ -1,0 +1,13 @@
+- change form (super sayen? disguise, e.g player->old man?)
+- speed, movement penalties
+- stamina in fighting, take away for attacking
+- weaknesses; immunity to SUPA powers
+- badge collection, after defeating people
+- choose whether to spare or kill (change how important people are defined as invulnerable)
+- "BATTLE" Mode; enter battle, show splash like "FIGHT!"
+	-"DO BATTLE!"
+	-"TO DEATH!"
+	-"KILL IT"
+	-"ITS ALIVE!"
+	-"DO IT!"
+- 

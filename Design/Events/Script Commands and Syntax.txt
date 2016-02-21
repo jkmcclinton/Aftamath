@@ -6,7 +6,7 @@ Script Commands and Syntax
 
 The parser operates by reading each consecutive line at a time.
 If you're using Notepad, make sure you have word wrapping turned off.
-It may pause reading the script file with commands like "text" and "pause",
+It may pause reading the script file with commands like "text" and "wait",
 but it generally should not stop unless the command "done" is given.
 
 EVERY code section of a script must be sectioned off into "sub scripts", or scripts within scripts.
@@ -80,25 +80,29 @@ I've tried my best to add print statements to help you debug your script.
 	~ move
 	~ pause
 	~ playSound
+	  random
 	  remove/removeObject
 	  removePartner
-	  return
+	  return/goto
 	  say
 	  setAttackType
+	  setAttackScript
 	  setChoice
 	  setDefaultState
+	  setDialog/setDialogue/ setDialogueScript
+	  setDiscoverScript
 	  setEvent
 	  setFlag
 	  setResponse
-	~ setScene
 	  setSpeaker
 	  setScript
 	~ setState
-	  setVulnerability
 	~ showStats
 	~ spawn
-	  statUpdate
+	~ splash
+	~ statUpdate
 	  text
+	~ teleport
        X~ unlock
 	  value/changeValue
 	  wait
@@ -125,8 +129,6 @@ addPartner:
 	attack(objectName, [targetObject])
 checkPoint:
 	sets a point in the script to return to with "return()"
-	NOTE: these are local, and are deleted when the script ends.
-	      This also means you cannot jump between subscripts
 	checkPoint(Name)
 choice:
 	provides handling for the indicated choice
@@ -264,13 +266,17 @@ unfocus/unfocusCamera/removeFocus:
 	~location is optional; if given, the sound will play at the given location. 
 	~It can either be an object or it can be separated into x, y.
 	playSound(soundName, [location])
+random:
+	produces a random value and writes the result to the given variable;
+	default range is from 0 to 1. a maximum value can be included to change the range from
+	0 to max. Also can specify 
 remove/removeObject:
 	remove the given object from the world
 	remove(objectName)
 removePartner:
 	makes the player no longer have a partner
 	removePartner()
-return:
+return/goto:
 	returns the script index to the given checkpoint
 	does nothing if no checkpoint found
 	return(checkpointName)
@@ -312,7 +318,10 @@ setDefaultState:
 		attacking
 setDialogue:
 	changes the dialogue script for the given mob. Usually use this after spawning a mob in
-	setDialogue(objectName, scriptName)	
+	setDialogue(objectName, scriptName)
+setDiscoverScript:
+	changes the discover script for the given mob. This gets activated when the mob sees the player
+	setScript(objectName, scriptName)	
 ~setEvent:
 	adds the event to the player's history
 	the description should be modified during the event. For example, if one event has multiple
@@ -336,11 +345,6 @@ setResponse:
 	setResponse(objectName, responseType)
 	
 	see responseTypes list
-~setScene:
-	change the current location to the given scene
-	setScene(sceneName)
-
-	see list of levels
 setSpeaker:
 	sets ther face on the dialog box to the indicated mob;
 	~ non-Mob objects might not have a face
@@ -365,6 +369,22 @@ setVul:
 setVulnerability:
 	set the vulnerability of the given mob. Value must be boolean
 	setVulnerability(objectName, value)
+setWarp:
+	permanently link the first warp to the second warp. This only links the warps in one direction.
+	The warpID's are a little complicated... The easiest way to find the ID of the warp you're looking 
+	for is to open the .tmx file of the respective Scene. This will not include warps with ID of 0 and 1, as 
+	these don't exactly exist. 0 refers to the warp at the very left of the scene, and 1 refers to the one 
+	at the very right. Not all scenes have a left and right warp.
+
+	If sceneID1 is not included, the default scene is the scene that is currently loaded at the time the
+	command is run
+
+	setWarp(warpID1, sceneID2, warpID2)
+	setWarp(SceneID1, warpID1, sceneID2, warpID2)
+
+	Note: The list of SceneID's can be found from the names of the .tmx files in "Aftamath/assets/maps"
+		capitalization matters
+	Note: be mindful of what warps you change! it will stay that way FOREVER unless you change it back!!!
 ~showStats:
 	shows money, health, and, if the player is a super hero, power
 	showStats(statType1, statType2, statType3)
@@ -381,6 +401,17 @@ setVulnerability:
 	objectType must be either NPC or other valid types (there aren't any as of now)
 	location (x, y) is a Tiled Vector.
 	refer to object type list for possible values
+~splash:
+	shows a brief splash across the screen! the way it displays depends on the splashType.
+	the optional boolean [wait] determines whether or not the script should wait for the splash to play
+	out. the default value is true.
+
+	Unfortunately [wait] has not been implemented yet, so the script just displays the splash and keeps parsing
+	splash(splashType, [wait])
+	splash({splash text}, [wait])
+
+	note: see the list of splashType's at the bottom of the file
+
 statUpdate:
 	adds nicetyVal and braveryVal player's current stats to the given values. 
 	nicetyScale and braveryScale are modified values. These values affect the rate at 
@@ -394,6 +425,12 @@ statUpdate:
 	if included, nicetyScale and braveryScale must be a number between 0 and 2, including
 		floating point values
 	both nicetyScale and braveryScale must be included if included at all
+teleport:
+	instantly move the object to 
+	
+	~teleport(objectName, x, y)
+	teleport(objectName, levelName, x, y)
+	teleport(objectName, levelName, warp)
 text:
 	gives text to the dialog box; 
 	consecutive text commands provide multiple pages of text
@@ -453,8 +490,15 @@ object properties:
 
 text delimiters:
 	/l - line
-	~ /c - capitilize previous word/variable
-	~ /cc - fully capitilize previous word/variable
+	~ /c - capitilize current word/variable
+	~ /cc - fully capitilize current word/variable
+		example: This guy/cc = This GUY
+		example: I'M GOING TO KILL /player/cc = I'M GOING TO KILL BOB
+		example: do not separate /cc = do not separate
+		
+		REMEMBER: the delimiters are read from left to right, so if you have something like
+		/cc/player it will not work
+
 	/player - player name
 	/playerg - player gender (guy, girl)
 	/playergpp - player gender, passive (him, her)
@@ -471,6 +515,7 @@ text delimiters:
 	/home - player's house type
 	/address - player's house address
 	/variable[]
+	/var[] - replace what's inside the braces with a variable. if variable is not found nothing is added
 
 emotions:
 	normal
@@ -483,6 +528,15 @@ stat types:
 	health
 	money
 	power/level (includes power type)
+
+splash types:
+	do_battle
+	do_it
+	fight
+	its_alive
+	kick_ass
+	kill_it
+	wasted
 
 choice types: 
 	YesNo, 

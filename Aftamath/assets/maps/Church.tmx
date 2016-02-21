@@ -161,7 +161,12 @@
  </layer>
  <layer name="ground" width="75" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt1slNAmAUhVEoxVl3tuGMZaigUoqzliHOpSji0Im3ARfExf9Mzkm+3b94gUtCpwMAAAAAAAAAAAAAAAAAAAAAAAAAAMC0Vrv1AoDfrKX1tJE201baTjupl3Ybval410k6TWfpPF2ky3SVrtNNozcV73pNb2mc3tMkfaTP9JW+G72peNdM/qvNprk0nxbSYlpKy2ml2+ZNxbv20n46SP00SIfpKB2nYaM3Fe+6TaN0l+7TQ3pMT+k5vTR6U/Guit+fXf3/XVW8qepnVXHrfoN2ZVd2ZVd2ZVf17qr4/dmVXdmVXdnV3978ADuVdiU=
+   eJzt08dRQ0EURNFRKHgRCk5AGMITCk5AGHgIBQ+Z0DmwmAd1TtXdzeKVfqs1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA/W0rLaSWtprU0SutpI212elPxrqN0nE7SaTpLk3SeLtJlpzcV73pOL+k1vaX39JE+01f67vSm4l1Tg9am00yaTXNpPi2kYVoc9HlT8a5x2krbaSftpr20nw7SYac3Fe+6StfpJt2mu3SfHtJjeur0puJdFb+fXf39XVW8qepvVXHr/oN2ZVd2ZVd2ZVf17qr4/ezKruzKruzqd29+AE7abxA=
+  </data>
+ </layer>
+ <layer name="ledge" width="75" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztwzENAAAIA7DhCP/q0MC3o02aAAAAAAAAAAAAAAAAAAAAAAAAAAAA8LHTFwAAAAAAAABaHH4/BxY=
   </data>
  </layer>
  <layer name="objects" width="75" height="100">
@@ -196,7 +201,7 @@
     <property name="NPC" value="gangster2"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST3"/>
-    <property name="script" value="actionTest"/>
+    <property name="script" value="boss stuff"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>

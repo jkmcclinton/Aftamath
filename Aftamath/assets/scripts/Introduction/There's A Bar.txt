@@ -7,7 +7,7 @@ setEvent(goneInBar, {Narrator forced you into a bar})
 focusCamera()
 setFlag(barLocked, true)
 
-text(normal, {Ah, the Fat Cocktail. Home to cockiest, most vicious, most notorious convicts in all of Big City.})
+text({Ah, the Fat Cocktail. Home to cockiest, most vicious, most notorious convicts in all of Big City.})
 text(normal, {That place has been an eyesore on the street for years.})
 text(flirty, {Suddenly....})
 text(flirty, {Suddenly you find yourself feeling a little bit thirsty....})

@@ -24,6 +24,7 @@ public class History implements Serializable {
 		flagList.put("false",false);
 		variableList.put("male", "male");
 		variableList.put("female", "female");
+		variableList.put("trainLoc", "nowhere");
 	}
 	
 	public History(String loadedData){
@@ -90,9 +91,10 @@ public class History implements Serializable {
 	}
 	
 	public Object getVariable(String variableName){
-		for(String p : variableList.keySet())
+		for(String p : variableList.keySet()){
 			if (p.equals(variableName))
 				return variableList.get(p);
+		}
 		return null;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 	}
 
@@ -102,13 +104,17 @@ public class History implements Serializable {
 				String type = variableList.get(p).getClass().getSimpleName();
 				if(!var.getClass().getSimpleName().equals(type)){
 					try{
-						if(type.toLowerCase().equals("float"))
+						if(type.toLowerCase().equals("float")){
 							variableList.put(p, (float) val);
-						if(type.toLowerCase().equals("integer"))
-							variableList.put(p, (int) val);
-						if(type.toLowerCase().equals("string"))
+						}
+						if(type.toLowerCase().equals("integer")){
+							if(val instanceof Float)
+								variableList.put(p, (int)((float) val));
+							else
+								variableList.put(p, (int)val);
+						}if(type.toLowerCase().equals("string"))
 							variableList.put(p, (String) val);
-					} catch (Exception e){ }
+					} catch (Exception e){e.printStackTrace(); }
 				} else 
 					variableList.put(p, val);
 			}

@@ -22,16 +22,19 @@ import com.badlogic.gdx.utils.JsonValue;
 import entities.DamageField;
 import entities.Entity;
 import entities.Entity.DamageType;
+import entities.HUD.SplashType;
 import entities.Mob;
 import entities.MobAI.ResetType;
 import entities.Path;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
+import entities.Warp;
 import handlers.Camera;
 import handlers.Evaluator;
 import handlers.GameStateManager;
 import handlers.Pair;
+import handlers.TextTrigger;
 import handlers.Vars;
 import main.Game;
 import main.Main;
@@ -218,14 +221,13 @@ public class Script implements Serializable {
 				String value = lastArg(line);
 				if(value.contains("{")) {
 					value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
-					value = getSubstitutions(value);
+					value =  main.evaluator.getSubstitutions(value, this);
 				}
 				//				System.out.println("\nn: "+ variableName +"\ns: "+scope+"\nt: "+type+"\nv: "+value);
 
 				try{
 					switch(type.toLowerCase()){
 					case"integer":
-						System.out.println("HEHRE");
 						if(scope.equalsIgnoreCase("local")) declareVariable(variableName, Integer.parseInt(value));
 						else if(scope.equalsIgnoreCase("global")) main.history.declareVariable(variableName, Integer.parseInt(value));
 						else System.out.println("Invalid scope \"" + scope +"\"; Line: "+(index+1)+"\tScript: "+ID);
@@ -398,7 +400,7 @@ public class Script implements Serializable {
 							if(((DamageField)e).getOwner().equals(main.character)){
 								found = true;
 								main.removeBody(e.getBody());
-								((DamageField) e).finalize();;
+								((DamageField) e).finalize();
 								break;
 							}
 					}
@@ -557,6 +559,8 @@ public class Script implements Serializable {
 //				move(objectName, x, y, [wait]) //accepts Tile Location
 //				move(objectName, pathName, [wait]) //accepts a path
 //				move(objectName, targetName, [wait]) //accepts a Mob
+//				move(objectNamce, x, y, sceneName, [wait]
+				
 				loc = null;
 				boolean wait = true;
 //				Entity targ = null;
@@ -635,8 +639,53 @@ public class Script implements Serializable {
 				String str = firstArg(line);
 				if(str.contains("{")&&str.contains("}"))
 					str = str.substring(str.indexOf("{")+1, str.indexOf("}"));
-				str = getSubstitutions(str);
+				str =  main.evaluator.getSubstitutions(str, this);
 				System.out.println(str);
+			case"random":
+				//random(variableName)
+				//random(variableName, max)
+				//random(variableName, min, max)
+
+				if(args.length>=1 && args.length<4){
+					float max=0,min=0;
+
+					float val =0;
+					var = getVariable(firstArg(line));
+					type = "localvar";
+					if(var==null){
+						type = "globalvar";
+						var = main.history.getVariable(firstArg(line));
+					}
+
+					if(Vars.isNumeric(lastArg(line)))
+						max = Float.parseFloat(lastArg(line));
+
+					if(args.length==3 && Vars.isNumeric(middleArg(line)))
+						min = Float.parseFloat(args[1]);
+					
+					if(max==0&&min==0) //range [0,1]
+						val = (float) Math.random();
+					else //range [min,max]
+						val = (float)(Math.random()*(max-min)+min);
+
+					//write random value to variable
+					if(var!=null){
+						switch(type){
+						case "localvar":
+							setVariable(firstArg(line), val);
+							break;
+						case "globalvar":
+							main.history.setVariable(firstArg(line), val);
+							break;
+						}
+					}
+					else
+						System.out.println("No variable \""+args[0]+"\" found to write value; Line: "+(index+1)+"\tScript: "+ID);
+				} else {
+					System.out.println("Invalid number of arguments; Line: "+(index+1)+"\tScript: "+ID);
+				}
+				
+				break;
 			case "unfocus":
 			case "unfocuscamera":
 			case "removefocus":
@@ -825,7 +874,7 @@ public class Script implements Serializable {
 				String description = lastArg(line);
 				
 				if(description.contains("{") && description.contains("}")){
-					description = getSubstitutions(description);
+					description =  main.evaluator.getSubstitutions(description, this);
 				} else {
 					var = getVariable(description); // get local var
 					if(var==null)
@@ -919,20 +968,61 @@ public class Script implements Serializable {
 					System.out.println("Cannot find object \"" + firstArg(line)+ "\" to set a dialogue script; Line: "+(index+1)+"\tScript: "+ID);
 	
 				break;
-			case "setvul":
-			case "setvulnerability":
-				obj = findObject(firstArg(line));
-				String v = lastArg(line);
-				
-				if(obj!=null)
-					try{
-						obj.setDestructability(Boolean.parseBoolean(v));
-					} catch(Exception e){
-						System.out.println("\""+v+"\" is not a valid boolean; Line: "+(index+1)+"\tScript: "+ID);
-					}
-				else
-					System.out.println("Cannot find \""+firstArg(line)+"\" to change vulnerability; Line: "+(index+1)+"\tScript: "+ID);
+//			case "setvul":
+//			case "setvulnerability":
+//				obj = findObject(firstArg(line));
+//				String v = lastArg(line);
+//				
+//				if(obj!=null)
+//					try{
+//						obj.setDestructability(Boolean.parseBoolean(v));
+//					} catch(Exception e){
+//						System.out.println("\""+v+"\" is not a valid boolean; Line: "+(index+1)+"\tScript: "+ID);
+//					}
+//				else
+//					System.out.println("Cannot find \""+firstArg(line)+"\" to change vulnerability; Line: "+(index+1)+"\tScript: "+ID);
+//					
+//				break;
+			case "setwarp":
+				//setWarp(warpID1, sceneID2, warpID2)
+				//setWarp(SceneID1, warpID1, sceneID2, warpID2)
+
+				if(args.length>=3 && args.length < 5){
+					String s1 = main.getScene().ID, 
+							s2 = args[args.length - 2],
+							wID1 = args[args.length-3], 
+							wID2 = args[args.length-1];
+					if(args.length==4)
+						s1 = args[0];
 					
+					System.out.println("s1: "+s1+"\ts2:"+s2+"\tw1: "+wID1+"\tw2:"+wID2);
+					
+					if(!Vars.isNumeric(wID1)){
+						System.out.println("ID for first warp must be an integer; \""+wID1+"\" is not an integer; Line: "+(index+1)+"\tScript: "+ID);
+						break;
+					} if(!Vars.isNumeric(wID2)){
+						System.out.println("ID for second warp must be an integer; \""+wID2+"\" is not an integer; Line: "+(index+1)+"\tScript: "+ID);
+						break;
+					}
+					
+					Warp w1 = main.findWarp(s1, Integer.parseInt(wID1));
+					Warp w2 = main.findWarp(s2, Integer.parseInt(wID2));
+					if(w1 == null){
+						System.out.println("No such warp with ID \""+wID1+"\" exists in the scene \""+s1+"\"; Line: "+(index+1)+"\tScript: "+ID);
+						break;
+					} if(w2==null){
+						System.out.println("No such warp with ID \""+wID2+"\" exists in the scene \""+s2+"\"; Line: "+(index+1)+"\tScript: "+ID);
+						break;
+					}
+					w1.setLink(w2);
+					
+					TextTrigger tt = w1.getTextTrigger();
+					if(tt!=null)
+						tt.message = "To "+w2.locTitle;
+					
+				} else {
+					System.out.println("Invalid number of arguments");
+				}
 				break;
 			case "showstats":
 				main.getHud().showStats = true;
@@ -945,34 +1035,48 @@ public class Script implements Serializable {
 					System.out.println("Error spawning \""+args[2]+"\" into level; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "splash":
+				//splash({text})
+				//splash(type)
+				
 				s = lastArg(line);
 				if (s.contains("{") && s.contains("}")) {
 					s = s.substring(s.indexOf("{") + 1, s.indexOf("}"));
-					s = getSubstitutions(s);
+					s =  main.evaluator.getSubstitutions(s, this);
 				} else {
 					var = getVariable(s);
 					if(var==null)
 						var = main.history.getVariable(s);
-					if(var!=null)
+					if(var!=null){
 						s = String.valueOf(var);
+						main.getHud().setSplash(s);
+					}else {
+						try{
+							s=s.replace(" ", "_");
+							SplashType st = SplashType.valueOf(s.toUpperCase());
+							main.getHud().setSplash(st);
+						} catch(Exception e){
+							System.out.println("\""+lastArg(line)+"\" is not a valid splash type; Line: "+(index+1)+"\tScript: "+ID);
+							e.printStackTrace();
+						}
+
+					}
 				}
-				main.getHud().setSplash(s);
 				break;
 			case "statupdate":
-				int nice, bravery, max;
+				int nice, bravery, mx;
 				boolean failed=false;
 				float niceScale, braveScale;
 				tmp = args(line);
 
-				if(args.length==4) max = 4;
+				if(args.length==4) mx = 4;
 				else {
 					if(tmp.length==1){
 						System.out.println("Invlaid number of arguments; Line: "+(index+1)+"\tScript: "+ID);
 						break;
-					} else max = 2;
+					} else mx = 2;
 				}
 
-				for(int i = 0;i<max;i++)
+				for(int i = 0;i<mx;i++)
 					if(!Vars.isNumeric(tmp[i])){
 						failed = true;
 						System.out.println("All values must be numbers; Line: "+(index+1)+"\tScript: "+ID);
@@ -1000,6 +1104,7 @@ public class Script implements Serializable {
 			case"teleport":
 				//teleport(objectName, levelName, x, y)
 				//teleport(objectName, levelName, warp)
+				
 				obj = findObject(firstArg(line));
 				if(obj!=null){
 					String level = args[1];
@@ -1091,7 +1196,7 @@ public class Script implements Serializable {
 						Gdx.audio.newMusic(new FileHandle("/assets/sounds/"+src+".wav"));
 						main.playSound(position, sound);
 					} catch(Exception e){
-						System.out.println("No such sound \""+ src +"\"");
+						System.out.println("No such sound \""+ src +"\"; Line: "+(index+1)+"\tScript: "+ID);
 					}
 				break;
 			case "preset":
@@ -1106,7 +1211,40 @@ public class Script implements Serializable {
 				}
 				break;
 			case "zoom":
-				//(Float.parseFloat(lastArg(line)));
+				//zoom(zoom_amount, [instant])
+
+				boolean instant = false;
+				if(Vars.isNumeric(args[0])){
+					if(args.length==2)
+						if(Vars.isBoolean(args[1]))
+							instant = Boolean.parseBoolean(args[1]);
+						else
+							System.out.println("\""+args[1]+"\" is not a valid boolean; Line: "+(index+1)+"\tScript: "+ID);
+					
+					if(instant)
+						main.getCam().zoom(Float.parseFloat(args[0]), 0);
+					else
+						main.getCam().zoom(Float.parseFloat(args[0]));
+				} else {
+					try{
+						if(args.length==2)
+							if(Vars.isBoolean(args[1]))
+								instant = Boolean.parseBoolean(args[1]);
+							else
+								System.out.println("\""+args[1]+"\" is not a valid boolean; Line: "+(index+1)+"\tScript: "+ID);
+
+						Field f = Camera.class.getField("ZOOM_"+args[0].toUpperCase());
+						if(instant)
+							main.getCam().zoom(f.getFloat(f), 0);
+						else
+							main.getCam().zoom(f.getFloat(f));
+
+					} catch(Exception e){
+						System.out.println("\""+args[0]+"\" is not a valid argument for zooming; Line: "+(index+1)+"\tScript: "+ID);
+						e.printStackTrace();
+					}
+				}
+				
 				break;
 			case "done":
 				finish();
@@ -1590,116 +1728,10 @@ public class Script implements Serializable {
 		} catch (IllegalAccessException e) { }
 	}
 	
-//	string substitutions
-	private String getSubstitutions(String txt){
-		while(txt.contains("/playergpp")){
-			String g = "him";
-			if(main.character.getGender().equals("female")) g="her";
-			txt = txt.substring(0, txt.indexOf("/playergpp")) +g + 
-					txt.substring(txt.indexOf("/playergpp") + "/playergpp".length());
-		} while(txt.contains("/playergps")){
-			String g = "his";
-			if(main.character.getGender().equals("female")) g="her";
-			txt = txt.substring(0, txt.indexOf("/playergps")) +g + 
-					txt.substring(txt.indexOf("/playergps") + "/playergps".length());
-		} while(txt.contains("/playergp")){
-			String g = "his";
-			if(main.character.getGender().equals("female")) g="hers";
-			txt = txt.substring(0, txt.indexOf("/playergp")) + g + 
-					txt.substring(txt.indexOf("/playergp") + "/playergp".length());
-		} while(txt.contains("/playergo")){
-			String g = "he";
-			if(main.character.getGender().equals("female")) g="she";
-			txt = txt.substring(0, txt.indexOf("/playergo")) + g + 
-					txt.substring(txt.indexOf("/playergo") + "/playergo".length());
-		} while(txt.contains("/playerg")){
-			String g = "guy";
-			if(main.character.getGender().equals("female")) g="girl";
-			txt = txt.substring(0, txt.indexOf("/playerg")) + g + 
-					txt.substring(txt.indexOf("/playerg") + "/playerg".length());
-		} while(txt.contains("/player")){
-			txt = txt.substring(0, txt.indexOf("/player")) + main.character.getName() + 
-					txt.substring(txt.indexOf("/player") + "/player".length());
-		} while(txt.contains("/partnergps")){
-			String g = "";
-			if(main.player.getPartner()!=null){
-				if(main.player.getPartner().getGender().equals("female")) g="her";
-				else g = "his"; 
-			}
-			txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
-					txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
-		} while(txt.contains("/partnergps")){
-			String g = "";
-			if(main.player.getPartner()!=null){
-				if(main.player.getPartner().getGender().equals("female")) g="her";
-				else g = "his"; 
-			}
-			txt = txt.substring(0, txt.indexOf("/partnergps")) + g + 
-					txt.substring(txt.indexOf("/partnergps") + "/partnergps".length());
-		}while(txt.contains("/partnergpp")){
-			String g = "";
-			if(main.player.getPartner()!=null){
-				if(main.player.getPartner().getGender().equals("female")) g="her";
-				else g = "him"; 
-			}
-			txt = txt.substring(0, txt.indexOf("/partnergpp")) + g + 
-					txt.substring(txt.indexOf("/partnergpp") + "/partnergpp".length());
-		} while(txt.contains("/partnergo")){
-			String g = "";
-			if(main.player.getPartner()!=null){
-				if(main.player.getPartner().getGender().equals("female")) g="she";
-				else g = "he"; 
-			}
-			txt = txt.substring(0, txt.indexOf("/partnergo")) + g + 
-					txt.substring(txt.indexOf("/partnergo") + "/partnergo".length());
-		} while(txt.contains("/partnerg")){
-			String g = "";
-			if(main.player.getPartner()!=null){
-				if(main.player.getPartner().getGender().equals("female")) g="girl";
-				else g = "guy"; 
-			}
-			txt = txt.substring(0, txt.indexOf("/partnerg")) + g + 
-					txt.substring(txt.indexOf("/partnerg") + "/partnerg".length());
-		} while (txt.contains("/partnert")) {
-			txt = txt.substring(0, txt.indexOf("/partnert")) + main.player.getPartnerTitle() + 
-					txt.substring(txt.indexOf("/partnergt") + "/partnergt".length());
-		} while(txt.contains("/partner")){
-			String s = "";
-			if(main.player.getPartner()==null)
-				s=main.player.getPartner().getName();
-			txt = txt.substring(0, txt.indexOf("/partner")) + s + 
-					txt.substring(txt.indexOf("/partner") + "/partner".length());
-		} while(txt.contains("/house")){
-			txt = txt.substring(0, txt.indexOf("/house")) + main.player.getHome().getType() + 
-					txt.substring(txt.indexOf("/house") + "/house".length());
-		} while(txt.contains("/address")){
-			txt = txt.substring(0, txt.indexOf("/address")) + main.player.getHome().getType() + 
-					txt.substring(txt.indexOf("/address") + "/address".length());
-		} while(txt.contains("/variable[")&& txt.indexOf("]")>=0){
-			String varName = txt.substring(txt.indexOf("/variable[")+"/variable[".length(), txt.indexOf("]"));
-			Object var = getVariable(varName);
-			if (var==null) var = main.history.getVariable(varName);
-			if (var==null && main.history.flagList.containsKey(varName))
-				var = main.history.getFlag(varName);
-			if(var!= null) {
-				txt = txt.substring(0, txt.indexOf("/variable[")) + var +
-						txt.substring(txt.indexOf("/variable[")+"/variable[".length()+ varName.length() + 1);
-			} else
-				System.out.println("No variable with name \""+ varName +"\" found; Line: "+(index+1)+"\tScript: "+ID);
-		} while(txt.contains("/cc")){
-			txt = txt.substring(0, txt.indexOf("/cc")) + "" + 
-					txt.substring(txt.indexOf("/cc") + "/cc".length());
-		} while(txt.contains("/c")){
-			txt = txt.substring(0, txt.indexOf("/c")) + "" + 
-					txt.substring(txt.indexOf("/c") + "/c".length());
-		}
-		return txt;
-	}
-
 	private String getDialogue(int index){
 		try{
 			String txt = source.get(index).substring(source.get(index).indexOf("{") + 1, source.get(index).indexOf("}"));
-			txt = getSubstitutions(txt);
+			txt = main.evaluator.getSubstitutions(txt, this);
 			return Vars.formatDialog(txt, true);
 		} catch(Exception e){
 			e.printStackTrace();
@@ -1724,23 +1756,21 @@ public class Script implements Serializable {
 
 //		System.out.println(function +":"+target+":"+value);
 
-		//value is formatted as a string
 		if (value.contains("{") && value.contains("}")) {
+			//value is formatted as a string
 			value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
-			value = getSubstitutions(value);
-		} else if(value.contains("[") && value.contains("}")){
-			if(value.contains("+")||value.contains("-")||value.contains("*")||value.contains("/"))
+			value = main.evaluator.getSubstitutions(value, this);
+		} else if(value.contains("[") && value.contains("]")){
+			//value formatted as an algebraic expression
+			if(value.contains("+")||value.contains("-")||value.contains("*")||value.contains("/")){
 				value = main.evaluator.evaluateExpression(value.substring(value.indexOf("[")+1, 
 						value.lastIndexOf("]")), this);
-			else
+			}else
+				//value is a variable
 				value = main.evaluator.determineValue(value, this);
-		} else {
-			Object var = getVariable(value);
-			if(var==null)
-				var = main.history.getVariable(value);
-			if(var!=null)
-				value = String.valueOf(var);
-		}
+		} else 
+			//value is a variable
+			value = main.evaluator.determineValue(value, this);
 
 		if(target.contains(".")){
 			String obj = target.substring(0, target.indexOf("."));
@@ -1793,11 +1823,6 @@ public class Script implements Serializable {
 				case "set":
 					try{
 						switch(target.toLowerCase()){
-//						case "name":
-//							if(object instanceof Mob){
-//								((Mob)object).setName(value);
-//								successful = true; 	}
-//							break;
 						case "flamable":
 							if(Vars.isBoolean(value))
 								object.flamable = Boolean.parseBoolean(value);
@@ -1920,12 +1945,9 @@ public class Script implements Serializable {
 						break;
 					default:
 						System.out.println("\""+function+"\" is not a valid operation for modifying values; Line: "+(index+1)+"\tScript: "+ID);
-
 					}
-
 				} else {
 					obj = main.history.getVariable(target);
-					System.out.println(value);
 					if(obj!=null){
 						switch(function.toLowerCase()){
 						case "add":
@@ -2294,6 +2316,7 @@ public class Script implements Serializable {
 			System.out.println("No such script called \""+this.ID+"\"");
 			return;
 		}
+		
 		loadScript(path);
 		if (source != null) {
 			findIndicies();

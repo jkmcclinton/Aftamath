@@ -2,7 +2,7 @@ Script Main
 
 if(!talkedToHobo)
 	setSpeaker(player)
-	text(normal, {The needs of the human body...})
+	text({Looks like they had to take a bathroom break...})
 else
 	if(!tookBread)
 		setSpeaker(player)

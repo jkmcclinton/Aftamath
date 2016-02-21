@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import handlers.AnimOld;
+import handlers.Animation;
 import handlers.Vars;
 import main.Game;
 import main.Main;
@@ -21,18 +21,18 @@ public class HUD {
 	public int moving;
 	public boolean raised, showStats;
 	
-	private float splashTime, locationTime;
+	private float locationTime;
 	private boolean top;
 	private OrthographicCamera cam;
 	private Mob character;
 	private Mob speaker;
 	private Main main;
-	private Texture textures, splashOverlay;
+	private Texture textures;
 	private TextureRegion[] hearts, cubeFrames, btnHighFrames, emotions;
 	private TextureRegion cash, /*faceHud,*/ textHud, pauseHud, inputBGLeft, inputBGMid, inputBGRight;
-	private AnimOld cube, buttonHigh;
+	private Animation cube, buttonHigh;
 	private String[] speakText; //amount of text already displaying
-	private String splash;
+	private Splash splash;
 //	private float rotf;
 //	private boolean flipping;
 	
@@ -66,20 +66,19 @@ public class HUD {
 		cubeFrames = new TextureRegion[10];
 		for (int i = 0; i < cubeFrames.length; i++)
 			cubeFrames[i] = new TextureRegion(textures, i * 11 + 192, 78, 11, 11);
-		cube = new AnimOld();
-		cube.setFrames(cubeFrames, .09f, false);
+		cube = new Animation(null);
+		cube.initFrames(cubeFrames, .09f, false);
 		
 		btnHighFrames = new TextureRegion[9];
 		for (int i = 0; i < btnHighFrames.length; i++)
 			btnHighFrames[i] = new TextureRegion(textures, 0, i * 18 + 361, 238, 11);
-		buttonHigh = new AnimOld();
-		buttonHigh.setFrames(btnHighFrames, .1f, false);
+		buttonHigh = new Animation(null);
+		buttonHigh.initFrames(btnHighFrames, .1f, false);
 		
 		inputBGLeft = new TextureRegion(textures, 302, 78, 6, 18);
 		inputBGMid = new TextureRegion(textures, 308, 78, 1, 18);
 		inputBGRight = new TextureRegion(textures, 309, 78, 6, 18);
 		
-		splashOverlay = Game.res.getTexture("splashOverlay");
 		
 		Texture emote = Game.res.getTexture("emotion");
 		if (emote != null) emotions = TextureRegion.split(emote, 64, 64)[0];
@@ -97,8 +96,8 @@ public class HUD {
 		cube.update(dt);
 		buttonHigh.update(dt);
 		
-		if(splashTime>0)
-			splashTime-=dt;
+		if(splash!=null)
+			splash.time-=dt;
 		
 		if(locationTime>0)
 			locationTime-=dt;
@@ -107,15 +106,19 @@ public class HUD {
 	public void render(SpriteBatch sb, int emotion) {
 		sb.begin();
 
-			if (splashTime>0 && splash!=null)
-				sb.draw(splashOverlay, 0, 0, Game.width, Game.height);
+		if(splash!=null)
+			if (splash.time>0){
+				if(splash.overlay !=null)
+					sb.draw(splash.overlay, 0, 0, Game.width, Game.height);
+			}else 
+				splash = null;
 			
 			sb.setProjectionMatrix(cam.combined);
 			drawDialog(sb, emotion);
 			drawStats(sb);
 			
-			if (splashTime>0 && splash!=null)
-				drawSplash(sb);
+			if (splash!=null)
+				splash.render(sb);
 			if(locationTime>0)
 				main.drawString(sb, main.getScene().title, 5, Game.height/2 - 5 - font[0].getRegionHeight());
 			
@@ -168,13 +171,6 @@ public class HUD {
 		//		if (money.split(".")[1].length()<2) money += "0";
 		main.drawString(sb, money, Game.width/2 - 10 - cash.getRegionWidth() -
 				(PERIODX + money.length() * PERIODX), Game.height/2 - 20);
-	}
-	
-	public void drawSplash(SpriteBatch sb){
-		int width = font4[0].getRegionWidth();
-		float scale = 2;
-		main.drawString(sb, font4, width, 2, splash, 
-				Game.width/4 - scale * width * splash.length()/2,  Game.height/4);
 	}
 	
 	public void drawInputBG(SpriteBatch sb){
@@ -257,10 +253,13 @@ public class HUD {
 	
 	public Entity getFace(){ return speaker; }
 	public void setSplash(String str){
-		splash = str;
-		splashTime = 3;
+		splash = new Splash(str);
+		splash.time = 3;
 	}
 	
+	public void setSplash(SplashType st){
+		splash = new Splash(st);
+	}
 	//draw entire dialog text to screen
 	public void drawString(SpriteBatch sb){
 		if (speakText == null) return;
@@ -343,4 +342,180 @@ public class HUD {
 	public static float getCenterW(TextureRegion t){
 		return Game.height/2 - t.getRegionWidth()/4;
 	}
+
+
+	public static enum SplashType {
+		KICK_ASS, FIGHT, DO_BATTLE, TO_DEATH, KILL_IT, ITS_ALIVE, DO_IT, STRING,
+		WASTED;
+	}
+	
+	public class Splash{
+		public String text;
+		public SplashType type;
+		public float time;
+		public Texture overlay;
+		
+		private float maxTime;
+		private Animation animation;
+		
+		public Splash(){
+			text = "";
+			type = SplashType.STRING;
+		}
+		
+		public Splash(String str){
+			text = str;
+			type = SplashType.STRING;
+		}
+		
+		public Splash(SplashType type){
+			this.type = type;
+			text = type.toString().replace("_", " ");
+			init();
+		}
+		
+		private void init(){
+			TextureRegion[] tr = null;
+			boolean direction = false;
+			Texture t;
+			time = 3;
+//			System.out.println("init splash: "+type);
+			switch(type){
+			case DO_BATTLE:
+				t = Game.res.getTexture("doBattlebase");
+				tr=TextureRegion.split(Game.res.getTexture("doBattle"), t.getWidth(), t.getHeight())[0];
+				break;
+			case DO_IT:
+				t = Game.res.getTexture("doItbase");
+				tr=TextureRegion.split(Game.res.getTexture("doIt"), t.getWidth(), t.getHeight())[0];
+				break;
+			case FIGHT:
+				t = Game.res.getTexture("fightbase");
+				tr=TextureRegion.split(Game.res.getTexture("fight"), t.getWidth(), t.getHeight())[0];
+				break;
+			case ITS_ALIVE:
+				t = Game.res.getTexture("itsAlivebase");
+				tr=TextureRegion.split(Game.res.getTexture("itsAlive"), t.getWidth(), t.getHeight())[0];
+				break;
+			case KICK_ASS:
+				t = Game.res.getTexture("kickAssbase");
+				tr=TextureRegion.split(Game.res.getTexture("kickAss"), t.getWidth(), t.getHeight())[0];
+				break;
+			case KILL_IT:
+				time = 2f;
+				t = Game.res.getTexture("killItbase");
+				tr=TextureRegion.split(Game.res.getTexture("killIt"), t.getWidth(), t.getHeight())[0];
+				break;
+			case TO_DEATH:
+				t = Game.res.getTexture("toDeathbase");
+				tr=TextureRegion.split(Game.res.getTexture("toDeath"), t.getWidth(), t.getHeight())[0];
+				break;
+			case WASTED:
+				overlay = Game.res.getTexture("splashOverlay");
+			default:
+				break;
+			}
+			
+			maxTime = time;
+			
+			if (tr!=null){
+				animation = new Animation(null);
+				animation.initFrames(tr, Vars.ANIMATION_RATE, direction);
+			}
+		}
+		
+		// YAY MATH~!!!
+		public void render(SpriteBatch sb){
+			float x = Game.height/4f, y = Game.height/4f, 
+					zx=1, zy=1, rot=0, t = maxTime - time;
+			float ts1 = maxTime/6, ts2 = 5*maxTime/6f;
+			float rx = 0, ry = 0;
+
+			if(animation!=null){
+				rx = animation.getFrame().getRegionWidth()/2f;
+				ry = animation.getFrame().getRegionHeight()/2f;
+				animation.update(Vars.DT);
+			}
+
+			switch(type){
+			case DO_BATTLE:
+				break;
+			case DO_IT:
+				break;
+			case ITS_ALIVE:
+				break;
+			case KILL_IT: //rotate and zoom in, stretch out
+				float az1 = 1.65f;
+				float az2 = 900;
+				float zm = .8f;
+				float oa = 8100f;
+				ts1 = .35f; ts2 = 1.5f;
+				
+				x = Game.width/4f;
+				y = 0.65f*Game.height/2f;
+				
+				if(t<ts1){
+					rot = oa*(t-ts1)*(t-ts1) ;
+					zx = zy = zm*t/ts1;
+				} else if (t<ts2) {
+					rot = ((-2)/(ts2-ts1))*(t-ts1)+
+							1/(ts1+oa*ts1);
+					zx = zy = ((1.25f-zm)/(ts2 - ts1))*(t-ts1)+zm;
+				} else {
+					rot = ((20-25)/(ts2-ts1))*(ts2-ts1)+
+							1/(ts1+oa*ts1);
+					float fz1ts2 = ((1.25f-zm)/(ts2 - ts1))*(t-ts1)+zm;
+					zy = (fz1ts2 /(ts2 - az1))*(t-ts2) + fz1ts2;
+					if(zy<0)zy=0;
+					zx = az2*(t-ts2)*(t-ts2)+
+							((1.25f-zm)/(ts2 - ts1))*(ts2-ts1)+zm;
+				}
+				
+				break;
+			case STRING:
+				int width = font4[0].getRegionWidth();
+				float scale = 2;
+				main.drawString(sb, font4, width, 2, splash.text, 
+						Game.width/4 - scale * width * splash.text.length()/2,  Game.height/4);
+				break;
+			case TO_DEATH:
+				break;
+			case WASTED:
+				break;
+				
+			default: //slide in from left
+				float cx =.5555555f*Game.width/2f;
+				float cxw=.1064814f*Game.width/2f;
+				float a1 = -13.3f;
+				float a0 = -1560;
+				float o  = .034f;
+				float o0 = .043f;
+				float o1 = 53;
+				y = 0.65f*Game.height/2f;
+
+//				if(animation!=null)
+//					y-=animation.getFrame().getRegionHeight()/2f;
+				
+				if(t<ts1)
+					x = a0*(t-ts1-o)*(t-ts1-o)+cx-cxw;
+				else if (t<ts2)
+					x = a1*(t-ts2)*(t-ts2)+o1+
+							a0*o*o+cx-cxw;
+				else
+					x = -a0*(t-ts2+o0)*(t-ts2+o0)+
+						a1*o0*o0+o1+
+						a0*o*o+cx-cxw;
+				break;
+			}
+
+			if(animation!=null){
+				TextureRegion tr = animation.getFrame();
+				sb.draw(tr, x-tr.getRegionWidth()/2f, y-tr.getRegionHeight()/2f, rx, ry, 
+						tr.getRegionWidth(), tr.getRegionHeight(), zx, zy, rot);
+				//sb.draw(tr,x-tr.getRegionWidth()/2f, y-tr.getRegionHeight()/2f);
+//				sb.draw(tr, main.debugX, main.debugY);
+			}
+//			TextureRegion region, float x, float y, float originX, float originY, float width, float height, float scaleX, float scaleY, float rotation)
+		}
+	}	
 }

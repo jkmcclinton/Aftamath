@@ -407,9 +407,11 @@ public class Scene {
 	public Vector2 getCBSP() { return camBotSpawnpoint; }
 
 	public void create() {
+		//TODO if already created, don't create
 		if(main.getHud()!=null) //that means we're no longer initializing the game
 			main.getHud().showLocation();
 		TiledMapTileLayer ground = (TiledMapTileLayer) tileMap.getLayers().get("ground");
+		TiledMapTileLayer g2 = (TiledMapTileLayer) tileMap.getLayers().get("ledge");
 		TiledMapTileLayer fg = (TiledMapTileLayer) tileMap.getLayers().get("fg");
 		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
 		
@@ -426,19 +428,33 @@ public class Scene {
 				Cell cell = ground.getCell(x, y);
 				Vector2 location = new Vector2((x+.5f) * Vars.TILE_SIZE / Vars.PPM,
 						y * Vars.TILE_SIZE / Vars.PPM);
-				if (cell == null) continue;
-				if (cell.getTile() == null) continue;
+				if (cell != null)
+					if (cell.getTile() != null){
+						groundLevel = (y-1)*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f;
+						String type = "";
+						if(cell.getTile().getProperties().get("type")!=null)
+							type = cell.getTile().getProperties().get("type", String.class);
+						g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
+								(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
+						g.setGameState(main);
+					}
+
+				if(g2!=null){
+					cell = g2.getCell(x, y);
+					if (cell != null)
+						if (cell.getTile() != null) {
+							String type = "";
+							if(cell.getTile().getProperties().get("type")!=null)
+								type = cell.getTile().getProperties().get("type", String.class);
+							g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
+									(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
+							g.setGameState(main);
+						}
+				}
 				
-				groundLevel = (y-1)*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f;
-				String type = "";
-				if(cell.getTile().getProperties().get("type")!=null)
-					type = cell.getTile().getProperties().get("type", String.class);
-				g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
-						(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
-				g.setGameState(main);
-				
+				//collect foreground and background sounds???
 				cell = fg.getCell(x, y);
-				if (cell != null) {
+				if (cell != null)
 					if (cell.getTile() != null) {
 						Object b = cell.getTile().getProperties().get("sound");
 						if(b!=null){
@@ -446,10 +462,9 @@ public class Scene {
 							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
 						}
 					}
-				}
-//				
+							
 				cell = bg1.getCell(x, y);
-				if (cell != null) {
+				if (cell != null) 
 					if (cell.getTile() != null) {
 						Object b = cell.getTile().getProperties().get("sound");
 						if(b!=null){
@@ -457,7 +472,6 @@ public class Scene {
 							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
 						}
 					}
-				}
 			}
 		
 		//lights
@@ -500,6 +514,8 @@ public class Scene {
 						String pathName = object.getProperties().get("path", String.class);
 						String powerType = object.getProperties().get("powerType", String.class);
 
+						String loadCondition = object.getProperties().get("load Condition", String.class);
+
 						if(l!=null) {
 							if (l.toLowerCase().equals("back")) {
 								l = "3";
@@ -541,28 +557,34 @@ public class Scene {
 								}
 								//ignore since object was already created via save file
 							} else{
-								Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);
-								e.setGameState(main);
-								e.setState(state, null, -1, ResetType.NEVER.toString());
-								e.setDialogueScript(script);
-								e.setAttackScript(aScript);
-								e.setSupAttackScript(sScript);
-								e.setDiscoverScript(dScript);
-								e.setResponseType(dType);
-								e.setAttackType(aType);
-								e.setPowerType(powerType);
-								e.active = true;
-								entities.add(e);
-								
-								if(pathName!=null)
-									pathsToAdd.put(e, pathName);
-								if(focus!=null) 
-									fociToAdd.put(e, focus);
-								if(nickName!=null)
-									e.setNickName(nickName);
-								
-								if(sceneIDParsed>=0)
-									Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
+								boolean b = true;
+								if(loadCondition!=null)
+									b = main.evaluator.evaluate(loadCondition);
+										
+								if(b){
+									Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);
+									e.setGameState(main);
+									e.setState(state, null, -1, ResetType.NEVER.toString());
+									e.setDialogueScript(script);
+									e.setAttackScript(aScript);
+									e.setSupAttackScript(sScript);
+									e.setDiscoverScript(dScript);
+									e.setResponseType(dType);
+									e.setAttackType(aType);
+									e.setPowerType(powerType);
+									e.active = true;
+									entities.add(e);
+
+									if(pathName!=null)
+										pathsToAdd.put(e, pathName);
+									if(focus!=null) 
+										fociToAdd.put(e, focus);
+									if(nickName!=null)
+										e.setNickName(nickName);
+
+									if(sceneIDParsed>=0)
+										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
+								}
 							}
 						} catch (NoSuchFieldException | SecurityException e) {
 							e.printStackTrace();
@@ -595,14 +617,17 @@ public class Scene {
 						String id = object.getProperties().get("ID", String.class);
 						int warpID = Integer.parseInt(id);
 						Warp w = main.findWarp(ID, warpID);
-						w.setOwner(this);
-						w.active = false;
-						entities.add(w);
+						if(w!=null){ //should only happen if main.cwarps is false
+							w.setOwner(this);
+							w.active = false;
+							entities.add(w);
+						}
 					}
 					
 					if(object.getProperties().get("event")!=null){
 						Iterator<String> it = object.getProperties().getKeys();
-						EventTrigger et = new EventTrigger(main, rect.x, rect.y, rect.width, rect.height);
+						EventTrigger et = new EventTrigger(main, rect.x+rect.width/2-7.1f, 
+								rect.y, rect.width, rect.height);
 						String script, condition, s;
 						
 						while(it.hasNext()){
@@ -664,7 +689,7 @@ public class Scene {
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 		
-		entities.addAll(createLinkWarps());
+		if(Main.cwarps)entities.addAll(createLinkWarps());
 	}
 	
 	
@@ -727,8 +752,8 @@ public class Scene {
 
 						int warpID = Integer.parseInt(id);
 						int nextID = Integer.parseInt(nextWarp);
-						Warp w = new Warp(this, next.replaceAll(" ", ""), warpID, nextID, rect.x, 
-								rect.y+rect.height/2, rect.width, rect.height);
+						Warp w = new Warp(this, next.replaceAll(" ", ""), warpID, nextID, rect.x+rect.width/2f, 
+								rect.y+rect.height/2-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
 						w.setCondition(condition);
 						w.setInstant(instant);
 						warps.add(w);
@@ -752,17 +777,23 @@ public class Scene {
 			w.setOwner(this);
 			warps.add(w);
 			// adds a trigger to show the title of the next location
-			if(w.getLink().owner.outside)
-				warps.add(new TextTrigger(w.getWarpLoc().x + Vars.TILE_SIZE, w.getWarpLoc().y+
-						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.RIGHT_MARGIN));
+			if(w.getLink().owner.outside){
+				TextTrigger tt = new TextTrigger(w.getWarpLoc().x + Vars.TILE_SIZE, w.getWarpLoc().y+
+						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.RIGHT_MARGIN);
+				w.setTextTrigger(tt);
+				warps.add(tt);
+			}
 		} if(prop.get("previous")!=null){
 			w = main.findWarp(ID, 0);
 			w.setOffset(4*Vars.TILE_SIZE, this.groundLevel);
 			w.setOwner(this);
 			warps.add(w);
-			if(w.getLink().owner.outside)
-				warps.add(new TextTrigger(w.getWarpLoc().x - Vars.TILE_SIZE, w.getWarpLoc().y+
-						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.LEFT_MARGIN));
+			if(w.getLink().owner.outside){
+				TextTrigger tt = new TextTrigger(w.getWarpLoc().x + Vars.TILE_SIZE, w.getWarpLoc().y+
+						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.LEFT_MARGIN);
+				w.setTextTrigger(tt);
+				warps.add(tt);
+			}
 		}
 		
 		return warps;
