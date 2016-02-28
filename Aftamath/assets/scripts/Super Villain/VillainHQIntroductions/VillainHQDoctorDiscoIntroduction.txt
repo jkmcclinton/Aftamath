@@ -1,0 +1,19 @@
+Script
+lockplayer
+
+setSpeaker(This)
+face(This, Player)
+Text({Hey, how ya doin'.})
+
+setSpeaker(player)
+setChoice(1: Tell me about yourself, 2: Nevermind)
+    [Choice Tell me about yourself]
+	    setSpeaker(This)
+		Text(happy, {There are two things that I consider my talents. Spinnin' records and kickin' ass.})
+	end
+	
+	[Choice Nevermind]
+	end
+
+done
+
