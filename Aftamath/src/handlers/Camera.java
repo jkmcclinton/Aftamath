@@ -295,7 +295,6 @@ public class Camera extends OrthographicCamera{
 	}
 
 	public void setLock(boolean val){ locked = val; }
-
 	public void setDefaultZoom(float zoom){ defaultZoom = zoom; }
 	public void setTrigger(RefocusTrigger trigger){ this.trigger = trigger; }
 	public RefocusTrigger getTrigger(){ return trigger; }

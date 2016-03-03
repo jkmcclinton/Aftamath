@@ -138,7 +138,6 @@ setChoice(1:Not now, 2:Yes)
 end
 done
 
-
 Script Fourth
 if(!microchipQuestFinished)
 	setSpeaker(this)

@@ -1,0 +1,19 @@
+Script
+lockplayer
+
+setSpeaker(This)
+face(This, Player)
+Text({Yo.})
+
+setSpeaker(Player)
+setChoice(1: Tell me about yourself, 2: Nevermind)
+    [Choice Tell me about yourself]
+	    setSpeaker(This)
+	    Text(sad, {Look, I come from nothin'. I gotta join this rabble outta necessity. That said, this is my home now. And I take care of my own.})
+	end
+	
+	[Choice Nevermind]
+	end
+
+done
+

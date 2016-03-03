@@ -74,15 +74,17 @@ public class Projectile extends Entity {
 		case ELECTRO:
 		case ROCK:	sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y-rh/4 - 1);
 			break;
-		default:	sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y);
+		default:	
+			Vector2 loc = new Vector2(getPixelPosition().x - rw, getPixelPosition().y);
+			Vector2 vel = body.getLinearVelocity();
+			float angle = (float)(Math.atan(vel.y/vel.x)*180/Math.PI);
+			sb.draw(animation.getFrame(), loc.x, loc.y, rw, rh, width, height, 1, 1, angle);
+//			 draw(region, x, y, originX, originY,  width,  height, scaleX, scaleY, rotation)
 			break;
 		
 		}
 	
-//		Vector2 loc = new Vector2(getPixelPosition().x - rw, getPixelPosition().y);
-//		Vector2 vel = body.getLinearVelocity();
-//		float angle = (float)(Math.atan(vel.y/vel.x));
-//		sb.draw(animation.getFrame(), loc.x, loc.y, loc.x+rw, loc.y+rh, width, height, 1, 1, angle);
+		
 	}
 
 	//handling for when projectile collides with something

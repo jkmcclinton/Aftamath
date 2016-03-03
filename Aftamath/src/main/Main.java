@@ -129,6 +129,7 @@ public class Main extends GameState {
 						render 		= true, 
 						dbtrender 	= false,
 						debugging   = true,
+						cwarps      = true,
 						random;
 	//	private float ambient = .5f;
 	//	private int colorIndex;
@@ -180,7 +181,7 @@ public class Main extends GameState {
 
 		cam.reset();
 		b2dCam.reset();
-		catalogueWarps();
+		if(cwarps)catalogueWarps();
 		load();
 
 		speakTime = 0;
@@ -215,12 +216,11 @@ public class Main extends GameState {
 			debugText = "";
 			player.updateMoney();
 
-			handleDayCycle();
+//			handleDayCycle();
 			if(scene.outside) {
 				weatherTime+=dt;
 				handleWeather();
 			}
-
 			
 			if(currentScript != null &&analyzing && !waiting &&!warping) 
 				currentScript.update();
@@ -499,8 +499,8 @@ public class Main extends GameState {
 		debugText+= "/l"+Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
 		debugText += "/lLevel: " + scene.title;
 		debugText += "/lSong: " + music;
-//		debugText+= "/lState: "+(stateType);
-//		debugText+="/lInteractable: "+character.getInteractable();
+		
+		debugText+="/l("+debugX+", "+debugY+")";
 
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM  /*/Vars.TILE_SIZE*/) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
@@ -538,8 +538,7 @@ public class Main extends GameState {
 	public void handleInput() {
 		DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.ICE, DamageType.ROCK};
 		
-		
-		if(MyInput.isPressed(Input.DEBUG_UP)) {
+		if(MyInput.isDown(Input.DEBUG_UP)) {
 //			light += .1f; rayHandler.setAmbientLight(light);
 			player.addFunds(100d);
 		}
@@ -547,38 +546,27 @@ public class Main extends GameState {
 		if(MyInput.isPressed(Input.DEBUG_DOWN)){
 //			light -= .1f; rayHandler.setAmbientLight(light);
 			player.addFunds(-100d);
-		} if(MyInput.isDown(Input.DEBUG_LEFT)) {
-//			if(colorIndex>0) 
-//				colorIndex--; 
-//			rayHandler.setAmbientLight(Vars.COLORS.get(colorIndex)); 
-//			rayHandler.setAmbientLight(ambient);
-		} if(MyInput.isDown(Input.DEBUG_RIGHT)) {
-//			if(colorIndex<Vars.COLORS.size -1) 
-//				colorIndex++; 
-//			rayHandler.setAmbientLight(Vars.COLORS.get(colorIndex)); 
-//			rayHandler.setAmbientLight(ambient);
-//			debugX+=.2f;
-//			System.out.println(debugX);
+		} if(MyInput.isPressed(Input.DEBUG_LEFT)) {
+		} if(MyInput.isPressed(Input.DEBUG_RIGHT)) {
 		} if (MyInput.isPressed(Input.DEBUG_LEFT2)) {
 			debugX = debugX>0 ? debugX - 1 : dm.length-1;
 			character.setPowerType(dm[(int) debugX]);
 			System.out.println(debugX+"\t"+dm[(int) debugX]);
+			debugY-=1;
 		} if (MyInput.isPressed(Input.DEBUG_RIGHT2)) {
 			debugX = debugX<dm.length-1 ? debugX + 1 : 0;
 			character.setPowerType(dm[(int) debugX]);
 			System.out.println(debugX+"\t"+dm[(int) debugX]);
+//			debugY+=1;
 		} if(MyInput.isPressed(Input.DEBUG_CENTER)) {
 			random=true;
 			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
 			changeSong(new Song(Game.SONG_LIST.get(current)));
 //			dayTime+=1.5f;
-		}
-
-		if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
+		} if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
 			cam.zoom+=.01;
 			b2dCam.zoom+=.01;
-		}
-		if(MyInput.isDown(Input.ZOOM_IN /*|| Gdx.input.getInputProcessor().scrolled(1)*/)) {
+		} if(MyInput.isDown(Input.ZOOM_IN /*|| Gdx.input.getInputProcessor().scrolled(1)*/)) {
 			cam.zoom-=.01;
 			b2dCam.zoom-=.01;
 		}
@@ -1309,7 +1297,8 @@ public class Main extends GameState {
 			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
-			if(debugging) scene= new Scene(world,this,"Church");
+			if(debugging) scene= new Scene(world,this,"Residential District N");
+//			if(debugging) scene= new Scene(world,this,"TrainCar");
 			else scene= new Scene(world,this,"Residential District N");
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
@@ -1320,7 +1309,6 @@ public class Main extends GameState {
 				character = new Mob("I am a normal person with a name (YOU)", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 			} else {
-				
 				//this spawns a camBot at its special location to take the place of 
 				//the player before it has been created by the introduction
 				if(scene.getCBSP()!=null)
@@ -1360,9 +1348,6 @@ public class Main extends GameState {
 	}
 
 	public void createPlayer(Vector2 location){
-//		String gender = character.getGender();
-//		character.setGender(gender);
-
 //		cam.setLock(false);
 //		b2dCam.setLock(false);
 		cam.zoom = Camera.ZOOM_NORMAL;

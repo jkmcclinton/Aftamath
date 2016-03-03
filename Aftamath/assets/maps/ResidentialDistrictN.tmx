@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="62">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="64">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -324,20 +324,20 @@
     <property name="grimReaper1" value=""/>
    </properties>
   </object>
-  <object id="60" x="848" y="1392" width="80" height="176">
+  <object id="60" x="816" y="1392" width="80" height="176">
    <properties>
     <property name="event" value=""/>
     <property name="hobo1" value="!Hobo1"/>
    </properties>
   </object>
-  <object id="61" name="2" x="400" y="1552" width="16" height="16">
+  <object id="61" name="2" x="384" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="55"/>
     <property name="NPC" value="breadstand"/>
     <property name="layer" value="back"/>
     <property name="name" value="AbandonedCart"/>
     <property name="script" value="cart"/>
-    <property name="state" value="STATIONARY"/>
+    <property name="state" value="FACERIGHT"/>
    </properties>
   </object>
  </objectgroup>

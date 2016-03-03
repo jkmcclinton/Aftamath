@@ -7,9 +7,9 @@ import entities.Mob;
 import entities.MobAI.ResetType;
 
 public class Animation {
-	
+
 	public int priority, type, transType, timesPlayed;
-	
+
 	private TextureRegion[] primaryFrames, transFrames, baseFrames;
 	private float primaryDelay, transDelay, baseDelay;
 	private float time, totTime, resetTime;
@@ -42,16 +42,16 @@ public class Animation {
 			delay = baseDelay;
 		}
 
-//		if(owner.toString().contains("Trevon"))
-//			printDebug(frames, delay);
-		
+		//		if(owner.toString().contains("Trevon"))
+		//			printDebug(frames, delay);
+
 		time += dt;
 		totTime += dt;
 		if (time >= delay) {
 			time = 0;
 			if (backwards) currentIndex--;
 			else currentIndex++;
-	
+
 			//reached end of animation
 			if ((backwards&&currentIndex == -1) || (!backwards&&currentIndex == frames.length)) {
 				//remove transition loop
@@ -98,7 +98,7 @@ public class Animation {
 			frames = baseFrames;
 		return frames[currentIndex]; 
 	}
-	
+
 	public void printDebug(TextureRegion[] frames, float delay){
 		String s;
 		s =loopBehavior + " "+Mob.getAnimName(type) + "("+ (currentIndex+1) +"/"+frames.length+")\t:: ";
@@ -106,7 +106,7 @@ public class Animation {
 			s+=Mob.getAnimName(transType) + "("+ (currentIndex+1) +"/"+frames.length+")";
 		else
 			s+="_____(0/0)";
-			System.out.println(s);
+		System.out.println(s);
 	}
 
 	public void setFrames(TextureRegion[] frames, float delay, int priority, int type,
@@ -122,14 +122,15 @@ public class Animation {
 			this.backwards = backwards;
 			totTime = 0;
 			time = 0;
-			
+
 			if (backwards) 
 				currentIndex = frames.length - 1;
 			else 
 				currentIndex = 0;
-			
-			if (owner.isFacingLeft()) 
-				flip(true);
+
+			if(owner!=null)
+				if (owner.isFacingLeft()) 
+					flip(true);
 			timesPlayed = 0;
 		}
 	}
@@ -159,18 +160,20 @@ public class Animation {
 			this.transDelay = transDelay;
 			this.transType = transType;
 
-			if (owner.isFacingLeft()) 
-				flip(true);
+			if(owner!=null)
+				if (owner.isFacingLeft()) 
+					flip(true);
 		}
 	}
 
 	public void addTransition(TextureRegion[] transFrames, float transDelay, int transType, boolean direction) {
-			this.transFrames = transFrames;
-			this.transDelay = transDelay;
-			this.transType = transType;
-			currentIndex = 0;
-			totTime = 0;
-			time = 0;
+		this.transFrames = transFrames;
+		this.transDelay = transDelay;
+		this.transType = transType;
+		currentIndex = 0;
+		totTime = 0;
+		time = 0;
+		if(owner!=null)
 			if (owner.isFacingLeft()) 
 				flip(true);
 	}
@@ -185,12 +188,13 @@ public class Animation {
 		timesPlayed = 0;
 		resetTime = 0;
 		backwards = false;
-		
-		if(owner instanceof Mob)
-			if(((Mob)owner).getCurrentState().resetType.equals(ResetType.ON_ANIM_END))
-				((Mob) owner).resetState();
+
+		if(owner!=null)
+			if(owner instanceof Mob)
+				if(((Mob)owner).getCurrentState().resetType.equals(ResetType.ON_ANIM_END))
+					((Mob) owner).resetState();
 	}
-	
+
 	/**return the animation to its default loop of images*/
 	public void reset(){
 		removePrimaryFrames();
@@ -229,17 +233,17 @@ public class Animation {
 			f=primaryFrames;
 			d=primaryDelay;
 		} if(f==null) d=baseDelay;
-		
+
 		return d; 
 	}
-	
+
 	public int getCurrentType(){
 		int i = type;
 		if(transFrames!=null)
 			i = transType;
 		return i;
 	}
-	
+
 	public boolean hasTrans(){ return transFrames==null; }
 	public int getTimesPlayed() { return timesPlayed; }
 	public int getDefaultLength() { return baseFrames.length; }
