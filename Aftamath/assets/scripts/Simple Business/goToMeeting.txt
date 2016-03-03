@@ -1,0 +1,80 @@
+Script Main
+lockplayer
+
+setSpeaker(this)
+text({New colleague, shall we proceed to the meeting?}
+
+setSpeaker(player)
+text({I don't know anything about this company.})
+
+setSpeaker(this)
+text({No worries, new colleague. The compay operates smoothly within my grasp.})
+
+setSpeaker(player)
+text({That's... reassuring.})
+wait(.5)
+text({By the way, I have a name.})
+
+setSpeaker(this)
+text({Yes, as a new colleague, I am under the responsibility of giving you a name plate. Please wait until after the meeting to retrieve it, new colleague.})
+wait(.5)
+text({New colleague, shall we proceed to the meeting?})
+setChoice(2:Yes, 1:No)
+	[choice Yes]
+		#go to different level
+		setSpeaker(this)
+		texT({We will now start the meeting. We are here to talk about the circulation of our new product, the microchip. Any thoughts on that, new colleague?})
+		setChoice(1:I think we're ready, 2:I think we'd need more time)
+			[choice I think we're ready]
+				setSpeaker(this)
+				text({Yes, I like your enthusiasm.})
+				wait(.5)
+				text({I expect that we will have enough samples to put out on the international market by next month.})
+				setSpeaker(player)
+				text({I propose that we advertise it to our community so we can have some backing in reputation.})
+				setChoice(2:That seems to be the logical procedure, 2:Surely we don't need the backing of a small city like it, 2:We should do our best to not waste our time)
+					[choice That seems to be the logical procedure]
+					setSpeaker(this)
+					text({It is quite the careful approach. The only issue is time.})
+					end
+					
+					[choice Surely we don't need the backing of a small city like it]
+					setSpeaker(this)
+					text({You are new to this business. so I will tell you. On the contrary, we do. It is the businessman's duty to gain people's trust.})
+					end
+					
+					[choice We should do our best to not waste our time]
+					setSpeaker(this)
+					text({Yes, of course. Let's not waste too much time.})
+					end
+				end
+			[choice I think we'd need more time]
+				setSpeaker(this)
+				text({We seem to be in disagreement.})
+				setSpeaker(player)
+				text({We should hire a person to educate the public about our innovations.})
+				wait(.25)
+				texT({All they have to do is talk to them, give them a small something for free, and lay on the charm.})
+				setSpeaker(this)
+				text({We have limited supplies of these free goods, so the volunteer must be very careful on who has the most influence. Who would those people be?})
+				setChoice(2:The privileged, 2:The middle class, 2:The impoverished)
+					[choice The privileged]
+					setSpeaker(this)
+					text({Yes, though they will seek benefits, they will work.})
+					end
+					[choice The middle class]
+					setSpeaker(this)
+					text({Yes, though they will see kbenefits, they will work.})
+					end
+					[choice The impoverished]
+					setSpeaker(this)
+					text({Yes, though there are too many, they will work.})
+					end
+				end
+	end							
+	[choice No]
+		setSpeaker(player)
+		text({Nah Boss, I'm good for now.})
+	end
+	
+done
