@@ -7,11 +7,11 @@ if([asked < 3])
   text(normal, {...})
   setSpeaker(this,true)
   text(normal, {Will I go out with you?})
-  if(!hasPartner)
+  if(hasPartner)
     text(normal, {Ask me later.})
   else
     text(happy, {Sure!})
-    addPartner(this)
+    addPartner(this, {girlfriend}, {Random bystander said yes. That works?})
     setScript(WentOut)
   end
 else

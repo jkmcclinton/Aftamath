@@ -137,9 +137,9 @@ public class Main extends GameState {
 						rayHandling = false, //include lighting?
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
-						debugging   = true,	 //in debug mode?
+						debugging   = false,	 //in debug mode?
 						cwarps      = true,	 //create warps?
-						document    = true, //document variables?
+						document    = false, //document variables?
 						random;
 	//	private float ambient = .5f;
 	//	private int colorIndex;
@@ -444,7 +444,7 @@ public class Main extends GameState {
 		scene.renderBG(sb);
 
 		if(render){
-			scene.renderEnvironment(cam);
+			scene.renderEnvironment(cam, sb);
 
 			sb.begin();
 
@@ -458,7 +458,8 @@ public class Main extends GameState {
 					i = x;
 					break;
 				}
-				e.render(sb);
+				if(e.getLayer()!=Vars.BIT_LAYERSPECIAL)
+					e.render(sb);
 			}
 			drawHealthBars(sb);
 			sb.end();
@@ -1238,6 +1239,7 @@ public class Main extends GameState {
 	}
 	
 	public void addObject(Entity e){ 
+		if(e==null) return;
 		if(!exists(e)){
 			objects.add(e); 
 			e.setGameState(this);
@@ -1301,8 +1303,8 @@ public class Main extends GameState {
 			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
-			if(debugging) scene= new Scene(world,this,"Church");
-//			if(debugging) scene= new Scene(world,this,"Subway");
+//			if(debugging) scene= new Scene(world,this,"Residential District N");
+			if(debugging) scene= new Scene(world,this,"Subway");
 			else scene= new Scene(world,this,"Residential District N");
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
@@ -1476,8 +1478,9 @@ public class Main extends GameState {
 		
 		for (Entity d : objects){
 			d.setGameState(this);
-			if(!d.equals(character))
+			if(!d.equals(character)){
 				d.create();
+			}
 		}
 
 		sortObjects();
@@ -1574,7 +1577,7 @@ public class Main extends GameState {
 	public void printObjects() {
 		for(Entity e:objects){
 //			debugText+="/l"+e.ID;
-			System.out.println(e);
+			System.out.println(e+": "+e.getLayer());
 		}
 	}
 	

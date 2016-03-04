@@ -24,7 +24,7 @@ public class History implements Serializable {
 		flagList.put("false",false);
 		variableList.put("male", "male");
 		variableList.put("female", "female");
-		variableList.put("trainLoc", "nowhere");
+		variableList.put("trainLoc", "CommercialDistrictNW");
 		variableList.put("trainDest", "nowhere");
 	}
 	

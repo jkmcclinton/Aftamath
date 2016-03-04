@@ -9,12 +9,14 @@ import com.badlogic.gdx.utils.Array;
 public class Vars {
 	
 	//collision layer data
-	public static final short BIT_GROUND = 2;
-	public static final short BIT_HALFGROUND = 4;
-	public static final short BIT_BATTLE = 8;
-	public static final short BIT_LAYER1 = 16;
-	public static final short BIT_PLAYER_LAYER = 32;
-	public static final short BIT_LAYER3 = 64;	
+	public static final short BIT_LAYERSPECIAL = 2;
+	public static final short BIT_LAYERSPECIAL2 = 4;
+	public static final short BIT_GROUND = 8;
+	public static final short BIT_HALFGROUND = 16;
+	public static final short BIT_BATTLE = 32;
+	public static final short BIT_LAYER1 = 64;
+	public static final short BIT_PLAYER_LAYER = 128;
+	public static final short BIT_LAYER3 = 256;	
 	
 	//global constants
 	public static final float DT = .016666668f;

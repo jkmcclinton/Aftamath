@@ -9,7 +9,7 @@
   <property name="next" value="Commercial District NW"/>
   <property name="previous" value="Tha Hood"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
   <image source="tilesets/street.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -212,7 +212,7 @@
     <property name="NPC" value="richGuy"/>
     <property name="layer" value="back"/>
     <property name="name" value="Olivierre"/>
-    <property name="script" value="script1"/>
+    <property name="script" value="richComplaint"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
@@ -227,7 +227,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="24" name="spawn" x="736" y="1552" width="16" height="16">
+  <object id="24" name="spawn" x="208" y="256" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>

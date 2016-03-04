@@ -57,7 +57,7 @@ public class Entity implements Serializable {
 	protected double resistance = 1;
 	protected int sceneID;
 	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
-	protected float invulnerableTime;
+	protected float invulnerableTime, maxSpeed = MOVE_SPEED;
 	protected Texture texture;
 	protected boolean facingLeft, invulnerable;
 	protected World world;
@@ -71,19 +71,20 @@ public class Entity implements Serializable {
 	protected short layer, origLayer;
 	protected HashMap<Mob, Boolean> followers;
 	
+	protected static final float MAX_DISTANCE = 65;
+	protected static final double DEFAULT_MAX_HEALTH = 20;
+	
 	private Path path;
 	private boolean moving;
 	
+	private static final float MOVE_SPEED = .70f;
 	static {
 		idToEntity = new HashMap<Integer, Entity>();
 	}
 	
 	public enum DamageType{
-		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND;
+		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND, DARKMAGIC;
 	}
-	
-	protected static final float MAX_DISTANCE = 65;
-	protected static final double DEFAULT_MAX_HEALTH = 20;
 
 	//no-arg should only be used by serializer
 	public Entity() {
@@ -158,22 +159,135 @@ public class Entity implements Serializable {
 		}
 		
 		// make entity move to path
-		if(moving && path !=null){
-			float dx = path.getCurrent().x - getPixelPosition().x;
-			float dy = path.getCurrent().y - getPixelPosition().y;
-			
-			if(Math.abs(dx)<=1 && Math.abs(dy)<=1){
-				path.stepIndex();
-				if(path.completed){
-					body.setLinearVelocity(new Vector2(0, 0));
-					moving = false;
-					path = null;
+		//NOTE, should be merged with AI state?
+		if(moving){
+			if(body.getType().equals(BodyType.KinematicBody)){
+				moving = moveToLoc(goalPosition);
+				if(!moving) goalPosition = null;
+				if(path!=null){
+					path.stepIndex();
+					if(path.completed){
+						body.setLinearVelocity(new Vector2(0, 0));
+						maxSpeed = MOVE_SPEED;
+						moving = false;
+						path = null;
+					} else
+						goalPosition = path.getCurrent();
+				}
+			} else if(body.getType().equals(BodyType.DynamicBody)){
+				moving = moveToLoc(goalPosition.x);
+				if(!moving) goalPosition = null;
+				if(path!=null){
+					path.stepIndex();
+					if(path.completed){
+						Vector2 v = body.getLinearVelocity();
+						body.setLinearVelocity(new Vector2(v.x/2f, v.y));
+						maxSpeed = MOVE_SPEED;
+						moving = false;
+						path = null;
+					} else
+						goalPosition = path.getCurrent();
 				}
 			}
+		}	
+	}
+	
+	private boolean moveToLoc(Vector2 loc){
+		if(isReachable(loc)){
+			float dx = loc.x - getPixelPosition().x;
+			float dy = loc.y - getPixelPosition().y;
+			if(Math.abs(dx) > 2 || Math.abs(dy) > 2){
+				Vector2 v = body.getLinearVelocity();
+
+				if(Math.abs(dx) > 2 && Math.abs(dy) > 2)
+					v = Vars.getVelocity(getPixelPosition(), loc, maxSpeed);
+				else {
+					if (dx > 0) v = new Vector2(maxSpeed, v.y);
+					else v = new Vector2(-maxSpeed, v.y);
+					if (dy > 0) v = new Vector2(v.x, maxSpeed);
+					else v = new Vector2(v.x, -maxSpeed);
+				}
+				
+				body.setLinearVelocity(v);
+			} else {
+				body.setLinearVelocity(new Vector2(0,0));
+				return true;
+			}
+			return false;
 		}
+		body.setLinearVelocity(new Vector2(0, 0));
+		return true;
+	}
+	
+	private boolean moveToLoc(float gx){
+		if(isReachable(gx)){
+			float dx = gx - getPixelPosition().x;
+			if(Math.abs(dx) > 2){
+				if (dx > 0) right();
+				else left();
+			} else {
+				Vector2 v =body.getLinearVelocity();
+				body.setLinearVelocity(new Vector2(v.x/2f, v.y));
+				return true;
+			}
+			return false;
+		}
+		Vector2 v = body.getLinearVelocity();
+		body.setLinearVelocity(new Vector2(v.x/2f, v.y));
+		return true;
+	}
+	
+	public void left(){
+		if (!facingLeft) changeDirection();
+		if (body.getLinearVelocity().x > -maxSpeed) 
+			body.applyForceToCenter(-5f*x, 0, true);
+	}
+	
+	public void right(){
+		if (facingLeft) changeDirection();
+		if (body.getLinearVelocity().x < maxSpeed) 
+			body.applyForceToCenter(5f*x, 0, true);
+	}
+	
+	private boolean isReachable(Vector2 loc){
+		if(loc.x>getCurrentScene().width)
+			return false;
+		if(loc.x<0)
+			return false;
+		if(loc.y>getCurrentScene().height)
+			return false;
+		if(loc.y<0)
+			return false;
+		return true;
+	}
+	
+	private boolean isReachable(float x){
+//		if(!canMove())
+//			return false;
+		
+		//adjust goal if location is outside of level
+		if(x>getCurrentScene().width)
+			return false;
+		if(x<0)
+			return false;
+		return true;
+	}
+	
+	private Vector2 goalPosition;
+	public void move(Vector2 goal){
+		goalPosition = goal;
+		moving = true;
+	}
+	
+	public void moveToPath(Path path){
+		if (path==null) return;
+		this.path = path;
+		moving = true;
+		maxSpeed = path.getSpeed();
 	}
 	
 	public void render(FadingSpriteBatch sb) {
+//		System.out.println(this);
 		Color overlay = sb.getColor();
 		if(frozen)
 			sb.setColor(Vars.blendColors(Vars.FROZEN_OVERLAY, overlay));
@@ -484,7 +598,7 @@ public class Entity implements Serializable {
 	public HashMap<Mob, Boolean> getFollowers(){ return followers; }
 
 	public int compareTo(Entity e){
-		if(e ==null) return 0;
+		if(e ==null) return 0;		
 		if (layer < e.layer) return 1;
 		if (layer > e.layer) return -1;
 		return 0;
@@ -509,14 +623,6 @@ public class Entity implements Serializable {
 	public void killVelocity(){
 		Vector2 vel = body.getLinearVelocity();
 		body.setLinearVelocity(0, vel.y);
-	}
-	
-	public void moveToPath(Path path){
-		if (path==null) return;
-		this.path = path;
-		moving = true;
-		body.setLinearVelocity(Vars.getVelocity(getPixelPosition(), 
-				path.getCurrent(), path.getSpeed()));
 	}
 	
 	public void create(){

@@ -158,6 +158,9 @@ public class DamageField extends Entity {
 		
 		String sound;
 		switch(damageType){
+		case DARKMAGIC:
+			sound = "horror";
+			break;
 		case ELECTRO:
 			sound = "noise1";
 			break;
@@ -172,7 +175,6 @@ public class DamageField extends Entity {
 			break;
 		default:
 			sound = "chirp2";
-
 		}
 		main.playSound(e.getPosition(), sound);
 	}
@@ -182,6 +184,8 @@ public class DamageField extends Entity {
 	//by default the field doesn't have
 	private static String getID(DamageType type){
 		switch(type){
+		case DARKMAGIC:
+			return "mutagenicHorror";
 		case ELECTRO:
 			return "electricField";
 		case FIRE:
@@ -205,10 +209,8 @@ public class DamageField extends Entity {
 	private void instantiateType(){
 		isSensor= true;
 		switch(ID){
+		case "mutagenicHorror":
 		case "fireyField":
-			duration = 3;
-			damageStrength = 1;
-			break;
 		case "chillyWind":
 			duration = 3;
 			damageStrength = 1;

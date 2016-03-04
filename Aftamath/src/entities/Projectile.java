@@ -148,6 +148,7 @@ public class Projectile extends Entity {
 		case ELECTRO:
 			sound = "noise1";
 			break;
+		case DARKMAGIC:
 		case FIRE:
 			sound = "explosion1";
 			break;
@@ -175,8 +176,7 @@ public class Projectile extends Entity {
 		case ITEM:
 			return "item";
 		case SPELL:
-//			return "something cool";
-			return "fireball";
+			return "greenfire";
 		case ELECTRO_BALL:
 			return "electroball";
 		default:
@@ -223,6 +223,12 @@ public class Projectile extends Entity {
 		switch(type){
 		case FIREBALL:
 			damageType = DamageType.FIRE;
+			damageVal = 1;
+			speed = 3;
+			restitution = 0.25f;
+			break;
+		case SPELL:
+			damageType = DamageType.DARKMAGIC;
 			damageVal = 1;
 			speed = 3;
 			restitution = 0.25f;
@@ -294,6 +300,8 @@ public class Projectile extends Entity {
 		switch(damageType){
 		case ELECTRO:
 			sound = "chirp2"; break;
+		case DARKMAGIC:
+			sound = "spooky"; break;
 		case FIRE:
 			sound = "swish1"; break;
 		case ICE:
@@ -305,5 +313,4 @@ public class Projectile extends Entity {
 		}
 		main.playSound(getPosition(), sound);
 	}
-	
 }

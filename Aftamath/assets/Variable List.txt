@@ -1,4 +1,5 @@
 Variable Name            Type       Scope      Script
+a                        : integer  : global   : HeroHQEntry
 address                  : string   : local    : choice test
 ask                      : integer  : local    : afterTutorial
 asked                    : integer  : global   : ask out

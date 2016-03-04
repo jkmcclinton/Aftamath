@@ -91,7 +91,7 @@ if(!calledTrain)
 				value(set, loc, {Municipal District})
 			end
 
-			[Choice Commercial NW]([trainLoc != {CommercialNW}])
+			[Choice Commercial NW]([trainLoc != {CommercialDistrictNW}])
 				value(set, trainDest, {CommercialDistrictNW})
 				value(set, loc, {Commercial District NW})
 			end
@@ -104,6 +104,8 @@ if(!calledTrain)
 		hidedialog
 
 		#move train to embark location
+		teleport(trainCar, Subway, 0, 8)
+		move(trainCar, trainArrival)
 		wait(3)	
 		playSound(trainScreech)
 		wait(2.5)

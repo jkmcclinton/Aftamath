@@ -8,7 +8,7 @@
   <property name="next" value="Sewers"/>
   <property name="previous" value="Central Station"/>
  </properties>
- <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16">
   <image source="tilesets/indoors.png" width="960" height="771"/>
   <tile id="1320">
    <properties>
@@ -421,7 +421,7 @@
     <property name="loadCondition" value="[trainLoc != {Business}]"/>
    </properties>
   </object>
-  <object id="11" x="-199" y="99" width="380" height="78">
+  <object id="11" x="96" y="100" width="380" height="78">
    <properties>
     <property name="ID" value="33"/>
     <property name="entity" value="trainCar"/>
@@ -429,6 +429,10 @@
    </properties>
   </object>
   <object id="13" x="96" y="138">
+   <properties>
+    <property name="path" value="trainArrival"/>
+    <property name="speed" value="2"/>
+   </properties>
    <polyline points="0,0 384,0"/>
   </object>
   <object id="15" x="560" y="96" width="80" height="80">

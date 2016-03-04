@@ -1131,7 +1131,6 @@ public class Mob extends Entity{
 	}
 
 	public void climb(){ }
-
 	public void descend(){ }
 
 	public Script interact(){
@@ -1252,6 +1251,7 @@ public class Mob extends Entity{
 		else{
 			aimTime = 0;
 			switch (powerType){
+			case DARKMAGIC:
 			case ELECTRO:
 			case FIRE: 
 			case ICE:
@@ -1278,12 +1278,9 @@ public class Mob extends Entity{
 		
 		DamageField dF = null;
 		switch(powerType){
+		case DARKMAGIC:
 		case ELECTRO:
-			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
-			break;
 		case FIRE:
-			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
-			break;
 		case ICE:
 			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
 			break;
@@ -1315,58 +1312,32 @@ public class Mob extends Entity{
 				getPixelPosition().y+4);
 
 		Projectile p = null;
+		ProjectileType pT = null;
 		switch (powerType){
-		case FIRE:
-			p = new Projectile(this, ProjectileType.FIREBALL, spawnLoc.x, spawnLoc.y, target);
-			break;
-		case ICE:
-			p = new Projectile(this, ProjectileType.ICE_SPIKE, spawnLoc.x, spawnLoc.y, target);
-			break;
+		case DARKMAGIC: pT = ProjectileType.SPELL; break;
+		case FIRE: 	pT = ProjectileType.FIREBALL; break;
+		case ICE: pT = ProjectileType.ICE_SPIKE; break;
 		case BULLET:
 //			item = bullet
 //			p = new Projectile(this, ProjectileType.ITEM, spawnLoc.x, spawnLoc.y, target);
 			break;
-		case ELECTRO:
-			p = new Projectile(this, ProjectileType.ELECTRO_BALL, spawnLoc.x, spawnLoc.y, target);
-			break;
+		case ELECTRO: pT = ProjectileType.ELECTRO_BALL; break;
 		case PHYSICAL:
 			//find equipped throwable item
 			//throw item
 			//if no throwable item, play empty clip sound
 			break;
-		case ROCK:
-			p = new Projectile(this, ProjectileType.BOULDER, spawnLoc.x, spawnLoc.y, target);
-			break;
-		case WIND:
-			break;
+		case ROCK: pT = ProjectileType.BOULDER; break;
+		case WIND: break;
 		}
 		
-		p.setGameState(this.main);
-		p.setDirection(facingLeft);
-		p.create();
+		if(pT!=null){
+			p = new Projectile(this, pT, spawnLoc.x, spawnLoc.y, target);
+			p.setGameState(this.main);
+			p.setDirection(facingLeft);
+			p.create();
+		}
 		return p;
-	}
-	
-	public Particle special(){
-		switch(powerType){
-		case BULLET:
-			break;
-		case ELECTRO:
-			break;
-		case FIRE:
-			break;
-		case ICE:
-			break;
-		case ROCK:
-			break;
-		case WIND:
-			break;
-		default:
-			break;
-		}
-		
-//		setTransAnimation(Anim.AIM_TRANS, Anim.ATTACKING);
-		return null;
 	}
 
 	public void levelUp(){

@@ -5,7 +5,7 @@ declare(desc, local, string, {})
 #enter old lady
 face(player, Ms. Pancakes)
 move(Ms. Pancakes, 54, 97)
-doAction(Ms. Pancakes, knockout, false)
+doAction(Ms. Pancakes, knockout, null, on_script_end, false)
 
 setSpeaker(Ms. Pancakes)
 text(sad, {Help! I've fallen and I can't get up!})
@@ -30,14 +30,14 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 		text({Don't worry ma'am, I'll help you out.})
 		
 		hidedialog
-		move(player, 53.5, 97)
+		move(player, 53, 97)
 		
 		doAction(player, duck, 1.5, false)
 		doAction(Ms. Pancakes, recover)
 		wait(1.5)
 		
 		move(player, 50, 97)
-		face(player, Ms. Pancakes)
+		face(player, Donna)
 		
 		setSpeaker(Ms. Pancakes)
 		text(happy, {Oh, thank you soo much (old person word for young person here)!})
@@ -77,7 +77,7 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 			
 			setSpeaker(player)
 			text({Sure!})
-			
+			setDefaultState(Donna, faceleft)
 			move(Donna, 38, 97)
 		end
 	end
@@ -91,7 +91,6 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 		
 		setSpeaker(narrator)
 		text(sad, {Dammit, how could you tell?})
-		
 		setSpeaker(player)
 		text({Wait, what?})
 		
@@ -100,16 +99,19 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 		text(happy, {But, now that that's out of the question, I have to go with plan B!})
 		
 		setSpeaker(player)
+		eventmusic(Silence)
 		text({Plan... B? ~Oh god...})
 		
 		hidedialog
 		remove(Ms. Pancakes)
 		playSound(warp)
 		spawn(NPC, witch, Witch, 54, 97, 8)
+		value(set, Witch.powertype, {darkMagic})
 		value(set, Witch.nickname, {The Wicked Ol' Witch})
 		setDialog(Witch, genericWitch)
+		eventMusic(Incinerated Lands)
 		
-		setSpeaker (Witch)
+		setSpeaker(Witch)
 		text({Hahahahahahahahahahahahahahahahahahahahahahhahahahaha!})
 		text({FOOOL!})
 		text({You should have helped me when you had the chance!})
@@ -127,16 +129,17 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 		
 		setSpeaker(player)
 		text({!!!}, false)
+		doAction(player, duck)
 		attack(Witch, player)
+		wait(.01)
 		attack(Witch, player)
+		wait(.01)
 		attack(Witch, player)
 		value(set, player.health, 5)
-		doAction(player, duck)
 		
 		#witch goes to bridge area
-		#run(Witch, x, y)
-		move(Witch, 38, 97)
-		teleport(Witch, 20, 28, UnderaBridge)
+		run(Witch, 37, 97)
+		teleport(Witch, UnderaBridge, 20, 28)
 		
 		setSpeaker(narrator)
 		text({Ah... such a pointless yet entertaining story we have developing here.})

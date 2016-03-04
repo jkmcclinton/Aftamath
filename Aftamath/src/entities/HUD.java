@@ -328,10 +328,13 @@ public class HUD {
 			if(main.getCam().moving){
 //				System.out.println("moving");
 				return false;}
-			if(main.currentScript != null)
+			if(main.currentScript != null){
 				if(main.currentScript.waitTime > 0){
 //					System.out.println("waiting");
 					return false;}
+				if(main.currentScript.getActiveObject()!=null)
+					return false;
+			}
 //			if(main.getStateType() == InputState.LOCKED){
 //				System.out.println("locked");
 //				return false;}

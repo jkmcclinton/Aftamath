@@ -1,16 +1,24 @@
 Script Splash
-
+lockplayer
 declare(c, global, Integer, 0)
-	value(add, c, 1)
+value(add, c, 1)
 
-	if([c = 1] )
-		splash(fight)
+if([c = 1] )
+	splash(fight)
+else
+	if([c = 2])
+		splash(kick_ass)
 	else
-		if([c = 2])
-			splash(kick_ass)
-		else
-			splash(kill_it)
-			value(set, c, 0)
-		end
+		splash(kill_it)
+		value(set, c, 0)
 	end
+end
+	
+wait(3)
+
+setSpeaker(this)
+text({...Yeah, sorry m8.})
+text({Fighting wasn't included in this version.})
 done
+
+

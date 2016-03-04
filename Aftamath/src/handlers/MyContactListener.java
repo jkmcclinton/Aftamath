@@ -47,6 +47,8 @@ public class MyContactListener implements ContactListener {
 		String typeA = (String) fa.getUserData();
 		Entity entB = (Entity) fb.getBody().getUserData();
 		String typeB = (String) fb.getUserData();
+		
+		if(entA==null || entB==null) return;
 
 		if(typeB.equalsIgnoreCase("textBox") && typeA.equalsIgnoreCase("textBox")){
 			((TextBox) entB).add(entA);
@@ -114,10 +116,10 @@ public class MyContactListener implements ContactListener {
 		}if(typeB.equals("attack") && !fa.isSensor() && entA.isAttackable){ 
 			((Mob) entB).addAttackable(entA);
 		}if(typeA.equals("vision")){
-			if(!fb.isSensor())
+			if(!fb.isSensor() && !(entB instanceof Ground))
 				((Mob) entA).discover(entB);
 		}if(typeB.equals("vision")){ 
-			if(!fa.isSensor())
+			if(!fa.isSensor() && !(entA instanceof Ground))
 			((Mob) entB).discover(entA);
 		}if(typeA.equals("warp") && typeB.equals("foot")){
 			if(((Warp) entA).conditionsMet()) {

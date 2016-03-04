@@ -860,6 +860,7 @@ public class MobAI {
 		case LOSEAIM:
 			if(!owner.aiming) finish();
 			break;
+		case RUN:
 		case MOVE:
 			canPosition = false;
 			break;

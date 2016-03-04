@@ -358,11 +358,35 @@ public class Scene {
 		sb.end();
 	}
 	
-	public void renderEnvironment(OrthographicCamera cam){
+	public void renderEnvironment(OrthographicCamera cam, FadingSpriteBatch sb){
 		tmr.setView(cam);
+		ArrayList<Entity> objs = main.getObjects();
 		try{
+			//draw furthest background layer
 			for(MapLayer t : tileMap.getLayers()){
-				if(t.getName().equals("fg"))
+				if(t.getName().equals("fg") || 
+						!t.getName().equals("bg1"))
+					t.setVisible(false);
+				else t.setVisible(true);
+			}
+			tmr.render();
+			
+			//draw objects on special layer
+			sb.begin();
+			for(int i = objs.size()-1; i>=0; i--){
+				if(objs.get(i).getLayer()==0) continue;
+				Entity e = objs.get(i);
+				if(e.getLayer()!=Vars.BIT_LAYERSPECIAL && 
+						e.getLayer()!=Vars.BIT_LAYERSPECIAL2)
+					break;
+				e.render(sb);
+			}
+			sb.end();
+			
+			//draw rest of layers
+			for(MapLayer t : tileMap.getLayers()){
+				if(t.getName().equals("fg") || 
+						t.getName().equals("bg1"))
 					t.setVisible(false);
 				else t.setVisible(true);
 			}
@@ -543,17 +567,16 @@ public class Scene {
 									l = "3";
 								else if (l.toLowerCase().equals("player")) 
 									l = "2";
-								else
+								else if(!l.toLowerCase().contains("special"))
 									l = "1";
-
-							} else l = "1";
+							} else l = "3";
 
 							try {
 								short lyr;
-								if (l.equals("2")) {	//TODO refactor
+								if (l.equals("2")) {
 									lyr = Vars.BIT_PLAYER_LAYER;
 								} else {
-									Field f = Vars.class.getField("BIT_LAYER"+l);
+									Field f = Vars.class.getField("BIT_LAYER"+l.toUpperCase());
 									lyr = f.getShort(f);
 								}
 								ID = ID.toLowerCase();
@@ -627,23 +650,22 @@ public class Scene {
 							if(cDimStr!=null)
 								if(Vars.isBoolean(cDimStr))
 									cDim = Boolean.parseBoolean(cDimStr);
-							
+
 							if(l!=null) {
 								if (l.toLowerCase().equals("back")) 
 									l = "3";
 								else if (l.toLowerCase().equals("player")) 
 									l = "2";
-								else
+								else if(!l.toLowerCase().contains("special"))
 									l = "1";
-
-							} else l = "1";
+							} else l = "3";
 
 							try {
 								short lyr;
-								if (l.equals("2")) {	//TODO refactor
+								if (l.equals("2")) {
 									lyr = Vars.BIT_PLAYER_LAYER;
 								} else {
-									Field f = Vars.class.getField("BIT_LAYER"+l);
+									Field f = Vars.class.getField("BIT_LAYER"+l.toUpperCase());
 									lyr = f.getShort(f);
 								}
 								int sceneIDParsed = Integer.parseInt(sceneID);
