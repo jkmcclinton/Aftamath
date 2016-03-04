@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="30">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="32">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
-  <property name="bgm day" value="Second Day"/>
+  <property name="bgm day" value="Disco Battle"/>
   <property name="bgm night" value="Second Day"/>
   <property name="name" value="Church"/>
   <property name="next" value="Tha Hood"/>
@@ -149,55 +149,55 @@
    </properties>
   </tile>
  </tileset>
- <layer name="bg1" width="75" height="100">
+ <layer name="bg1" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJzt0MENglAURNHXgLqAVtRK0GqESpBq0LaYDv7KQOI5yewntwoAAAAAAAD4hWtXdcvu3d5Pju+VRmM2adW0ptEn+2rVdOqrztml3/vJ8Q1p9MieWjXNafTOFq0AAAAAAIA/tQG1XwjU
   </data>
  </layer>
- <layer name="bg2" width="75" height="100">
+ <layer name="bg2" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
   </data>
  </layer>
- <layer name="ground" width="75" height="100">
+ <layer name="ground" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt08dRQ0EURNFRKHgRCk5AGMITCk5AGHgIBQ+Z0DmwmAd1TtXdzeKVfqs1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA/W0rLaSWtprU0SutpI212elPxrqN0nE7SaTpLk3SeLtJlpzcV73pOL+k1vaX39JE+01f67vSm4l1Tg9am00yaTXNpPi2kYVoc9HlT8a5x2krbaSftpr20nw7SYac3Fe+6StfpJt2mu3SfHtJjeur0puJdFb+fXf39XVW8qepvVXHr/oN2ZVd2ZVd2ZVf17qr4/ezKruzKruzqd29+AE7abxA=
+   eJzt08lRQlEUBuFHKIAghIIKaBggIISizGGATIaijGZC58DiHqq6q77dXZzi/WSZmZmZmZmZmZmZmZmZmZmZmd1rNTzhGS+oo4EmXvGW6E3Euz7xhSFGGGOCKWaYJ3oT8a5f/GGPA4444YwL/hO9iXhXPpdlBRTxgBLKeEQF1VyaNxHvaqGNd3TQRQ8f6GOQ6E3EuxZY4hsrrLHBFjv8JHoT8a6I389d3f+uIt4U9beKuHX/g+7KXbkrd+Wu3FW8uyJ+P3flrtyVu3JXt725AhRCbxA=
   </data>
  </layer>
- <layer name="ledge" width="75" height="100">
+ <layer name="ledge" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwzENAAAIA7DhCP/q0MC3o02aAAAAAAAAAAAAAAAAAAAAAAAAAAAA8LHTFwAAAAAAAABaHH4/BxY=
+   eJztwzENAAAIA7DhCP/quPCwo02aAAAAAAAAAG+nLwAAAAAAAAC0OEOnBxY=
   </data>
  </layer>
- <layer name="objects" width="75" height="100">
+ <layer name="objects" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
   </data>
  </layer>
- <layer name="fg" width="75" height="100">
+ <layer name="fg" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
   </data>
  </layer>
  <objectgroup name="entities">
-  <object id="2" x="592" y="1248" width="16" height="16">
+  <object id="2" x="592" y="448" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
   </object>
-  <object id="4" name="2" x="464" y="1248" width="16" height="16">
+  <object id="4" name="2" x="464" y="448" width="16" height="16">
    <properties>
-    <property name="ID" value="2"/>
+    <property name="ID" value="95"/>
     <property name="NPC" value="femaleplayer2"/>
     <property name="layer" value="front"/>
-    <property name="name" value="TEST"/>
+    <property name="name" value="YourGirl"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="5" name="3" x="528" y="1248" width="16" height="16">
+  <object id="5" name="3" x="528" y="448" width="16" height="16">
    <properties>
-    <property name="ID" value="3"/>
+    <property name="ID" value="96"/>
     <property name="NPC" value="gangster2"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST3"/>
@@ -205,9 +205,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="6" name="4" x="528" y="1152" width="16" height="16">
+  <object id="6" name="4" x="528" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="4"/>
+    <property name="ID" value="85"/>
     <property name="NPC" value="girlfriend1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -215,9 +215,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="7" name="8" x="560" y="1152" width="16" height="16">
+  <object id="7" name="8" x="560" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="8"/>
+    <property name="ID" value="86"/>
     <property name="NPC" value="girlfriend2"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -225,9 +225,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="8" name="11" x="624" y="1152" width="16" height="16">
+  <object id="8" name="11" x="624" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="11"/>
+    <property name="ID" value="88"/>
     <property name="NPC" value="girlfriend3"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -235,9 +235,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="9" name="14" x="656" y="1152" width="16" height="16">
+  <object id="9" name="14" x="656" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="14"/>
+    <property name="ID" value="89"/>
     <property name="NPC" value="narrator1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -245,9 +245,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="10" name="16" x="688" y="1152" width="16" height="16">
+  <object id="10" name="16" x="688" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="16"/>
+    <property name="ID" value="90"/>
     <property name="NPC" value="oldlady1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -255,9 +255,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="11" name="18" x="720" y="1152" width="16" height="16">
+  <object id="11" name="18" x="720" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="18"/>
+    <property name="ID" value="91"/>
     <property name="NPC" value="richguy"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -265,9 +265,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="12" name="17" x="752" y="1152" width="16" height="16">
+  <object id="12" name="17" x="752" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="17"/>
+    <property name="ID" value="92"/>
     <property name="NPC" value="boss1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -275,9 +275,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="13" name="19" x="432" y="1152" width="16" height="16">
+  <object id="13" name="19" x="432" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="19"/>
+    <property name="ID" value="82"/>
     <property name="NPC" value="hippie"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -285,9 +285,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="14" name="20" x="400" y="1152" width="16" height="16">
+  <object id="14" name="20" x="400" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="20"/>
+    <property name="ID" value="81"/>
     <property name="NPC" value="cashier"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -295,9 +295,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="15" name="21" x="784" y="1152" width="16" height="16">
+  <object id="15" name="21" x="784" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="21"/>
+    <property name="ID" value="93"/>
     <property name="NPC" value="burly1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -305,9 +305,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="16" name="22" x="464" y="1152" width="16" height="16">
+  <object id="16" name="22" x="464" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="22"/>
+    <property name="ID" value="83"/>
     <property name="NPC" value="burly2"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -315,9 +315,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="17" name="24" x="816" y="1152" width="16" height="16">
+  <object id="17" name="24" x="816" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="24"/>
+    <property name="ID" value="94"/>
     <property name="NPC" value="bballer"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -325,9 +325,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="19" name="25" x="368" y="1152" width="16" height="16">
+  <object id="19" name="25" x="368" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="25"/>
+    <property name="ID" value="80"/>
     <property name="NPC" value="boss2"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -335,9 +335,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="20" name="268" x="672" y="1248" width="16" height="16">
+  <object id="20" name="268" x="672" y="448" width="16" height="16">
    <properties>
-    <property name="ID" value="268"/>
+    <property name="ID" value="97"/>
     <property name="NPC" value="hobo"/>
     <property name="layer" value="front"/>
     <property name="name" value="Hobo"/>
@@ -345,9 +345,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="21" name="67" x="496" y="1152" width="16" height="16">
+  <object id="21" name="67" x="496" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="67"/>
+    <property name="ID" value="84"/>
     <property name="NPC" value="logger"/>
     <property name="layer" value="front"/>
     <property name="name" value="John"/>
@@ -355,9 +355,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="23" name="26" x="592" y="1152" width="16" height="16">
+  <object id="23" name="26" x="592" y="352" width="16" height="16">
    <properties>
-    <property name="ID" value="26"/>
+    <property name="ID" value="87"/>
     <property name="NPC" value="gangster1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST26"/>
@@ -365,9 +365,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="25" name="29" x="704" y="1248" width="16" height="16">
+  <object id="25" name="29" x="704" y="448" width="16" height="16">
    <properties>
-    <property name="ID" value="29"/>
+    <property name="ID" value="98"/>
     <property name="NPC" value="hero1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -375,9 +375,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="26" name="30" x="736" y="1248" width="16" height="16">
+  <object id="26" name="30" x="736" y="448" width="16" height="16">
    <properties>
-    <property name="ID" value="30"/>
+    <property name="ID" value="99"/>
     <property name="NPC" value="villain1"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
@@ -385,12 +385,30 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="29" name="31" x="768" y="1248" width="16" height="16">
+  <object id="29" name="31" x="768" y="448" width="16" height="16">
    <properties>
-    <property name="ID" value="301"/>
+    <property name="ID" value="100"/>
     <property name="NPC" value="doctordisco"/>
     <property name="layer" value="front"/>
     <property name="name" value="TEST"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="30" name="outside" x="617" y="392" width="37.25" height="71.9167">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="Bar"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="31" name="31" x="800" y="448" width="16" height="16">
+   <properties>
+    <property name="ID" value="101"/>
+    <property name="NPC" value="witch"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="HAHAHAHAHA"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>

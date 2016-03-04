@@ -1,0 +1,38 @@
+Variable Name            Type       Scope      Script
+address                  : string   : local    : choice test
+ask                      : integer  : local    : afterTutorial
+asked                    : integer  : global   : ask out
+c                        : integer  : global   : splash test
+counter                  : integer  : local    : choice test
+counter                  : integer  : local    : intro
+desc                     : string   : local    : Ms Pancakes Mishap
+desc                     : string   : local    : robbers1
+extra                    : integer  : local    : intro
+female                   : string   : global
+field                    : flag     : local    : afterTutorial
+fill                     : string   : local    : superTutIntro
+found                    : flag     : global   : grimReaper
+found                    : flag     : local    : BusinessDistrict
+found                    : flag     : local    : CommercialDistrictNW
+found                    : flag     : local    : Mansion
+found                    : flag     : local    : Pier
+found                    : flag     : local    : superGlare
+g                        : string   : local    : annoyedPancakes
+greeting                 : string   : local    : credits
+limitCounter             : integer  : local    : trainSelection
+loc                      : string   : local    : trainSelection
+male                     : string   : global
+name                     : string   : local    : Ms Pancakes Mishap
+name                     : string   : local    : trainSelection
+not                      : integer  : local    : realGangsta
+num                      : integer  : local    : superGlare
+part                     : integer  : local    : actionTest
+playergender             : string   : local    : intro
+playertype               : integer  : local    : intro
+punchCount               : integer  : local    : tutOnAttacked
+shotCount                : integer  : local    : afterTutorial
+talkedToGrim             : integer  : global   : grimResponse
+title                    : string   : local    : disappointedVillain
+trainDest                : string   : global
+trainLoc                 : string   : global
+tutAsked                 : integer  : global   : tutDescribe

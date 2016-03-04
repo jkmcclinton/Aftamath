@@ -1,0 +1,15 @@
+Script Main
+
+#zoom(close, true)
+setFlag(calledTrain, false)
+
+#got off train
+#if(trainArrived)
+	setFlag(trainArrived, false)
+	#set train location to embark position
+	#move train to right side of level
+#else
+	#set train to left side of level
+#end
+
+done

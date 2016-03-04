@@ -146,12 +146,10 @@ public class HUD {
 	
 	//draw dialog graphics
 	public void drawDialog(SpriteBatch sb, int emotion) {
-//		sb.draw(textHud, x + 71, y - 76);
 		sb.draw(textHud, x, y - 76);
 		
 		drawString(sb);
 		if (speaker != null) if (speaker.nickName != null) {
-//			sb.draw(faceHud, x, y - 76);
 			if(speaker.getFace(0)!=null){
 				sb.draw(emotions[emotion],  x + 7, y - 69);
 				sb.draw(speaker.getFace(emotion), x + 7, y - 69);
@@ -168,7 +166,7 @@ public class HUD {
 		String money = NumberFormat.getCurrencyInstance().format(main.player.getMoney());
 		if (money.startsWith("(")) money = "-" + money.substring(1, money.indexOf(")"));
 
-		//		if (money.split(".")[1].length()<2) money += "0";
+		//if (money.split(".")[1].length()<2) money += "0";
 		main.drawString(sb, money, Game.width/2 - 10 - cash.getRegionWidth() -
 				(PERIODX + money.length() * PERIODX), Game.height/2 - 20);
 	}
@@ -193,6 +191,14 @@ public class HUD {
 	
 	public void hide(){
 		moving = 2;
+		moveDialog();
+		raised = false;
+		
+		//Gdx.audio.newSound(new FileHandle("assets/sounds/slidedown.wav"));
+	}
+	
+	public void halfHide(){
+		moving = 3;
 		moveDialog();
 		raised = false;
 		
@@ -224,10 +230,13 @@ public class HUD {
 			
 			if(y >= 75 + offset) { moving = 0; raised = true; }
 		} else {  //bring out of focus
+			float min = -20;
+			if(moving==3) min = 47.5f;
+				
 			if (top) y += speed;
 			else y -= speed;
 			
-			if(y <= -20 || y >= Game.height/2) moving = 0; 
+			if(y <= min || y >= Game.height/2) moving = 0; 
 		}
 	}
 	

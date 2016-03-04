@@ -12,7 +12,9 @@ public class Path extends Entity {
 	private boolean forward = true, reached;
 	private Array<Vector2> points;
 	private Behavior behavior;
+	private float speed = DEFAULT_SPEED;
 	
+	private static final float DEFAULT_SPEED = 1;
 	
 	public enum Behavior {
 		ONCE, RETURN, MULTIPLE, CONTINUOUS
@@ -41,6 +43,8 @@ public class Path extends Entity {
 	}
 	
 	public Vector2 getCurrent(){ return points.get(current); }
+	public float getSpeed(){ return this.speed; }
+	public void setSpeed(float speed){ this.speed = speed; }
 	
 	//set the current node to the next possible point
 	public void stepIndex(){

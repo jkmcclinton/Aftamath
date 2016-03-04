@@ -1,9 +1,0 @@
-Script Main
-lockplayer
-setSpeaker(this)
-
-text({You are Lord of the Office, so you have security clearance for this information.})
-
-setSpeaker(player)
-#go to different level
-done

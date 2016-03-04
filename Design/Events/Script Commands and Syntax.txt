@@ -115,10 +115,10 @@ I've tried my best to add print statements to help you debug your script.
 
 addPartner:
 	makes the given NPC be the player's partner
-	addPartner(objectName)
+	addPartner(objectName, titleName, info)
 
 	~multiple partners have not been implemented, and most likely will not be in the future.
-	 This means that adding a partner will not work if the player already has a partner
+	 This means that adding a partner will override values if the player already has a partner
 ~attack:
 	makes a mob attack an object once with a power type move
 	if the mob has no innate power, the result is a punch
@@ -132,8 +132,13 @@ checkPoint:
 	checkPoint(Name)
 choice:
 	provides handling for the indicated choice
-	must be ended with "end" command
-	[choice choiceName]
+	choiceName must be spelled EXACTLY as it is in the "setChoice"
+	must be ended with "end" command and inside a "setChoice" block
+	[choice choiceName] (condition)
+
+	the condition is formatted just the same as conditions for an "if" command.
+	if included, the parser will check if the choice is available. If not, the player
+	will not even be given the option to choose the choice, let alone see it
 declare:
 	use to declare counter variables to keep track of throughout the game
 	declare(variableName, scope, type, initialValue)
@@ -270,6 +275,9 @@ random:
 	produces a random value and writes the result to the given variable;
 	default range is from 0 to 1. a maximum value can be included to change the range from
 	0 to max. Also can specify 
+releasePlayer:
+	allow play to be able to move
+	releasePlayer()
 remove/removeObject:
 	remove the given object from the world
 	remove(objectName)
@@ -394,10 +402,11 @@ setWarp:
 ~spawn:
 	spawns the object at the specified location
 	spawn(objectType, NPCtype, name, x, y, layer) //for spawning NPCs
+	spawn(objectType, NPCType, name, x, y, sceneID)
 
 	NPCtype must be a valid image base name, like "boss1" or "bballer". For full list of current 
 		available images see "Aftamath/assets/images/entities/mobs"
-	layer must either be 1 or 3
+	layer must either be layer1 or layer3
 	objectType must be either NPC or other valid types (there aren't any as of now)
 	location (x, y) is a Tiled Vector.
 	refer to object type list for possible values
@@ -470,7 +479,7 @@ variable:
 object properties:
 	Note: some properties are limited to certain object types.
 	
-	location - Entities
+	location - Entities, TileVector.x
 	flamable - Entities
 	vulnerable - Entities
 	nickname - Mobs

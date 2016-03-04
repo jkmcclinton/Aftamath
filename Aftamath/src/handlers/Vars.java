@@ -140,6 +140,23 @@ public class Vars {
 		return result;
 	}
 	
+	public static String formatHundreds(String s, int length){
+		switch(length){
+		case 1:
+			s+="0";
+		case 2:
+			s+="0";
+		}
+		return s;
+	}
+	
+	public static String addSpaces(String orig, int length){
+		String spaces = "";
+		for(int i = 0; i<length-orig.length(); i++)
+			spaces+=" ";
+		return spaces;
+	}
+	
 	/**
 	 * 
 	 * @param s

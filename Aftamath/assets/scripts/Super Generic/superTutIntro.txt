@@ -81,6 +81,6 @@ else
 end
 
 #doAction(this, duck)
-setEvent(supTutIntro, {Ran into /variable[fill] on the (Commercial Drive) for a SUPA tutorial.})
+setEvent(supTutIntro, {Ran into /var[fill] on the "Commercial Drive" for a SUPA tutorial.})
 setFlag(inSupTut, true)
 done

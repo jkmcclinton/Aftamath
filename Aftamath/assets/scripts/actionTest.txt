@@ -1,7 +1,13 @@
 Script Main
 lockplayer
 
-	#move(player, TEST3)
-	setWarp(0, HighRise, 0)
+declare(part, local, integer, 0)
+if([part = 0])
+	value(set, part, 1)
+	doAction(this, knockout, null, on_level_change)
+else
+	doAction(this, recover)
+	value(set, part, 0)
+end
 
 done

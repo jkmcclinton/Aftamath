@@ -1,7 +1,5 @@
 package entities;
 
-import static handlers.Vars.PPM;
-
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
@@ -68,7 +66,7 @@ public class Mob extends Entity{
 	protected static final int IDLE_LIMIT = 500;
 	protected static Array<Anim> immobileActions = new Array<>(); 
 
-	protected float inactiveWait, inactiveTime, doTime, doDelay, time;
+	protected float inactiveWait, doTime, doDelay, time;
 	protected boolean reached, locked, attacked;
 	protected Script discoverScript;
 	protected AttackType attackType;
@@ -778,7 +776,7 @@ public class Mob extends Entity{
 	public void setGoal(float gx) {
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
-		setState("MOVE", new Vector2((float) gx/PPM + getPosition().x, getPosition().y));
+		setState("MOVE", new Vector2((float) gx + getPosition().x, getPosition().y));
 	}
 
 	public boolean setState(String type) {
@@ -787,8 +785,9 @@ public class Mob extends Entity{
 				follow(main.character);
 			else {
 			AIType s = AIType.valueOf(type.toUpperCase());
-				if(currentState.equals(defaultState))
-					defaultState = currentState;
+//				if(currentState.equals(defaultState))
+//					defaultState = currentState;
+				controlled = true;
 				currentState = new MobAI(this, s, ResetType.ON_AI_COMPLETE, null);
 			}
 			return true;
@@ -803,9 +802,8 @@ public class Mob extends Entity{
 			if (type.toUpperCase().equals(AIType.FOLLOWING.toString()))
 				follow(target);
 			else {
-			AIType s = AIType.valueOf(type.toUpperCase());
-				if(currentState.equals(defaultState))
-					defaultState = currentState;
+				AIType s = AIType.valueOf(type.toUpperCase());
+				controlled = true;
 				currentState = new MobAI(this, s, ResetType.ON_AI_COMPLETE, target);
 			}
 			return true;
@@ -830,8 +828,9 @@ public class Mob extends Entity{
 			else {
 				if(time==-1){
 					this.currentState = new MobAI(this, s, type, target);
-					if(type.equals(ResetType.NEVER) && !MobAI.technical.contains(s, false))
+					if(type.equals(ResetType.NEVER) && !MobAI.technical_types.contains(s, false))
 						defaultState = currentState;
+					else controlled = true;
 				} else
 					currentState = new MobAI(this, s, time, target);
 			}
@@ -859,7 +858,7 @@ public class Mob extends Entity{
 	public void setDefaultState(String s) {
 		try{
 			AIType type = AIType.valueOf(s.toUpperCase());
-			if(!MobAI.technical.contains(type, false))
+			if(!MobAI.technical_types.contains(type, false))
 				defaultState = new MobAI(this, type, ResetType.NEVER, null);
 		} catch(Exception e){
 			
@@ -902,23 +901,51 @@ public class Mob extends Entity{
 			wake();
 			return;
 		}
-//		if(lookingUp)
-//		unLookUp();
+		
+		//shorten body height
+		if(body.getFixtureList().get(0).getUserData().equals(Vars.trimNumbers(ID))){
+			PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
+			shape.setAsBox(w/Vars.PPM, (rh)/(Vars.PPM*1.75f), new Vector2(0, -(rh)/(Vars.PPM*2.25f)), 0);
+		} 
+		
 		ducking = true;
 		aiming = true;
 		setTransAnimation(Anim.DUCK, Anim.DUCKING);
 	}
 	
 	public void unDuck(){
-		//normalize body shape
+		//normalize body height
+
+		if(body.getFixtureList().get(0).getUserData().equals(Vars.trimNumbers(ID))){
+			PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
+			shape.setAsBox(w/Vars.PPM, (rh)/Vars.PPM);
+		} 
+		
 		aiming = false;
 		ducking = false;
 		setAnimation(Anim.DUCK, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 	}
 	
+	public void knockOut(){
+		snoozing = false;
+		knockedOut = true;
+		setTransAnimation(Anim.STUMBLE, Vars.ACTION_ANIMATION_RATE, Anim.KNOCKED_OUT, 
+				Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
+	}
+	
+	public void recover(){
+		aiming = false;
+		knockedOut = false;
+		setAnimation(Anim.RECOVER, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+	}
+	
+	private void resetIdle(){
+		idleTime = 0;
+		timesIdled = 0;
+	}
+	
 	public void snooze(){
 		setTransAnimation(Anim.GET_DOWN, Vars.ACTION_ANIMATION_RATE, Anim.SNOOZING, Vars.ANIMATION_RATE);
-		timesIdled = 0;
 		snoozing = true;
 	}
 	
@@ -926,6 +953,7 @@ public class Mob extends Entity{
 		animation.reset();
 		setAnimation(Anim.GET_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 		snoozing = false;
+		resetIdle();
 	}
 	
 	public void embrace(AIType type){
@@ -946,8 +974,7 @@ public class Mob extends Entity{
 
 	public void jump() {
 		main.getCam().removeFocus();
-		inactiveTime = 0;
-		timesIdled=0;
+		resetIdle();
 		if(snoozing){
 			wake();
 			return;
@@ -973,14 +1000,6 @@ public class Mob extends Entity{
 		if (facingLeft) {d = 1; }
 		facingLeft = !facingLeft;
 		
-//		try{
-//			Vector2 n = null;
-//			System.out.println(n.x);
-//		} catch(Exception e){
-//			if(ID.contains("femaleplayer"))
-//			e.printStackTrace();
-//		}
-		
 		int max = body.getFixtureList().size;
 		float w1;
 		PolygonShape shape;
@@ -999,7 +1018,7 @@ public class Mob extends Entity{
 			}
 		if(max >=5)
 			if(body.getFixtureList().get(4).getUserData().equals("vision")){
-				int h = main.getScene().height/4;
+				int h = 6*Vars.TILE_SIZE;
 				w1 = w + visionRange;
 				shape = (PolygonShape) body.getFixtureList().get(4).getShape();
 				shape.setAsBox((w1/2f+rh)/Vars.PPM, h/Vars.PPM, new Vector2((d*visionRange/2-d*w)/Vars.PPM, (h-height)/(Vars.PPM)), 0);
@@ -1015,8 +1034,7 @@ public class Mob extends Entity{
 	}
 
 	public boolean canMove() {
-		inactiveTime = 0;
-		timesIdled=0;
+		resetIdle();
 		if(snoozing){
 			//force mob to wake up
 			wake();
@@ -1125,7 +1143,12 @@ public class Mob extends Entity{
 	}
 
 	public TextureRegion getFace(int face){
-		if (this.face != null) return this.face[face];
+		try{
+			if (this.face != null)
+				if(face>=this.face.length)
+					return this.face[0];
+				return this.face[face];
+		} catch(Exception e){}
 		return null;
 	}
 
@@ -1141,7 +1164,6 @@ public class Mob extends Entity{
 			this.gender = gender;
 	}
 	
-	public float getinactiveTime(){ return inactiveTime; }
 	public int getTimesIdled(){ return timesIdled; }
 
 	public void addAttackable(Entity e){
@@ -1407,15 +1429,25 @@ public class Mob extends Entity{
 	
 	//allows the mob to automatically target something to shoot at
 	public Vector2 target(){
+		float distance = main.getScene().width;
+		Entity target = null;
 		if(discovered.size>=0){
-			float dx;
+			float dx, dy, d;
 			for(Entity e: discovered){
 				if(e.getBody()==null/* || !e.destructable*/) continue;
 				dx = e.getPosition().x - getPosition().x;
-				if((dx<0 && facingLeft) || (dx>=0 && !facingLeft))
-					return e.getPixelPosition();
+				if((dx<0 && facingLeft) || (dx>=0 && !facingLeft)){
+					dy = e.getPosition().y - getPosition().y;
+					d = (float) Math.sqrt(dx*dx + dy*dy);
+					if(d<distance/* && e is attackable?*/){
+						distance = d;
+						target = e;
+					}
+				}
 			}
 		}
+		
+		if(target!=null) return target.getPixelPosition();
 
 		int x = 3;
 		if(facingLeft) x *= -1;
@@ -1496,7 +1528,7 @@ public class Mob extends Entity{
 	
 	protected void createVisionSensor(){
 		float w1 = w + visionRange;
-		int d = 1, h = main.getScene().height/8;
+		int d = 1, h = 6*Vars.TILE_SIZE;
 		if(facingLeft) d = -1;
 		
 		

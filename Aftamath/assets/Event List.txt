@@ -1,0 +1,16 @@
+Event Name               Script
+EvilBar                  : There's A Bar
+FellFromNowhere          : intro
+GoodBar                  : There's A Bar
+HeroTut                  : afterTutorial
+HeroTutEvil              : afterTutorial
+RobberIntro              : robbers1
+RogueTutorial            : afterTutorial
+VillainTut               : afterTutorial
+VillainTutGood           : afterTutorial
+credits                  : credits
+gaveSoul                 : grimResponse
+goneInBar                : There's A Bar
+msPancakesMishap         : Ms Pancakes Mishap
+rodeTrainFirstTime       : trainSelection
+supTutIntro              : superTutIntro

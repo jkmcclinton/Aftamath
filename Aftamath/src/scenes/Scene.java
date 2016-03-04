@@ -18,6 +18,7 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -60,12 +61,12 @@ import scenes.Script.ScriptType;
 public class Scene {
 	
 	// global mapping of scenes to the entities they contain
-	public static Map<String, Set<Integer> > sceneToEntityIds;
+	public static Map<String, Set<Integer>> sceneToEntityIds;
 	public Script loadScript;
 	public int width, height;
 	public String title, ID;
 	public Song[] DEFAULT_SONG;
-	public boolean newSong; //tells us whether or not to fade music when loading scene from previous scene
+//	public boolean newSong; //tells us whether or not to fade music when loading scene from previous scene
 	public boolean outside; //controls whether or not to step weather time or to add the day/night cycle effect
 	
 	private float groundLevel;
@@ -76,6 +77,7 @@ public class Scene {
 	private Vector2 spawnpoint, localSpawnpoint, camBotSpawnpoint;
 	private ArrayList<Entity> entities;
 	private ArrayList<PointLight> lights;
+	private ArrayList<DynamicTile> tiles;
 	private ArrayList<Path> paths;
 	private HashMap<Script, Pair<String, Boolean>> conditionalScripts;
 	private HashMap<Mob, String> pathsToAdd;
@@ -84,7 +86,6 @@ public class Scene {
 	private Texture background, midground, foreground, clouds, sky, grad, sun, moon;
 	private World world;
 	private RayHandler rayHandler;
-//	private Mob character;
 	private boolean tileBG = true;
 	
 	private static Vector2 gravity;
@@ -93,10 +94,14 @@ public class Scene {
 	
 	private static final int DAY = 0;
 	private static final int NOON = 1;
-	private static final int NIGHT =2;
+	private static final int NIGHT = 2;
 	
 	static {
 		sceneToEntityIds = new HashMap<String, Set<Integer> >();
+	}
+	
+	public String toString(){
+		return title;
 	}
 	
 	//temporary object used only for creating warps
@@ -131,6 +136,7 @@ public class Scene {
 		entities = new ArrayList<>();
 		lights = new ArrayList<>();
 		paths = new ArrayList<>();
+		tiles = new ArrayList<>();
 		pathsToAdd = new HashMap<>();
 		fociToAdd = new HashMap<>();
 		conditionalScripts = new HashMap<>();
@@ -181,8 +187,6 @@ public class Scene {
 				DEFAULT_SONG[NIGHT]=new Song(Game.SONG_LIST.get(0));
 			}
 		}
-
-		newSong = true;
 		
 		//load the image for the backgrounds and forgrounds
 		String src = prop.get("bg", String.class);
@@ -232,7 +236,6 @@ public class Scene {
 			}
 		} catch (Exception e){
 			ambient = Vars.DAYLIGHT;
-			newSong = true;
 		} finally{
 			sb.setRHAmbient(ambient);
 		}
@@ -406,6 +409,7 @@ public class Scene {
 	public Vector2 getLocalSpawnpoint(){ return localSpawnpoint; }
 	public Vector2 getCBSP() { return camBotSpawnpoint; }
 
+	//pull all scene data from the Tiled file
 	public void create() {
 		//TODO if already created, don't create
 		if(main.getHud()!=null) //that means we're no longer initializing the game
@@ -430,13 +434,19 @@ public class Scene {
 						y * Vars.TILE_SIZE / Vars.PPM);
 				if (cell != null)
 					if (cell.getTile() != null){
-						groundLevel = (y-1)*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f;
+						groundLevel = (y+1)*Vars.TILE_SIZE;
 						String type = "";
 						if(cell.getTile().getProperties().get("type")!=null)
 							type = cell.getTile().getProperties().get("type", String.class);
 						g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
 								(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
 						g.setGameState(main);
+						
+//						if(cell.getTile().getProperties().get("poly")!=null)
+//							g.setBounds(cell.getTile().getProperties());
+						
+//						Polygon pg = ((PolygonMapObject) cell.getTile().get()).getPolygon();
+						
 					}
 
 				if(g2!=null){
@@ -452,7 +462,7 @@ public class Scene {
 						}
 				}
 				
-				//collect foreground and background sounds???
+				//collect foreground and background sounds and dynamic tiles???
 				cell = fg.getCell(x, y);
 				if (cell != null)
 					if (cell.getTile() != null) {
@@ -461,6 +471,10 @@ public class Scene {
 							String src = cell.getTile().getProperties().get("sound", String.class);
 							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
 						}
+						
+						b = cell.getTile().getProperties().get("dynamic");
+						if(b!=null)
+							tiles.add(new DynamicTile(cell, main));
 					}
 							
 				cell = bg1.getCell(x, y);
@@ -471,6 +485,10 @@ public class Scene {
 							String src = cell.getTile().getProperties().get("sound", String.class);
 							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
 						}
+						
+						b = cell.getTile().getProperties().get("dynamic");
+						if(b!=null)
+							tiles.add(new DynamicTile(cell, main));
 					}
 			}
 		
@@ -479,89 +497,87 @@ public class Scene {
 		Color color = Color.YELLOW;
 		lights.add(new PointLight(rayHandler, Vars.LIGHT_RAYS, color, distance, 0, 0 ));
 
-		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("fg");
-		if(layer!=null){
-			layer.hashCode();
-		}
+//		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("fg");
+//		if(layer!=null){
+//			layer.hashCode();
+//		}
 
 		if(tileMap.getLayers().get("entities")!=null){
 			MapObjects objects = tileMap.getLayers().get("entities").getObjects();
 			for(MapObject object : objects) {
-				if (object instanceof RectangleMapObject) {
-					Rectangle rect = ((RectangleMapObject) object).getRectangle();
-//					if(object.getProperties().get("warp")!=null)
-//						System.out.println(new Vector2(rect.x,rect.y));
-					rect.set(rect.x+7.1f, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
 
-					//this indicaties the base spawn location
+				String loadCondition = object.getProperties().get("load Condition", String.class);
+				if(loadCondition==null) loadCondition = object.getProperties().get("loadCondition", String.class);
+				boolean load = true;
+				if(loadCondition!=null)
+					load = main.evaluator.evaluate(loadCondition);
+
+				if(load){
+					if (object instanceof RectangleMapObject) {
+						Rectangle rect = ((RectangleMapObject) object).getRectangle();
+						rect.set(rect.x+7.1f, rect.y-Vars.TILE_SIZE*(9f/80f), rect.width, rect.height);
+
+						//this indicaties the base spawn location
 //					entities.add(new Entity(rect.x,rect.y,(int)rect.width,(int)rect.height,"TiledObject"));
 
-					Object o = object.getProperties().get("NPC");
-					if(o!=null) {
-						String l = object.getProperties().get("layer", String.class);		//render/collision layer
-						String ID = object.getProperties().get("NPC", String.class);		//name used for art file
-						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
-						String name = object.getProperties().get("name", String.class);		//character name
-						String nickName = object.getProperties().get("nickName", String.class);
-						String state = object.getProperties().get("state", String.class);	//AI state
-						String focus = object.getProperties().get("focus", String.class);
-						String script = object.getProperties().get("script", String.class);
-						String aScript = object.getProperties().get("attackScript", String.class);
-						String sScript = object.getProperties().get("supSttackScript", String.class);
-						String dScript = object.getProperties().get("discoverScript", String.class);
-						String dType = object.getProperties().get("onSight", String.class);
-						String aType = object.getProperties().get("onAttacked", String.class);
-						String pathName = object.getProperties().get("path", String.class);
-						String powerType = object.getProperties().get("powerType", String.class);
+						Object o = object.getProperties().get("NPC");
+						if(o!=null) {
+							String l = object.getProperties().get("layer", String.class);		//render/collision layer
+							String ID = object.getProperties().get("NPC", String.class);		//name used for art file
+							String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+							String name = object.getProperties().get("name", String.class);		//character name
+							String nickName = object.getProperties().get("nickName", String.class);
+							String state = object.getProperties().get("state", String.class);	//AI state
+							String focus = object.getProperties().get("focus", String.class);
+							String script = object.getProperties().get("script", String.class);
+							String aScript = object.getProperties().get("attackScript", String.class);
+							String sScript = object.getProperties().get("supSttackScript", String.class);
+							String dScript = object.getProperties().get("discoverScript", String.class);
+							String dType = object.getProperties().get("onSight", String.class);
+							String aType = object.getProperties().get("onAttacked", String.class);
+							String pathName = object.getProperties().get("path", String.class);
+							String powerType = object.getProperties().get("powerType", String.class);
 
-						String loadCondition = object.getProperties().get("load Condition", String.class);
+							if(l!=null) {
+								if (l.toLowerCase().equals("back")) 
+									l = "3";
+								else if (l.toLowerCase().equals("player")) 
+									l = "2";
+								else
+									l = "1";
 
-						if(l!=null) {
-							if (l.toLowerCase().equals("back")) {
-								l = "3";
-							} else if (l.toLowerCase().equals("player")) {
-								l = "2";
-							} else {
-								l = "1";
-							}
-						}
-						else l = "1";
+							} else l = "1";
 
-						try {
-							short lyr;
-							if (l.equals("2")) {	//TODO refactor
-								lyr = Vars.BIT_PLAYER_LAYER;
-							} else {
-								Field f = Vars.class.getField("BIT_LAYER"+l);
-								lyr = f.getShort(f);
-							}
-							ID = ID.toLowerCase();
-							int sceneIDParsed = Integer.parseInt(sceneID);
-
-							if (sceneID==null)
-								System.out.println("'" + name + "', '"+ID+"' cannot be created without a sceneID!");
-							else if (Entity.idToEntity.containsKey(sceneIDParsed)) {
-								Entity c = Entity.idToEntity.get(sceneIDParsed);
-								boolean conflict = true;
-								
-								if(c instanceof Mob)
-									if(((Mob)c).getName().equals(name) && c.ID.equals(ID))
-										conflict = false;
-
-								if(conflict){
-									System.out.print("'" + name + "', '"+ID+"' cannot be created; ");
-									if(c instanceof Mob)
-										System.out.println("'" + ((Mob)c).getName() + "' already exists with ssceneID " + sceneID);
-									else
-										System.out.println("'" + c.ID + "' already exists with sceneID " + sceneID);
+							try {
+								short lyr;
+								if (l.equals("2")) {	//TODO refactor
+									lyr = Vars.BIT_PLAYER_LAYER;
+								} else {
+									Field f = Vars.class.getField("BIT_LAYER"+l);
+									lyr = f.getShort(f);
 								}
-								//ignore since object was already created via save file
-							} else{
-								boolean b = true;
-								if(loadCondition!=null)
-									b = main.evaluator.evaluate(loadCondition);
-										
-								if(b){
+								ID = ID.toLowerCase();
+								int sceneIDParsed = Integer.parseInt(sceneID);
+
+								if (sceneID==null)
+									System.out.println("'" + name + "', '"+ID+"' cannot be created without a sceneID!");
+								else if (Entity.idToEntity.containsKey(sceneIDParsed)) {
+									Entity c = Entity.idToEntity.get(sceneIDParsed);
+									boolean conflict = true;
+
+									if(c instanceof Mob)
+										if(((Mob)c).getName().equals(name) && c.ID.equals(ID))
+											conflict = false;
+
+									if(conflict){
+										System.out.print("'" + name + "', '"+ID+"' cannot be created; ");
+										if(c instanceof Mob)
+											System.out.println("'" + ((Mob)c).getName() + "' already exists with ssceneID " + sceneID);
+										else
+											System.out.println("'" + c.ID + "' already exists with sceneID " + sceneID);
+									}
+									//ignore since object was already created via save file
+								} else{
 									Mob e = new Mob(name, ID, sceneIDParsed, rect.x, rect.y, lyr);
 									e.setGameState(main);
 									e.setState(state, null, -1, ResetType.NEVER.toString());
@@ -585,85 +601,190 @@ public class Scene {
 									if(sceneIDParsed>=0)
 										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
 								}
-							}
-						} catch (NoSuchFieldException | SecurityException e) {
-							e.printStackTrace();
-						} catch (IllegalArgumentException e) {
-							e.printStackTrace();
-						} catch (IllegalAccessException e) {
-							e.printStackTrace();
-						}
-					}
-					
-					if(object.getProperties().get("barrier")!=null) {
-						String id = object.getProperties().get("ID", String.class);
-						Entity e = new Barrier(rect.x, rect.y+rect.height/2, 
-								(int)rect.width, (int)rect.height, id);
-						e.active = false;
-						entities.add(e);
-					}
 
-					if(object.getProperties().get("spawn")!=null) {
-						spawnpoint = new Vector2(rect.x, rect.y);
-						localSpawnpoint = new Vector2(rect.x, rect.y);
-					}
-					
-					if(object.getProperties().get("cambot spawn")!=null) {
-						camBotSpawnpoint = new Vector2(rect.x, rect.y);
-					}
-					
-					// pull warp from existing warps
-					if(object.getProperties().get("warp")!=null) {
-						String id = object.getProperties().get("ID", String.class);
-						int warpID = Integer.parseInt(id);
-						Warp w = main.findWarp(ID, warpID);
-						if(w!=null){ //should only happen if main.cwarps is false
-							w.setOwner(this);
-							w.active = false;
-							entities.add(w);
-						}
-					}
-					
-					if(object.getProperties().get("event")!=null){
-						Iterator<String> it = object.getProperties().getKeys();
-						EventTrigger et = new EventTrigger(main, rect.x+rect.width/2-7.1f, 
-								rect.y, rect.width, rect.height);
-						String script, condition, s;
-						
-						while(it.hasNext()){
-							script = it.next();
-							if(script.equals("x") || script.equals("y") || script.equals("event")
-									|| script.equals("retriggerable") || script.equals("avoidHalt"))
-								continue;
-							condition = object.getProperties().get(script, String.class);
-							et.addEvent(script, condition);
+							} catch (NoSuchFieldException | SecurityException e) {
+								e.printStackTrace();
+							} catch (IllegalArgumentException e) {
+								e.printStackTrace();
+							} catch (IllegalAccessException e) {
+								e.printStackTrace();
+							}
 						}
 						
-						if((s = object.getProperties().get("retriggerable", String.class))!=null){
-							if(!s.isEmpty()){
-								for(String sc : s.split(","))
-									et.setRetriggerable(sc, true);
-							} else
-								et.setRetriggerable(true);
-						} if((s = object.getProperties().get("avoidHalt", String.class))!=null){
-							if(!s.isEmpty()){
-								for(String sc : s.split(","))
-									et.setHalt(sc, false);
-							} else
-								et.setHalt(false);
+						o = object.getProperties().get("Entity");
+						if(o==null) o = object.getProperties().get("entity");
+						if(o!=null) {
+							String l = object.getProperties().get("layer", String.class);		//render/collision layer
+							String ID = object.getProperties().get("entity", String.class);		//name used for art file
+							if(ID==null) ID = object.getProperties().get("Entity", String.class);
+							String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+//							String focus = object.getProperties().get("focus", String.class);
+							String script = object.getProperties().get("script", String.class);
+							String aScript = object.getProperties().get("attackScript", String.class);
+							String sScript = object.getProperties().get("supSttackScript", String.class);
+							String cDimStr = object.getProperties().get("entity", String.class);
+							boolean cDim = false;
+							if(cDimStr!=null)
+								if(Vars.isBoolean(cDimStr))
+									cDim = Boolean.parseBoolean(cDimStr);
+							
+							if(l!=null) {
+								if (l.toLowerCase().equals("back")) 
+									l = "3";
+								else if (l.toLowerCase().equals("player")) 
+									l = "2";
+								else
+									l = "1";
+
+							} else l = "1";
+
+							try {
+								short lyr;
+								if (l.equals("2")) {	//TODO refactor
+									lyr = Vars.BIT_PLAYER_LAYER;
+								} else {
+									Field f = Vars.class.getField("BIT_LAYER"+l);
+									lyr = f.getShort(f);
+								}
+								int sceneIDParsed = Integer.parseInt(sceneID);
+
+								if (sceneID==null)
+									System.out.println("'"+ID+"' cannot be created without a sceneID!");
+								else if (Entity.idToEntity.containsKey(sceneIDParsed)) {
+									Entity c = Entity.idToEntity.get(sceneIDParsed);
+									boolean conflict = true;
+
+									//this is the same object we're looking at, therefore no conflict
+									if(c.ID.equals(ID))
+										conflict = false;
+
+									if(conflict){
+										System.out.print("'"+ID+"' cannot be created; ");
+										if(c instanceof Mob)
+											System.out.println("'" + ((Mob)c).getName() + "' already exists with ssceneID " + sceneID);
+										else
+											System.out.println("'" + c.ID + "' already exists with sceneID " + sceneID);
+									}
+									//ignore since object was already created via save file
+								} else {
+									Entity e;
+									if(cDim) e = new Entity(rect.x, rect.y+rect.height/2, rect.width, rect.height, ID);
+									else e = new Entity(rect.x, rect.y+Mob.getHeight(ID)/2f, ID);
+									e.setSceneID(sceneIDParsed);
+									e.setGameState(main);
+									e.setDialogueScript(script);
+									e.setAttackScript(aScript);
+									e.setSupAttackScript(sScript);
+									e.changeLayer(lyr);
+									e.active = true;
+									entities.add(e);
+
+									//TODO
+//									if(focus!=null) 
+//										fociToAdd.put(e, focus);
+
+									if(sceneIDParsed>=0)
+										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
+								}
+							} catch (NoSuchFieldException | SecurityException e) {
+								e.printStackTrace();
+							} catch (IllegalArgumentException e) {
+								e.printStackTrace();
+							} catch (IllegalAccessException e) {
+								e.printStackTrace();
+							} catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+
+						if(object.getProperties().get("barrier")!=null) {
+							String id = object.getProperties().get("ID", String.class);
+//							String type = object.getProperties().get("type", String.class);
+							Entity e = new Barrier(rect.x, rect.y+rect.height/2, 
+									(int)rect.width, (int)rect.height, id);
+							e.active = false;
+							entities.add(e);
+						}
+
+						if(object.getProperties().get("spawn")!=null) {
+							spawnpoint = new Vector2(rect.x, rect.y);
+							localSpawnpoint = new Vector2(rect.x, rect.y);
+						}
+
+						if(object.getProperties().get("cambot spawn")!=null) {
+							camBotSpawnpoint = new Vector2(rect.x, rect.y);
+						}
+
+						// pull warp from existing warps
+						if(object.getProperties().get("warp")!=null) {
+							String id = object.getProperties().get("ID", String.class);
+							int warpID = Integer.parseInt(id);
+							Warp w = main.findWarp(ID, warpID);
+							if(w!=null){ //should only happen if main.cwarps is false
+//								w.setOwner(this);
+								w.active = false;
+								entities.add(w);
+							}
+						}
+
+						if(object.getProperties().get("event")!=null){
+							Iterator<String> it = object.getProperties().getKeys();
+							EventTrigger et = new EventTrigger(main, rect.x+rect.width/2-7.1f, 
+									rect.y, rect.width, rect.height);
+							String script, condition, s;
+
+							while(it.hasNext()){
+								script = it.next();
+								if(script.equals("x") || script.equals("y") || script.equals("event")
+										|| script.equals("retriggerable") || script.equals("avoidHalt"))
+									continue;
+								condition = object.getProperties().get(script, String.class);
+								et.addEvent(script, condition);
+							}
+
+							if((s = object.getProperties().get("retriggerable", String.class))!=null){
+								if(!s.isEmpty()){
+									for(String sc : s.split(","))
+										et.setRetriggerable(sc, true);
+								} else
+									et.setRetriggerable(true);
+							} if((s = object.getProperties().get("avoidHalt", String.class))!=null){
+								if(!s.isEmpty()){
+									for(String sc : s.split(","))
+										et.setHalt(sc, false);
+								} else
+									et.setHalt(false);
+							}
+						}
+					} else if(object instanceof PolylineMapObject){
+						String name = object.getProperties().get("name", String.class);
+						String speed = object.getProperties().get("speed", String.class);
+						String behavior = object.getProperties().get("behavior", String.class);
+						Polyline pl =((PolylineMapObject) object).getPolyline();
+
+						Array<Vector2> vertices = new Array<Vector2>();
+						for(int i = 0; i<pl.getVertices().length-1; i+=2)
+							vertices.add(new Vector2(pl.getVertices()[i]+pl.getX(), 
+									pl.getVertices()[i+1]+pl.getY()));
+
+						Path p = new Path(name, behavior, vertices);
+						paths.add(p);
+						
+						if(speed!=null)
+							if(Vars.isNumeric(speed))
+								p.setSpeed(Float.parseFloat(speed));
+					} else if(object instanceof PolygonMapObject){
+						if(object.getProperties().get("barrier")!=null) {
+							String id = object.getProperties().get("ID", String.class);
+							String type = object.getProperties().get("type", String.class);
+							Barrier e = new Barrier(((PolygonMapObject)object).getPolygon(), id);
+							e.active = false;
+							
+							if(type!=null)
+								e.setType(type);
+							entities.add(e);
 						}
 					}
-				} else if(object instanceof PolylineMapObject){
-					String name = object.getProperties().get("name", String.class);
-					String behavior = object.getProperties().get("behavior", String.class);
-					Polyline pl =((PolylineMapObject) object).getPolyline();
-					
-					Array<Vector2> vertices = new Array<Vector2>();
-					for(int i = 0; i<pl.getVertices().length-1; i+=2)
-								vertices.add(new Vector2(pl.getVertices()[i]+pl.getX(), 
-										pl.getVertices()[i+1]+pl.getY()));
-					
-					paths.add(new Path(name, behavior, vertices));
 				}
 			}
 		}
@@ -689,7 +810,7 @@ public class Scene {
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3 | Vars.BIT_BATTLE;
 		body.createFixture(fdef).setUserData("wall");
 		
-		if(Main.cwarps)entities.addAll(createLinkWarps());
+		if(Main.cwarps)entities.addAll(retrieveSideWarps());
 	}
 	
 	
@@ -702,7 +823,6 @@ public class Scene {
 		if(prop.get("next")!=null) {
 			String next = prop.get("next", String.class);
 			String nextWarp = prop.get("nextWarp", String.class);
-			boolean instant = true;
 
 			int nextID = 0;
 			if(nextWarp!=null) nextID = Integer.parseInt(nextWarp);
@@ -711,7 +831,7 @@ public class Scene {
 			Warp w = new Warp(this, next.replaceAll(" ", ""), 1, nextID, rect.x, 
 					rect.y+rect.height/2, rect.width, rect.height);
 
-			w.setInstant(instant);
+			w.setInstant(true);
 			warps.add(w);
 		}
 
@@ -719,7 +839,6 @@ public class Scene {
 		if(prop.get("previous")!=null) {
 			String next = prop.get("previous", String.class);
 			String nextWarp = prop.get("prevWarp", String.class);
-			boolean instant = true;
 
 			int nextID = 1;
 			if(nextWarp!=null) nextID = Integer.parseInt(nextWarp);
@@ -728,7 +847,7 @@ public class Scene {
 			Warp w = new Warp(this, next.replaceAll(" ", ""), 0, nextID, rect.x, 
 					rect.y+rect.height/2, rect.width, rect.height);
 
-			w.setInstant(instant);
+			w.setInstant(true);
 			warps.add(w);
 		}
 
@@ -766,7 +885,7 @@ public class Scene {
 	}
 	
 	//pull side warps from hashtable for adding into world
-	public ArrayList<Entity> createLinkWarps(){
+	public ArrayList<Entity> retrieveSideWarps(){
 		ArrayList<Entity> warps = new ArrayList<>();
 		MapProperties prop = tileMap.getProperties();
 
@@ -774,23 +893,23 @@ public class Scene {
 		if(prop.get("next")!=null){
 			w = main.findWarp(ID, 1);
 			w.setOffset(-4*Vars.TILE_SIZE, this.groundLevel);
-			w.setOwner(this);
+//			w.setOwner(this);
 			warps.add(w);
 			// adds a trigger to show the title of the next location
-			if(w.getLink().owner.outside){
+			if(w.getLink().outside){
 				TextTrigger tt = new TextTrigger(w.getWarpLoc().x + Vars.TILE_SIZE, w.getWarpLoc().y+
-						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.RIGHT_MARGIN);
+						TextTrigger.DEFAULT_HEIGHT/2f-.36f*Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.RIGHT_MARGIN);
 				w.setTextTrigger(tt);
 				warps.add(tt);
 			}
 		} if(prop.get("previous")!=null){
 			w = main.findWarp(ID, 0);
 			w.setOffset(4*Vars.TILE_SIZE, this.groundLevel);
-			w.setOwner(this);
+//			w.setOwner(this);
 			warps.add(w);
-			if(w.getLink().owner.outside){
-				TextTrigger tt = new TextTrigger(w.getWarpLoc().x + Vars.TILE_SIZE, w.getWarpLoc().y+
-						TextTrigger.DEFAULT_HEIGHT-Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.LEFT_MARGIN);
+			if(w.getLink().outside){
+				TextTrigger tt = new TextTrigger(w.getWarpLoc().x - Vars.TILE_SIZE, w.getWarpLoc().y+
+						TextTrigger.DEFAULT_HEIGHT/2f-.36f*Vars.TILE_SIZE, "To "+w.getLink().locTitle, SpeechBubble.PositionType.LEFT_MARGIN);
 				w.setTextTrigger(tt);
 				warps.add(tt);
 			}
@@ -808,12 +927,14 @@ public class Scene {
 		this.rayHandler = rh;
 	}
 	
-	public Scene levelFromID(String ID, Warp warp, int warpID){
-		Scene s = new Scene(world, main, ID);
-		s.setRayHandler(rayHandler);
+	public static Scene levelFromID(String ID, Warp warp, int warpID){
+		if(warp==null) return null;
+		Main main = warp.getGameState();
+		Scene s = new Scene(main.getWorld(), main, ID);
+		s.setRayHandler(main.getScene().rayHandler);
 		
-		if(warp!=null)
-			if(!warp.owner.newSong) s.newSong = false;
+//		if(warp!=null)
+//			if(!warp.owner.newSong) s.newSong = false;
 		
 //		Vector2 linkLoc = main.findWarp(ID, warpID).getLink();
 //		if(linkLoc!=null) warp.setLink(linkLoc);

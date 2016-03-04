@@ -10,7 +10,7 @@ setChoice(1:Offer him money, 2:Talk to him)
 		setSpeaker(player)
 		text(normal, {Here's somthing to keep you going sir.})
 		setSpeaker(Hobo)
-		text(mad, {The onlyl hunger I feel is my hunger for revolution!})
+		text(mad, {The only hunger I feel is my hunger for revolution!})
 		text(mad, {Damn Capitalism!})
 	end
 	[choice Talk to him]

@@ -18,14 +18,14 @@ Script Main
 			text(normal, {Rachael Perkins /lBeau Sahaj /lMe again...})
 			
 			setNickName(this, Art)
-			text(normal, {All me. Background, character, UI...})
+			text({Zane Laughlin /lMe.})
 			
 			setNickName(this, Music)
 			text(normal, {Raymond Zhao /lAnd Me})
 			
 			setNickName(this, Programming)
-			text(normal, {Jay Sebastian /lRyan McCampbell /lNathan Chatham})
-			text(normal, {Reid Bixler /lJiten Bhatt /l...And me, of course.})
+			text(normal, {Jay Sebastian /lRyan McCampbell /lNathan Chatham /lRachael Hazlett})
+			text(normal, {Reid Bixler /lJiten Bhatt /lTony Nghieu /l...And me})
 			
 			setNickName(this, ...)
 			text(normal, {....})

@@ -17,17 +17,18 @@ public class MobAI {
 	public static enum AIType {
 		AIM, ATTACK, BLOCKPATH, DANCING, DUCK, IDLE, IDLEWALK, EVADING, EVADING_ALL, 
 		FACELEFT, FACEOBJECT, FACEPLAYER, FACERIGHT, FIGHTING, FLAIL, FLY, FOLLOWING, 
-		HUG, JUMP, KISS, LOSEAIM, LOOK_UP, MOVE, RUN, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING,
+		HUG, JUMP, KISS, KNOCKOUT, LOSEAIM, LOOK_UP, MOVE, RUN, RECOVER, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING,
 		SNOOZE, SPECIAL1, SPECIAL2, SPECIAL3, STATIONARY, STOP
 	}
 
 	public static enum ResetType {
 		ON_ANIM_END, ON_SCRIPT_END, ON_AI_COMPLETE, ON_LEVEL_CHANGE, ON_TIME, NEVER;
 	}
-	public static final Array<AIType> technical = new Array<>();
+	public static final Array<AIType> technical_types = new Array<>();
 	static{
-		technical.add(AIType.LOSEAIM);
-		technical.add(AIType.STOP);
+		technical_types.add(AIType.LOSEAIM);
+		technical_types.add(AIType.STOP);
+		technical_types.add(AIType.RECOVER);
 	}
 
 	public final Mob owner;
@@ -78,7 +79,7 @@ public class MobAI {
 	}
 	
 	public void update(float dt){
-		if(!resetType.equals(ResetType.NEVER) && time<15) 
+		if(!resetType.equals(ResetType.NEVER)) 
 			time+=dt;
 		position();
 		
@@ -113,7 +114,7 @@ public class MobAI {
 			if(Math.abs(dx) < POS_RANGE && !owner.aiming)
 				owner.aim();
 			if(focus!=null){
-				//watch focus if Mob doesn't need to reposisition
+				//watch focus if Mob doesn't need to reposition
 				if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
 					owner.faceObject(focus);
 			}
@@ -123,7 +124,7 @@ public class MobAI {
 					owner.unAim();
 					finish();
 				}
-			} else if(resetType!=ResetType.NEVER){
+			} else if(resetType==ResetType.ON_ANIM_END || resetType==ResetType.ON_AI_COMPLETE){
 				inactiveTime += dt;
 				if(inactiveTime>=inactiveWait){
 					owner.unAim();
@@ -187,7 +188,7 @@ public class MobAI {
 					owner.unDuck();
 					finish();
 				}
-			} else if(resetType!=ResetType.NEVER){
+			} else if(resetType==ResetType.ON_ANIM_END || resetType==ResetType.ON_AI_COMPLETE){
 				inactiveTime += dt;
 				if(inactiveTime>=inactiveWait){
 					owner.unDuck();
@@ -449,6 +450,20 @@ public class MobAI {
 				}
 			}
 			break;
+		case KNOCKOUT:
+			if (resetType.equals(ResetType.ON_TIME)){
+				if(time>=resetTime-1){
+					owner.recover();
+					finish();
+				}
+			} else if(resetType==ResetType.ON_ANIM_END || resetType==ResetType.ON_AI_COMPLETE){
+				inactiveTime += dt;
+				if(inactiveTime>=inactiveWait){
+					owner.recover();
+					finish();
+				}
+			}
+			break;
 		case LOOK_UP:
 			canPosition = false;
 
@@ -481,13 +496,17 @@ public class MobAI {
 			break;
 		case LOSEAIM:
 			owner.unAim();
+			if(owner.defaultState.type==AIType.AIM)
+				owner.setDefaultState((MobAI) owner.defaultState.data);
 			finish();
 			break;
 		case RUN:
 			owner.run();
 		case MOVE:
-			if(moveToLoc(goalPosition))
+			if(moveToLoc(goalPosition)){
+				owner.respawnPoint = new Vector2(goalPosition);
 				finish();
+			}
 			break;
 		case PATH:
 			if (!owner.canMove()){ 
@@ -519,6 +538,15 @@ public class MobAI {
 					!resetType.equals(ResetType.ON_ANIM_END))
 				strictAnim = Anim.PUNCHING;
 			anim = Anim.PUNCHING;
+			break;
+		case RECOVER:
+			owner.recover();
+			System.out.println("find data from: "+owner.defaultState);
+			if(owner.defaultState.type==AIType.KNOCKOUT){
+				owner.setDefaultState((MobAI) owner.defaultState.data);
+				System.out.println("found data: "+owner.defaultState.data);
+			}
+			finish();
 			break;
 		case SHOOT:
 			if(!resetType.equals(ResetType.ON_AI_COMPLETE) && 
@@ -619,6 +647,7 @@ public class MobAI {
 			}
 			break;
 		case STOP:
+			finish();
 			break;
 		}
 		
@@ -650,6 +679,7 @@ public class MobAI {
 	//relocate mob to original location
 	public void position(){
 		if(!canPosition) return;
+//		System.out.println("positioning: "+owner);
 		float dx = retLoc.x - owner.getPixelPosition().x;
 		if(Math.abs(dx)>= POS_RANGE)
 			moveToLoc(retLoc);
@@ -741,6 +771,8 @@ public class MobAI {
 		switch(type){
 		case AIM:
 			data = owner.defaultState;
+			if(resetType!=ResetType.ON_AI_COMPLETE && resetType!=ResetType.ON_ANIM_END)
+				owner.defaultState = this;
 			owner.aim();
 			inactiveWait = DEFAULT_DURATION;
 			break;
@@ -790,7 +822,6 @@ public class MobAI {
 		case IDLEWALK:
 			findNewLoc(IDLE_RANGE, false);
 			inactiveWait = (float)(Math.random() * IDLE_DURATION + 1);
-//			canPosition = false;
 			retLoc = goalPosition;
 			break;
 		case HUG:
@@ -811,6 +842,13 @@ public class MobAI {
 				}
 			}
 			break;
+		case KNOCKOUT:
+			data = owner.defaultState;
+			if(resetType!=ResetType.ON_AI_COMPLETE && resetType!=ResetType.ON_ANIM_END)
+				owner.defaultState = this;
+			owner.knockOut();
+			inactiveWait = DEFAULT_DURATION;
+			break;
 		case JUMP:
 			canPosition = false;
 			owner.jump();
@@ -819,11 +857,20 @@ public class MobAI {
 			owner.lookUp();
 			inactiveWait = DEFAULT_DURATION;
 			break;
+		case LOSEAIM:
+			if(!owner.aiming) finish();
+			break;
+		case MOVE:
+			canPosition = false;
+			break;
 		case PATH:
 			canPosition = false;
 			break;
 		case PUNCH:
 			anim = Anim.PUNCHING;
+			break;
+		case RECOVER:
+			if(!owner.knockedOut) finish();
 			break;
 		case SHOOT:
 			canPosition = false;
@@ -894,9 +941,12 @@ public class MobAI {
 		case FOLLOWING:
 			focus.removeFollower(owner);
 			break;
-		case LOSEAIM:
-			if(owner.defaultState.type==AIType.AIM)
-				owner.setDefaultState((MobAI) owner.defaultState.data);
+		case MOVE:
+			if(owner.positioning && owner.positioningFocus!=null){
+				owner.faceObject(owner.positioningFocus);
+				owner.positioning = false;
+				owner.positioningFocus = null;
+			}
 			break;
 		case PATH_PAUSE:
 			break;
@@ -907,12 +957,12 @@ public class MobAI {
 
 	//conclude any controlled actions for mob
 	private void finish(){
-		goalPosition = null;
-		owner.controlled = false;
-		AIPhase2 = false;
-		repeat = -1;
 		finished = true;
-		System.out.println("This nigga finished");
+		owner.controlled = false;
+		System.out.println("AI finished: "+owner+";\t"+this.type);
+		if(main.currentScript!=null)
+			if(owner.equals(main.currentScript.getActiveObject()))
+				main.currentScript.removeActiveObj();
 	}
 
 	//ensure the mob can reach its destination
@@ -940,7 +990,5 @@ public class MobAI {
 		return false;
 	}
 	
-	public String toString(){
-		return "t: "+type+"    rt: "+resetType+"    t: "+time;
-	}
+	public String toString(){ return "t: "+type+"    rt: "+resetType+"    t: "+time; }
 }

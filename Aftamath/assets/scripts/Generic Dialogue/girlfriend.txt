@@ -1,0 +1,5 @@
+Script Main
+lockplayer
+setSpeaker(this)
+text(flirty, {Hey there, /player!})
+done

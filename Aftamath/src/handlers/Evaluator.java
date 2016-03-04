@@ -98,8 +98,9 @@ public class Evaluator {
 			//evaluate comparisons
 			if(s.contains("[")){ // contains expressions of format [expression1 comparison expression2]
 				if(s.lastIndexOf("]")==-1){
-					System.out.println("Mismatch braces; "+origStatement);
-					if(this.script!=null) System.out.println("Line: "+(script.index+1)+"\tScript: "+script.ID);
+					System.out.print("Mismatch braces; "+origStatement);
+					if(this.script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+					else System.out.println();
 					
 					return false;
 				}
@@ -170,8 +171,8 @@ public class Evaluator {
 			int first=-1;
 			for(int i = 0; i < tmp.length() - 1; i++){
 				index = tmp.substring(i,i+1);
-				if((index.equals(">") || index.equals("<") || index.equals("="))
-						&& condition.length()<2){
+				if((index.equals(">") || index.equals("<") || index.equals("=") || 
+						(index.equals("!") && tmp.contains("!="))) && condition.length()<2){
 					if(first==-1){
 						condition += index;
 						first = i;
@@ -213,6 +214,12 @@ public class Evaluator {
 					else
 						result = property.equals(value);
 					break;
+				case "!=":
+					if (Vars.isNumeric(property) && Vars.isNumeric(value))
+						result =(Double.parseDouble(property) != Double.parseDouble(value));
+					else
+						result = !property.equals(value);
+					break;
 				case ">":
 					if (Vars.isNumeric(property) && Vars.isNumeric(value))
 						result = (Double.parseDouble(property) > Double.parseDouble(value));
@@ -232,18 +239,24 @@ public class Evaluator {
 						result = (Double.parseDouble(property) <= Double.parseDouble(value));
 					break;
 				default:
-					System.out.println("\""+condition+"\" is not a vaild operator; Line: "+(script.index+1)+"\tScript: "+script.ID);
+					System.out.print("\""+condition+"\" is not a vaild operator");
+					if(script!=null)System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+					else System.out.println();
 				}
 
 //				System.out.println("result: "+result);
 				return result;
 			} catch(Exception e){
-				System.out.println("Could not compare \""+property+"\" with \""+value+"\" by condition \""+condition+"\"; Line: "+(script.index+1)+"\tScript: "+script.ID);
+				System.out.println("Could not compare \""+property+"\" with \""+value+"\" by condition \""+condition+"\"");
+				if(this.script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+				else System.out.println();
 //				e.printStackTrace();
 				return false;
 			}
 		} else {
-			System.out.println("No mathematical expression found in statement \"" + statement + "\"");
+			System.out.print("No mathematical expression found in statement \"" + statement + "\"");
+			if(this.script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+			else System.out.println();
 			return false;
 		}
 	}
@@ -263,8 +276,9 @@ public class Evaluator {
 		for(int i = 0; i<tmp.length()-1; i++){
 			if(tmp.substring(i, i+1).equals("(")){
 				if(tmp.lastIndexOf(")")==-1){
-					System.out.println("Error evaluating: \"" +tmp +
-							"\"\nMissing a \")\"; Line: "+(script.index+1)+"\tScript: "+script.ID);
+					System.out.print("Error evaluating: \"" +tmp +"\"\nMissing a \")\"");
+					if(this.script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+					else System.out.println();
 					return null;
 				}
 				String e =evaluateExpression(tmp.substring(i+1, tmp.lastIndexOf(")")));
@@ -389,7 +403,7 @@ public class Evaluator {
 			property = obj;
 		//the object is a string and must be isolated
 		else if(obj.contains("{") && obj.contains("}"))
-			return getSubstitutions(obj.substring(obj.indexOf("{")+1, obj.lastIndexOf("{")));
+			return getSubstitutions(obj.substring(obj.indexOf("{")+1, obj.lastIndexOf("}")));
 		//random between [0,10]
 		else if(obj.toLowerCase().equals("random")) 
 			return String.valueOf(Math.random()*10);
@@ -404,14 +418,18 @@ public class Evaluator {
 
 			object = findObject(obj);
 			if (object==null){
-				System.out.println("Could not find object with name \"" +obj+"\"; Line: "+(script.index+1)+"\tScript: "+script.ID);
+				System.out.print("Could not find object with name \"" +obj+"\"");
+				if(this.script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+				else System.out.println();
 				return null;
 			}
 
 			property = findProperty(prop, object);
 
 			if(property == null){
-				System.out.println("\""+prop+"\" is an invalid object property for object \""+ obj+"\"; Line: "+(script.index+1)+"\tScript: "+script.ID);
+				System.out.print("\""+prop+"\" is an invalid object property for object \""+ obj+"\"");
+				if(this.script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+				else System.out.println();
 				return null;
 			}
 
@@ -444,12 +462,17 @@ public class Evaluator {
 					property = not+String.valueOf(main.history.getFlag(obj));
 				} else 
 					property = not + main.history.findEvent(obj);
-			} else
-				System.out.println("Could not determine value for \""+obj+"\"; Line: "+(script.index+1)+"\tScript: "+script.ID);
+			} else {
+				System.out.print("Could not determine value for \""+obj+"\"");
+				if(script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
+				else System.out.println();
+			}
+				
 		}
 
 		return property;
 		} catch(Exception e){
+			e.printStackTrace();
 			System.out.println("FATAL error trying to determine value for \"" +orig+"\"");
 			return null;
 		}
@@ -632,7 +655,7 @@ public class Evaluator {
 					txt.substring(txt.indexOf("/partnerg") + "/partnerg".length());
 		} while (txt.contains("/partnert")) {
 			txt = txt.substring(0, txt.indexOf("/partnert")) + main.player.getPartnerTitle() + 
-					txt.substring(txt.indexOf("/partnergt") + "/partnergt".length());
+					txt.substring(txt.indexOf("/partnert") + "/partnert".length());
 		} while(txt.contains("/partner")){
 			String s = "";
 			if(main.player.getPartner()==null)
@@ -649,7 +672,7 @@ public class Evaluator {
 			String varName = txt.substring(txt.indexOf("/variable[")+"/variable[".length(), txt.indexOf("]"));
 			Object var = null;
 			if(script!=null)
-				script.getVariable(varName);
+				var =script.getVariable(varName);
 			if (var==null) var = main.history.getVariable(varName);
 			if (var==null && main.history.flagList.containsKey(varName))
 				var = main.history.getFlag(varName);
@@ -669,7 +692,7 @@ public class Evaluator {
 			String varName = txt.substring(txt.indexOf("/var[")+"/var[".length(), txt.indexOf("]"));
 			Object var = null;
 			if(script!=null)
-				script.getVariable(varName);
+				var = script.getVariable(varName);
 			if (var==null) var = main.history.getVariable(varName);
 			if (var==null && main.history.flagList.containsKey(varName))
 				var = main.history.getFlag(varName);

@@ -83,16 +83,16 @@ public class Script implements Serializable {
 	
 	public Script(String scriptID, ScriptType type, Main m, Entity owner){
 		this();
-		this.owner = owner;
-		this.type = type;
-		this.ID = scriptID;
-		main = m;
-
 		String path;
 		if((path = Game.res.getScript(scriptID))==null) {
 			System.out.println("No such script called \""+scriptID+"\"");
 			return;
 		}
+		
+		this.owner = owner;
+		this.type = type;
+		this.ID = scriptID;
+		main = m;
 		
 		loadScript(path);
 		if(source!=null){
@@ -106,7 +106,7 @@ public class Script implements Serializable {
 //				i++;
 //			}
 
-			activeObj = new Entity();
+			activeObj = null;
 			setIndex();
 		}
 	}
@@ -114,10 +114,12 @@ public class Script implements Serializable {
 	public void update(){
 		if(main.analyzing && this.equals(main.currentScript)){
 			if(!paused){
-				if(activeObj instanceof Entity)
-					if (!((Entity) activeObj).controlled){
-						analyze();
-					}
+				if(activeObj==null)
+					analyze();
+				
+//				if(activeObj instanceof Entity)
+//					if (!((Entity) activeObj).controlled)
+//						removeActiveObj();
 			} else {
 				if (waitTime > 0){
 					time+=Vars.DT;
@@ -127,10 +129,8 @@ public class Script implements Serializable {
 					}
 				} else{
 					if(activeObj instanceof Camera)
-						if (!main.getCam().moving && !forcedPause && !dialog){
-							paused = false;
-							activeObj = new Entity();
-						}
+						if (!main.getCam().moving && !forcedPause && !dialog)
+							removeActiveObj();
 				}
 			}
 		} else if (this.equals(main.loadScript))
@@ -142,7 +142,7 @@ public class Script implements Serializable {
 			finish();
 			return;
 		}
-//		System.out.println("---"+(index+1)+"---- "+source.get(index));
+		System.out.println("---"+(index+1)+"---- "+source.get(index).trim());
 
 		Operation o;
 		dialog = false;
@@ -171,9 +171,18 @@ public class Script implements Serializable {
 
 			case "addpartner":
 				obj = findObject(firstArg(line));
-				if(obj!=null)
-					if(obj instanceof Mob)
-						main.player.goOut((Mob) obj, lastArg(line));
+				if(args.length!=3)
+					System.out.println("Invalid number of arguments for addPartner command; Line: "+(index+1)+"\tScript: "+ID);
+				else if(obj!=null){
+					if(obj instanceof Mob){
+						String title = main.evaluator.determineValue(args[1], this);
+						String info = main.evaluator.determineValue(args[2], this);
+						main.player.addPartner((Mob) obj, title, info);
+					} else
+						System.out.println("Can only set NPCs as partners; \""+obj+"\" is a \""+obj.getClass().getSimpleName()+"\"; Line: "+(index+1)+"\tScript: "+ID);
+				} else {
+					System.out.println("No object \""+args[0]+"\" to set as player's partner; Line: "+(index+1)+"\tScript: "+ID);
+				}
 				break;
 			case "attack":
 				obj = findObject(firstArg(line));
@@ -215,6 +224,7 @@ public class Script implements Serializable {
 				changeValue(line);
 				break;
 			case "declare":
+				//declare(variableName, scope, type, initialValue)
 				String variableName = firstArg(line);
 				String scope = firstArg(middleArg(line));
 				String type = lastArg(middleArg(line));
@@ -223,7 +233,7 @@ public class Script implements Serializable {
 					value = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
 					value =  main.evaluator.getSubstitutions(value, this);
 				}
-				//				System.out.println("\nn: "+ variableName +"\ns: "+scope+"\nt: "+type+"\nv: "+value);
+//				System.out.println("\nn: "+ variableName +"\ns: "+scope+"\nt: "+type+"\nv: "+value);
 
 				try{
 					switch(type.toLowerCase()){
@@ -244,7 +254,6 @@ public class Script implements Serializable {
 						break;
 					case"flag":
 						if(scope.equalsIgnoreCase("local")){
-//							System.out.println("declaring local flag");
 							boolean b = false;
 							try{ b = Boolean.parseBoolean(value); }
 							catch(Exception e){
@@ -309,9 +318,8 @@ public class Script implements Serializable {
 								}
 								break;
 							case 5:
-								if(Vars.isBoolean(args[4])){
+								if(Vars.isBoolean(args[4]))
 									wait = Boolean.parseBoolean(args[4]);
-								}
 								target = findObject(args[2]);
 								if(Vars.isNumeric(args[3])){
 									time = Float.parseFloat(args[3]);
@@ -321,10 +329,12 @@ public class Script implements Serializable {
 							} 
 							
 							System.out.println("ac: "+actionType+"\tt: "+target+"\tdt: "+time+"\trt: "+resetType+"\tw: "+wait);
-							m.setState(actionType, target, time, resetType);
-							m.controlled = true;
-							if(wait && !resetType.toUpperCase().equals("NEVER")){
-								activeObj = m;
+							boolean success = m.setState(actionType, target, time, resetType);
+							if(wait && !resetType.toUpperCase().equals("NEVER") &&!resetType.toUpperCase().equals("ON_SCRIPT_END")
+									&& !resetType.toUpperCase().equals("ON_LEVEL_CHANGE")){
+								if(!m.getCurrentState().finished || !success)
+									//ensures that states that immediately fail aren't waited on forever
+									setActiveObj(m);
 							}
 						} else
 							System.out.println("Insufficient number of arguments; Line: "+(index+1)+"\tScript: "+ID);
@@ -440,9 +450,8 @@ public class Script implements Serializable {
 			case "focuscamera":
 				obj = findObject(lastArg(line));
 				if (obj != null) {
-					paused = true;
 					main.getCam().setFocus(obj);
-					activeObj = main.getCam();
+					setActiveObj(main.getCam());
 				} else if (args.length==2) {
 					loc = parseTiledVector(args, 0);
 					if(loc!=null)
@@ -493,7 +502,7 @@ public class Script implements Serializable {
 				System.out.println("Hiding stats has not yet implemented. Sorry!");
 				break;
 			case "hidedialog":
-				main.hud.hide();
+				main.getHud().hide();
 				break;
 			case "if":
 				Evaluator eval = new Evaluator(main);
@@ -520,7 +529,7 @@ public class Script implements Serializable {
 				break;
 			case "introevent":
 				paused = true;
-				main.hud.hide();
+				main.getHud().hide();
 
 				main.removeBody(main.character.getBody());
 				main.character = new Mob(main.character.getName(), 
@@ -540,6 +549,8 @@ public class Script implements Serializable {
 				}
 					
 				break;
+			case "releaseplayer":
+				main.setStateType(InputState.MOVELISTEN);
 			case "respawn":
 				obj= findObject(firstArg(line));
 				if(obj!=null)
@@ -559,11 +570,10 @@ public class Script implements Serializable {
 //				move(objectName, x, y, [wait]) //accepts Tile Location
 //				move(objectName, pathName, [wait]) //accepts a path
 //				move(objectName, targetName, [wait]) //accepts a Mob
-//				move(objectNamce, x, y, sceneName, [wait]
+//				move(objectNamce, x, y, sceneName, [wait]) //accepts a tile location from another level
 				
 				loc = null;
 				boolean wait = true;
-//				Entity targ = null;
 			
 				if(lastArg(line).contains("true") || lastArg(line).contains("false"))
 					wait = Boolean.parseBoolean(lastArg(line));
@@ -580,11 +590,11 @@ public class Script implements Serializable {
 					target = findPath(args[1]);
 					if(target != null)
 						if(obj instanceof Mob){
-						Path path = (Path) target;
-						// make object move to path
-						((Mob) obj).moveToPath(path);
-						break;
-					}
+							Path path = (Path) target;
+							// make object move to path
+							((Mob) obj).moveToPath(path);
+							break;
+						}
 
 					//is target a Mob?
 					target = findObject(args[1].trim());
@@ -596,12 +606,14 @@ public class Script implements Serializable {
 					}
 
 					// is targ a tile vector?
-					if(target==null)
+					if(target==null){
 						loc = parseTiledVector(args, 1);
+						System.out.println("should I be parsing Vector? "+args[1].trim()+" :: "+target);
+					}
 
 					if(loc != null)
 						if(obj instanceof Mob){
-							if(wait) activeObj = obj;
+							if(wait) setActiveObj(obj);
 							((Mob) obj).setState("MOVE", loc);
 						} else
 							System.out.println("Cannot move \""+middleArg(line)+"\" because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
@@ -703,7 +715,7 @@ public class Script implements Serializable {
 					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "removepartner":
-				main.player.breakUp();
+				main.player.removePartner();
 				break;
 			case "resetstate":
 				obj = findObject(lastArg(line));
@@ -796,14 +808,21 @@ public class Script implements Serializable {
 							if(o1.isAvailable())
 								temp.add(o1);
 
-						main.displayChoice(temp);
-						main.setStateType(InputState.CHOICE);
-						main.choosing = true;
-						paused = true;
+						if(temp.size>=1){
+							main.displayChoice(temp);
+							main.setStateType(InputState.CHOICE);
+							main.choosing = true;
+							main.getHud().halfHide();
+							paused = true;
+						} else{
+							System.out.println("setchoice has no viable options...");
+							index = o.end;
+							operations.pop();
+						}
 					} 
 				}
-				//				else
-				//					System.out.println("No choices found for this choice set; Line: "+(index+1)+"\tScript: "+ID);
+//				else
+//					System.out.println("No choices found for this choice set; Line: "+(index+1)+"\tScript: "+ID);
 				break;
 			case "setdefaultstate":
 				obj = findObject(firstArg(line));
@@ -942,15 +961,16 @@ public class Script implements Serializable {
 
 				if(speaker != null) {
 					if(speaker instanceof Mob){
-						if( main.hud.getFace() != speaker) 
-							main.hud.changeFace((Mob) speaker);
+						if( main.getHud().getFace() != speaker) 
+							main.getHud().changeFace((Mob) speaker);
 					}
-					else main.hud.changeFace(null);
+					else main.getHud().changeFace(null);
 					if(args.length == 2)
 						main.getCam().setFocus(speaker);
 				} else {
-					System.out.println("Cannot find \""+firstArg(line)+"\" to set as speaker; Line: "+(index+1)+"\tScript: "+ID);
-					main.hud.changeFace(null);
+					if(!args[0].equals("null")) 
+						System.out.println("Cannot find \""+firstArg(line)+"\" to set as speaker; Line: "+(index+1)+"\tScript: "+ID);
+					main.getHud().changeFace(null);
 				}
 
 				break;
@@ -995,8 +1015,6 @@ public class Script implements Serializable {
 					if(args.length==4)
 						s1 = args[0];
 					
-					System.out.println("s1: "+s1+"\ts2:"+s2+"\tw1: "+wID1+"\tw2:"+wID2);
-					
 					if(!Vars.isNumeric(wID1)){
 						System.out.println("ID for first warp must be an integer; \""+wID1+"\" is not an integer; Line: "+(index+1)+"\tScript: "+ID);
 						break;
@@ -1015,6 +1033,7 @@ public class Script implements Serializable {
 						break;
 					}
 					w1.setLink(w2);
+					w1.next = s2;
 					
 					TextTrigger tt = w1.getTextTrigger();
 					if(tt!=null)
@@ -1103,52 +1122,77 @@ public class Script implements Serializable {
 				break;
 			case"teleport":
 				//teleport(objectName, levelName, x, y)
-				//teleport(objectName, levelName, warp)
-				
+				//teleport(objectName, levelName, warpID)
+
 				obj = findObject(firstArg(line));
 				if(obj!=null){
 					String level = args[1];
 					if(Game.LEVEL_NAMES.contains(level, false)){
-					if(args.length==3){ //teleport object to warp
-						//TODO
-						System.out.println("Sorry, but teleporting using warps is disabled!"+(index+1)+"\tScript: "+ID);
-					} if(args.length==4){ //teleport object to tile vector
-						loc = parseTiledVector(args, 2, new Scene(level));
-						if(loc==null){
-							System.out.println("Could not parse a tile vector for teleportation; Line: "+(index+1)+"\tScript: "+ID);
-							break;
-						}
-						
-						loc.y-=Vars.TILE_SIZE;
-						System.out.println("See my ass for details");
-						if(obj.equals(main.character))
-							main.initTeleport(loc, level);
-						else {
-							int sceneID = obj.getSceneID();
-							Entity.idToEntity.remove(sceneID);
-							
-							Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
-							set.remove(sceneID);
-							set = Scene.sceneToEntityIds.get(main.getScene().ID);
-							set.add(sceneID);
+						if(args.length==3){ //teleport object to warp
+							if(Vars.isNumeric(args[2])){
+								Warp w = main.findWarp(level, Integer.parseInt(args[2]));
+								if(w!=null){
+									loc = w.getWarpLoc();
+									
+									//TODO make NPC or player walk to warp, then initiate teleport
+									if(obj.equals(main.character)){
+										Warp trigger = new Warp(main.getScene(), w.locTitle, 0, 0, 0, 0, 0, 0);
+										trigger.setLink(w);
+										trigger.setGameState(main);
+										main.initWarp(trigger);
+									} else {
+										int sceneID = obj.getSceneID();
+										Entity.idToEntity.remove(sceneID);
 
-							obj.setPosition(new Vector2(loc.x, loc.y));
-							main.removeBody(obj.getBody());
+										Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
+										set.remove(sceneID);
+										set = Scene.sceneToEntityIds.get(main.getScene().ID);
+										set.add(sceneID);
+
+//										obj.setPosition(new Vector2(loc.x, loc.y));
+										main.removeBody(obj.getBody());
+									}
+								}else
+									System.out.println("No such warp with ID \""+args[2]+"\" exists in the scene \""+level+"\"; Line: "+(index+1)+"\tScript: "+ID);
+							} else 
+								System.out.println("Warp ID \""+args[2]+"\" must be an integer; Line: "+(index+1)+"\tScript: "+ID);
+
+						} if(args.length==4){ //teleport object to tile vector
+							loc = parseTiledVector(args, 2, new Scene(level));
+							if(loc==null){
+								System.out.println("Could not parse a tile vector for teleportation; Line: "+(index+1)+"\tScript: "+ID);
+								break;
+							}
+
+							loc.y-=Vars.TILE_SIZE;
+							if(obj.equals(main.character))
+								main.initTeleport(loc, level);
+							else {
+								int sceneID = obj.getSceneID();
+								Entity.idToEntity.remove(sceneID);
+
+								Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
+								set.remove(sceneID);
+								set = Scene.sceneToEntityIds.get(main.getScene().ID);
+								set.add(sceneID);
+
+								obj.setPosition(new Vector2(loc.x, loc.y));
+								main.removeBody(obj.getBody());
+							}
 						}
-					}
 					}
 					else
 						System.out.println("Invalid level name \""+args[1]+"\" to teleport; Line: "+(index+1)+"\tScript: "+ID);
 				}
 				else
 					System.out.println("Could not find \""+firstArg(line)+"\" to teleport; Line: "+(index+1)+"\tScript: "+ID);
-				
+
 				break;
 			case "text":
 				text(line);
 				break;
 			case "toggleStats":
-				main.hud.showStats = Boolean.parseBoolean(firstArg(line));
+				main.getHud().showStats = Boolean.parseBoolean(firstArg(line));
 				break;
 			case "triggerScript":
 				System.out.println("triggering: "+firstArg(line));
@@ -1264,15 +1308,15 @@ public class Script implements Serializable {
 		if(this.equals(main.currentScript)){
 			main.setStateType(InputState.MOVE);
 			main.analyzing = false;
-			if(main.hud.raised)
-				main.hud.hide();
+			if(main.getHud().raised)
+				main.getHud().hide();
 
 			if(main.tempSong && main.getSong().looping)
 				main.removeTempSong();
 
 			main.getCam().removeFocus();
 			main.currentScript = null;
-			main.hud.changeFace(null);
+			main.getHud().changeFace(null);
 
 			for (Entity d : main.getObjects()){
 				if (d instanceof Mob)
@@ -1446,12 +1490,11 @@ public class Script implements Serializable {
 							b=findBounds("choice", j, bounds.getValue());
 							Option o = choiceIndicies.get(i).get(m);
 							o.setBounds(b);
-							if(s1.replace(" ", "").contains("][")){
-								String s2 = s1.substring(0, s1.indexOf("]")+1);
-								String condition = s1.substring(s2.length());
+							if(s1.replace(" ", "").contains("](")){
+								String condition = s1.substring(s1.indexOf("(")+1, s1.indexOf(")"));
 								o.setCondition(condition);
 							}
-							break;
+							//break;
 						}
 					}
 				}
@@ -1558,7 +1601,7 @@ public class Script implements Serializable {
 	}
 
 	//return everything inside (), seperated by commas
-	private String[] args(String line){
+	public static String[] args(String line){
 		if(line.indexOf("(") == -1 || line.indexOf(")") == -1)
 			return line.split(",");
 		String tmp = line.substring(line.indexOf("(")+1 , line.indexOf(")"));
@@ -1639,7 +1682,7 @@ public class Script implements Serializable {
 		
 		try{
 			float x = Float.parseFloat(args[index].trim()) * Vars.TILE_SIZE;
-			float y =	scene.height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
+			float y =scene.height - Integer.parseInt(args[index+1].trim()) * Vars.TILE_SIZE;
 			System.out.println("Parsed Vec: "+x+", "+y);
 			Vector2 v = new Vector2(x, y);
 			return v;
@@ -1776,34 +1819,38 @@ public class Script implements Serializable {
 			String obj = target.substring(0, target.indexOf("."));
 			target = target.substring(target.indexOf(".")+1);
 			Entity object = findObject(obj);
-
+			boolean valid = false;
 			if(object!=null){
 				switch(function.toLowerCase()){
 				case "add":
 					try{
 						switch(target.toLowerCase()){
 						case "health":
-							if(object instanceof Mob){
-								float val = Float.parseFloat(value);
-								if (val>=0) ((Mob)object).heal(val);
-								else ((Mob)object).damage(val);
-							}
+							valid = true;
+							float val = Float.parseFloat(value);
+							if (val>=0) object.heal(val);
+							else object.damage(val);
 							break;
 						case "money": 
+							valid = true;
 							main.player.addFunds(Float.parseFloat(value));
 							break;
 						case "love":
 						case "relationship": 
+							valid = true;
 							main.player.setRelationship(Float.parseFloat(value));
 							break;
 						case "niceness":
+							valid = true;
 							main.player.setNiceness(Float.parseFloat(value));
 							break;
 						case "bravery":
+							valid = true;
 							main.player.setBravery(Float.parseFloat(value));
 							break;
 						case "power":
 						case "level":
+							
 							if(object instanceof Mob){
 								((Mob)object).levelUp();
 								if(object.equals(main.character))
@@ -1811,10 +1858,13 @@ public class Script implements Serializable {
 							}
 							break;
 						default:
-							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object +
-									"\"; Line: "+(index+1)+"\tScript: "+ID);
+							successful = true;
 							break;
 						}
+						
+						if(!valid)
+							System.out.println("\"" + target +"\" is an invalid property to add to for \"" + object +
+									"\"; Line: "+(index+1)+"\tScript: "+ID);
 					} catch (Exception e) {
 						System.out.println("Could not add \"" + value +"\" to \"" + target + 
 								"\"; Line: "+(index+1)+"\tScript: "+ID);
@@ -1824,13 +1874,15 @@ public class Script implements Serializable {
 					try{
 						switch(target.toLowerCase()){
 						case "flamable":
+							valid = true;
 							if(Vars.isBoolean(value))
 								object.flamable = Boolean.parseBoolean(value);
 							else
 								System.out.println("\""+value+"\" is not a boolean; Line: "+(index+1)+"\tScript: "+ID);
 							break;
 						case "gender":
-							if(object instanceof Mob)
+							if(object instanceof Mob){
+								valid = true;
 								if(value.toLowerCase().equals("male")||value.toLowerCase().equals("boy")||
 										value.toLowerCase().equals("man")){
 									((Mob)object).setGender("male");
@@ -1841,42 +1893,52 @@ public class Script implements Serializable {
 									successful = true; 	}
 								else
 									System.out.println("\""+value+"\" is not a valid gender; Line: "+(index+1)+"\tScript: "+ID);
+							}
 							break;
 						case "money":
+							valid = true;
 							float g = Float.parseFloat(value);
 							main.player.addFunds(g - main.player.getMoney());
 							successful = true;
 							break;
 						case "love":
 						case "relationship":
+							valid = true;
 							main.player.resetRelationship(Float.parseFloat(value));
 							successful = true;
 							break;
 						case "niceness":
+							valid = true;
 							main.player.resetNiceness(Float.parseFloat(value));
 							successful = true;
 							break;
 						case "bravery":
+							valid = true;
 							main.player.resetBravery(Float.parseFloat(value));
 							successful = true;
 							break;
 						case "lovescale":
+							valid = true;
 							main.player.setLoveScale(Float.parseFloat(value));
 							successful = true;
 							break;
 						case "nicenessscale":
+							valid = true;
 							main.player.setNicenessScale(Float.parseFloat(value));
 							successful = true;
 							break;
 						case"nickname":
+							valid = true;
 							if(object instanceof Mob)
 								((Mob)object).setNickName(value);
 							break;
 						case "braveryscale":
+							valid = true;
 							main.player.setBraveryScale(Float.parseFloat(value));
 							successful = true;
 							break;
 						case "powertype":
+							valid = true;
 							if(object instanceof Mob){
 								DamageType type = DamageType.valueOf(value.toUpperCase());
 								if(type!=null)
@@ -1886,16 +1948,19 @@ public class Script implements Serializable {
 							successful = true;
 							break;
 						case "vulnerable":
+							valid = true;
 							if(Vars.isBoolean(value))
 								object.setDestructability(Boolean.parseBoolean(value));
 							else
 								System.out.println("\""+value+"\" is not a boolean; Line: "+(index+1)+"\tScript: "+ID);
 							break;
 						default:
-							System.out.println("\"" + target +"\" is an invalid property to modify for \"" + object + "\"; Line: "+(index+1)+"\tScript: "+ID);
 							successful = true;
 							break;
 						}
+						
+						if(!valid)
+							System.out.println("\"" + target +"\" is an invalid property to modify for \"" + object + "\"; Line: "+(index+1)+"\tScript: "+ID);
 					} catch (Exception e) {
 						e.printStackTrace();
 						System.out.println("Could not set \"" + value +"\" to \"" + target + "\"; Line: "+(index+1)+"\tScript: "+ID);
@@ -1904,6 +1969,7 @@ public class Script implements Serializable {
 					break;
 				default:
 					System.out.println("\""+function+"\" is not a valid operation for modifying values; Line: "+(index+1)+"\tScript: "+ID);
+					break;
 				}
 
 				if (!successful)
@@ -2034,7 +2100,7 @@ public class Script implements Serializable {
 	public boolean declareVariable(String variableName, Object value){
 		for(String p : localVars.keySet())
 			if (p.equals(variableName)){
-				System.out.println("Variable \""+variableName +"\" already exists locally; Line: "+(index+1)+"\tScript: "+ID);
+//				System.out.println("Variable \""+variableName +"\" already exists locally; Line: "+(index+1)+"\tScript: "+ID);
 				return false;
 			}
 		if (!(value instanceof String) && !(value instanceof Integer) && !(value instanceof Float) &&!(value instanceof Boolean))
@@ -2165,7 +2231,7 @@ public class Script implements Serializable {
 				e.setPosition(new Vector2(loc.x, loc.y));
 				if(e1.equals(main.character))
 					main.setCharacter((Mob) e);
-				System.out.println("medic!! ");
+				System.out.println("medic!!!");
 			}
 			
 			main.addObject(e);
@@ -2188,18 +2254,27 @@ public class Script implements Serializable {
 		return e;
 	}
 	
-	public String toString(){
-		return ID;
-	}
-
+	public String toString(){ return ID; }
 	public void setPlayState(Main gs) { main = gs; }
 	public Entity getOwner(){ return owner; }
 	public void setOwner(Entity owner) { this.owner = owner; }
 	public Main getMainRef() { return main; }
 	public void setMainRef(Main main) { this.main = main; }
-	public Object getActiveObject(){ return activeObj; }
-	public void setActiveObj(Object obj){ activeObj = obj; }
 	public String getCurrentName() { return currentName; }
+	public Object getActiveObject(){ return activeObj; }
+	public void setActiveObj(Object aO){
+		if(aO == null)
+			removeActiveObj();
+		else{
+			activeObj = aO;
+			paused = true;
+		}
+	}
+	
+	public void removeActiveObj(){
+		activeObj = null;
+		paused = false;
+	}
 
 	public class Operation{
 		public String type;
@@ -2268,10 +2343,8 @@ public class Script implements Serializable {
 		}
 
 		public boolean isAvailable(){
-			if(!condition.isEmpty()){
-				Evaluator eval= new Evaluator(main);
-				return eval.evaluate(condition, script);
-			}
+			if(!condition.isEmpty())
+				return main.evaluator.evaluate(condition, script);
 			return true;
 		}
 
@@ -2321,7 +2394,7 @@ public class Script implements Serializable {
 		if (source != null) {
 			findIndicies();
 			getDistanceLimit();
-			activeObj = new Entity();
+			activeObj = null;
 		}
 	}
 

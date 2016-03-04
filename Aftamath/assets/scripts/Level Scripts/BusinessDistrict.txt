@@ -1,5 +1,9 @@
 Script Main
 
+#train related stuff
+value(set, trainLoc, {BusinessDistrict})
+setWarp(Subway, 0, BusinessDistrict, 2)
+
 #spawn the boss
 if(SBDidMenialLabor and !SBReceivedPromotion1)
 	declare(found, local, Flag, false)

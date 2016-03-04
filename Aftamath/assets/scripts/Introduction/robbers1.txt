@@ -58,7 +58,7 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
   end
 
   [choice Negotiate]
-    value(set, desc, {Tried to negotiate with cold blooded killers and died. (Wait, what?)})
+    value(set, desc, {Tried to negotiate with cold blooded killers and died. (Wait - what?)})
     setFlag(GotRobbed)
     setSpeaker(player)
     text(normal, {Look, can we just talk-})
@@ -68,7 +68,7 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
 	playsound(pistol, Trevon)
     kill(player)
     
-    splash({WASTED})
+    splash(wasted)
 	doAction(Trevon, loseaim)
 	doAction(Jose, loseaim)
     setSpeaker(narrator)

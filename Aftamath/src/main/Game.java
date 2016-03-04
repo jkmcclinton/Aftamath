@@ -133,16 +133,15 @@ public class Game implements ApplicationListener {
 
 	//Contains all the titles for songs
 	public static final Array<String> SONG_LIST = new Array<>();
-	public static Array<String> LEVEL_NAMES = new Array<>();
+	public static final Array<String> LEVEL_NAMES = new Array<>();
+	public static final HashMap<String, String> SCRIPT_LIST = new HashMap<>();
 
 	public static class Assets {
 
 		private HashMap<String, Texture> textures;
-		private HashMap<String, String> SCRIPT_LIST;
 
 		public Assets() {
 			textures = new HashMap<>();
-			SCRIPT_LIST = new HashMap<>();
 		}
 
 		public void loadMusic(){
@@ -154,7 +153,6 @@ public class Game implements ApplicationListener {
 		}
 		
 		public void loadLevelNames(){
-
 			//collect names for valid levels
 			FileHandle [] files = Gdx.files.internal("assets/maps").list();
 			for(FileHandle f:files)

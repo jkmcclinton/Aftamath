@@ -11,7 +11,8 @@ import scenes.Scene;
 public class Warp extends Entity {
 
 	public String next = null;
-	public Scene owner;
+//	public Scene owner;
+	public boolean outside;
 	public String locTitle;
 	public int warpID;
 	public boolean instant;
@@ -41,7 +42,7 @@ public class Warp extends Entity {
 		this.height = (int) h;
 		this.rw = width/2;
 		this.rh = height/2;
-		this.owner = owner;
+		this.outside = owner.outside;
 		this.offset = new Vector2(0, 0);
 		this.warpLoc = new Vector2(x, y-rh);
 		this.locTitle = owner.title;
@@ -62,11 +63,11 @@ public class Warp extends Entity {
 
 	public Scene getNextScene(){
 		if (next!=null)
-			return owner.levelFromID(next, this, nextWarp);
+			return Scene.levelFromID(next, this, nextWarp);
 		return null;
 	}
 	
-	public void setOwner(Scene owner){ this.owner =owner; }
+//	public void setOwner(Scene owner){ this.owner =owner; }
 	public int getLinkID(){ return nextWarp; }
 	public Warp getLink() { return link; }
 	public void setLink(Warp link){this.link = link; }

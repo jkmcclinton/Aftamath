@@ -176,7 +176,7 @@
    <properties>
     <property name="ID" value="2"/>
     <property name="next" value="Subway"/>
-    <property name="nextWarp" value="2"/>
+    <property name="nextWarp" value="0"/>
     <property name="warp" value=""/>
    </properties>
   </object>
@@ -195,7 +195,7 @@
   </object>
   <object id="4" name="2" x="1104" y="1248" width="16" height="16">
    <properties>
-    <property name="ID" value="99"/>
+    <property name="ID" value="500"/>
     <property name="NPC" value="julian"/>
     <property name="layer" value="front"/>
     <property name="name" value="Julian"/>
@@ -219,7 +219,7 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="8" x="368" y="1088" width="16" height="176">
+  <object id="8" x="368" y="1089" width="16" height="176">
    <properties>
     <property name="There's A Bar" value="!goneInBar"/>
     <property name="event" value=""/>

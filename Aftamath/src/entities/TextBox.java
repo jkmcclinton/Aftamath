@@ -12,6 +12,7 @@ import handlers.Animation;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 import main.Game;
+import scenes.Script;
 
 public class TextBox extends Entity {
 	
@@ -194,6 +195,11 @@ public class TextBox extends Entity {
 		expanded = false;
 		if (!selfKill && owner instanceof Mob)
 			((Mob)owner).resetState();
+		Script s = main.currentScript;
+		if(s!=null)
+		if(s.getActiveObject()!=null)
+		if(s.getActiveObject().equals(this))
+			s.removeActiveObj();
 	}
 	
 	public void add(Entity t){

@@ -277,7 +277,7 @@ public class SpeechBubble extends Entity {
 		}
 	}
 
-	protected static int getHeight(String ID){
+	public static int getHeight(String ID){
 		try{
 			Texture src = Game.res.getTexture(ID+"base");
 			return src.getHeight();

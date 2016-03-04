@@ -71,6 +71,9 @@ public class Entity implements Serializable {
 	protected short layer, origLayer;
 	protected HashMap<Mob, Boolean> followers;
 	
+	private Path path;
+	private boolean moving;
+	
 	static {
 		idToEntity = new HashMap<Integer, Entity>();
 	}
@@ -91,7 +94,7 @@ public class Entity implements Serializable {
 		this(x, y, -1, -1, ID);
 	}
 	
-	public Entity(float x, float y, int width, int height, String ID) {
+	public Entity(float x, float y, float width, float height, String ID) {
 		this.init();
 		this.ID = ID;
 		this.x = x;
@@ -135,11 +138,13 @@ public class Entity implements Serializable {
 				frozen = false;
 		}
 		
+		//step invulnerability timer
 		if (invulnerable && invulnerableTime > 0) 
 			invulnerableTime-= dt;
 		else if (invulnerable && invulnerableTime <= 0 && invulnerableTime > -1) 
 			invulnerable = false;
 		
+		//apply burn effect
 		if(burning){
 			burnTime+=dt;
 			burnDelay+=dt;
@@ -149,6 +154,21 @@ public class Entity implements Serializable {
 			} if(burnTime >= totBurnLength){
 				burning = false;
 				burnTime = 0;
+			}
+		}
+		
+		// make entity move to path
+		if(moving && path !=null){
+			float dx = path.getCurrent().x - getPixelPosition().x;
+			float dy = path.getCurrent().y - getPixelPosition().y;
+			
+			if(Math.abs(dx)<=1 && Math.abs(dy)<=1){
+				path.stepIndex();
+				if(path.completed){
+					body.setLinearVelocity(new Vector2(0, 0));
+					moving = false;
+					path = null;
+				}
 			}
 		}
 	}
@@ -359,18 +379,18 @@ public class Entity implements Serializable {
 		setDimensions(getWidth(ID), getHeight(ID));
 	}
 	
-	protected void setDimensions(int width, int height){
+	protected void setDimensions(float width, float height){
 		//if (width < 0 || height < 0) {
 		//	width = getWidth(this.ID);
 		//	height = getHeight(this.ID);
 		//}
 		
-		this.width = width; 
-		this.height = height;
+		this.width = (int) width; 
+		this.height = (int) height;
 
 		//units in pixels, measures radius of image
-		this.rw = width/2; 
-		this.rh = height/2;
+		this.rw = (int) width/2; 
+		this.rh = (int) height/2;
 	}
 	
 	protected static int getWidth(String ID){
@@ -387,7 +407,7 @@ public class Entity implements Serializable {
 		}
 	}
 
-	protected static int getHeight(String ID){
+	public static int getHeight(String ID){
 		try{
 			Texture src = Game.res.getTexture(ID+"base");
 			return src.getHeight();
@@ -464,6 +484,7 @@ public class Entity implements Serializable {
 	public HashMap<Mob, Boolean> getFollowers(){ return followers; }
 
 	public int compareTo(Entity e){
+		if(e ==null) return 0;
 		if (layer < e.layer) return 1;
 		if (layer > e.layer) return -1;
 		return 0;
@@ -490,6 +511,14 @@ public class Entity implements Serializable {
 		body.setLinearVelocity(0, vel.y);
 	}
 	
+	public void moveToPath(Path path){
+		if (path==null) return;
+		this.path = path;
+		moving = true;
+		body.setLinearVelocity(Vars.getVelocity(getPixelPosition(), 
+				path.getCurrent(), path.getSpeed()));
+	}
+	
 	public void create(){
 		init = true;
 		//hitbox
@@ -497,7 +526,7 @@ public class Entity implements Serializable {
 		shape.setAsBox((rw)/PPM, (rh)/PPM);
 		
 		bdef.position.set(x/PPM, y/PPM);
-		bdef.type = BodyType.StaticBody;
+		bdef.type = BodyType.KinematicBody;
 		fdef.shape = shape;
 		body = world.createBody(bdef);
 		body.setUserData(this);

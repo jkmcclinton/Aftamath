@@ -25,6 +25,7 @@ public class History implements Serializable {
 		variableList.put("male", "male");
 		variableList.put("female", "female");
 		variableList.put("trainLoc", "nowhere");
+		variableList.put("trainDest", "nowhere");
 	}
 	
 	public History(String loadedData){
@@ -135,6 +136,8 @@ public class History implements Serializable {
 			return null;
 		}
 	}
+	
+	public HashMap<String, Object> getVarlist(){ return variableList; }
 
 	@Override
 	public void read(Json json, JsonValue val) {

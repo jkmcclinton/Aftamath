@@ -1,5 +1,9 @@
 Script Main
 
+#train related stuff
+value(set, trainLoc, {CommercialDistrictNW})
+setWarp(Subway, 0, CommercialDistrictNW, 2)
+
 #Bar event
 #if(!goneInBar)
 #	triggerScript({There's A Bar})

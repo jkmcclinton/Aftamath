@@ -85,17 +85,20 @@ public class Player implements Serializable {
 	
 	//following methods are getters and setters
 	
-	public void goOut(Mob newPartner, String info){
+	public void addPartner(Mob newPartner, String title, String info){
 		setPartner(newPartner);
 		this.info = info;
+		this.partnerTitle = title;
 		relationship = 0;
 		L = 0;
 		
 		main.history.setFlag("hasPartner", true);
 	}
 	
-	public void breakUp(){
+	public void removePartner(){
 		myPartner = null;
+		this.info = "";
+		this.partnerTitle = "";
 		main.history.setFlag("hasPartner", false);
 	}
 	

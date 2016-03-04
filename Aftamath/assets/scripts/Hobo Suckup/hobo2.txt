@@ -77,9 +77,9 @@ else
 			[choice Give him the bread]
 				text(normal, {I'm impressed.})
 				setSpeaker(narrator)
-				text(normal, {You just helped a socialist hobo})
+				text(normal, {You just helped a socialist hobo... nice.})
 				setSpeaker(this)
-				text(normal, {You placed what was morally right before what was socially right.})
+				text(normal, {Hey, he put what was morally right before what was socially right.})
 				setSpeaker(player)
 				text(normal, {I didn't want to hear that from a homeless man.})
 				setSpeaker(this)

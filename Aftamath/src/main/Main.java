@@ -2,6 +2,9 @@ package main;
 
 import static handlers.Vars.PPM;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -10,6 +13,8 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -17,6 +22,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -62,7 +71,6 @@ public class Main extends GameState {
 	public Player player;
 	public Warp warp;
 	public Mob narrator;
-	public HUD hud;
 	public History history;
 	public Evaluator evaluator;
 	public Script currentScript, loadScript;
@@ -79,6 +87,7 @@ public class Main extends GameState {
 	private String[] speakText; //current text page displaying
 	private String gameFile; //used to load a game
 	private World world;
+	private HUD hud;
 	private Scene scene, nextScene;
 	private Color drawOverlay;
 	private Texture pixel;
@@ -122,14 +131,15 @@ public class Main extends GameState {
 	//use these for determining hard-coded values
 	//please, don't keep them as hard-coded
 	//public int debugX;
-	public float debugY = Game.height/4, debugX=1;
+	public float debugY = 7, debugX=1;
 
-	public static boolean dbRender 	= false, 
-						rayHandling = false, 
-						render 		= true, 
-						dbtrender 	= false,
-						debugging   = true,
-						cwarps      = true,
+	public static boolean dbRender 	= false, //render physics camera?
+						rayHandling = false, //include lighting?
+						render 		= true,  //render world?
+						dbtrender 	= false, //render debug text?
+						debugging   = true,	 //in debug mode?
+						cwarps      = true,	 //create warps?
+						document    = true, //document variables?
 						random;
 	//	private float ambient = .5f;
 	//	private int colorIndex;
@@ -181,6 +191,7 @@ public class Main extends GameState {
 
 		cam.reset();
 		b2dCam.reset();
+		if(document) documentVariables();
 		if(cwarps)catalogueWarps();
 		load();
 
@@ -499,8 +510,6 @@ public class Main extends GameState {
 		debugText+= "/l"+Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
 		debugText += "/lLevel: " + scene.title;
 		debugText += "/lSong: " + music;
-		
-		debugText+="/l("+debugX+", "+debugY+")";
 
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM  /*/Vars.TILE_SIZE*/) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
@@ -508,27 +517,22 @@ public class Main extends GameState {
 //		debugText+="/lducking: "+character.ducking;
 		//debugText+="/lcontacts "+character.contacts;
 		
-//		if(currentScript!=null){
-//			debugText+= "/lIndex: "+(currentScript.index);
-//			debugText+= "/lActiveObj: "+(currentScript.getActiveObject());
-//			debugText+= "/lPaused: "+(currentScript.paused);
-//		}
-		
-		Entity e = findObject("Trevon");
-		if(e!=null){
-			debugText+="/l/l"+e;
-			if(e instanceof Mob)
-			debugText+="/lCurrentState: "+((Mob)e).getCurrentState();
-			debugText+="/lfoc:"+((Mob)e).getCurrentState().focus;
-			debugText+="/laimin:"+((Mob)e).aiming();
-//			debugText+="/ldiscovered: "+((Mob)e).getDiscovered();
+		if(currentScript!=null){
+			debugText+= "/l"+currentScript+": "+(currentScript.index);
+			debugText+= "/lActiveObj: "+(currentScript.getActiveObject());
+			debugText+= "/lPaused: "+(currentScript.paused)+"  ForcedP: "+(currentScript.forcedPause);
 		}
 		
-//		float t = ((int)(character.aimTime*100))/100f;
-//		debugText+="/l/la: "+character.aiming()+"    s: "+character.aimSounded()+"    t: "+t;
-//		t = ((int)(character.powerCoolDown*100))/100f;
-//		debugText+="/lC: "+t;
-
+		float t = ((int)(character.aimTime*100))/100f;
+		debugText+="/l/la: "+character.aiming()+"    s: "+character.aimSounded()+"    t: "+t;
+		t = ((int)(character.powerCoolDown*100))/100f;
+		debugText+="/lC: "+t;
+		
+		Mob m = getMob("YourGirl");
+		if(m!=null 	){
+			debugText+="/l/lYGstate: "+m.getCurrentState();
+		}
+		
 		sb.begin();
 		drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
 		sb.end();
@@ -546,8 +550,10 @@ public class Main extends GameState {
 		if(MyInput.isPressed(Input.DEBUG_DOWN)){
 //			light -= .1f; rayHandler.setAmbientLight(light);
 			player.addFunds(-100d);
-		} if(MyInput.isPressed(Input.DEBUG_LEFT)) {
-		} if(MyInput.isPressed(Input.DEBUG_RIGHT)) {
+		} if(MyInput.isDown(Input.DEBUG_LEFT)) {
+			debugY-=1;
+		} if(MyInput.isDown(Input.DEBUG_RIGHT)) {
+			debugY+=1;
 		} if (MyInput.isPressed(Input.DEBUG_LEFT2)) {
 			debugX = debugX>0 ? debugX - 1 : dm.length-1;
 			character.setPowerType(dm[(int) debugX]);
@@ -705,7 +711,10 @@ public class Main extends GameState {
 				if(MyInput.isPressed(Input.JUMP)) character.jump();
 				if(MyInput.isDown(Input.UP)) {
 					if(character.canWarp && character.isOnGround() && !character.snoozing && 
-							!character.getWarp().instant) { }
+							!character.getWarp().instant) {
+						initWarp(character.getWarp());
+						character.killVelocity();
+					}
 					else if(character.canClimb) character.climb();
 					else {
 						Vector2 f = new Vector2(character.getPixelPosition().x, 
@@ -716,13 +725,13 @@ public class Main extends GameState {
 					}
 				}
 
-				if(MyInput.isPressed(Input.UP)) {
-					if(character.canWarp && character.isOnGround() && !character.snoozing && 
-							!character.getWarp().instant) {
-						initWarp(character.getWarp());
-						character.killVelocity();
-					}
-				}
+//				if(MyInput.isPressed(Input.UP)) {
+//					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+//							!character.getWarp().instant) {
+//						initWarp(character.getWarp());
+//						character.killVelocity();
+//					}
+//				}
 
 				if(MyInput.isDown(Input.DOWN)) 
 					if(character.canClimb)
@@ -857,9 +866,6 @@ public class Main extends GameState {
 							if(currentScript.getActiveObject() instanceof TextBox){
 								TextBox t = (TextBox) currentScript.getActiveObject();
 								t.kill();
-
-								currentScript.paused = currentScript.forcedPause = false;
-								currentScript.setActiveObj(new Entity());
 								setStateType(prevStateType);
 							} else {
 
@@ -892,26 +898,26 @@ public class Main extends GameState {
 				if (buttonTime >= buttonDelay){
 					if(MyInput.isDown(Input.LEFT)){
 						buttonTime = 0;
-						choiceIndex++;
-						if (choiceIndex >= choices.length)
-							choiceIndex = 0;
+						if(choices.length!=1){
+							choiceIndex = choiceIndex < choices.length -1 ? choiceIndex + 1: 0;
 
-						playSound("text1");
-						choices[choiceIndex].expand();
-						choices[prevIndex].collapse();
+							playSound("text1");
+							choices[choiceIndex].expand();
+							choices[prevIndex].collapse();
+						}
 					} else if (MyInput.isDown(Input.RIGHT)){
 						buttonTime = 0;
-						choiceIndex--;
-						if (choiceIndex < 0)
-							choiceIndex = choices.length - 1;
+						if(choices.length!=1){
+							choiceIndex = choiceIndex == 0 ? choices.length - 1 : choiceIndex - 1;
 
-						playSound("text1");
-						choices[choiceIndex].expand();
-						choices[prevIndex].collapse();
+							playSound("text1");
+							choices[choiceIndex].expand();
+							choices[prevIndex].collapse();
+						}
 					} else if(MyInput.isPressed(Input.JUMP)){
-						//						setStateType(prevStateType);
+//						setStateType(prevStateType);
 						playSound("ok1");
-						//						wait(.5f);
+//						wait(.5f);
 
 						currentScript.paused = choosing = false;
 						currentScript.getChoiceIndex(choices[choiceIndex].getMessage());
@@ -933,26 +939,22 @@ public class Main extends GameState {
 	//trigger the necessary scripts for making the partner follow
 	private void partnerFollow(){
 		if(player.getPartner()!=null){
-			if(player.getPartner().getName() != null){
+			if(player.getPartner().getName() != null)
 				if(getMob(player.getPartner().getName())!=null){
 					setStateType(InputState.LISTEN);
-
-					if (player.stopPartnerDisabled) {
+					if (player.stopPartnerDisabled)
 						triggerScript("toggleFollowDisabled");
-					} else if(player.getPartner().getState().type == AIType.FOLLOWING) {
+					else if(player.getPartner().getState().type == AIType.FOLLOWING) {
 						triggerScript("stopFollower");
 						player.getPartner().stay();
 					} else {
 						triggerScript("suggestFollow");
 						player.getPartner().follow(character);
 					}
-				}else{
+				} else
 					triggerScript("noPartnerPresent");
-				}
-			}
-		} else {
+		} else 
 			triggerScript("noPartner");
-		}
 	}
 
 	public void changeSong(Song newSong){
@@ -967,11 +969,12 @@ public class Main extends GameState {
 
 	public void positionPlayer(Entity obj){
 		float min = 18;
-		float dx = (character.getPosition().x - obj.getPosition().x) * Vars.PPM;
-		float gx = min * dx / Math.abs(dx) - dx ;
+		float dx = (character.getPixelPosition().x - obj.getPixelPosition().x);
+		float gx = obj.getPixelPosition().x + min * dx / Math.abs(dx);
 
+		System.out.println(dx+"\tgx: "+gx);
+		
 		if (Math.abs(dx) < min - 2){
-			//			setStateType(InputState.LOCKED);
 			character.positioning = true;
 			character.setPositioningFocus(character.getInteractable());
 			character.setGoal(gx);
@@ -1140,18 +1143,21 @@ public class Main extends GameState {
 			music.fadeIn();
 	}
 
+	//initialize level transition using a warp
 	public void initWarp(Warp warp){
+		if (warp.getLink()==null) return;
 		warping = true;
 		warped = false;
 		this.warp = warp;
 		nextScene = warp.getNextScene();
 
 		sb.fade();
-		if(nextScene.newSong)
+		if(!nextScene.DEFAULT_SONG[dayState].title.equals(music.title))
 			changeSong(nextScene.DEFAULT_SONG[dayState]);
 	}
 	
 	private Vector2 location;
+	//initalize level transition using teleportation
 	public void initTeleport(Vector2 loc, String level){
 		if(Game.LEVEL_NAMES.contains(level, false)){
 			warping = true;
@@ -1163,7 +1169,7 @@ public class Main extends GameState {
 			nextScene.setRayHandler(rayHandler);
 
 			sb.fade();
-			if(nextScene.newSong)
+			if(!nextScene.DEFAULT_SONG[dayState].title.equals(music.title))
 				changeSong(nextScene.DEFAULT_SONG[dayState]);
 		} else {
 			System.out.println("\""+level+"\" is an invalid level name");
@@ -1177,16 +1183,14 @@ public class Main extends GameState {
 		destroyBodies();
 		scene = nextScene;
 		scene.create();
+		
 		if(warp!=null){
 			Vector2 w = warp.getLink().getWarpLoc();
-			
-			w.y+=character.rh;
 			createPlayer(w);
 			if(warp.getLink().warpID==1 && !character.isFacingLeft()) character.setDirection(true);
 			if(warp.getLink().warpID==0 && !character.isFacingLeft()) character.setDirection(false);
-		
 		} else {
-			location.y+=character.rh;
+			location.y-=1.5f*character.height;
 			createPlayer(location);
 			location = null;
 		}
@@ -1203,7 +1207,7 @@ public class Main extends GameState {
 		totalWait = time;
 		waiting = true;
 		waitTime = 0;
-		//		if(hud.raised) hud.clearSpeech();
+//		if(hud.raised) hud.clearSpeech();
 	}
 
 	public boolean busy(){
@@ -1297,8 +1301,8 @@ public class Main extends GameState {
 			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
-			if(debugging) scene= new Scene(world,this,"Residential District N");
-//			if(debugging) scene= new Scene(world,this,"TrainCar");
+			if(debugging) scene= new Scene(world,this,"Church");
+//			if(debugging) scene= new Scene(world,this,"Subway");
 			else scene= new Scene(world,this,"Residential District N");
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
@@ -1306,8 +1310,10 @@ public class Main extends GameState {
 
 			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
-				character = new Mob("I am a normal person with a name (YOU)", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+//				character = new Mob("'Normal' person with a name (YOU)", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+				character = new Mob("You", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
+//				createEmptyPlayer(scene.getSpawnPoint());
 			} else {
 				//this spawns a camBot at its special location to take the place of 
 				//the player before it has been created by the introduction
@@ -1423,9 +1429,9 @@ public class Main extends GameState {
 				} else {
 					if(character!=null)
 						if(character.getInteractable()!=null)
-							if(tg==null)
-								positionPlayer(character.getInteractable());
-							else if (tg.getHalt(currentScript.ID)) 
+							if(tg==null){
+//								positionPlayer(character.getInteractable());
+							}else if (tg.getHalt(currentScript.ID)) 
 								System.out.println("not positioning");
 //						do something
 				}
@@ -1448,7 +1454,7 @@ public class Main extends GameState {
 
 		//pull permanent followers into the current level
 		HashMap<Mob, Boolean> f = character.getFollowers();
-		Array<Mob> toRemove = new Array<>();
+		Array<Entity> toRemove = new Array<>();
 		for(Mob m : f.keySet())
 			if(f.get(m)){
 				Scene.sceneToEntityIds.get(m.getCurrentScene().ID).remove(m.getSceneID());
@@ -1457,11 +1463,18 @@ public class Main extends GameState {
 				objects.add(m);
 			} else
 				toRemove.add(m);
-		for(Mob m : toRemove)
+		for(Entity m : toRemove)
 			f.remove(m);
-
+		toRemove.clear();
+		
+		//remove null references?
+		for(int i =0; i<objects.size();i++)
+			if(objects.get(i)==null)
+				toRemove.add(objects.get(i));
+		for(Entity r: toRemove)
+			objects.remove(r);
+		
 		for (Entity d : objects){
-			if(d==null)continue;
 			d.setGameState(this);
 			if(!d.equals(character))
 				d.create();
@@ -1548,9 +1561,12 @@ public class Main extends GameState {
 	}
 
 	public boolean exists(Entity obj){
-		for(Entity e: objects)
+		for(Entity e: objects){
+			if(e==null) 
+				return false;
 			if(e.equals(obj))
 				return true;
+		}
 		return false;
 	}
 
@@ -1589,7 +1605,233 @@ public class Main extends GameState {
 		// should be dependant on time;
 		return new Color(2,2,2,Vars.ALPHA);
 	}
+	
+	
+	//create a file listing all used scene IDs from game
+	//create a file listing all events names
+	//create a file listing all used variable names
+	public void documentVariables(){
+		TreeSet<String> IDs = new TreeSet<>();
+		TreeSet<String> variables = new TreeSet<>();
+		TreeSet<String> events = new TreeSet<>();
+		Array<Integer> used = new Array<>();
+		Array<Pair<String, String>> entities = new Array<>(); //used for determining duplication
+
+		//load each level and collect data about NPCs and other Entities
+		for(String level : Game.LEVEL_NAMES){
+			TiledMap tileMap = new TmxMapLoader().load("assets/maps/" + level + ".tmx");
+			if(tileMap.getLayers().get("entities")!=null){
+				MapObjects objects = tileMap.getLayers().get("entities").getObjects();
+				for(MapObject object : objects) {
+					Object o = object.getProperties().get("NPC");
+					if(o!=null) {
+						String ID = object.getProperties().get("NPC", String.class);		//name used for art file
+						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+						String name = object.getProperties().get("name", String.class);		//character name
+						String script = object.getProperties().get("script", String.class);		
+						if(ID!=null && sceneID!=null && name!=null){
+							String s = " ";
+							s = Vars.formatHundreds(s, sceneID.trim().length());
+							s+=sceneID+" - "+name+"; "+ID;
+							s+=Vars.addSpaces(s, 40)+": "+level+".tmx";
+							if(script!=null) s+=Vars.addSpaces(s, 75)+": " + script;
+							IDs.add(s);
+							
+							//conflicting entity!!!
+							if(used.contains(Integer.parseInt(sceneID), false))
+								s = "*"+s.substring(1, 4) + "*" + s.substring(5);
+							else {
+								used.add(Integer.parseInt(sceneID));
+								entities.add(new Pair<>(name, ID));
+							}
+						}	
+					}
+
+					o = object.getProperties().get("Entity");
+					if(o==null) o = object.getProperties().get("entity");
+					if(o!=null) {
+						String ID = object.getProperties().get("entity", String.class);		//name used for art file
+						if(ID==null) ID = object.getProperties().get("Entity", String.class);
+						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+						String script = object.getProperties().get("script", String.class);
+						String name = object.getProperties().get("name", String.class);
+
+						if(ID!=null && sceneID!=null){
+							String s = " ";
+							s = Vars.formatHundreds(s, sceneID.trim().length());
+							s+=sceneID+" - "+ID;
+							s+=Vars.addSpaces(s, 40)+": "+level;
+							if(script!=null) s+=Vars.addSpaces(s, 75)+": " + script;
+							IDs.add(s);
+							
+							//conflicting entity!!!
+							if(used.contains(Integer.parseInt(sceneID), false))
+								s = "*"+s.substring(1, 4) + "*" + s.substring(5);
+							else {
+								used.add(Integer.parseInt(sceneID));
+								entities.add(new Pair<>(name, ID));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//define variables and events from scripts, as well as spawned entities
+		for(String script : Game.SCRIPT_LIST.keySet()){
+			try{
+				BufferedReader br = new BufferedReader(new FileReader(Game.res.getScript(script)));
+				try {
+					String line = br.readLine();
+					String command;
+					while (line != null ) {
+						//parse command
+						if (!line.startsWith("#")){
+							line = line.trim();
+							if (line.indexOf("(") == -1)
+								if(line.startsWith("["))
+									command = line.substring(line.indexOf("[")+1, line.indexOf("]"));
+								else command = line;
+							else command = line.substring(0, line.indexOf("("));
+
+							String[] args = Script.args(line);
+							if(command.toLowerCase().equals("declare")){
+								if(args.length==4){
+									String s = args[0];
+									s+=Vars.addSpaces(s, 25) + ": " + args[2].toLowerCase();
+									s+=Vars.addSpaces(s, 36) + ": " + args[1].toLowerCase();
+									s+=Vars.addSpaces(s, 47) + ": " + script;
+									variables.add(s);
+								}
+							} if(command.toLowerCase().equals("setevent")){
+								String s = args[0];
+								s+=Vars.addSpaces(s, 25)+ ": " + script;
+								events.add(s);
+							} if(command.toLowerCase().equals("spawn")){
+								int sceneID = -1;
+								if(args.length==6)
+									if(Vars.isNumeric(args[5].trim()))
+										sceneID = Integer.parseInt(args[5].trim());
+								
+								String name=args[2].trim(), ID=args[1].trim();
+								
+								//sceneID is given and a new mob is spawned
+								Pair<String, String> p = new Pair<>(name, ID);
+								if(name==null)p = new Pair<>("", ID);
+								if(!entities.contains(p, false) && sceneID!=-1){
+									String s = " ";
+									s = Vars.formatHundreds(s, String.valueOf(sceneID).length());
+									if(name!=null)
+										s+=sceneID+" - "+name+"; "+ID;
+									else
+										s+=sceneID+" - "+ID;
+									s+=Vars.addSpaces(s, 40)+": "+script+".txt";
+									if(script!=null) s+=Vars.addSpaces(s, 75)+": ???";
+									IDs.add(s);
+									
+									//conflicting entity!!!
+									if(used.contains(sceneID, false))
+										s = "*"+s.substring(1, 4) + "*" + s.substring(5);
+									else {
+										used.add(sceneID);
+										entities.add(p);
+									}
+								}
+							}
+						}
+
+						line = br.readLine();
+					}
+				} finally {
+					br.close();
+				}
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		
+		//document unused sceneIDs
+		for(int i = 0; i<500; i++)
+			if(!used.contains(i, false)){
+				String s = " ";
+				s = Vars.formatHundreds(s, String.valueOf(i).length());
+				IDs.add(s+i+ " - ");
+			}
+
+		//collect default global variables
+		HashMap<String, Object> varList = history.getVarlist();
+		for(String v: varList.keySet()){
+			String c = varList.get(v).getClass().getSimpleName().toLowerCase();
+			String s = v+"";
+			s+=Vars.addSpaces(s, 25) + ": " + c;
+			s+=Vars.addSpaces(s, 36) + ": global";
+			variables.add(s);
+		}
+
+		//write SceneID list to file
+		try {
+			FileHandle file = Gdx.files.local("assets/SceneID List.txt");
+			BufferedWriter wr = new BufferedWriter(file.writer(false));
+
+			String s = "Scene ID";
+			s+=Vars.addSpaces(s, 40) + "Spawned by";
+			s+=Vars.addSpaces(s, 75) + "Script";
+			wr.write(s); wr.newLine();
+
+			Iterator<String> it = IDs.iterator();
+			while(it.hasNext()){
+				wr.write(it.next());
+				wr.newLine();
+			}
+
+			wr.flush();
+			wr.close();
+		} catch(Exception e){
+			System.out.println("Could not write a sceneID list file.");
+			e.printStackTrace();
+		} 
+
+		try{
+			FileHandle file = Gdx.files.local("assets/Variable List.txt");
+			BufferedWriter wr = new BufferedWriter(file.writer(false));
+
+			String s = "Variable Name";
+			s+=Vars.addSpaces(s, 25) + "Type";
+			s+=Vars.addSpaces(s, 36) + "Scope";
+			s+=Vars.addSpaces(s, 47) + "Script";
+			wr.write(s); wr.newLine();
+
+			Iterator<String> it = variables.iterator();
+			while(it.hasNext()){
+				wr.write(it.next());
+				wr.newLine();
+			}
+
+			wr.flush();
+			wr.close();
+		} catch(Exception e){
+			System.out.println("Could not write variable list file");
+		}
+
+		try{
+			FileHandle file = Gdx.files.local("assets/Event List.txt");
+			BufferedWriter wr = new BufferedWriter(file.writer(false));
+
+			String s = "Event Name";
+			s+=Vars.addSpaces(s, 25) + "Script";
+			wr.write(s); wr.newLine();
+
+			Iterator<String> it = events.iterator();
+			while(it.hasNext()){
+				wr.write(it.next());
+				wr.newLine();
+			}
+
+			wr.flush();
+			wr.close();
+		} catch(Exception e){
+			System.out.println("Could not write event list file");
+		}
+	}
 }
-
-
 
