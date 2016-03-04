@@ -142,7 +142,7 @@ public class Script implements Serializable {
 			finish();
 			return;
 		}
-		System.out.println("---"+(index+1)+"---- "+source.get(index).trim());
+//		System.out.println("---"+(index+1)+"---- "+source.get(index).trim());
 
 		Operation o;
 		dialog = false;
@@ -158,6 +158,7 @@ public class Script implements Serializable {
 		Object var;
 		int c;
 		dialog = false;
+		boolean bool = false;
 
 		if (!line.startsWith("#")){
 			line = line.trim(); //trim leading spaces
@@ -165,9 +166,9 @@ public class Script implements Serializable {
 				if(line.startsWith("["))
 					command = line.substring(line.indexOf("[")+1, line.indexOf("]"));
 				else command = line;
-			else command = line.substring(0, line.indexOf("("));
+			else command = line.substring(0, line.indexOf("(")).trim();
 
-			switch(command.toLowerCase()){
+			switch(command.toLowerCase().trim()){
 
 			case "addpartner":
 				obj = findObject(firstArg(line));
@@ -198,8 +199,10 @@ public class Script implements Serializable {
 									main.player.doRandomPower(target.getPosition());
 								else
 									((Mob) obj).attack(target.getPosition());
-							else
+							else{
+								System.out.println("THIS is the ATTACK that should be called");
 								((Mob) obj).attack(target.getPosition());
+							}
 						} else 
 							if(obj.equals(main.character)){
 								if(((Mob) obj).getPowerType()==DamageType.PHYSICAL)
@@ -565,6 +568,8 @@ public class Script implements Serializable {
 			case "movecamera":
 				createFocus(line);
 				break;
+			case "run":
+				bool = true;
 			case "move":
 			case "moveobject":
 //				move(objectName, x, y, [wait]) //accepts Tile Location
@@ -583,18 +588,17 @@ public class Script implements Serializable {
 					obj = findObject(args[0]);
 					if(obj==null){
 						System.out.println("Cannot find \""+firstArg(line)+"\" to move to a location; Line: "+(index+1)+"\tScript: "+ID);
-						return;
+						break;
 					}
 
 					//is target a pathing object?
 					target = findPath(args[1]);
-					if(target != null)
-						if(obj instanceof Mob){
-							Path path = (Path) target;
-							// make object move to path
-							((Mob) obj).moveToPath(path);
-							break;
-						}
+					if(target != null){
+						Path path = (Path) target;
+						// make object move to path
+						obj.moveToPath(path);
+						break;
+					}
 
 					//is target a Mob?
 					target = findObject(args[1].trim());
@@ -611,12 +615,16 @@ public class Script implements Serializable {
 						System.out.println("should I be parsing Vector? "+args[1].trim()+" :: "+target);
 					}
 
-					if(loc != null)
+					if(loc != null){
+						if(wait) setActiveObj(obj);
 						if(obj instanceof Mob){
-							if(wait) setActiveObj(obj);
-							((Mob) obj).setState("MOVE", loc);
-						} else
-							System.out.println("Cannot move \""+middleArg(line)+"\" because it is not a Mob; Line: "+(index+1)+"\tScript: "+ID);
+							if(bool)
+								((Mob) obj).setState("RUN", loc);
+							else
+								((Mob) obj).setState("MOVE", loc);
+						}else 
+							obj.move(loc);
+					}
 				}
 				catch (ArrayIndexOutOfBoundsException e){
 					System.out.println("Insufficient arguments provided; Line: "+(index+1)+"\tScript: "+ID);
@@ -778,7 +786,7 @@ public class Script implements Serializable {
 			case"setattackscript":
 				obj = findObject(firstArg(line));
 
-				if(obj!=null){
+				if(obj!=null){ 
 					if(obj instanceof Mob){
 						s= lastArg(line);
 						if(s.contains("{")&&s.contains("}"))
@@ -863,7 +871,7 @@ public class Script implements Serializable {
 				break;
 			case "setflag":
 				try{
-					boolean bool = true;
+					bool = true;
 					if(args(line).length==2) 
 						bool = Boolean.parseBoolean(lastArg(line));
 					
@@ -1168,6 +1176,7 @@ public class Script implements Serializable {
 							if(obj.equals(main.character))
 								main.initTeleport(loc, level);
 							else {
+								System.out.println("teleporting: "+obj);
 								int sceneID = obj.getSceneID();
 								Entity.idToEntity.remove(sceneID);
 
@@ -1850,7 +1859,6 @@ public class Script implements Serializable {
 							break;
 						case "power":
 						case "level":
-							
 							if(object instanceof Mob){
 								((Mob)object).levelUp();
 								if(object.equals(main.character))
@@ -1928,9 +1936,10 @@ public class Script implements Serializable {
 							successful = true;
 							break;
 						case"nickname":
-							valid = true;
-							if(object instanceof Mob)
+							if(object instanceof Mob){
+								valid = true;
 								((Mob)object).setNickName(value);
+							}
 							break;
 						case "braveryscale":
 							valid = true;
@@ -1938,12 +1947,16 @@ public class Script implements Serializable {
 							successful = true;
 							break;
 						case "powertype":
-							valid = true;
 							if(object instanceof Mob){
-								DamageType type = DamageType.valueOf(value.toUpperCase());
-								if(type!=null)
-									((Mob)object).setPowerType(type);
-								else System.out.println("\""+value+"\" is not a valid power type; Line: "+(index+1)+"\tScript: "+ID);
+								valid = true;
+								try{
+									DamageType type = DamageType.valueOf(value.toUpperCase());
+									if(type!=null)
+										((Mob)object).setPowerType(type);
+									else System.out.println("\""+value+"\" is not a valid power type; Line: "+(index+1)+"\tScript: "+ID);
+								} catch(Exception e){
+									System.out.println("Value is null... why?");
+								}
 							}
 							successful = true;
 							break;
