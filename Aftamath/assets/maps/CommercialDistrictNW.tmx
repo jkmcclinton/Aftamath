@@ -9,7 +9,7 @@
   <property name="previous" value="Residential District N"/>
  </properties>
  <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
-  <image source="tilesets/street.png" width="1152" height="1608"/>
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
     <property name="type" value="concrete"/>
@@ -53,6 +53,11 @@
   <tile id="8">
    <properties>
     <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="light" value="street"/>
    </properties>
   </tile>
   <tile id="72">
@@ -168,7 +173,7 @@
  </layer>
  <layer name="fg" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T+1lC6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAbnEAAAQ==
+   eJztz7ENgDAQBEE7phTKcSmUQ3k0QgVIDl6H9JqJN9kxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPjLUdglm65WYZdsuroLu2TT1VPYJZuuzlnXJZuurs33nS7ZAAAAAAAAAADw7QWUaQxt
   </data>
  </layer>
  <objectgroup name="entities">
@@ -189,7 +194,7 @@
    <properties>
     <property name="event" value=""/>
     <property name="retriggerable" value="tutDistance"/>
-    <property name="superTutIntro" value="!supTutIntro and PowerBar"/>
+    <property name="superTutIntro" value="!supTutIntro and goneInBar"/>
     <property name="tutDistance" value="inSupTut"/>
    </properties>
   </object>
@@ -219,7 +224,7 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="8" x="368" y="1089" width="16" height="176">
+  <object id="8" x="320" y="1088" width="16" height="176">
    <properties>
     <property name="There's A Bar" value="!goneInBar"/>
     <property name="event" value=""/>

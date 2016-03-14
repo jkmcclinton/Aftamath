@@ -162,58 +162,72 @@ public class Entity implements Serializable {
 		//NOTE, should be merged with AI state?
 		if(moving){
 			if(body.getType().equals(BodyType.KinematicBody)){
-				moving = moveToLoc(goalPosition);
-				if(!moving) goalPosition = null;
-				if(path!=null){
-					path.stepIndex();
-					if(path.completed){
-						body.setLinearVelocity(new Vector2(0, 0));
-						maxSpeed = MOVE_SPEED;
-						moving = false;
-						path = null;
-					} else
-						goalPosition = path.getCurrent();
+//				System.out.println("moving kinematic entity");
+				moving = !moveToLoc(goalPosition);
+				if(!moving){
+					goalPosition = null;
+					if(path!=null){
+						path.stepIndex();
+						if(path.completed){
+							body.setLinearVelocity(new Vector2(0, 0));
+							moving = false;
+						} else{
+							moving = true;
+							goalPosition = path.getCurrent();
+						}
+					}
 				}
 			} else if(body.getType().equals(BodyType.DynamicBody)){
-				moving = moveToLoc(goalPosition.x);
-				if(!moving) goalPosition = null;
-				if(path!=null){
-					path.stepIndex();
-					if(path.completed){
-						Vector2 v = body.getLinearVelocity();
-						body.setLinearVelocity(new Vector2(v.x/2f, v.y));
-						maxSpeed = MOVE_SPEED;
-						moving = false;
-						path = null;
-					} else
-						goalPosition = path.getCurrent();
+//				System.out.println("moving dynamic entity");
+				moving = !moveToLoc(goalPosition.x);
+				if(!moving) {
+					goalPosition = null;
+					if(path!=null){
+						path.stepIndex();
+						if(path.completed){
+							Vector2 v = body.getLinearVelocity();
+							body.setLinearVelocity(new Vector2(v.x/2f, v.y));
+							moving = false;
+						} else {
+							moving = true;
+							goalPosition = path.getCurrent();
+						}
+					}
 				}
+			}
+			
+			if(!moving){
+				maxSpeed = MOVE_SPEED;
+				path = null;
+				Script s = main.currentScript;
+				if(s!=null)
+					if(s.getActiveObject()!=null)
+						if(s.getActiveObject().equals(this))
+							s.removeActiveObj();
 			}
 		}	
 	}
 	
+	//for entities w/ kinematic bodies
 	private boolean moveToLoc(Vector2 loc){
 		if(isReachable(loc)){
 			float dx = loc.x - getPixelPosition().x;
 			float dy = loc.y - getPixelPosition().y;
-			if(Math.abs(dx) > 2 || Math.abs(dy) > 2){
+			if(Math.abs(dx) > 2*maxSpeed || Math.abs(dy) > 2*maxSpeed){
 				Vector2 v = body.getLinearVelocity();
+				if (dx > 1.5f*maxSpeed) v.x = maxSpeed;
+				else if (dx < -1.5f*maxSpeed) v.x = -maxSpeed;
+				else setPosition(new Vector2(loc.x, getPixelPosition().y));
 
-				if(Math.abs(dx) > 2 && Math.abs(dy) > 2)
-					v = Vars.getVelocity(getPixelPosition(), loc, maxSpeed);
-				else {
-					if (dx > 0) v = new Vector2(maxSpeed, v.y);
-					else v = new Vector2(-maxSpeed, v.y);
-					if (dy > 0) v = new Vector2(v.x, maxSpeed);
-					else v = new Vector2(v.x, -maxSpeed);
-				}
-				
+				if (dy > 1.5f*maxSpeed) v.y = maxSpeed;
+				else if (dy < -1.5f*maxSpeed) v.y = -maxSpeed;
+				else setPosition(new Vector2(getPixelPosition().x, loc.y-rh));
 				body.setLinearVelocity(v);
+				return false;
 			} else {
 				body.setLinearVelocity(new Vector2(0,0));
 				return true;
 			}
-			return false;
 		}
 		body.setLinearVelocity(new Vector2(0, 0));
 		return true;
@@ -250,14 +264,10 @@ public class Entity implements Serializable {
 	}
 	
 	private boolean isReachable(Vector2 loc){
-		if(loc.x>getCurrentScene().width)
-			return false;
-		if(loc.x<0)
-			return false;
-		if(loc.y>getCurrentScene().height)
-			return false;
-		if(loc.y<0)
-			return false;
+		if(loc.x>getCurrentScene().width) return false;
+		if(loc.x<0) return false;
+		if(loc.y>getCurrentScene().height) return false;
+		if(loc.y<0) return false;
 		return true;
 	}
 	
@@ -281,9 +291,10 @@ public class Entity implements Serializable {
 	
 	public void moveToPath(Path path){
 		if (path==null) return;
-		this.path = path;
+		this.path = path.copy();
 		moving = true;
 		maxSpeed = path.getSpeed();
+		goalPosition = path.getCurrent();
 	}
 	
 	public void render(FadingSpriteBatch sb) {
@@ -368,9 +379,22 @@ public class Entity implements Serializable {
 	public Scene getCurrentScene(){ return currentScene; }
 	public int getSceneID(){ return sceneID; }
 	public void setSceneID(int ID){ sceneID = ID; }
+	
+	/**units in pixels*/
 	public void setPosition(Vector2 location){
+		if(location==null) return;
 		x=location.x;
-		y=location.y;
+		y=location.y+rh;
+		respawn();
+	}
+	
+	private void respawn(){
+		dead = false;
+		animation.reset();
+//		System.out.println(body);
+		main.removeBody(body);
+		body.setUserData(this.copy());
+		create();
 	}
 	
 	public Vector2 getPosition(){ return body.getPosition(); }

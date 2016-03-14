@@ -60,7 +60,7 @@ setSuperAttackScript(this, null)
 
 if([player.niceness < 0])
 	text(normal, {That's it. You know, you might actually have some potential.})
-	#text(normal, {By the way, they call me The Flying Chick. Because I'm the only one who can fly.})
+	text(normal, {By the way, they call me The Flying Chick. Because I'm the only one who can fly.})
 	setNickName(Villain, The Flying Chick)
 	text(flirty, {...})
 	text(flirty, {Hmm... I just got an idea...})
@@ -113,7 +113,9 @@ if([player.niceness < 0])
 	setChoice(6:Villain, 6:Hero, 4:NEITHER!, 3:Do I have to?)
 		[choice Hero]
 			setEvent(VillainTutGood, {Went with hero after learning from villain})
+			setAttackScript(Hero, {onAttackedPleased})
 			setDialogueScript(Villain, {disappointedVillain})
+			setAttackScript(Villain, {onAttackedDisappointed})
 			setNickName(Villain, Evil Mastermind)
 			face(player, Hero)
 			value(add, player.niceness, 2)
@@ -128,7 +130,9 @@ if([player.niceness < 0])
 	
 		[choice Villain]
 			setEvent(VillainTut, {Went with villain})
+			setAttackScript(Villain, {onAttackedPleased})
 			setDialogueScript(Hero, {disappointedHero})
+			setAttackScript(Hero, {onAttackedDisappointed})
 			setNickName(Hero, Justice Guy)
 			value(add, player.niceness, -2)
 			face(player, Villain)
@@ -157,6 +161,8 @@ if([player.niceness < 0])
 		
 			setDialogueScript(Villain, {disappointedVillain})
 			setDialogueScript(Hero, {disappointedHero})
+			setAttackScript(Villain, {onAttackedDisappointed})
+			setAttackScript(Hero, {onAttackedDisappointed})
 		end
 	
 		[choice Do I have to?]
@@ -165,7 +171,7 @@ if([player.niceness < 0])
 				face(player, Villain)
 				value(add, ask, 1)
 				text(mad, {What do you mean, do you have to?})
-				text(mad, {This is the choice of a lifetime! A superperson's defining moment!})
+				text(mad, {This is the choice of a lifetime! A supaperson's defining moment!})
 				text(mad, {You can't just ignore it!})
 				return(choiceVillain)
 			end
@@ -198,7 +204,7 @@ else
 
 	setSpeaker(Villain)
 	eventMusic(Tension and Excitement)
-	text(sad, {Oh, it's you...})
+	text(sad, {Oh, you're here too...})
 
 	setSpeaker(Hero)
 	text(happy, {I'm here! ~Yes, I'm always here to save the day! That's why they call me a here-o.})
@@ -236,7 +242,9 @@ else
 	setChoice(6:Hero, 6:Villain, 4:NEITHER!, 3:Do I have to?)
 		[choice Hero]
 			setEvent(HeroTut, {Went with hero})
+			setAttackScript(Hero, {onAttackedPleased})
 			setDialogueScript(Villain, {disappointedVillain})
+			setAttackScript(Villain, {onAttackedDisappointed})
 			setNickName(Villain, Evil Mastermind)
 			value(add, player.niceness, 2)
 			face(player, Hero)
@@ -251,7 +259,9 @@ else
 	
 		[choice Villain]
 			setEvent(HeroTutEvil, {Went with villain after learning from hero})	
+			setAttackScript(Villain, {onAttackedPleased})
 			setDialogueScript(Hero, {disappointedHero})
+			setAttackScript(Hero, {onAttackedDisappointed})
 			setNickName(Villain, The Flying Chick)
 			value(add, player.niceness, -2)
 			face(player, Villain)
@@ -279,6 +289,8 @@ else
 		
 			setDialogueScript(Villain, {disappointedVillain})
 			setDialogueScript(Hero, {disappointedHero})
+			setAttackScript(Villain, {onAttackedDisappointed})
+			setAttackScript(Hero, {onAttackedDisappointed})
 		end
 	
 		[choice Do I have to?]

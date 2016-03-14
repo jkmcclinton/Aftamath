@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="10" tilewidth="16" tileheight="16" nextobjectid="30">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="10" tilewidth="16" tileheight="16" nextobjectid="31">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Train Tracks"/>
@@ -244,6 +244,14 @@
     <property name="name" value="Passenger"/>
     <property name="script" value="splash test"/>
     <property name="state" value="SITTING"/>
+   </properties>
+  </object>
+  <object id="30" name="outside" x="380" y="28" width="40.25" height="68.9167">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="Subway"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value="notMoving"/>
    </properties>
   </object>
  </objectgroup>

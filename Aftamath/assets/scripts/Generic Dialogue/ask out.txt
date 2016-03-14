@@ -3,25 +3,23 @@ lockPlayer
 declare(asked, global, Integer, 0)
 value(add, asked, 1)
 if([asked < 3])
-  setSpeaker(player)
-  text(normal, {...})
-  setSpeaker(this,true)
-  text(normal, {Will I go out with you?})
-  if(hasPartner)
-    text(normal, {Ask me later.})
-  else
-    text(happy, {Sure!})
-    addPartner(this, {girlfriend}, {Random bystander said yes. That works?})
-    setScript(WentOut)
-  end
+	setSpeaker(player)
+	text(normal, {...})
+	setSpeaker(this,true)
+	text(normal, {Will I go out with you?})
+	if(hasPartner)
+		text(normal, {Ask me later.})
+	else
+		text(happy, {Sure!})
+		addPartner(this, {girlfriend}, {Random bystander said yes. That works?})
+		setDialog(this, girlfriend)
+		setAttackScript(this, attackedPartner)
+		setSuperAttackScript(this, supAttackedPartner)
+	end
 else
-  setSpeaker(this)
-  text(mad, {Go away. I'm not in the mood.})
-  setSpeaker(narrator)
-  text(normal, {You asked her out /variable[asked] times.})
+	setSpeaker(this)
+	text(mad, {Go away. I'm not in the mood.})
+	setSpeaker(narrator)
+	text(normal, {You asked her out /variable[asked] times.})
 end
-done
-
-Script WentOut
-text(flirty, {Hey there, /player!})
 done

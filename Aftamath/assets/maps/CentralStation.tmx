@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="5">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="35" tilewidth="16" tileheight="16" nextobjectid="5">
  <properties>
-  <property name="ambient" value="INDOORS"/>
+  <property name="ambient" value="INDOOR"/>
   <property name="bg" value="downtown"/>
   <property name="bgm day" value="Leveler"/>
   <property name="bgm night" value="Midnight Waves"/>
@@ -9,7 +9,7 @@
   <property name="next" value="Subway"/>
  </properties>
  <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
-  <image source="tilesets/street.png" width="1152" height="1608"/>
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
     <property name="type" value="concrete"/>
@@ -146,38 +146,38 @@
    </properties>
   </tile>
  </tileset>
- <layer name="bg1" width="75" height="100">
+ <layer name="bg1" width="75" height="35">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwQENAAAAwqD3T20ON6AAAAAAAAAAAAAA/gwpBAAB
   </data>
  </layer>
- <layer name="bg2" width="75" height="100">
+ <layer name="bg2" width="75" height="35">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwQENAAAAwqD3T20ON6AAAAAAAAAAAAAA/gwpBAAB
   </data>
  </layer>
- <layer name="ground" width="75" height="100">
+ <layer name="ground" width="75" height="35">
   <data encoding="base64" compression="zlib">
-   eJzt08dRQ0EURNFRKHgRCk5AGMITCk5AGHgIBQ+Z0DmwmAd1TtXdzeKVfqs1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA/W0rLaSWtprU0SutpI212elPxrqN0nE7SaTpLk3SeLtJlpzcV73pOL+k1vaX39JE+01f67vSm4l1Tg9am00yaTXNpPi2kYVoc9HlT8a5x2krbaSftpr20nw7SYac3Fe+6StfpJt2mu3SfHtJjeur0puJdFb+fXf39XVW8qepvVXHr/oN2ZVd2ZVd2ZVf17qr4/ezKruzKruzqd29+AE7abxA=
+   eJzt09kRAVEQRuE7odgJxU4YdkKxE4adUOxk4mTRPeU/Vd9bP3TN9A1BKaWUUkoppZRSSimllFJKKfUvFVFCGRVUUUMdDTSNZjzuNcYEU8wwxwJLrLA2mvG41xU33PHAEy+88cHXaMbjXokohCRSSCODLHLIoxDZzHjcq4U2Ouiihz4GGGJkNONxrw222GGPA4444YyL0YzHvTz+P91V/O/K405ev5XHW9cbjP9d/QA+88Ok
   </data>
  </layer>
- <layer name="objects" width="75" height="100">
+ <layer name="objects" width="75" height="35">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwQENAAAAwqD3T20ON6AAAAAAAAAAAAAA/gwpBAAB
   </data>
  </layer>
- <layer name="fg" width="75" height="100">
+ <layer name="fg" width="75" height="35">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwQENAAAAwqD3T20ON6AAAAAAAAAAAAAA/gwpBAAB
   </data>
  </layer>
  <objectgroup name="entities">
-  <object id="2" x="604" y="1248" width="16" height="16">
+  <object id="2" x="604" y="368" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
   </object>
-  <object id="4" name="room1_1" x="396" y="1192" width="37" height="73">
+  <object id="4" name="room1_1" x="396" y="312" width="37" height="73">
    <properties>
     <property name="ID" value="2"/>
     <property name="next" value="Downtown"/>

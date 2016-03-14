@@ -48,6 +48,12 @@ public class Warp extends Entity {
 		this.locTitle = owner.title;
 		loadSprite();
 	}
+	
+	public void setPosition(Vector2 location){
+		if(location==null) return;
+		x=location.x;
+		y=location.y;
+	}
 
 	//check if conditions in scene have been met
 	//for example, has a certain event been triggered

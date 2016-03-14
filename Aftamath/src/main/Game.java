@@ -3,6 +3,7 @@ package main;
 import static handlers.Vars.PPM;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -17,6 +18,7 @@ import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyInput;
 import handlers.MyInputProcessor;
+import scenes.Scene;
 import scenes.Song;
 
 
@@ -156,8 +158,12 @@ public class Game implements ApplicationListener {
 			//collect names for valid levels
 			FileHandle [] files = Gdx.files.internal("assets/maps").list();
 			for(FileHandle f:files)
-				if(f.extension().equals("tmx"))
-					LEVEL_NAMES.add(f.nameWithoutExtension());
+				if(f.extension().equals("tmx")){
+					String l = f.nameWithoutExtension();
+					LEVEL_NAMES.add(l);
+					if (!Scene.sceneToEntityIds.containsKey(l))
+						Scene.sceneToEntityIds.put(l, new HashSet<Integer>());
+				}
 		}
 		
 		public void loadScriptList(FileHandle begin){

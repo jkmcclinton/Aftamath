@@ -1,6 +1,7 @@
 Script Main
 lockplayer
 declare(desc, local, string, {})
+focus(Ms. Pancakes)
 
 #enter old lady
 face(player, Ms. Pancakes)
@@ -10,6 +11,7 @@ doAction(Ms. Pancakes, knockout, null, on_script_end, false)
 setSpeaker(Ms. Pancakes)
 text(sad, {Help! I've fallen and I can't get up!})
 
+removeFocus
 setSpeaker(narrator)
 text({Oh no, that poor old lady...})
 
@@ -21,10 +23,12 @@ setSpeaker(narrator)
 text({Gosh... if only someone were around to, I don't know... ~/lHelp her up?})
 text({Before a car comes and runs her over?})
 
+declare(c, local, integer, 0)
 setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 	[Choice Help her up]
 		setSpeaker(player)
-		value(set, desc, {Old lady turned out to be a under a spell! Who knew?})
+		value(set, desc, {Helped out up an old lady})
+		value(set, c, 1)
 		value(add, player.niceness, 2)
 		value(add, player.bravery, 1)
 		text({Don't worry ma'am, I'll help you out.})
@@ -47,6 +51,8 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 		playSound(warp)
 		spawn(NPC, girlfriend1, Donna, 54, 97, 8)
 		setDialog(Donna, girlfriend)
+		setAttackScript(Donna, attackedPartner)
+		setSuperAttackScript(Donna, supAttackedPartner)
 			
 		setSpeaker(Donna)
 		text({Woah...})
@@ -86,6 +92,7 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 		setSpeaker(player)
 		value(set, desc, {Old lady turned out to be a witch! Who knew?})
 		value(add, player.bravery, -1)
+		value(set, c, 2)
 		text({What if a car ran over me too? ~What then?})
 		text({What happens to me then, Ms. Narrator?})
 		
@@ -129,11 +136,11 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 		
 		setSpeaker(player)
 		text({!!!}, false)
-		doAction(player, duck)
+		doAction(player, duck, false)
 		attack(Witch, player)
-		wait(.01)
+		wait(.5)
 		attack(Witch, player)
-		wait(.01)
+		wait(.5)
 		attack(Witch, player)
 		value(set, player.health, 5)
 		
@@ -192,5 +199,10 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 end
 
 setEvent(msPancakesMishap, desc)
-
+if([c = 1])
+	setEvent(brokeAnOldLadyCurse, {Old lady turned out to be a under a spell! Who knew?})
+end
+if([c = 2])
+		setEvent(metTheWitch, {The witch was in disguise as an old lady.})
+end
 done

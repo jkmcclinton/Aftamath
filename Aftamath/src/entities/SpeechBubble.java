@@ -52,7 +52,6 @@ public class SpeechBubble extends Entity {
 	 * 7 - No
 	 */
 		
-	
 	//Standard interaction based bubble, e.g. choices
 	public SpeechBubble(Entity d, float x, float y, int ID, String message, PositionType positioningType) {
 		super(x, y, "speechBubble");
@@ -102,6 +101,12 @@ public class SpeechBubble extends Entity {
 	public void update(float dt){
 		animation.update(dt);
 		
+		if(ID.contains("arrow") && owner instanceof Mob){
+			System.out.println("removed invalid warp identifyer arrow");
+			if(((Mob)owner).getWarp()==null)
+				main.removeBody(body);
+		}
+		
 		//calculations for hovering
 		if (body != null) {
 			reposition();
@@ -129,7 +134,7 @@ public class SpeechBubble extends Entity {
 		
 		//destroy object if interaction has lost contact
 		if(body != null && main.character.getInteractable() != owner && ID.equals("speechBubble0")) 
-			main.removeBody(getBody());
+			main.removeBody(body);
 	}
 	
 	public void render(FadingSpriteBatch sb){

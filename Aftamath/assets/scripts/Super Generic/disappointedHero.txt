@@ -6,7 +6,7 @@ setSpeaker(this)
 
 if(HeroTutEvil)
 	text(mad, {Don't you give me that look! I gave you a chance and you blew it!})
-	text(mad, {And you know what? You're worst than evil!})
+	text(mad, {And you know what? You're worse than evil!})
 	text(mad, {You had the audacity to make me think you were on the side of good in the first place!})
 	text(mad, {At least the Flying Chick and the rest of her cohorts can't stand to even think about sneaking onto our side!})
 	

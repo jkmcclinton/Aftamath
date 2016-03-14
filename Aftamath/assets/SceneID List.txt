@@ -6,7 +6,7 @@ Scene ID                                Spawned by                         Scrip
  004 - 
  005 - Sam; girlfriend2                 : ResidentialDistrictN.tmx         : ask out
  006 - John; logger                     : ResidentialDistrictN.tmx         : choice test
- 007 - Olivierre; richGuy               : ResidentialDistrictN.tmx         : script1
+ 007 - Olivierre; richGuy               : ResidentialDistrictN.tmx         : richComplaint
  008 - Donna; girlfriend1               : Ms Pancakes Mishap.txt           : ???
  008 - Witch; witch                     : Ms Pancakes Mishap.txt           : ???
  009 - Ms. Pancakes; oldlady1           : ResidentialDistrictN.tmx         : generic_1
@@ -97,21 +97,21 @@ Scene ID                                Spawned by                         Scrip
  093 - TEST; burly1                     : Church.tmx                       : actionTest
  094 - TEST; bballer                    : Church.tmx                       : actionTest
  095 - YourGirl; femaleplayer2          : Church.tmx                       : actionTest
- 096 - TEST3; gangster2                 : Church.tmx                       : boss stuff
- 097 - Hobo; hobo                       : Church.tmx
+ 096 - TEST3; gangster2                 : Church.tmx                       : actionTest
+ 097 - Hobo; hobo                       : Church.tmx                       : actionTest
  098 - TEST; hero1                      : Church.tmx                       : actionTest
  099 - TEST; villain1                   : Church.tmx                       : actionTest
  100 - TEST; doctordisco                : Church.tmx                       : actionTest
  101 - HAHAHAHAHA; witch                : Church.tmx                       : actionTest
- 102 - 
- 103 - 
+ 102 - Darth Droid; robot1              : Church.tmx                       : actionTest
+ 103 - yoko; witch                      : Subway.tmx                       : actionTest
  104 - 
  105 - 
  106 - 
  107 - 
  108 - 
  109 - 
- 110 - HLRMS-110; femaleplayer4         : ThaHood.tmx                      : getMail
+ 110 - HLRMS-110; robot1                : BusinessDistrict.tmx             : getMail
  111 - 
  112 - 
  113 - 

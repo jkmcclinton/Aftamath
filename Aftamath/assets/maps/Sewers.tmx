@@ -1,176 +1,293 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="3">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="12" tilewidth="16" tileheight="16" nextobjectid="3">
  <properties>
-  <property name="ambient" value="INDOOR"/>
-  <property name="bgm" value="Silence"/>
+  <property name="ambient" value="DARK"/>
+  <property name="bgm" value="Sewers"/>
   <property name="name" value="Sewers"/>
   <property name="previous" value="Subway"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
-  <image source="tilesets/street.png" width="1152" height="1608"/>
-  <tile id="0">
+ <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16" tilecount="2880">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
+  <tile id="563">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="light" value="sewer"/>
    </properties>
   </tile>
-  <tile id="1">
+  <tile id="644">
+   <animation>
+    <frame tileid="644" duration="100"/>
+    <frame tileid="646" duration="100"/>
+    <frame tileid="648" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="645">
+   <animation>
+    <frame tileid="645" duration="100"/>
+    <frame tileid="647" duration="100"/>
+    <frame tileid="649" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="705">
+   <animation>
+    <frame tileid="705" duration="100"/>
+    <frame tileid="707" duration="100"/>
+    <frame tileid="709" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="765">
+   <animation>
+    <frame tileid="765" duration="100"/>
+    <frame tileid="767" duration="100"/>
+    <frame tileid="769" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="825">
+   <animation>
+    <frame tileid="825" duration="100"/>
+    <frame tileid="827" duration="100"/>
+    <frame tileid="829" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="864">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="2">
+  <tile id="865">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="3">
+  <tile id="866">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="4">
+  <tile id="867">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="5">
+  <tile id="868">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="6">
+  <tile id="869">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="7">
+  <tile id="870">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="8">
+  <tile id="871">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="72">
+  <tile id="872">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="73">
+  <tile id="873">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="74">
+  <tile id="874">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="75">
+  <tile id="875">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="76">
+  <tile id="876">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="77">
+  <tile id="877">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="78">
+  <tile id="878">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="79">
+  <tile id="879">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="80">
+  <tile id="880">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="144">
+  <tile id="881">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="145">
+  <tile id="882">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="146">
+  <tile id="883">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="147">
+  <tile id="885">
+   <animation>
+    <frame tileid="885" duration="100"/>
+    <frame tileid="887" duration="100"/>
+    <frame tileid="889" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="924">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="148">
+  <tile id="925">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="149">
+  <tile id="926">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="150">
+  <tile id="927">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="151">
+  <tile id="928">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
-  <tile id="152">
+  <tile id="929">
    <properties>
-    <property name="type" value="concrete"/>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="930">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="931">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="932">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="933">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="934">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="935">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="936">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="937">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="938">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="939">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="940">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="941">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="942">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="943">
+   <properties>
+    <property name="type" value="tile"/>
    </properties>
   </tile>
  </tileset>
- <layer name="bg1" width="75" height="100">
+ <layer name="bg1" width="75" height="12" visible="0">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztz1VOg0EYheFJuxbcKRXcZTVABXdZDaWCFm+3g7tzwbuA+b9kJs1PSOYkz+WZ841SLi4uf5lwQKkIooihHR3oRBe60YNe9KE/oO8MYBBDGMYIRjEmdEx3pA3pNpv/6DpxJJBEClOYxgxmMYd5LGARSx6dZaxgFWtYxwY2hY7pjrQh3WbzH10ngyxyyGMHu9jDPg5wiAKOcOzROcEpznCOCxRREjqmO9KGdJvNf3SdS1zhGje4xR3u8YBHPOEZL3j16LzhHR/4xBe+8SN0THekDek2m//oOhVBpSpRhWrUoBZ1qEcDGtGEZrQE9Z1WhNCGMCKIIiZ0THekDek2m//oOuXKOG9NYBJxJJBE6p9t+JEt7k1jGxlkkUO+jP/wY8PFxe/8Aic30G8=
   </data>
  </layer>
- <layer name="bg2" width="75" height="100">
+ <layer name="bg2" width="75" height="12" visible="0">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztztEJACAMxNCDdpbq/mOpQ7RDCBXMg/xHAgD8bJm0q2PdJ+8Ll0Y1vfsEAIA7Et1iA0w=
   </data>
  </layer>
- <layer name="ground" width="75" height="100">
+ <layer name="ground" width="75" height="12">
   <data encoding="base64" compression="zlib">
-   eJzt08dRQ0EURNFRKHgRCk5AGMITCk5AGHgIBQ+Z0DmwmAd1TtXdzeKVfqs1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA/W0rLaSWtprU0SutpI212elPxrqN0nE7SaTpLk3SeLtJlpzcV73pOL+k1vaX39JE+01f67vSm4l1Tg9am00yaTXNpPi2kYVoc9HlT8a5x2krbaSftpr20nw7SYac3Fe+6StfpJt2mu3SfHtJjeur0puJdFb+fXf39XVW8qepvVXHr/oN2ZVd2ZVd2ZVf17qr4/ezKruzKruzqd29+AE7abxA=
+   eJzt0LkNAjEQhWFrXRIBBRBQB/d9F0BAHdz3XQABZRGQ8KdreWR2pc3mSV9gyU9jjzEajUbzfwpR/FyM/Pc0xkyd3cx0V2Jezm7euisxH2c3X92VmJyNn/PWfy+LlJhVRgVV1FBHA0200EYHXfSsv9PHAEOMMMYk0Ek6R5oRelua//g6cyywxAprbLDFDnsccMQJZ6FzwRU33PHAM9BJOkeaEXpbmv/4OhpNFvkBEjtV1w==
   </data>
  </layer>
- <layer name="objects" width="75" height="100">
+ <layer name="ledge" width="75" height="12">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwQEBAAAAgiD/r25IQAEAAPBoDhAAAQ==
   </data>
  </layer>
- <layer name="fg" width="75" height="100">
+ <layer name="objects" width="75" height="12">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJzt0scNwkAUhOGF5xbIOVMAhdEkRZBzpgj+JxtZ3DiAWUtvpE8rzWG8ktc5i8XiQ0bZz/t/db5kzN2m4twMcyywlLBfc26wxS7qDpxHnHCOuqu8b2inGyuJN7TTjb3EG9rpxkXCjdd9fE4ucC6PAooooYwKqqihjgaaaKGNDrroBd/Z8D2ThP7jjXdzx0OS+d4vkkno7n3ezQDDFLwfi8ViSWue1s4mow==
+  </data>
+ </layer>
+ <layer name="fg" width="75" height="12">
+  <data encoding="base64" compression="zlib">
+   eJztz8EJgEAUA9Gwe9Z+tAPtRzvQvrQvxXQg5PAhkHefwwARdYYGjK2uc7bwdxWe1c7Zwd9TeFY7Zxd/b+FZ7Zw9/H2FZ7VzNnVg7nWds42/u/CsdhERfz7ePQ1r
   </data>
  </layer>
  <objectgroup name="entities">
-  <object id="2" x="604" y="1248" width="16" height="16">
+  <object id="2" x="128" y="112" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>

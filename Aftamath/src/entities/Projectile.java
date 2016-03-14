@@ -2,12 +2,13 @@ package entities;
 
 import static handlers.Vars.PPM;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
-import entities.Mob.IFFTag;
+import box2dLight.PointLight;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 
@@ -23,6 +24,7 @@ public class Projectile extends Entity {
 	protected Vector2 velocity;
 	protected Mob owner;
 	protected DamageType damageType;
+	protected PointLight pL;
 	
 	public static enum ProjectileType{
 		FIREBALL, ICE_SPIKE, BOULDER, ELECTRO_BALL, SPELL, ITEM
@@ -63,7 +65,8 @@ public class Projectile extends Entity {
 		totKillTime+=dt;
 		if(totKillTime>=killTime && killType.equals(KillType.TIMED))
 			main.removeBody(getBody());
-		
+		if(pL!=null)
+			pL.setPosition(getPixelPosition());
 		if(body.getLinearVelocity().x < 0 && !isFacingLeft()) changeDirection();
 		else if(body.getLinearVelocity().x > 0 && isFacingLeft()) changeDirection();
 		animation.update(dt);
@@ -72,7 +75,8 @@ public class Projectile extends Entity {
 	public void render(FadingSpriteBatch sb){
 		switch(damageType){
 		case ELECTRO:
-		case ROCK:	sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y-rh/4 - 1);
+		case ROCK:	
+			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y-rh/4 - 1);
 			break;
 		default:	
 			Vector2 loc = new Vector2(getPixelPosition().x - rw, getPixelPosition().y);
@@ -83,8 +87,6 @@ public class Projectile extends Entity {
 			break;
 		
 		}
-	
-		
 	}
 
 	//handling for when projectile collides with something
@@ -123,9 +125,8 @@ public class Projectile extends Entity {
 		impacted = true;
 
 		if(target instanceof Mob){
-			if(((Mob)target).getIFF()!=IFFTag.FRIENDLY)
-				((Mob) target).damage(damageVal, damageType, owner);
-			else main.addHealthBar(target);
+			((Mob) target).damage(damageVal, damageType, owner);
+//			main.addHealthBar(target);
 			
 			if(damageType.equals(DamageType.ROCK) && target.equals(main.character))
 				main.getCam().shake();
@@ -139,6 +140,8 @@ public class Projectile extends Entity {
 	
 	public void kill(){
 		main.removeBody(getBody());
+		if(pL!=null)
+			main.getRayHandler().lightList.removeValue(pL, true);
 	}
 	
 	// give sound effect to collision based on damage type
@@ -297,15 +300,32 @@ public class Projectile extends Entity {
 		body.setLinearVelocity(velocity);
 		
 		String sound;
+		Color c;
 		switch(damageType){
 		case ELECTRO:
-			sound = "chirp2"; break;
+			sound = "chirp2"; 
+			c = new Color(Vars.SUNSET_GOLD); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					100, x, y);
+			break;
 		case DARKMAGIC:
-			sound = "spooky"; break;
+			sound = "spooky";
+			c = new Color(Color.GREEN); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					75, x, y);
+			break;
 		case FIRE:
-			sound = "swish1"; break;
+			sound = "swish1"; 
+			c = new Color(Vars.SUNSET_ORANGE); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					75, x, y);
+			break;
 		case ICE:
-			sound = "sweep"; break;
+			sound = "sweep"; 
+			c = new Color(Color.CYAN); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					25, x, y);
+			break;
 		case ROCK:
 			sound = "rockShot"; break;
 		default:

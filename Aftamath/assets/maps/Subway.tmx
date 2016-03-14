@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="17">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="30">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm day" value="Hawthorne"/>
@@ -8,7 +8,7 @@
   <property name="next" value="Sewers"/>
   <property name="previous" value="Central Station"/>
  </properties>
- <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="2880">
   <image source="tilesets/indoors.png" width="960" height="771"/>
   <tile id="1320">
    <properties>
@@ -365,7 +365,7 @@
  </layer>
  <layer name="ground" width="60" height="30">
   <data encoding="base64" compression="zlib">
-   eJzt0LdxAlAABNEf0QPeCSO895LwHgn6b0YbQAMQkOzOvJmLLwQzMzMzs+eLRkKI3T12HAkkkUIaGWSRQx4fKKCIEsr4RAVV1FBHA0200EYHXfTQxwBDjDDGBFPM8IVv/GCOBZZYYY0NtthhjwOOOOGMC37xhytukXe/bWZmZmZmZmb2ev90ew2D
+   eJztzsdtQgEABNHPhR5MNjYZTM6YnLP7b4ZBggY44hnpSXvcIDAzMzMze72PcBBEHp47ihjiSCCJFD6Rxhe+kUEWOeRRQBEllFHBD6qooY4GmmihjQ666KGPAYYY4RdjTDDFDHMssMQKa2ywxQ57HHDECWdccMXf/VNI78zMzMzMzMzsP3QDWksjEw==
   </data>
  </layer>
  <layer name="ledge" width="60" height="30">
@@ -384,7 +384,7 @@
   </data>
  </layer>
  <objectgroup name="entities">
-  <object id="1" name="room1_1" x="455" y="109" width="45" height="67">
+  <object id="1" name="trainCar" x="465" y="109" width="45" height="67">
    <properties>
     <property name="ID" value="2"/>
     <property name="next" value="TrainCar"/>
@@ -392,7 +392,7 @@
     <property name="warp" value="trainArrived"/>
    </properties>
   </object>
-  <object id="2" x="112" y="160" width="16" height="16">
+  <object id="2" x="352" y="160" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
@@ -421,25 +421,27 @@
     <property name="loadCondition" value="[trainLoc != {Business}]"/>
    </properties>
   </object>
-  <object id="11" x="96" y="100" width="380" height="78">
+  <object id="11" x="11" y="329" width="380" height="78">
    <properties>
     <property name="ID" value="33"/>
     <property name="entity" value="trainCar"/>
     <property name="layer" value="special"/>
    </properties>
   </object>
-  <object id="13" x="96" y="138">
+  <object id="13" name="trainArrival1" x="101" y="138">
    <properties>
-    <property name="path" value="trainArrival"/>
+    <property name="behavior" value="once"/>
+    <property name="name" value="trainArrival1"/>
+    <property name="path" value=""/>
     <property name="speed" value="2"/>
    </properties>
-   <polyline points="0,0 384,0"/>
+   <polyline points="-5,0 206,0"/>
   </object>
   <object id="15" x="560" y="96" width="80" height="80">
    <properties>
     <property name="event" value=""/>
-    <property name="hobo1" value="!Hobo1"/>
-    <property name="loadCondition" value="!Hobo1"/>
+    <property name="hobo2" value="!Hobo1"/>
+    <property name="loadCondition" value="[trainLoc = {BusinessDistrict}]"/>
    </properties>
   </object>
   <object id="16" name="1" x="592" y="160" width="16" height="16">
@@ -447,11 +449,110 @@
     <property name="ID" value="26"/>
     <property name="NPC" value="hobo"/>
     <property name="layer" value="front"/>
-    <property name="loadCondition" value="[trainLoc = {Business}]"/>
+    <property name="loadCondition" value="[trainLoc = {BusinessDistrict}]"/>
     <property name="name" value="Hobo"/>
     <property name="nickName" value="Jermaine"/>
     <property name="script" value="hobo2"/>
     <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="17" name="1" x="224" y="160" width="16" height="16">
+   <properties>
+    <property name="ID" value="103"/>
+    <property name="NPC" value="witch"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="yoko"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="20" name="trainArrival2" x="308" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainArrival2"/>
+    <property name="path" value=""/>
+    <property name="speed" value="1.8"/>
+   </properties>
+   <polyline points="0,0 64,0"/>
+  </object>
+  <object id="21" name="trainArrival3" x="372" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainArrival3"/>
+    <property name="path" value=""/>
+    <property name="speed" value="1.4"/>
+   </properties>
+   <polyline points="0,0 34,0"/>
+  </object>
+  <object id="22" name="trainArrival4" x="406" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainArrival4"/>
+    <property name="path" value=""/>
+    <property name="speed" value=".8"/>
+   </properties>
+   <polyline points="0,0 18,0"/>
+  </object>
+  <object id="23" name="trainArrival5" x="424" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainArrival5"/>
+    <property name="path" value=""/>
+    <property name="speed" value=".3"/>
+   </properties>
+   <polyline points="0,0 8,0"/>
+  </object>
+  <object id="24" name="trainDeparture4" x="492" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainDeparture4"/>
+    <property name="path" value=""/>
+    <property name="speed" value="1.8"/>
+   </properties>
+   <polyline points="0,0 64,0"/>
+  </object>
+  <object id="25" name="trainDeparture5" x="556" y="138">
+   <properties>
+    <property name="behavior" value="once"/>
+    <property name="name" value="trainDeparture5"/>
+    <property name="path" value=""/>
+    <property name="speed" value="2"/>
+   </properties>
+   <polyline points="0,0 402,0"/>
+  </object>
+  <object id="26" name="trainDeparture3" x="458" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainDeparture3"/>
+    <property name="path" value=""/>
+    <property name="speed" value="1.4"/>
+   </properties>
+   <polyline points="0,0 34,0"/>
+  </object>
+  <object id="27" name="trainDeparture2" x="440" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainDeparture2"/>
+    <property name="path" value=""/>
+    <property name="speed" value=".8"/>
+   </properties>
+   <polyline points="0,0 18,0"/>
+  </object>
+  <object id="28" x="432" y="138">
+   <properties>
+    <property name="behavior" value="ONCE"/>
+    <property name="name" value="trainDeparture1"/>
+    <property name="path" value=""/>
+    <property name="speed" value=".3"/>
+   </properties>
+   <polyline points="0,0 8,0"/>
+  </object>
+  <object id="29" name="26" x="139" y="126" width="16" height="16">
+   <properties>
+    <property name="ID" value="33"/>
+    <property name="ad" value="subway"/>
+    <property name="entity" value="subwayAd"/>
+    <property name="layer" value="back"/>
    </properties>
   </object>
  </objectgroup>

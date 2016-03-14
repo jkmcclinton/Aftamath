@@ -4,12 +4,12 @@
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Misdirection"/>
  </properties>
- <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2928">
-  <image source="tilesets/indoors.png" width="980" height="771"/>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
  </tileset>
  <layer name="bg1" width="30" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBhcwA6I7cmkYWxy7ITpZQZiFiQxUjG59joAsSOd7K2G4hogrgXiOiQxUjEpYAcU7wTiXUC8G0mMVDwKRiYAADkmI8I=
+   eJxjYBhcwBaI7cikYWxy7ITpZQZiFiQxUjG59toDsQOd7K2E4iogrgbiGiQxUjEpYCsUbwPi7UC8A0mMVDwKRiYAAKNMIy4=
   </data>
  </layer>
  <layer name="bg2" width="30" height="10">
@@ -19,7 +19,7 @@
  </layer>
  <layer name="ground" width="30" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYMAERozUw6QAUtVTy5xRe4ePvbjS4VcGyjE5/h2ofDQQ9tIDAAC0ex8E
+   eJxjYMAEuozUw6QAUtVTy5xRe4ePvbjS4UcGyjE5/h2ofDQQ9tIDAAAORh1O
   </data>
  </layer>
  <layer name="fg" width="30" height="10">

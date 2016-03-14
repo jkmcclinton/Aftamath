@@ -8,9 +8,13 @@ RobberIntro              : robbers1
 RogueTutorial            : afterTutorial
 VillainTut               : afterTutorial
 VillainTutGood           : afterTutorial
+brokeAnOldLadyCurse      : Ms Pancakes Mishap
+brokeUpWithPartner       : attackedPartner
+brokeUpWithPartner       : supAttackedPartner
 credits                  : credits
 gaveSoul                 : grimResponse
 goneInBar                : There's A Bar
+metTheWitch              : Ms Pancakes Mishap
 msPancakesMishap         : Ms Pancakes Mishap
 rodeTrainFirstTime       : trainSelection
 supTutIntro              : superTutIntro

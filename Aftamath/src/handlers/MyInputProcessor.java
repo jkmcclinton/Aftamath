@@ -27,7 +27,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.R || k == Keys.NUMPAD_1) MyInput.setKey(Input.USE, true);
 			if(k == Keys.ESCAPE) MyInput.setKey(Input.PAUSE, true);
 			if(k == Keys.ENTER) MyInput.setKey(Input.ENTER, true);
-			if(k == Keys.TAB) MyInput.setKey(Input.DEBUG, true);
+			if(k == Keys.TAB) MyInput.setKey(Input.RESPAWN, true);
 			if(k == Keys.NUMPAD_8 || k == Keys.U) MyInput.setKey(Input.DEBUG_UP, true);
 			if(k == Keys.NUMPAD_2 || k == Keys.J) MyInput.setKey(Input.DEBUG_DOWN, true);
 			if(k == Keys.NUMPAD_4 || k == Keys.I) MyInput.setKey(Input.DEBUG_LEFT, true);
@@ -38,7 +38,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, true);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, true);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, true);
-			if(k == Keys.F4) MyInput.setKey(Input.DEBUG2, true);
+			if(k == Keys.F4) MyInput.setKey(Input.RENDER, true);
 			if(k == Keys.EQUALS) MyInput.setKey(Input.ZOOM_IN, true);
 			if(k == Keys.MINUS) MyInput.setKey(Input.ZOOM_OUT, true);
 		} else {
@@ -107,7 +107,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.R || k == Keys.NUMPAD_1) MyInput.setKey(Input.USE, false);
 			if(k == Keys.ESCAPE) MyInput.setKey(Input.PAUSE, false);
 			if(k == Keys.ENTER) MyInput.setKey(Input.ENTER, false);
-			if(k == Keys.TAB) MyInput.setKey(Input.DEBUG, false);
+			if(k == Keys.TAB) MyInput.setKey(Input.RESPAWN, false);
 			if(k == Keys.NUMPAD_8 || k == Keys.U) MyInput.setKey(Input.DEBUG_UP, false);
 			if(k == Keys.NUMPAD_2 || k == Keys.J) MyInput.setKey(Input.DEBUG_DOWN, false);
 			if(k == Keys.NUMPAD_4 || k == Keys.I) MyInput.setKey(Input.DEBUG_LEFT, false);
@@ -118,7 +118,7 @@ public class MyInputProcessor extends InputAdapter {
 			if(k == Keys.F1) MyInput.setKey(Input.COLLISION, false);
 			if(k == Keys.F2) MyInput.setKey(Input.LIGHTS, false);
 			if(k == Keys.F3) MyInput.setKey(Input.DEBUG_TEXT, false);
-			if(k == Keys.F4) MyInput.setKey(Input.DEBUG2, false);
+			if(k == Keys.F4) MyInput.setKey(Input.RENDER, false);
 			if(k == Keys.EQUALS) MyInput.setKey(Input.ZOOM_IN, false);
 			if(k == Keys.MINUS) MyInput.setKey(Input.ZOOM_OUT, false);
 		} else {

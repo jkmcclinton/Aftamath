@@ -1,5 +1,7 @@
 Script Main
 
+setFlag(businessEvent, true)
+
 #train related stuff
 value(set, trainLoc, {BusinessDistrict})
 setWarp(Subway, 0, BusinessDistrict, 2)

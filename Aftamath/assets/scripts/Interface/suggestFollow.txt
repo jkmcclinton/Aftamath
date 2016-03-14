@@ -1,11 +1,12 @@
 Script Main
 lockplayer
 
-facePlayer(partner)
+face(partner, player)
 setSpeaker(partner)
 if([player.love < -2])
 	text(mad, {No way. I'm staying here.})
 else
+	follow(partner, player, true)
 	if([partner.gender = male])
 		text(normal, {On my way.}
 	else

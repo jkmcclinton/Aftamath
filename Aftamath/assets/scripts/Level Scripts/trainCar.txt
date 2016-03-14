@@ -1,26 +1,20 @@
 Script Main
 zoom(close, true)
-
 setFlag(calledTrain, false)
 setFlag(trainArrived, false)
 value(set, trainLoc, trainDest)
 
 if([trainDest = {BusinessDistrict}])
-	setWarp(Subway, 0, Business District, 2)
-	#remove barrier
-else
-	#spawn(barrier, Subway, all the way at the left of the level, 0)
-	#Can't get to the sewers from here
+	setWarp(Subway, 0, BusinessDistrict, 2)
 end
-
 if([trainDest = {CentralStation}])
-	setWarp(Subway, 0, Central Station, 3)
+	setWarp(Subway, 0, CentralStation, 3)
 end
 if([trainDest = {MunicipalDistrict}])
-	setWarp(Subway, 0, Municpal District, 2)
+	setWarp(Subway, 0, MunicipalDistrict, 2)
 end
 if([trainDest = {CommercialDistrictNW}])
-	setWarp(Subway, 0, Commercial District NW, 2)
+	setWarp(Subway, 0, CommercialDistrictNW, 2)
 end
 
 wait(10)

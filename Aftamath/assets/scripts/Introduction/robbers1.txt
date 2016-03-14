@@ -14,8 +14,8 @@ setSpeaker(Trevon)
 text(mad, {Ey you!})
 
 #make robbers aim at player
-doAction(Trevon, aim, player, never, false)
-doAction(Jose, aim, player, never)
+doAction(Trevon, aim, player, on_script_end, false)
+doAction(Jose, aim, player, on_script_end)
 text({Dis a robry!/lPut cho hands up!})
 doAction(Trevon, shoot)
 playsound(pistol, Trevon)
@@ -61,7 +61,7 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
     value(set, desc, {Tried to negotiate with cold blooded killers and died. (Wait - what?)})
     setFlag(GotRobbed)
     setSpeaker(player)
-    text(normal, {Look, can we just talk-})
+    text(normal, {Look, can we just talk-}, false)
     setSpeaker(Trevon)
     text(mad, {Tch- u thot, bruh!})
     doAction(Trevon, shoot, false)
@@ -125,12 +125,13 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
 	hidedialog
 	wait(.5)
 	text(normal, {Sorry, I'm back.})
-	text(normal, {Since you can't kill those those guys, I gues I'll have to.})
+	text(normal, {Since you can't kill those those guys, I guess I'll have to.})
 	remove(Trevon)
 	remove(Jose)
 	
 	text(normal, {Hopefully sometime in the distant future you'll be able to fight people.})
-	text(normal, {Once a certain dunderhead learns to do his job})
+	text(normal, {Once a certain dunderhead learns to do his job.})
+	text({ANYWAY....})
   end
 
   [choice Comply]
@@ -193,7 +194,9 @@ setChoice(4:Flee, 1:Negotiate, 2:Fight 'em, 3:Comply,  5:SUPA-Powers!)
 	
 	setSpeaker(narrator)
     text(normal, {I'll give you a little extra experience to help you out some.})
+	wait(.2)
     value(add, player.level, 1)
+	wait(.2)
     text(normal, {Hear that? You just leveled up! Do that enough times and you can become a SUPA hero!})
     text(sad, {Or villain. Whatever you decide.})
   end

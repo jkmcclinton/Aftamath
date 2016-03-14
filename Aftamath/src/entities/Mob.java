@@ -3,7 +3,6 @@ package entities;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -34,7 +33,7 @@ public class Mob extends Entity{
 	public Array<Entity> contacts;
 	public double strength = DEFAULT_STRENGTH;
 	public float attackRange = DEFAULT_ATTACK_RANGE, attackTime, attackDelay=DEFAULT_ATTACK_DELAY, aimMax = DEFAULT_AIM_THRESHOLD;;
-	public Sound voice;
+	public float voice;
 	public boolean canWarp, canClimb, wasOnGround, running;
 	public boolean climbing, falling, snoozing, knockedOut;
 	public float experience, aimTime, powerCoolDown;
@@ -47,7 +46,7 @@ public class Mob extends Entity{
 	
 	protected int level;
 	protected DamageType powerType;
-	protected IFFTag iff;
+	protected IFFTag iFF;
 	public Vector2 respawnPoint;
 	protected String groundType, gender, name, nickName;
 	protected float knockOutTime, idleTime, idleDelay;
@@ -154,6 +153,9 @@ public class Mob extends Entity{
 		this.nickName = name;
 		this.layer = layer;
 		origLayer = layer;
+		try{
+			this.voice = Vars.VOICES.get(ID);
+		} catch(Exception e){voice = 0;}
 
 		determineGender();
 		this.powerType = type;
@@ -204,7 +206,7 @@ public class Mob extends Entity{
 		isAttackable = true;
 		destructable = true;
 		attackTime = attackDelay;
-		iff=IFFTag.FRIENDLY;
+		iFF=IFFTag.FRIENDLY;
 		health = maxHealth = DEFAULT_MAX_HEALTH;
 		defaultState = new MobAI(this, AIType.STATIONARY, null);
 		currentState = defaultState;
@@ -216,6 +218,12 @@ public class Mob extends Entity{
 
 	public void update(float dt){
 		attackTime+=dt;
+		
+		if(warp!=null)
+			if(!warp.conditionsMet()){
+				warp = null;
+				canWarp = false;
+			}
 		
 		if(frozen)
 			super.update(dt);
@@ -493,11 +501,11 @@ public class Mob extends Entity{
 	}
 	
 	public void watchPlayer(){
-		setState("FACEPLAYER", null, -1, "NEVER");
+		setState("FACEPLAYER", null, -1, "ON_SCRIPT_END");
 	}
 	
 	public void watchObject(Entity e){
-		setState("FACEOBJECT", e, -1, "NEVER");
+		setState("FACEOBJECT", e, -1, "ON_SCRIPT_END");
 	}
 
 	public MobAI getState(){ return currentState; }
@@ -574,11 +582,13 @@ public class Mob extends Entity{
 	public void setFollowIndex(int index){ followIndex = index; }
 	public void resetFollowIndex(){ followIndex = -1; }
 
-	public void stay(){
-		if(currentState.equals(defaultState))
+	public boolean stay(){
+		if(!currentState.type.equals(AIType.FOLLOWING)) return false;
+		if(!currentState.equals(defaultState))
 			defaultState = currentState;
+		currentState.focus.removeFollower(this);
 		currentState = new MobAI(this, AIType.FACEPLAYER, main.character);
-		main.character.removeFollower(this);
+		return true;
 	}
 
 	public void fight(Entity d){
@@ -586,7 +596,7 @@ public class Mob extends Entity{
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
 		currentState = new MobAI(this, AIType.FIGHTING, d);
-		iff = IFFTag.HOSTILE; 
+		iFF = IFFTag.HOSTILE; 
 		doTime= (float) (Math.random()*3);
 		attacked = false;
 		reached = false;
@@ -670,7 +680,9 @@ public class Mob extends Entity{
 			if(!invulnerable){
 				if(type.equals(DamageType.PHYSICAL))
 					main.playSound(getPosition(), "damage");
-				health = health - val;
+
+				if(iFF!=IFFTag.FRIENDLY)
+					health = health - val;
 
 				if(type==DamageType.FIRE){
 					double chance = Math.random();
@@ -687,7 +699,7 @@ public class Mob extends Entity{
 
 				if(health<=0){
 					if(health<0)health = 0;
-					if(owner.equals(main.character) && this.iff!=IFFTag.FRIENDLY)
+					if(owner.equals(main.character) && this.iFF!=IFFTag.FRIENDLY)
 						owner.experience+= .15f/owner.level;
 					die();
 				}
@@ -820,6 +832,7 @@ public class Mob extends Entity{
 	}
 	
 	public boolean setState(String state, Entity target, float time, String resetType) {
+		if(frozen) return false;
 		try{
 			AIType s = AIType.valueOf(state.toUpperCase());
 			ResetType type = ResetType.valueOf(resetType.toUpperCase());
@@ -1344,8 +1357,8 @@ public class Mob extends Entity{
 		if(level < 20) level++;
 	}
 	
-	public IFFTag getIFF(){return iff;}
-	public void setIFF(IFFTag tag){iff=tag;}
+	public IFFTag getIFF(){return iFF;}
+	public void setIFF(IFFTag tag){iFF=tag;}
 	public void setIFF(String tag){
 		try{
 			IFFTag i = IFFTag.valueOf(tag);
@@ -1549,7 +1562,7 @@ public class Mob extends Entity{
 		} catch (SerializationException | NullPointerException e) {
 		}
 		
-		this.iff = IFFTag.valueOf(val.getString("iff"));
+		this.iFF = IFFTag.valueOf(val.getString("iff"));
 		this.name = val.getString("name");
 		this.strength = val.getDouble("strength");
 		this.level = val.getInt("level");
@@ -1578,7 +1591,7 @@ public class Mob extends Entity{
 	public void write(Json json) {
 		super.write(json);
 		json.writeValue("respawnPoint", this.respawnPoint);
-		json.writeValue("iff", this.iff);
+		json.writeValue("iff", this.iFF);
 		json.writeValue("name", this.name);
 		//json.writeValue("voice", this.voice);	//TODO: implement voice
 		json.writeValue("strength", this.strength);
@@ -1692,7 +1705,7 @@ public class Mob extends Entity{
 			3, /*SPECIAL2*/
 			3, /*SPECIAL3*/
 			3}; /*SPECIAL3_TRANS*/
-	protected static final int[] actionLengths =    {0,
+	protected static final int[] actionLengths =    {16,
 			8,  /*WALKING*/
 			8,  /*RUNNING*/
 			3,  /*JUMPING*/
@@ -1734,6 +1747,6 @@ public class Mob extends Entity{
 			1,  /*TURN_SWIM*/
 			1,  /*SPECIAL1*/
 			1,  /*SPECIAL2*/
-			1,  /*SPECIAL3*/
-			1}; /*SPECIAL3_TRANS*/
+			16,  /*SPECIAL3*/
+			3}; /*SPECIAL3_TRANS*/
 }

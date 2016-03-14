@@ -3,6 +3,7 @@ lockplayer
 
 setSpeaker(null)
 if(!calledTrain)
+	#introduction
 	if(!explainedTrain)
 		setFlag(explainedTrain, true)
 		setSpeaker(narrator)
@@ -10,14 +11,15 @@ if(!calledTrain)
 		text({Simply come down to the subway and select a route to fast travel.})
 		text({For now, you can only travel to the Business District.})
 	else
-		if(([trainLoc != {Business}] or businessEvent) and rodeTrainFirstTime)
+		if([trainLoc = {BusinessDistrict}] and !businessEvent and rodeTrainFirstTime)
+		else
 			text({Please select a destination.})
 		end
 	end
-
+	
 	declare(loc, local, string, {nowhere})
 	declare(limitCounter, local, integer, 0)
-	if([trainLoc = {Business}] and !businessEvent and rodeTrainFirstTime)
+	if([trainLoc = {BusinessDistrict}] and !businessEvent and rodeTrainFirstTime)
 		value(add, limitCounter, 1)
 		setSpeaker(narrator)
 	
@@ -76,7 +78,6 @@ if(!calledTrain)
 				if(!rodeTrainFirstTime)
 					setEvent(rodeTrainFirstTime, {Learned how the train system works})
 				end
-		
 				value(set, trainDest, {BusinessDistrict})
 				value(set, loc, {Business District})
 			end
@@ -91,7 +92,7 @@ if(!calledTrain)
 				value(set, loc, {Municipal District})
 			end
 
-			[Choice Commercial NW]([trainLoc != {CommercialDistrictNW}])
+			[Choice Commercial NW]([trainLoc != {CommercialDistrictNW}] and businessEvent)
 				value(set, trainDest, {CommercialDistrictNW})
 				value(set, loc, {Commercial District NW})
 			end
@@ -104,12 +105,17 @@ if(!calledTrain)
 		hidedialog
 
 		#move train to embark location
-		teleport(trainCar, Subway, 0, 8)
-		move(trainCar, trainArrival)
+		teleport(trainCar, Subway, 0, 10)
 		wait(3)	
-		playSound(trainScreech)
-		wait(2.5)
+		move(trainCar, trainArrival1)
+		playSound(screech)
+		move(trainCar, trainArrival2)
+		move(trainCar, trainArrival3)
+		move(trainCar, trainArrival4)
+		move(trainCar, trainArrival5)
+		wait(.5)
 
+		lockplayer
 		setFlag(notMoving, false)
 		setFlag(trainArrived, true)
 		text({Now departing for /var[loc]. Watch your step.}, false)

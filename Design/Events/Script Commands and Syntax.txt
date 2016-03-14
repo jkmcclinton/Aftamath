@@ -49,6 +49,7 @@ I've tried my best to add print statements to help you debug your script.
 
 	  addPartner
 	~ attack
+	  bufferFollow
 	  checkPoint
 	  choice
 	  declare
@@ -127,6 +128,12 @@ addPartner:
 	~should automatically handle moving the mob back to its original position if movement is
 		necessary
 	attack(objectName, [targetObject])
+bufferFollow:
+	adds or removes an empty mob in the the target object's list of followers. think of the followers
+	as a line of people; when you add a buffer, there will be a gap somewhere in the line.
+	if the boolean "buffer" is true, then the function will add. if it is false, the function will 
+	remove all gaps in the list
+	bufferFollow(objectName, buffer)
 checkPoint:
 	sets a point in the script to return to with "return()"
 	checkPoint(Name)

@@ -1,13 +1,31 @@
 Variable Name            Type       Scope      Script
+GaveSoul                 : flag     : global   : choice test
+GotRobbed                : flag     : global   : robbers1
+Hobo1                    : flag     : global   : hobo1
+PaidPrince               : flag     : global   : princeRandom
+PowerBar                 : flag     : global   : There's A Bar
+SBAgreedWork             : flag     : global   : getMail
+SBCanPushButton          : flag     : global   : factoryWorkerEntrance
+SBCanPushButton          : flag     : global   : firstTask
+SBDidMenialLabor         : flag     : global   : firstTask
+SBReceivedPromotion1     : flag     : global   : bossPromotion1
+VisitedPier              : flag     : global   : Pier
 a                        : integer  : global   : HeroHQEntry
 address                  : string   : local    : choice test
 ask                      : integer  : local    : afterTutorial
 asked                    : integer  : global   : ask out
+barLocked                : flag     : global   : There's A Bar
+businessEvent            : flag     : global   : BusinessDistrict
 c                        : integer  : global   : splash test
+c                        : integer  : local    : Ms Pancakes Mishap
+calledTrain              : flag     : global   : Subway
+calledTrain              : flag     : global   : TrainCar
+calledTrain              : flag     : global   : trainSelection
 counter                  : integer  : local    : choice test
 counter                  : integer  : local    : intro
 desc                     : string   : local    : Ms Pancakes Mishap
 desc                     : string   : local    : robbers1
+explainedTrain           : flag     : global   : trainSelection
 extra                    : integer  : local    : intro
 female                   : string   : global
 field                    : flag     : local    : afterTutorial
@@ -20,20 +38,43 @@ found                    : flag     : local    : Pier
 found                    : flag     : local    : superGlare
 g                        : string   : local    : annoyedPancakes
 greeting                 : string   : local    : credits
+inSupTut                 : flag     : global   : afterTutorial
+inSupTut                 : flag     : global   : superTutIntro
 limitCounter             : integer  : local    : trainSelection
 loc                      : string   : local    : trainSelection
+lvC                      : float    : local    : girlfriend
+m                        : string   : local    : attackedPartner
+m                        : string   : local    : onRobotAttacked
 male                     : string   : global
+microchipQuestStarted    : flag     : global   : hobo2
+myPlace                  : local    : flag     : girlfriend
 name                     : string   : local    : Ms Pancakes Mishap
+name                     : string   : local    : intro
 name                     : string   : local    : trainSelection
 not                      : integer  : local    : realGangsta
+notMoving                : flag     : global   : TrainCar
+notMoving                : flag     : global   : trainSelection
 num                      : integer  : local    : superGlare
+pC                       : integer  : local    : supAttackedPartner
 part                     : integer  : local    : actionTest
 playergender             : string   : local    : intro
 playertype               : integer  : local    : intro
+punchC                   : integer  : local    : attackedPartner
 punchCount               : integer  : local    : tutOnAttacked
+sawBread                 : flag     : global   : cart
 shotCount                : integer  : local    : afterTutorial
+talked                   : integer  : local    : richComplaint
 talkedToGrim             : integer  : global   : grimResponse
+talkedToHobo             : flag     : global   : hobo1
+talkedToHobo             : flag     : global   : hobo2
 title                    : string   : local    : disappointedVillain
+tookBread                : flag     : global   : cart
+trainArrived             : flag     : global   : Subway
+trainArrived             : flag     : global   : TrainCar
+trainArrived             : flag     : global   : trainSelection
 trainDest                : string   : global
 trainLoc                 : string   : global
 tutAsked                 : integer  : global   : tutDescribe
+txt                      : integer  : local    : attackedPartner
+txt                      : integer  : local    : girlfriend
+txt                      : integer  : local    : supAttackedPartner

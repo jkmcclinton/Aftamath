@@ -33,6 +33,10 @@ public class Path extends Entity {
 		this.points = points;
 		this.maxRun = maxRun;
 		this.ID = pathName;
+		
+		Vector2 v = points.get(0);
+		x = v.x;
+		y = v.y;
 
 		try{
 			Behavior b = Behavior.valueOf(behavior.toUpperCase());
@@ -101,6 +105,8 @@ public class Path extends Entity {
 				break;
 			}
 	}
+	
+	public Path copy(){ return new Path(ID, behavior.toString(), points); }
 	
 	public String toString(){
 		return ID+": ["+x+","+y+"]";

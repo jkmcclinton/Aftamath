@@ -10,23 +10,25 @@ setWarp(Subway, 0, CommercialDistrictNW, 2)
 #end
 
 #create the super tutorial event
-if(GoodBar and !supTutIntro)
-	declare(found, local, Flag, false)
-	wait(.01)
-	findObject(Hero, found)
-	if(!found)
-		spawn(NPC, hero1, Hero, 54, 78, 12)
-		setDialogue(Hero, {tutDescribe})
-	end
-end
-
-if(EvilBar and !supTutIntro)
-	declare(found, local, Flag, false)
-	wait(.01)
-	findObject(Villain, found)
-	if(!found)
-		spawn(NPC, villain1, Villain, 54, 78, 15)
-		setDialogue(Villain, {tutDescribe})
+if(goneInBar)
+	if((GoodBar or [player.niceness >= 0]) and !supTutIntro)
+		declare(found, local, Flag, false)
+		wait(.01)
+		findObject(Hero, found)
+		if(!found)
+			spawn(NPC, hero1, Hero, 54, 78, 12)
+			setDialogue(Hero, {tutDescribe})
+		end
+	else
+		if((EvilBar or [player.niceness < 0]) and !supTutIntro)
+			declare(found, local, Flag, false)
+			wait(.01)
+			findObject(Villain, found)
+			if(!found)
+				spawn(NPC, villain1, Villain, 54, 78, 15)
+				setDialogue(Villain, {tutDescribe})
+			end
+		end
 	end
 end
 

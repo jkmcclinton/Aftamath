@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 
 import entities.Entity;
-import entities.Mob;
 import scenes.Scene;
 import scenes.Script;
 
@@ -21,7 +20,7 @@ public class Camera extends OrthographicCamera{
 	private Boolean wasCharacterFacingLeft;
 	private Entity focus;
 	private Vector2 tmpFocus;
-	private Mob character;
+	private Entity character;
 	private RefocusTrigger trigger;
 //	private Camtrack currentTrack;
 
@@ -301,8 +300,8 @@ public class Camera extends OrthographicCamera{
 	public void setDefaultZoom(float zoom){ defaultZoom = zoom; }
 	public void setTrigger(RefocusTrigger trigger){ this.trigger = trigger; }
 	public RefocusTrigger getTrigger(){ return trigger; }
-	public void setCharacter(Mob character) { this.character = character; }  //set camera focus to the character
-	public Mob getCharacter(){ return character; }
+	public void setCharacter(Entity character) { this.character = character; }  //set camera focus to the character
+	public Entity getCharacter(){ return character; }
 
 	public float getDefaultZoom() { return defaultZoom; }
 }

@@ -6,7 +6,7 @@ SetSpeaker(narrator)
 wait(1.5)
 text(normal, {Man, it's empty in here.})
 wait(.75)
-text(normal, {New game, huh? So you want to start your life over?~/l/lOld life not good enough for you?})
+text(normal, {New game, huh? So you want to start your life over? ~Old life not good enough for you?})
 text(normal, {Well, I don't know exactly what it is you're thinking of finding in here...~/lBut I'm sure there's a whole bunch of stupid crap in this dumb game you'll find worthwhile.})
 text(normal, {So let's start with the basics. The real slims./lName, gender, DOB, all that jazz.})
 text(normal, {You know the drill. ~How could you not?})
@@ -16,9 +16,10 @@ text(normal, {So, what's your name?})
 wait(.75)
 
 #Allow text input
-input(player.name)
+declare(name, local, string, {})
+input(name)
 
-text(normal, {Okay /player, do you want to be a knocker or a talker?})
+text(normal, {Okay /var[name], do you want to be a knocker or a talker?})
 #special choice input
 declare(counter, local, integer, 0)
 declare(playergender, local, string, {}) 

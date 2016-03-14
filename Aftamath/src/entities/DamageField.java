@@ -9,7 +9,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
-import entities.Mob.IFFTag;
 import handlers.FadingSpriteBatch;
 import handlers.PositionalAudio;
 import handlers.Vars;
@@ -108,11 +107,9 @@ public class DamageField extends Entity {
 	
 	//cause damage to the given entity
 	public void applyDamageEffect(Entity e){
-		if(e instanceof Mob){
-			if(((Mob)e).getIFF()!=IFFTag.FRIENDLY)
-				((Mob) e).damage(damageStrength, damageType, owner);
-			else main.addHealthBar(e);
-		} else
+		if(e instanceof Mob)
+			((Mob) e).damage(damageStrength, damageType, owner);
+		else
 			e.damage(damageStrength, damageType);
 		playDamageSound(e);
 		
@@ -281,14 +278,17 @@ public class DamageField extends Entity {
 		default:
 			sound = "";
 		}
-		damageSound = new PositionalAudio(getPosition(), sound, main);
+		if(!sound.isEmpty())
+			damageSound = new PositionalAudio(getPosition(), sound, main);
 	}
 	
 	public void finalize(){
 		try {
 			super.finalize();
-			damageSound.stop();
-			main.removeSound(damageSound);
+			if(damageSound!=null){
+				damageSound.stop();
+				main.removeSound(damageSound);
+			}
 			
 		} catch (Throwable e) {
 			e.printStackTrace();

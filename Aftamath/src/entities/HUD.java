@@ -18,7 +18,7 @@ import main.Main.InputState;
 public class HUD {
 	
 	public TextureRegion[] font, font2, font4;
-	public int moving;
+	public MoveType moving;
 	public boolean raised, showStats;
 	
 	private float locationTime;
@@ -45,6 +45,10 @@ public class HUD {
 	public int x;
 	public int y;
 	private int offset = 0;
+	
+	public enum MoveType {
+		UP, DOWN, HALFUP, HALFDOWN, NOT
+	}
 	
 	public HUD(Main main, OrthographicCamera cam) {
 		this.cam = cam;
@@ -92,7 +96,7 @@ public class HUD {
 	}
 	
 	public void update(float dt){
-		if (moving > 0) moveDialog();
+		if (!moving.equals(MoveType.NOT)) moveDialog();
 		cube.update(dt);
 		buttonHigh.update(dt);
 		
@@ -166,9 +170,8 @@ public class HUD {
 		String money = NumberFormat.getCurrencyInstance().format(main.player.getMoney());
 		if (money.startsWith("(")) money = "-" + money.substring(1, money.indexOf(")"));
 
-		//if (money.split(".")[1].length()<2) money += "0";
 		main.drawString(sb, money, Game.width/2 - 10 - cash.getRegionWidth() -
-				(PERIODX + money.length() * PERIODX), Game.height/2 - 20);
+				(PERIODX -1 + money.length() * (PERIODX-1)), Game.height/2 - 20);
 	}
 	
 	public void drawInputBG(SpriteBatch sb){
@@ -183,14 +186,14 @@ public class HUD {
 	}
 	
 	public void show(){
-		moving = 1;
+		moving = MoveType.UP;
 		moveDialog();
 		
 		//Gdx.audio.newSound(new FileHandle("assets/sounds/slideup.wav"));
 	}
 	
 	public void hide(){
-		moving = 2;
+		moving = MoveType.DOWN;
 		moveDialog();
 		raised = false;
 		
@@ -198,7 +201,7 @@ public class HUD {
 	}
 	
 	public void halfHide(){
-		moving = 3;
+		moving = MoveType.HALFDOWN;
 		moveDialog();
 		raised = false;
 		
@@ -224,19 +227,19 @@ public class HUD {
 	public void moveDialog(){
 		final int speed = 4;
 		
-		if(moving == 1){ //bring into focus
+		if(moving == MoveType.UP){ //bring into focus
 			if (top) y -= speed;
 			else y += speed;
 			
-			if(y >= 75 + offset) { moving = 0; raised = true; }
+			if(y >= 75 + offset) { moving = MoveType.NOT; raised = true; }
 		} else {  //bring out of focus
 			float min = -20;
-			if(moving==3) min = 47.5f;
+			if(moving==MoveType.HALFDOWN) min = 47.5f;
 				
 			if (top) y += speed;
 			else y -= speed;
 			
-			if(y <= min || y >= Game.height/2) moving = 0; 
+			if(y <= min || y >= Game.height/2) moving = MoveType.NOT; 
 		}
 	}
 	
@@ -274,10 +277,17 @@ public class HUD {
 		if (speakText == null) return;
 		
 		for (int i = 0; i < speakText.length; i++){
-			if (speakText[i] == null) {System.out.println(i+ "\n" + true);return;}
+			int o = 0;
+			if (speakText[i] == null) {
+				System.out.println(i+ "\n" + true);
+				return;
+			}
 			for (int j = 0; j < speakText[i].length(); j++){
 				char c = speakText[i].charAt(j);
-				if (c != " ".charAt(0) && c+Vars.FONT_OFFSET<font2.length) sb.draw(font2[c + Vars.FONT_OFFSET], HUDX + j * PERIODX, HUDY + y + i * PERIODY);
+				if(c == 'i') o -=3;
+				if(c == 'l' || c == 'r' || c == 'T' || c == 'l' || c == 'I') o -=1;
+				if (c != " ".charAt(0) && c+Vars.FONT_OFFSET<font2.length) 
+					sb.draw(font2[c + Vars.FONT_OFFSET], HUDX + j * PERIODX + o, HUDY + y + i * PERIODY);
 			} 
 		}
 	}
@@ -314,17 +324,14 @@ public class HUD {
 			if (main.paused && main.getStateType() == InputState.PAUSED){
 //				System.out.println("paused");
 				return false;}
+			if(main.getStateType()==InputState.KEYBOARD)
+				return false;
 			if (main.speaking){
 //				System.out.println("speaking");
 				return false;}
 			if(main.choosing){
 //				System.out.println("choosing");
-//			if(play.currentScript != null)
 				return false;}
-//			if(main.currentScript.getActiveObject() != null)
-//				if(main.currentScript.getActiveObject().controlled){
-//					System.out.println("controlled");
-//					return false;}
 			if(main.getCam().moving){
 //				System.out.println("moving");
 				return false;}
@@ -332,12 +339,10 @@ public class HUD {
 				if(main.currentScript.waitTime > 0){
 //					System.out.println("waiting");
 					return false;}
-				if(main.currentScript.getActiveObject()!=null)
-					return false;
+				if(main.currentScript.getActiveObject()!=null){
+//					System.out.println("activeObj");
+					return false;}
 			}
-//			if(main.getStateType() == InputState.LOCKED){
-//				System.out.println("locked");
-//				return false;}
 			return true;
 		}
 		

@@ -96,6 +96,8 @@ public class Animation {
 			frames = primaryFrames;
 		if (frames == null)
 			frames = baseFrames;
+		if(currentIndex>=frames.length)
+			currentIndex = frames.length-1;
 		return frames[currentIndex]; 
 	}
 

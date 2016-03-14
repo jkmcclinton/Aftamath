@@ -1,5 +1,15 @@
 Script Main
 lockplayer
+setSpeaker(this)
+text({List emotions.})
+text(happy, {Happy.})
+text(sad, {Sad.})
+text(mad, {Mad.})
+text(flirty, {Flirty.})
+done
+
+Script aniM
+lockplayer
 
 declare(part, local, integer, 0)
 if([part = 0])
@@ -10,4 +20,16 @@ else
 	value(set, part, 0)
 end
 
+done
+
+
+Script sub
+lockplayer
+teleport(trainCar, Subway, 0, 10)
+move(trainCar, trainArrival1)
+move(trainCar, trainArrival2)
+move(trainCar, trainArrival3)
+playSound(screech)
+move(trainCar, trainArrival4)
+move(trainCar, trainArrival5)
 done

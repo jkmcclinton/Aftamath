@@ -60,17 +60,17 @@ public class Barrier extends Entity {
 		if(polygon!=null){
 			float vertices[] = polygon.getTransformedVertices();
 			
-			System.out.print("PVs: ");
+//			System.out.print("PVs: ");
 			for(float f : polygon.getVertices()){
-				System.out.print(f+", ");
+//				System.out.print(f+", ");
 				f=f/PPM;
 			}
-			System.out.print("\nPTFVs: ");
+//			System.out.print("\nPTFVs: ");
 			for(float f : vertices){
-				System.out.print(f+", ");
+//				System.out.print(f+", ");
 				f=f/PPM;
 			}
-			System.out.println();
+//			System.out.println();
 			shape.set(vertices);
 		}else
 			shape.setAsBox((rw)/PPM, (rh)/PPM);

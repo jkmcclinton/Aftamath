@@ -324,8 +324,8 @@ public class MobAI {
 			owner.faceObject(focus);
 			dx = focus.getPosition().x - owner.body.getPosition().x;
 
-			float m = Entity.MAX_DISTANCE * (owner.followIndex+1);
-			
+			float m = Entity.MAX_DISTANCE * (owner.followIndex);
+			if(Math.abs(dx) > (m + 2*Entity.MAX_DISTANCE)/PPM) 	owner.run();
 			if(dx > m/PPM) owner.right();
 			else if (dx < -1 * m/PPM) owner.left();
 			break;
@@ -764,9 +764,13 @@ public class MobAI {
 
 	public void begin(){
 		canPosition = true;
-		retLoc = owner.respawnPoint;
+//		if(owner.respawnPoint!=null)
+//			retLoc = owner.respawnPoint.cpy();
+//		else
+//			retLoc = new Vector2(owner.x, owner.y);
+		
+		retLoc = owner.getPixelPosition().cpy();
 		Anim anim = null;
-//		float r, max;
 
 		switch(type){
 		case AIM:
@@ -830,6 +834,7 @@ public class MobAI {
 			inactiveWait = 2;
 			if(resetType.equals(ResetType.NEVER)){
 				AIPhase2 = true;
+				reached = true;
 				owner.embrace(type);
 			}else{
 				if(focus!=null && focus!=owner){
@@ -838,6 +843,7 @@ public class MobAI {
 					goalPosition = new Vector2(focus.getPixelPosition().x - a*d, focus.getPixelPosition().y);
 				} else {
 					AIPhase2 = true;
+					reached = true;
 					owner.embrace(type);
 				}
 			}

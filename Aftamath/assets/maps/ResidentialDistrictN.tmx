@@ -3,14 +3,14 @@
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
-  <property name="bgm day" value="Misdirection"/>
+  <property name="bgm day" value="Bright Days"/>
   <property name="bgm night" value="Midnight Waves"/>
   <property name="name" value="Residential District N"/>
   <property name="next" value="Commercial District NW"/>
   <property name="previous" value="Tha Hood"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
-  <image source="tilesets/street.png" width="1152" height="1608"/>
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
     <property name="type" value="concrete"/>
@@ -54,6 +54,11 @@
   <tile id="8">
    <properties>
     <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="light" value="street"/>
    </properties>
   </tile>
   <tile id="72">
@@ -213,7 +218,7 @@
     <property name="layer" value="back"/>
     <property name="name" value="Olivierre"/>
     <property name="script" value="richComplaint"/>
-    <property name="state" value="FACEPLAYER"/>
+    <property name="state" value="STATIONARY"/>
    </properties>
   </object>
   <object id="22" name="9" x="1040" y="1552" width="16" height="16">
@@ -269,6 +274,7 @@
     <property name="layer" value="front"/>
     <property name="name" value="Villain"/>
     <property name="nickName" value="Some chick in tights"/>
+    <property name="powerType" value="ELECTRO"/>
     <property name="script" value="superGlare"/>
     <property name="state" value="FACELEFT"/>
    </properties>
@@ -281,6 +287,7 @@
     <property name="layer" value="front"/>
     <property name="name" value="Hero"/>
     <property name="nickName" value="Some guy in tights"/>
+    <property name="powerType" value="FIRE"/>
     <property name="script" value="superGlare"/>
     <property name="state" value="FACERIGHT"/>
    </properties>

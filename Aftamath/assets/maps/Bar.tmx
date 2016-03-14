@@ -24,7 +24,7 @@
  </layer>
  <layer name="fg" width="40" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjIJRMApIBwAGQAAB
+   eJxjYBgFo2BogrNoNLo4PjX0AJyMqDS6OD41o2AUDAUAAE0JBDQ=
   </data>
  </layer>
  <objectgroup name="entities">
@@ -36,7 +36,7 @@
     <property name="spawn" value=""/>
    </properties>
   </object>
-  <object id="28" x="304.5" y="79.75" width="16" height="16">
+  <object id="28" x="320" y="80" width="16" height="16">
    <properties>
     <property name="ID" value="43"/>
     <property name="NPC" value="gangster2"/>

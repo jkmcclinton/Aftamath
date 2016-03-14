@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="6">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="6">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -11,7 +11,7 @@
   <property name="previous" value="Under a Bridge"/>
  </properties>
  <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
-  <image source="tilesets/street.png" width="1152" height="1608"/>
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
     <property name="type" value="concrete"/>
@@ -148,33 +148,33 @@
    </properties>
   </tile>
  </tileset>
- <layer name="bg1" width="75" height="100">
+ <layer name="bg1" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt1VWQ1XUcxuGDIrmp2I4toUgotte2hJKK7dgSCkstpV7bEkoqtmNLKGzAUort2BJKKrZjCz7cer+zM8f3M/PMnIv/xXm/N79CIaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKf23qpJCYRSjGcNYxlHNeCYwkUlMLmnqf9t4rbHtTd7ibd7hXd7jfT6ghlrqqGcpy2hgOStYySpWF/Gt2pUWCnuzD/uyH/tzAAdyEC1oSSta04a2lFBKGeVUUFna1Isar8G2XcKlXMblXMGVXMXV9KQXvenDBVxIX/rRnwEMZFAR32qebY/yGI/zBE/yFE/zDFOYyjSm8yAPMYOZzGI2c5hbxLfabtu3fMf3/MCP/MTP/MJa1rGeDXzJV2xkE5vZwla2FfGtepQVCidwIidxMqdwKqdxOu3pQEc6cTTH0Jlj6UJXutG9rKkXNV7Vto1nAhOZxGRu43buYAhDGcZwbuFWRjCSKkYxmjFFfKsG25azgpWsYjWv8wZrmM8CFrKIV3mNxSyhhlrqqC/iW5WUe/cpo5wKKtmTvWjHDvt37rqB383Yjd1pzh60oCWtaF3e1Isar7629aM/AxjIIC7iYgZzBmdyFmdzDudyHufTk170pk8R32qGbTOZxWzmMJeHeYR53Mld3M093Mt93M8DTGEq05hexLfaaNsmNrOFrWzja75hOx/yER/zCZ/yGZ/zBWtZx3o2FPGtOld49+lCV7rRneM4nh4czCEcymEczhEcyVG0pwMd6VTR1IsarxG2jaSKUYxmDGMZRzXXcC3XcT03cCM3cTNDGMowhhfxrRbbtoQaaqmjnqUso4FneY7neYEXeYmXeYX5LGAhi4r4Vs0rvfu0oCWtaE0b2lLCr/b/xu/8wZ/8xd/8ww527rqRb5tVNvWilFJKKaWUUkoppZRSSin93/oXo6W+og==
+   eJzt1VWzlXUYh+FFuAPWLkTEGBGDECQECzgWFCSUVBRQx5ZmB2xKPFZBpSQV27ElFHbAphQVlLEllFRsR8EALz7EmjXz8twz18w6eA/W7zn5p1JRFEVRFEVRFEVRdGpVmk6lyiingslMoZKpTGM6M5iZzva/zVzbbPuAD/mI7ezgYz5hJ1VUU0Mt69lAHRvZxGa2sDXBt2pakEqdQTPOpDlncTbncC455JJHPo1oTJoCCimimJKCbC/KXMNtu4VbGcFIRnEbt3MHfelHfwZwAzcykEEMZghDGZbgW62w7Rme5Tme5wVe5CVeZi7zmM8CFvIki1jMEpayjOUJvtUR237kJ37mF37lN37nD3axmz3s5Vu+Yx/7OcBBDnE4wbfqWphKXc4VXMlVXE03utODVrSmDW25hHa051I60JFOdC7M9qLMVWnbVKYxnRnM5EFm8RCjGcNYxjGeCUxkEqWUUU5Fgm9VZ9tGNrGZLWzlPd5nGytZxWrW8A7vspZ1VFFNDbUJvlW6yLtPIUUUU0ITTqcpx+0/cfIGftejPg1oyGnkkEse+UXZXpS5Bto2iMEMYSjDuImbGc419KQX13IdvenD9fSlH/0ZkOBbLbJtMUtYyjKW8xRPs4KHeYRHmc0cHuNxnmAu85jPggTfap9t+znAQQ5xmO/5gSN8ymd8zhd8yVd8zTfsYjd72JvgW7Uv9u7TgY50ojOX0YWunEcLzqclF3AhF3ExrWhNG9oWZ3tR5ppo2yRKKaOcCiYzhUru5C7u5h7u5T7u5wFGM4axjEvwrdbato4qqqmhlvVsoI5XeJXXeJ03eJO3eJuVrGI1axJ8q4Yl3n1yyCWPfBrRmDR/2v8XRznG3/zDv/zHcU6cvJFv65Vke1EURVEURVEURVEURVEURVEURada/wNpDb6i
   </data>
  </layer>
- <layer name="bg2" width="75" height="100">
+ <layer name="bg2" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt0CszhmEUhtE9DoXvSKVRaPwFGoVG/TQKjb9Ao9CoNIpDoVFpFBqVxoxdlfepZt616n2nKwIAAAAAAAAAAAAAAAAAAAAAAAD+um9EPDSqP9e53xQ+dTDSjBhtVn8Gch8sfOpgJRusFjos5L6oVRxng5NCh/3cD7SK92zwUejwnPuLVjHTiphtVX8mcp8sfOpgOxvsFDqs576hVdxmg7tCh/PcL7SKoXbEcLv6852dfrSKpey0XGg1l/t84VMHh9ngqNBhN/c9reI1G7wVOjzm/qRVTHUipjvVn7HcxwufOtjMBluFDr3c17SKy2xwVehwmvuZVtHXjejvVn8+s9OXVgAAAAAAwD/3CyFUI3k=
+   eJzt0C83A2AcxfF7mDL7S6VZofEWaBQadWtWaLwFGoVGpVHYyjSrNCvWpm7Nztl9Bc+v7pzn+6n3pq8EAAAAAABy8lmS+qX0p+O9G3xysFKWVsvpT8H7UvDJwbEbnAQd9r0f0EoPbvAYdLjxfksrjdzgL+jw431AK21XpJ1K+rPhvRF8cnDhBpdBh1PvbVqp5wYfQYcX76+0UrEqLVfTn393mtJKh+50FLTa9b4XfHJw5wb3QYcr79e00q8bDIMOX96/aaXNmrRVS3/WvK8HnxycucF50KHpvUUrvbnBe9DhyfszrbRQlxbr6c/YnSa0AgAAAAAAAAAAc24G5q0jeQ==
   </data>
  </layer>
- <layer name="ground" width="75" height="100">
+ <layer name="ground" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt08dRQ0EURNFRKHgRCk5AGMITCk5AGHgIBQ+Z0DmwmAd1TtXdzeKVfqs1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA/W0rLaSWtprU0SutpI212elPxrqN0nE7SaTpLk3SeLtJlpzcV73pOL+k1vaX39JE+01f67vSm4l1Tg9am00yaTXNpPi2kYVoc9HlT8a5x2krbaSftpr20nw7SYac3Fe+6StfpJt2mu3SfHtJjeur0puJdFb+fXf39XVW8qepvVXHr/oN2ZVd2ZVd2ZVf17qr4/ezKruzKruzqd29+AE7abxA=
+   eJzt08lRQlEUBuFHKIAghIIKaBggIISizGGATIaijGZC58DiHqq6q77dXZzi/WSZmZmZmZmZmZmZmZmZmZmZmd1rNTzhGS+oo4EmXvGW6E3Euz7xhSFGGGOCKWaYJ3oT8a5f/GGPA4444YwL/hO9iXhXPpdlBRTxgBLKeEQF1VyaNxHvaqGNd3TQRQ8f6GOQ6E3EuxZY4hsrrLHBFjv8JHoT8a6I389d3f+uIt4U9beKuHX/g+7KXbkrd+Wu3FW8uyJ+P3flrtyVu3JXt725AhRCbxA=
   </data>
  </layer>
- <layer name="objects" width="75" height="100">
+ <layer name="objects" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
   </data>
  </layer>
- <layer name="fg" width="75" height="100">
+ <layer name="fg" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
   </data>
  </layer>
  <objectgroup name="entities">
-  <object id="1" name="room1_1" x="804" y="1192" width="37" height="73">
+  <object id="1" name="room1_1" x="804" y="392" width="37" height="73">
    <properties>
     <property name="ID" value="2"/>
     <property name="next" value="Church"/>
@@ -182,12 +182,12 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="2" x="604" y="1248" width="16" height="16">
+  <object id="2" x="604" y="448" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
   </object>
-  <object id="3" name="1" x="672" y="1248" width="16" height="16">
+  <object id="3" name="1" x="672" y="448" width="16" height="16">
    <properties>
     <property name="ID" value="28"/>
     <property name="NPC" value="hippie"/>
@@ -197,7 +197,7 @@
     <property name="state" value="faceplayer"/>
    </properties>
   </object>
-  <object id="4" name="1" x="720" y="1248" width="16" height="16">
+  <object id="4" name="1" x="720" y="448" width="16" height="16">
    <properties>
     <property name="ID" value="13"/>
     <property name="NPC" value="doctordisco"/>
@@ -205,16 +205,6 @@
     <property name="layer" value="front"/>
     <property name="name" value="Doctor Disco"/>
     <property name="script" value="disco"/>
-    <property name="state" value="faceplayer"/>
-   </properties>
-  </object>
-  <object id="5" name="1" x="528" y="1248" width="16" height="16">
-   <properties>
-    <property name="ID" value="110"/>
-    <property name="NPC" value="femaleplayer4"/>
-    <property name="layer" value="front"/>
-    <property name="name" value="HLRMS-110"/>
-    <property name="script" value="getMail"/>
     <property name="state" value="faceplayer"/>
    </properties>
   </object>

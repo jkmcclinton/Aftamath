@@ -10,7 +10,7 @@
   <property name="previous" value="Boardwalk"/>
  </properties>
  <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
-  <image source="tilesets/street.png" width="1152" height="1608"/>
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
     <property name="type" value="concrete"/>

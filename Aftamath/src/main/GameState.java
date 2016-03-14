@@ -290,13 +290,15 @@ public abstract class GameState {
 		String[] lines = text.split("/l");
 
 		for (int j = 0; j < lines.length; j++) {
+//			int o = 0;
 			for (int i = 0; i < lines[j].length(); i++) {
 				char c = lines[j].charAt(i);
 				try {
+//					if(c == 'i') o -=3;
+//					if(c == 'l' || c == 'r' || c == 'T' || c == 'l' || c == 'I') o -=1;
 					if (c != " ".charAt(0))
-						sb.draw(font[c + Vars.FONT_OFFSET], x + i * px, y + j * -font[0].getRegionHeight());
-				} catch (Exception e) {
-				}
+						sb.draw(font[c + Vars.FONT_OFFSET], x + 0 + i * px, y + j * -font[0].getRegionHeight());
+				} catch (Exception e) { }
 			}
 		}
 	}

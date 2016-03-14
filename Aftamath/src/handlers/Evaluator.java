@@ -247,7 +247,7 @@ public class Evaluator {
 //				System.out.println("result: "+result);
 				return result;
 			} catch(Exception e){
-				System.out.println("Could not compare \""+property+"\" with \""+value+"\" by condition \""+condition+"\"");
+				System.out.print("Could not compare \""+property+"\" with \""+value+"\" by condition \""+condition+"\"");
 				if(this.script!=null) System.out.println("; Line: "+(script.index+1)+"\tScript: "+script.ID);
 				else System.out.println();
 //				e.printStackTrace();
@@ -573,6 +573,11 @@ public class Evaluator {
 		case "powertype":
 			if(object instanceof Mob)
 				property = String.valueOf(((Mob)object).getPowerType());
+			break;
+		case "title":
+			if(object instanceof Mob)
+				if(object.equals(main.player.getPartner()))
+					property = main.player.getPartnerTitle();
 			break;
 		}
 		return property;

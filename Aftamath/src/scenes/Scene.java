@@ -5,7 +5,6 @@ import static handlers.Vars.PPM;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -36,11 +35,13 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-import box2dLight.PointLight;
+import box2dLight.ConeLight;
+import box2dLight.Light;
 import box2dLight.RayHandler;
 import entities.Barrier;
 import entities.Entity;
 import entities.Ground;
+import entities.LightObj;
 import entities.Mob;
 import entities.MobAI.ResetType;
 import entities.Path;
@@ -68,15 +69,15 @@ public class Scene {
 	public Song[] DEFAULT_SONG;
 //	public boolean newSong; //tells us whether or not to fade music when loading scene from previous scene
 	public boolean outside; //controls whether or not to step weather time or to add the day/night cycle effect
+	public Color ambientLight;
 	
 	private float groundLevel;
-	private Color ambient;
 	private Main main;
 	private FadingSpriteBatch sb;
 	private OrthogonalTiledMapRenderer tmr;
 	private Vector2 spawnpoint, localSpawnpoint, camBotSpawnpoint;
 	private ArrayList<Entity> entities;
-	private ArrayList<PointLight> lights;
+	private ArrayList<LightObj> lights;
 	private ArrayList<DynamicTile> tiles;
 	private ArrayList<Path> paths;
 	private HashMap<Script, Pair<String, Boolean>> conditionalScripts;
@@ -147,9 +148,6 @@ public class Scene {
 		this.ID = ID.replaceAll(" ", "");
 
 		tileMap = new TmxMapLoader().load("assets/maps/" + this.ID + ".tmx");
-		if (!sceneToEntityIds.containsKey(this.ID)) {	//first time scene is referenced
-			sceneToEntityIds.put(this.ID, new HashSet<Integer>());
-		}
 		
 		MapProperties prop = tileMap.getProperties();
 		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
@@ -226,32 +224,30 @@ public class Scene {
 			if((light = prop.get("ambient", String.class))!=null){
 				if(light.equals("daynight".toUpperCase())){
 					outside = true;
-					ambient = m.getColorOverlay();
+					ambientLight = m.getColorOverlay();
 				}else{
-					Field f = Vars.class.getField(light);
-					ambient = (Color) f.get(f);
+					Field f = Vars.class.getField(light+"_LIGHT");
+					ambientLight = (Color) f.get(f);
 					if(prop.get("outside", String.class)!=null)
 						outside=true;
 				}
 			}
 		} catch (Exception e){
-			ambient = Vars.DAYLIGHT;
-		} finally{
-			sb.setRHAmbient(ambient);
+			ambientLight = Vars.DAY_OVERLAY;
 		}
-		
+
 		//get scripts
-			Iterator<String> it = prop.getKeys();
-			String script, condition;
-			
-			while(it.hasNext()){
-				script = it.next();
-				if(Game.res.getScript(script)==null)
-					continue;
-				condition = prop.get(script, String.class);
-				conditionalScripts.put(new Script(script, ScriptType.SCENE, m, null),
-						new Pair<String, Boolean>(condition, false));
-			}
+		Iterator<String> it = prop.getKeys();
+		String script, condition;
+
+		while(it.hasNext()){
+			script = it.next();
+			if(Game.res.getScript(script)==null)
+				continue;
+			condition = prop.get(script, String.class);
+			conditionalScripts.put(new Script(script, ScriptType.SCENE, m, null),
+					new Pair<String, Boolean>(condition, false));
+		}
 		
 		loadScript = new Script(this.ID, ScriptType.SCENE, m, null);
 		tmr = new OrthogonalTiledMapRenderer(tileMap, m.getSpriteBatch());
@@ -295,11 +291,6 @@ public class Scene {
 					sb.draw(sky, x, y-2*s*sky.getHeight(), w*z, s*sky.getHeight());
 				sb.draw(sky, x,	y, w*z, s*sky.getHeight());
 				sb.draw(grad, x, y1/2f, w*z, h*z+y1/2);
-
-//				Main.debugText+="/l/l cam: ("+x+" , "+ y1+")"+
-//						"   ("+(cam.position.x)+" , "+ 	(cam.position.y)+")";
-//				Main.debugText+="/l sky: ("+x+" , "+ y+")";
-//				Main.debugText+="/l"+(y+sky.getHeight()*s);
 			} if(sun!=null){
 				Vector2 o = new Vector2(0, -10f);
 				float t = ((main.dayTime-Main.DAY_TIME/24f)%Main.DAY_TIME)*(w+sun.getWidth()/4f)*z/(2*Main.NIGHT_TIME);
@@ -425,6 +416,7 @@ public class Scene {
 			m.getCurrentState().focus = main.findObject(fociToAdd.get(m));
 	}
 	
+	public ArrayList<LightObj> getLights() {return lights;}
 	public ArrayList<Entity> getInitEntities() { return entities; }
 	public Vector2 getGravity() { return gravity; }
 	public TiledMap getTileMap(){ return tileMap; }
@@ -442,6 +434,7 @@ public class Scene {
 		TiledMapTileLayer g2 = (TiledMapTileLayer) tileMap.getLayers().get("ledge");
 		TiledMapTileLayer fg = (TiledMapTileLayer) tileMap.getLayers().get("fg");
 		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
+		TiledMapTileLayer ob = (TiledMapTileLayer) tileMap.getLayers().get("objects");
 		
 		//add in entities loaded from save file
 		if (Scene.sceneToEntityIds.containsKey(this.ID)) {
@@ -456,22 +449,19 @@ public class Scene {
 				Cell cell = ground.getCell(x, y);
 				Vector2 location = new Vector2((x+.5f) * Vars.TILE_SIZE / Vars.PPM,
 						y * Vars.TILE_SIZE / Vars.PPM);
-				if (cell != null)
+				if (cell != null){
 					if (cell.getTile() != null){
 						groundLevel = (y+1)*Vars.TILE_SIZE;
 						String type = "";
 						if(cell.getTile().getProperties().get("type")!=null)
 							type = cell.getTile().getProperties().get("type", String.class);
 						g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
-								(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
+								(y * Vars.TILE_SIZE+Vars.TILE_SIZE/3.6f) / PPM);
 						g.setGameState(main);
-						
-//						if(cell.getTile().getProperties().get("poly")!=null)
-//							g.setBounds(cell.getTile().getProperties());
-						
-//						Polygon pg = ((PolygonMapObject) cell.getTile().get()).getPolygon();
-						
+						if(cell.getTile().getProperties().get("light")!=null) 
+							initLight(cell, x, y);
 					}
+				}
 
 				if(g2!=null){
 					cell = g2.getCell(x, y);
@@ -483,6 +473,9 @@ public class Scene {
 							g = new Ground(world, type, (x * Vars.TILE_SIZE +7.1f) / PPM,
 									(y * Vars.TILE_SIZE+Vars.TILE_SIZE/ /*1.8f*/ 3.6f) / PPM);
 							g.setGameState(main);
+							
+							if(cell.getTile().getProperties().get("light")!=null) 
+								initLight(cell, x, y);
 						}
 				}
 				
@@ -495,6 +488,9 @@ public class Scene {
 							String src = cell.getTile().getProperties().get("sound", String.class);
 							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
 						}
+						
+						b = cell.getTile().getProperties().get("light");
+						if(b!=null) initLight(cell, x, y);
 						
 						b = cell.getTile().getProperties().get("dynamic");
 						if(b!=null)
@@ -509,21 +505,36 @@ public class Scene {
 							String src = cell.getTile().getProperties().get("sound", String.class);
 							if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
 						}
-						
+
+						if(cell.getTile().getProperties().get("light")!=null) 
+							initLight(cell, x, y);
 						b = cell.getTile().getProperties().get("dynamic");
 						if(b!=null)
 							tiles.add(new DynamicTile(cell, main));
 					}
+
+				if(ob!=null){
+					cell = ob.getCell(x, y);
+					if (cell != null) 
+						if (cell.getTile() != null) {
+							Object b = cell.getTile().getProperties().get("sound");
+							if(b!=null){
+								String src = cell.getTile().getProperties().get("sound", String.class);
+								if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
+							}
+
+							if(cell.getTile().getProperties().get("light")!=null) 
+								initLight(cell, x, y);
+							b = cell.getTile().getProperties().get("dynamic");
+							if(b!=null)
+								tiles.add(new DynamicTile(cell, main));
+						}
+				}
 			}
-		
-		//lights
-		int distance = 10000;
-		Color color = Color.YELLOW;
-		lights.add(new PointLight(rayHandler, Vars.LIGHT_RAYS, color, distance, 0, 0 ));
 
 //		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("fg");
 //		if(layer!=null){
-//			layer.hashCode();
+		
 //		}
 
 		if(tileMap.getLayers().get("entities")!=null){
@@ -621,7 +632,7 @@ public class Scene {
 									if(nickName!=null)
 										e.setNickName(nickName);
 
-									if(sceneIDParsed>=0)
+									if(sceneIDParsed>0)
 										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
 								}
 
@@ -631,6 +642,7 @@ public class Scene {
 								e.printStackTrace();
 							} catch (IllegalAccessException e) {
 								e.printStackTrace();
+							} catch(NullPointerException e){
 							}
 						}
 						
@@ -646,6 +658,7 @@ public class Scene {
 							String aScript = object.getProperties().get("attackScript", String.class);
 							String sScript = object.getProperties().get("supSttackScript", String.class);
 							String cDimStr = object.getProperties().get("entity", String.class);
+							String ad = object.getProperties().get("ad", String.class);;
 							boolean cDim = false;
 							if(cDimStr!=null)
 								if(Vars.isBoolean(cDimStr))
@@ -690,6 +703,14 @@ public class Scene {
 									//ignore since object was already created via save file
 								} else {
 									Entity e;
+									
+									if(ad!=null)
+										switch(ad.trim().toLowerCase()){
+										case"subway":
+											ID += ""+ ((int) (Math.random()*2 + 1));
+											break;
+										}
+									
 									if(cDim) e = new Entity(rect.x, rect.y+rect.height/2, rect.width, rect.height, ID);
 									else e = new Entity(rect.x, rect.y+Mob.getHeight(ID)/2f, ID);
 									e.setSceneID(sceneIDParsed);
@@ -701,10 +722,6 @@ public class Scene {
 									e.active = true;
 									entities.add(e);
 
-									//TODO
-//									if(focus!=null) 
-//										fociToAdd.put(e, focus);
-
 									if(sceneIDParsed>=0)
 										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
 								}
@@ -715,7 +732,6 @@ public class Scene {
 							} catch (IllegalAccessException e) {
 								e.printStackTrace();
 							} catch(Exception e){
-								e.printStackTrace();
 							}
 						}
 
@@ -758,7 +774,8 @@ public class Scene {
 							while(it.hasNext()){
 								script = it.next();
 								if(script.equals("x") || script.equals("y") || script.equals("event")
-										|| script.equals("retriggerable") || script.equals("avoidHalt"))
+										|| script.equals("retriggerable") || script.equals("avoidHalt")
+										|| script.equals("loadCondition"))
 									continue;
 								condition = object.getProperties().get(script, String.class);
 								et.addEvent(script, condition);
@@ -789,12 +806,19 @@ public class Scene {
 							vertices.add(new Vector2(pl.getVertices()[i]+pl.getX(), 
 									pl.getVertices()[i+1]+pl.getY()));
 
-						Path p = new Path(name, behavior, vertices);
-						paths.add(p);
-						
-						if(speed!=null)
-							if(Vars.isNumeric(speed))
-								p.setSpeed(Float.parseFloat(speed));
+						if(name!=null && behavior != null){
+							Path p = new Path(name, behavior, vertices);
+							paths.add(p);
+
+							if(speed!=null)
+								if(Vars.isNumeric(speed))
+									p.setSpeed(Float.parseFloat(speed));
+						} else {
+							if(name==null)
+								System.out.println("Path cannot be created without a name.");
+							if(behavior==null)
+								System.out.println("Path cannot be created without a behavior.");
+						}
 					} else if(object instanceof PolygonMapObject){
 						if(object.getProperties().get("barrier")!=null) {
 							String id = object.getProperties().get("ID", String.class);
@@ -833,6 +857,27 @@ public class Scene {
 		body.createFixture(fdef).setUserData("wall");
 		
 		if(Main.cwarps)entities.addAll(retrieveSideWarps());
+	}
+	
+	private void initLight(Cell cell, float x, float y){
+		String type = cell.getTile().getProperties().get("light", String.class);
+		Light l = null;
+		type = type.toLowerCase().trim();
+		switch(type){
+		case"street":
+			l = new ConeLight(rayHandler, Vars.LIGHT_RAYS, Vars.SUNSET_GOLD, 
+					200, (x*Vars.TILE_SIZE + 13f), (y*Vars.TILE_SIZE + 14), 270, 35);
+			break;
+		case "window":
+			break;
+		case"sewer":
+			l = new ConeLight(rayHandler, Vars.LIGHT_RAYS, new Color(139/255f, 195/255f, 217/255f, Vars.ALPHA), 
+					210, (x*Vars.TILE_SIZE + 8.1f), (y*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f), 270, 35);
+			break;
+		}
+
+		if(l!=null)
+			lights.add(new LightObj(type, l));
 	}
 	
 	
@@ -954,14 +999,6 @@ public class Scene {
 		Main main = warp.getGameState();
 		Scene s = new Scene(main.getWorld(), main, ID);
 		s.setRayHandler(main.getScene().rayHandler);
-		
-//		if(warp!=null)
-//			if(!warp.owner.newSong) s.newSong = false;
-		
-//		Vector2 linkLoc = main.findWarp(ID, warpID).getLink();
-//		if(linkLoc!=null) warp.setLink(linkLoc);
-//		else warp.setLink(s.spawnpoint);
-		
 		return s;
 	}
 }

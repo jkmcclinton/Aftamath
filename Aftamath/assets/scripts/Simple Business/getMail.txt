@@ -3,17 +3,19 @@ lockplayer
 
 setSpeaker(this)
 text(normal, {Greetings. I am the Human-Looking Robotic Mail Service.})
-text(normal, {There is 1 new message for /player.~ Outputting contents now...})
+text(normal, {There is 1 new message for /player. ~Outputting contents now...}, false)
+doAction(this, special3)
 text(normal, {Congratulations! You have been offered the honor to work for the number one business on its way to greatness!})
 text(normal, {We have a job for everyone, as long as your cooperation is 100%! Interview and/or resume not required!})
 
 setChoice(2:Go, 4:Don't go)
 	[choice Go]
-		#doAction(player, jump)
+		doAction(player, jump)
 		setSpeaker(player)
 		text(happy, {Money!!})
 		setSpeaker(this)
-		text(normal, {Sending affirmative response to sender.~ Outputting instructions now...})
+		text(normal, {Sending affirmative response to sender. ~Outputting instructions now...}, false)
+		doAction(this, special3)
 		text(normal, {Please report to the factory for your assignment.})
 		setFlag(SBAgreedWork, true)
 		setScript(RepeatResponse)
@@ -22,8 +24,22 @@ setChoice(2:Go, 4:Don't go)
 		setSpeaker(player)
 		text(sad, {This looks too shady. There's no information about the actual business...})
 		setSpeaker(narrator)
-		text(mad, {Game over, buddy. If you don't get money, you won't eat. If you don't eat, you'll die. Too bad!})
-		endGame
+		text({Whelp. Game over.})
+		
+		setSpeaker(player)
+		text({Wait, are you serious? Just because I don't want to take a job request from some shady source?})
+		
+		setSpeaker(narrator)
+		text({You need this job to get money. If you don't get money, you won't eat. If you don't eat, you'll die.})
+		text({How could you not see that?})
+		
+		setSpeaker(player)
+		text({But there have to be other jobs I can take, right?})
+		
+		setSpeaker(narrator)
+		text(sad, {Ugh... yesss.})
+		text(sad, {I can pull a few strings.})
+		setScript(ReSuggest)
 	end
 end
 #setResponse(this, ignore)
@@ -33,4 +49,34 @@ Script RepeatResponse
 lockplayer
 setSpeaker(this)
 text(normal, {Please report to the factory for your assignment.})
+done
+
+Script ReSuggest
+lockplayer
+setSpeaker(this)
+text(normal, {There is 1 new message for /player. ~Outputting contents now...}, false)
+doAction(this, special3)
+text(normal, {Congratulations! You have been offered the honor to work for the number one business on its way to greatness!})
+text(normal, {We have a job for everyone, as long as your cooperation is 100%! Interview and/or resume not required!})
+
+setChoice(2:Go, 4:Don't go)
+	[choice Go]
+		setSpeaker(player)
+		text(happy, {I guess I can go.})
+		setSpeaker(this)
+		text(normal, {Sending affirmative response to sender. ~Outputting instructions now...}, false)
+		doAction(this, special3)
+		text(normal, {Please report to the factory for your assignment.})
+		setFlag(SBAgreedWork, true)
+		setScript(RepeatResponse)
+	end
+	[choice Don't go]
+		setSpeaker(player)
+		text({Not feeling having to do any work any time soon.})
+		
+		setSpeaker(this)
+		text({Request declined. Sending mail to trash....})
+		text({Done.})
+	end
+end
 done
