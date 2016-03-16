@@ -1,0 +1,43 @@
+Script Main
+eventMusic(Silence)
+lockplayer
+setSpeaker(player)
+text(normal,{I hope it worked out okay.})
+#boss opens door
+setSpeaker(this)
+text(normal,{Hello.})
+setSpeaker(player)
+text(normal,{Hello, boss})
+setSpeaker(this)
+text(normal,{We have written you a paycheck, because the amount was to high for it to be given in cash.})
+#boss gives player currency, probably rubles
+value(set, player.money, 5000)
+setSpeaker(player)
+text(normal, {Thank you.})
+setSpeaker(this)
+text(normal,{Also, due to your efforts, we would like to promote you to the Vassal of the Office.})
+setSpeaker(player)
+text(normal,{What's that?})
+setSpeaker(this)
+text(normal,{Nothing will change except your paycheck. It will double. Your work will remain the same.})
+setSpeaker(player)
+text(normal,{Sure, why not?})
+setSpeaker(this)
+text(normal,{I do have the first assignment ready for you.})
+text(normal,{Talk to me about it whenever you please})
+setSpeaker(player)
+text(normal,{Thank you, boss.})
+setSpeaker(this)
+text(normal,{It is my pleasure.})
+#Boss walks towards the door and stands in it
+#Player talks to boss
+setChoice(3:Take the mission, 1:Not now)
+	[choice Take the mission]
+		text(normal,{yay})
+	end
+	[choice Not now]
+		text(normal,{That's fine.})
+	end
+
+end
+done
