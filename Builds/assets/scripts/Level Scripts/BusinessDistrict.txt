@@ -1,0 +1,20 @@
+Script Main
+
+setFlag(businessEvent, true)
+
+#train related stuff
+value(set, trainLoc, {BusinessDistrict})
+setWarp(Subway, 0, BusinessDistrict, 2)
+
+#spawn the boss
+if(SBDidMenialLabor and !SBReceivedPromotion1)
+	declare(found, local, Flag, false)
+	wait(.01)
+	findObject(Mr. Chipp, found)
+	if(!found)
+		spawn(NPC, boss2, Mr. Chipp, 29, 78, 130)
+		setDialogue(Mr. Chipp, {bossPromotion1})
+	end
+end
+
+done

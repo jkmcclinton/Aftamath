@@ -397,7 +397,14 @@ public class Entity implements Serializable {
 		create();
 	}
 	
-	public Vector2 getPosition(){ return body.getPosition(); }
+	public Vector2 getPosition(){ 
+		if(body!=null) {
+			return body.getPosition();
+		}
+		else {
+			return new Vector2(x, y);
+		}
+	}
 	public Vector2 getPixelPosition(){ 
 		if(body!=null) {
 			return new Vector2(body.getPosition().x*Vars.PPM, body.getPosition().y*Vars.PPM);

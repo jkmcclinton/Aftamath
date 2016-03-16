@@ -86,7 +86,8 @@ public class Script implements Serializable {
 		this();
 		String path;
 		if((path = Game.res.getScript(scriptID))==null) {
-			System.out.println("No such script called \""+scriptID+"\"");
+			if(!Game.LEVEL_NAMES.contains(scriptID, false)) 
+				System.out.println("No such script called \""+scriptID+"\"");
 			return;
 		}
 		
@@ -113,27 +114,29 @@ public class Script implements Serializable {
 	}
 
 	public void update(){
-		if(main.analyzing && this.equals(main.currentScript)){
-			if(!paused){
-				if(activeObj==null)
-					analyze();
-			} else {
-				if (waitTime > 0){
-					time+=Vars.DT;
-					if (time >= waitTime){ 
-						waitTime = 0;
-						paused = false;
-					}
-				} else{
-					if(activeObj instanceof Camera){
-						System.out.println("cam--- m:"+main.getCam().moving+"\tfP: "+forcedPause+"\td: "+dialog);
-						if (!main.getCam().moving && !forcedPause && !dialog)
-							removeActiveObj();
+		if(main !=null){
+			if(main.analyzing && this.equals(main.currentScript)){
+				if(!paused){
+					if(activeObj==null)
+						analyze();
+				} else {
+					if (waitTime > 0){
+						time+=Vars.DT;
+						if (time >= waitTime){ 
+							waitTime = 0;
+							paused = false;
+						}
+					} else{
+						if(activeObj instanceof Camera){
+							System.out.println("cam--- m:"+main.getCam().moving+"\tfP: "+forcedPause+"\td: "+dialog);
+							if (!main.getCam().moving && !forcedPause && !dialog)
+								removeActiveObj();
+						}
 					}
 				}
-			}
-		} else if (this.equals(main.loadScript))
-			analyze();
+			} else if (this.equals(main.loadScript))
+				analyze();
+		}
 	}
 
 	public void analyze(){
@@ -150,7 +153,7 @@ public class Script implements Serializable {
 		
 		String line = source.get(index);
 		String command, s;
-		String[] tmp, args = args(line);
+		String[] args = args(line);
 		Entity obj = null;
 		Entity target=null;
 		Vector2 loc = null;
@@ -171,9 +174,9 @@ public class Script implements Serializable {
 
 			case "addpartner":
 				obj = findObject(firstArg(line));
-				if(args.length!=3)
+				if(args.length!=3){
 					System.out.println("Invalid number of arguments for addPartner command; Line: "+(index+1)+"\tScript: "+ID);
-				else if(obj!=null){
+				}else if(obj!=null){
 					if(obj instanceof Mob){
 						String title = main.evaluator.determineValue(args[1], this);
 						String info = main.evaluator.determineValue(args[2], this);
@@ -1151,27 +1154,26 @@ public class Script implements Serializable {
 				int nice, bravery, mx;
 				boolean failed=false;
 				float niceScale, braveScale;
-				tmp = args(line);
 
 				if(args.length==4) mx = 4;
 				else {
-					if(tmp.length==1){
+					if(args.length==1){
 						System.out.println("Invlaid number of arguments; Line: "+(index+1)+"\tScript: "+ID);
 						break;
 					} else mx = 2;
 				}
 
 				for(int i = 0;i<mx;i++)
-					if(!Vars.isNumeric(tmp[i])){
+					if(!Vars.isNumeric(args[i])){
 						failed = true;
 						System.out.println("All values must be numbers; Line: "+(index+1)+"\tScript: "+ID);
 					}
 
 				if(!failed){
-					nice = Integer.parseInt(tmp[0]);
-					bravery = Integer.parseInt(tmp[1]);
-					niceScale = Float.parseFloat(tmp[2]);
-					braveScale = Float.parseFloat(tmp[3]);
+					nice = Integer.parseInt(args[0]);
+					bravery = Integer.parseInt(args[1]);
+					niceScale = Float.parseFloat(args[2]);
+					braveScale = Float.parseFloat(args[3]);
 
 					main.player.setNicenessScale(niceScale);
 					main.player.setBraveryScale(braveScale);
@@ -1689,17 +1691,19 @@ public class Script implements Serializable {
 			return line.split(",");
 		String tmp = line.substring(line.indexOf("(")+1 , line.lastIndexOf(")"));
 
-		//preserve string argument
-		String str="";
-		if(tmp.contains("{") && tmp.contains("}")){
-			str = tmp.substring(tmp.indexOf("{"), tmp.lastIndexOf("}") +1);
-			tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&" + tmp.substring(tmp.lastIndexOf("}")+1);
+		//preserve string arguments
+		Array<String> str= new Array<>();
+		while(tmp.contains("{") && tmp.contains("}")){
+			str.add(tmp.substring(tmp.indexOf("{"), tmp.indexOf("}") +1));
+			tmp = tmp.substring(0, tmp.indexOf("{")) + "&str&" + tmp.substring(tmp.indexOf("}")+1);
 		}
 
 		String[] a = tmp.split(",");
 		for(int i =0;i<a.length;i++){
-			if(a[i].trim().equals("&str&"))
-				a[i]=str;
+			if(a[i].trim().equals("&str&")){
+				a[i]=str.get(0);
+				str.removeIndex(0);
+			}
 			a[i] = a[i].trim();
 		}
 		return a;

@@ -1,0 +1,25 @@
+Script Main
+zoom(close, true)
+setFlag(calledTrain, false)
+setFlag(trainArrived, false)
+value(set, trainLoc, trainDest)
+
+if([trainDest = {BusinessDistrict}])
+	setWarp(Subway, 0, BusinessDistrict, 2)
+end
+if([trainDest = {CentralStation}])
+	setWarp(Subway, 0, CentralStation, 3)
+end
+if([trainDest = {MunicipalDistrict}])
+	setWarp(Subway, 0, MunicipalDistrict, 2)
+end
+if([trainDest = {CommercialDistrictNW}])
+	setWarp(Subway, 0, CommercialDistrictNW, 2)
+end
+
+wait(10)
+setFlag(notMoving, true)
+setFlag(trainArrived, true)
+value(set, trainDest, {nowhere})
+
+done

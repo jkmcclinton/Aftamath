@@ -37,6 +37,7 @@ import com.badlogic.gdx.utils.Array;
 
 import box2dLight.ConeLight;
 import box2dLight.Light;
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import entities.Barrier;
 import entities.Entity;
@@ -45,6 +46,7 @@ import entities.LightObj;
 import entities.Mob;
 import entities.MobAI.ResetType;
 import entities.Path;
+import entities.Spawner;
 import entities.SpeechBubble;
 import entities.Warp;
 import handlers.Camera;
@@ -536,6 +538,9 @@ public class Scene {
 //		if(layer!=null){
 		
 //		}
+		
+		if(outside)
+			initCivSpawner();
 
 		if(tileMap.getLayers().get("entities")!=null){
 			MapObjects objects = tileMap.getLayers().get("entities").getObjects();
@@ -861,7 +866,7 @@ public class Scene {
 	
 	private void initLight(Cell cell, float x, float y){
 		String type = cell.getTile().getProperties().get("light", String.class);
-		Light l = null;
+		Light l = null; boolean scheduled = true;
 		type = type.toLowerCase().trim();
 		switch(type){
 		case"street":
@@ -873,11 +878,56 @@ public class Scene {
 		case"sewer":
 			l = new ConeLight(rayHandler, Vars.LIGHT_RAYS, new Color(139/255f, 195/255f, 217/255f, Vars.ALPHA), 
 					210, (x*Vars.TILE_SIZE + 8.1f), (y*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f), 270, 35);
+			scheduled = false;
+			break;
+		case "boardwalk":
+			l = new PointLight(rayHandler, Vars.LIGHT_RAYS, new Color(120/255f, 128/255f, 121/255f, 200/255f),
+					275, (x*Vars.TILE_SIZE + 8.1f), (y*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f));
 			break;
 		}
 
 		if(l!=null)
-			lights.add(new LightObj(type, l));
+			lights.add(new LightObj(type, l, scheduled));
+	}
+	
+	//these spawners are placed at both ends of the level and spawn civilians who walk left and right
+	private void initCivSpawner(){
+		// TODO get map properties relating to spawner
+		MapProperties prop = tileMap.getProperties();
+		 String en = prop.get("spawners", String.class);
+		 boolean enabled = true;
+		 if(Vars.isBoolean(en))
+			 enabled = Boolean.parseBoolean(en);
+		
+		 if(!enabled) return;
+		 
+		//left spawner
+		Spawner s = new Spawner(0, groundLevel, "civilian", "movetopath", "genericCivilian", 
+				"onAttacked", null, null, null);
+//		entities.add(s);
+		Array<Vector2> points = new Array<>();
+		points.add(new Vector2(width-2*Vars.TILE_SIZE, groundLevel));
+		points.add(new Vector2(width, groundLevel));
+		Path p = new Path(ID, ID, points);
+		s.setPath(p);
+		s.setID("spawner "+ID+" :: left");
+		s.setMax(10); //should be relative to level size
+		s.setGameState(main);
+		s.initOccupy(this);
+		
+		//right spawner
+		s = new Spawner(width - 2*Vars.TILE_SIZE, groundLevel, "civilian", "movetopath", "genericCivilian", 
+				"onAttacked", null, null, null);
+		entities.add(s);
+		points.clear();
+		points.add(new Vector2(2*Vars.TILE_SIZE, groundLevel));
+		points.add(new Vector2(0, groundLevel));
+		p = new Path(ID, ID, points);
+		s.setPath(p);
+		s.setID("spawner "+ID+" :: right");
+		s.setMax(10); //should be relative to level size
+		s.setGameState(main);
+		s.initOccupy(this);
 	}
 	
 	

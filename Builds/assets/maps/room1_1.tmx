@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="16" tileheight="16" nextobjectid="29">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="Misdirection"/>
+ </properties>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
+ </tileset>
+ <layer name="bg1" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBhcwBaI7cikYWxy7ITpZQZiFiQxUjG59toDsQOd7K2E4iogrgbiGiQxUjEpYCsUbwPi7UC8A0mMVDwKRiYAAKNMIy4=
+  </data>
+ </layer>
+ <layer name="bg2" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIKhAQAEsAAB
+  </data>
+ </layer>
+ <layer name="ground" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYMAEuozUw6QAUtVTy5xRe4ePvbjS4UcGyjE5/h2ofDQQ9tIDAAAORh1O
+  </data>
+ </layer>
+ <layer name="fg" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIKhAQAEsAAB
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="26" name="outside" x="130.44" y="41.9545" width="25.2878" height="53.9394">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="Residential District N"/>
+    <property name="nextWarp" value="3"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="27" name="Spawn" x="160" y="80" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="28" x="224.5" y="79.75" width="16" height="16">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="NPC" value="gangster1"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Darrius"/>
+    <property name="script" value="realGangsta"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

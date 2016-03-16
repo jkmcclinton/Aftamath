@@ -39,7 +39,7 @@ public class Player implements Serializable {
 	}
 	
 	private void init() {
-		money = goalMoney = 1500.00;
+		money = goalMoney = 500.00;
 		home = new House();
 		
 		L = 1; B = 1; N = 1;

@@ -7,13 +7,15 @@ import box2dLight.Light;
 public class LightObj {
 	private Light light;
 	private String type;
-	private boolean on, flickering;
+	private boolean on, flickering, scheduled;
 	private Color color;
 	
-	public LightObj(String type, Light light){
+	public LightObj(String type, Light light, boolean scheduled){
 		this.light = light;
 		this.type = type;
+		this.scheduled = scheduled;
 		color = new Color(light.getColor());
+		on = true;
 	}
 	
 	public void update(float dt){
@@ -39,10 +41,13 @@ public class LightObj {
 	}
 	
 	public boolean isOn() { return on; }
+	public boolean isScheduled() { return scheduled; }
 	public String getType(){ return type; }
 	
 	private void flicker(){
 		flickering = true;
 	}
+	
+	public String toString(){ return type+": "+on+"\tScheduled: "+scheduled; }
 
 }

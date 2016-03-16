@@ -32,8 +32,8 @@ public class MobAI {
 	}
 
 	public final Mob owner;
-	public final ResetType resetType;
 	public final float resetTime;
+	public ResetType resetType;
 	public Entity focus;
 	public AIType type;
 	public boolean finished = false;
@@ -75,6 +75,17 @@ public class MobAI {
 		this.resetTime = -1;
 		this.main = owner.main;
 		this.focus = focus;
+		begin();
+	}
+	
+	//initializing Path AIs
+	public MobAI(Mob owner, AIType type, ResetType resetType, Path path) {
+		this.owner = owner;
+		this.type = type;
+		this.resetType = resetType;
+		this.resetTime = -1;
+		this.main = owner.main;
+		this.path = path;
 		begin();
 	}
 	
@@ -512,7 +523,8 @@ public class MobAI {
 			if (!owner.canMove()){ 
 				path.stepIndex();
 				if(path.completed){
-					path = null;
+					if(resetType!=ResetType.NEVER)
+						path = null;
 					finish();
 				} else {
 					setGoal(path.getCurrent());
@@ -522,7 +534,8 @@ public class MobAI {
 				reached = moveToLoc(goalPosition);
 				if(reached) {
 					if(path.completed){
-						path = null;
+						if(resetType!=ResetType.NEVER)
+							path = null;
 						finish();
 					} else {
 						setGoal(path.getCurrent());
@@ -872,6 +885,8 @@ public class MobAI {
 			break;
 		case PATH:
 			canPosition = false;
+			goalPosition = path.getCurrent();
+			retLoc = goalPosition;
 			break;
 		case PUNCH:
 			anim = Anim.PUNCHING;

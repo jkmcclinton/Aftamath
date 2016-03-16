@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="100" tilewidth="16" tileheight="16" nextobjectid="4">
+ <properties>
+  <property name="ambient" value="DAYNIGHT"/>
+  <property name="bg" value="main"/>
+  <property name="bgm day" value="Opulent Gems"/>
+  <property name="bgm night" value="Midnight Waves"/>
+  <property name="name" value="High Rise"/>
+  <property name="next" value="Business District"/>
+  <property name="previous" value="Municipal District"/>
+ </properties>
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
+  <tile id="0">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="72">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="73">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="74">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="75">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="76">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="77">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="144">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="145">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="146">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="147">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="148">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="149">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="150">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="151">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="152">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="75" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+  </data>
+ </layer>
+ <layer name="bg2" width="75" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+  </data>
+ </layer>
+ <layer name="ground" width="75" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt08dRQ0EURNFRKHgRCk5AGMITCk5AGHgIBQ+Z0DmwmAd1TtXdzeKVfqs1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA/W0rLaSWtprU0SutpI212elPxrqN0nE7SaTpLk3SeLtJlpzcV73pOL+k1vaX39JE+01f67vSm4l1Tg9am00yaTXNpPi2kYVoc9HlT8a5x2krbaSftpr20nw7SYac3Fe+6StfpJt2mu3SfHtJjeur0puJdFb+fXf39XVW8qepvVXHr/oN2ZVd2ZVd2ZVf17qr4/ezKruzKruzqd29+AE7abxA=
+  </data>
+ </layer>
+ <layer name="objects" width="75" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+  </data>
+ </layer>
+ <layer name="fg" width="75" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <object id="1" name="room1_1" x="324" y="1192" width="37" height="73">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="Crosswalk"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="2" x="604" y="1248" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="3" name="room1_1" x="716" y="1192" width="37" height="73">
+   <properties>
+    <property name="ID" value="3"/>
+    <property name="next" value="Hero HQ"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

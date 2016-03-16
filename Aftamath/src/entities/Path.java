@@ -30,7 +30,7 @@ public class Path extends Entity {
 	}
 	
 	public Path(String pathName, String behavior, Array<Vector2> points, int maxRun){
-		this.points = points;
+		this.points = new Array<>(points);
 		this.maxRun = maxRun;
 		this.ID = pathName;
 		

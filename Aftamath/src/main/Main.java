@@ -97,7 +97,7 @@ public class Main extends GameState {
 	private Texture pixel;
 	private Page currentPage;
 	private Array<Body> bodiesToRemove;
-	private ArrayList<Entity> objects/*, UIobjects, UItoRemove*/;
+	private ArrayList<Entity> objects, objsToAdd/*, UIobjects, UItoRemove*/;
 	private ArrayList<Path> paths;
 	private ArrayList<LightObj> lights;
 	private ArrayList<PositionalAudio> sounds;
@@ -137,11 +137,11 @@ public class Main extends GameState {
 						rayHandle   = true, //include lighting?
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
-						debugging   = true,	 //in debug mode?
+						debugging   = false,	 //in debug mode?
 						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "Business District"; //where the player starts
+	public static String debugLoadLoc = "Church"; //where the player starts
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 
 	public Main(GameStateManager gsm) {
@@ -157,6 +157,7 @@ public class Main extends GameState {
 	public void create(){
 		displayText = new ArrayDeque<>();
 		bodiesToRemove = new Array<>();
+		objsToAdd = new ArrayList<>();
 		healthBars = new HashMap<>();
 		objects = new ArrayList<>();
 		lights = new ArrayList<>();
@@ -176,8 +177,8 @@ public class Main extends GameState {
 		currentEmotion = Mob.NORMAL;
 		paused=analyzing=choosing=waiting=warping=warped=speaking=false;
 		waitTime=totalWait=speakTime=0;
-		dayTime = NIGHT_TIME;
-		dayState = NIGHT;
+		dayTime = DAY_TIME+TRANSITION_INTERVAL;
+		dayState = DAY;
 		
 		cam.reset();
 		b2dCam.reset();
@@ -282,11 +283,18 @@ public class Main extends GameState {
 					//find bodies that are out of bounds
 					if (e.getPixelPosition().x > scene.width + 50 || e.getPixelPosition().x < -50 || 
 							e.getPixelPosition().y > scene.height + 100 || e.getPixelPosition().y < -50) {
-						if (e instanceof Projectile)
-							removeBody(e.getBody());
+						if (e instanceof Projectile){
+							((Projectile) e).kill();
+//							removeBody(e.getBody());
+						}
 					}
 				}
 			}
+			
+			//add new objects into world
+			objects.addAll(objsToAdd);
+			objsToAdd.clear();
+			sortObjects();
 
 			//apply removal of deleted bodies
 			for (Body b : bodiesToRemove){
@@ -361,13 +369,12 @@ public class Main extends GameState {
 			dayState = DAY;
 			dayTime=0;
 
-			if (scene.outside)
-				for(LightObj l : lights)
-					if(l.getType().equals("street") && l.isOn())
-						l.turnOff();
-		} if(dayTime>NIGHT_TIME-TRANSITION_INTERVAL && scene.outside){
 			for(LightObj l : lights)
-				if(l.getType().equals("street") && !l.isOn())
+				if(l.isScheduled() && l.isOn())
+					l.turnOff();
+		} if(dayTime>NIGHT_TIME-TRANSITION_INTERVAL){
+			for(LightObj l : lights)
+				if(l.isScheduled() && !l.isOn())
 					l.turnOn();
 		}
 
@@ -449,7 +456,6 @@ public class Main extends GameState {
 
 		if(render){
 			scene.renderEnvironment(cam, sb);
-
 			sb.begin();
 
 			//render every object on-screen, 
@@ -467,7 +473,6 @@ public class Main extends GameState {
 			}
 			drawHealthBars(sb);
 			sb.end();
-
 
 			scene.renderFG(sb);
 
@@ -524,6 +529,7 @@ public class Main extends GameState {
 		
 		if(currentScript!=null){
 			debugText+= "/l"+currentScript+": "+(currentScript.index);
+			debugText+= "/lanalyzing: "+(analyzing) +"   waiting: "+waiting;
 			debugText+= "/lActiveObj: "+(currentScript.getActiveObject());
 			debugText+= "/lPaused: "+(currentScript.paused)+"  ForcedP: "+(currentScript.forcedPause);
 		}
@@ -686,8 +692,11 @@ public class Main extends GameState {
 				int index = (int) currentScript.getVariable("playertype");
 
 				if(MyInput.isPressed(Input.LEFT)){
+					int cap = 2;
+					if(character.getGender().equals("male"))
+						cap = 4;
 					if(index>1)index--;
-					else index = 4;
+					else index = cap;
 
 					character.ID = character.getGender() + "player" + index;
 					character.loadSprite();
@@ -695,7 +704,10 @@ public class Main extends GameState {
 				}
 
 				if(MyInput.isPressed(Input.RIGHT)){
-					if(index<4) index++;
+					int cap = 2;
+					if(character.getGender().equals("male"))
+						cap = 4;
+					if(index<cap) index++;
 					else index =1;
 
 					character.ID = character.getGender() + "player" + index;
@@ -729,15 +741,6 @@ public class Main extends GameState {
 						character.lookUp();
 					}
 				}
-
-//				if(MyInput.isPressed(Input.UP)) {
-//					if(character.canWarp && character.isOnGround() && !character.snoozing && 
-//							!character.getWarp().instant) {
-//						initWarp(character.getWarp());
-//						character.killVelocity();
-//					}
-//				}
-
 				if(MyInput.isDown(Input.DOWN)) 
 					if(character.canClimb)
 						character.descend();
@@ -1060,13 +1063,14 @@ public class Main extends GameState {
 					//reached end of page
 					if (sy == speakText.length)
 						//move onto the next page without pausing if possible
-						if(currentPage.skip)
+						if(currentPage.skip){
+							wait(.3f);
 							if(!displayText.isEmpty()) startSpeak();
 							else {
 								endSpeak();
 								currentScript.paused = currentScript.forcedPause = false;
 							}
-						else endSpeak();
+						} else endSpeak();
 				} else
 					sy++;
 			}
@@ -1211,17 +1215,6 @@ public class Main extends GameState {
 		b2dCam.setBounds((Vars.TILE_SIZE*4)/PPM, (scene.width-Vars.TILE_SIZE*4)/PPM, 0, scene.height/PPM);
 		cam.removeFocus();
 		warped = true;
-
-		if (scene.outside)
-			if(dayState!=NIGHT){
-				for(LightObj l : lights)
-					if(l.getType().equals("street") && l.isOn())
-						l.turnOff();
-			} else
-				for(LightObj l : lights)
-					if(l.getType().equals("street") && !l.isOn())
-						l.turnOn();
-		
 	}
 
 	public void wait(float time){
@@ -1262,9 +1255,8 @@ public class Main extends GameState {
 	public void addObject(Entity e){ 
 		if(e==null) return;
 		if(!exists(e)){
-			objects.add(e); 
+			objsToAdd.add(e); 
 			e.setGameState(this);
-			sortObjects();
 		}
 	}
 
@@ -1388,6 +1380,12 @@ public class Main extends GameState {
 		b2dCam.setCharacter(character);
 		cam.locate(Vars.DT);
 		sortObjects();
+		
+		//TODO implement random powertyping
+
+		DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
+		int i = (int)(Math.random() * ((dm.length-1) + 1));
+		character.setPowerType(dm[i]);
 	}
 
 	public void createEmptyPlayer(Vector2 location){
@@ -1508,6 +1506,14 @@ public class Main extends GameState {
 		sortObjects();
 		if(scene.loadScript.source!=null) 
 			doLoadScript(scene.loadScript);
+		
+		//turn off loaded lights if necessary
+		if(dayState!=NIGHT){
+			for(LightObj l : lights){
+				if(l.isScheduled() && l.isOn())
+					l.turnOff();
+			}
+		}
 	}
 
 	public Mob getMob(String name) {

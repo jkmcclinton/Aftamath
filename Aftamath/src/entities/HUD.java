@@ -171,7 +171,7 @@ public class HUD {
 		if (money.startsWith("(")) money = "-" + money.substring(1, money.indexOf(")"));
 
 		main.drawString(sb, money, Game.width/2 - 10 - cash.getRegionWidth() -
-				(PERIODX -1 + money.length() * (PERIODX-1)), Game.height/2 - 20);
+				(PERIODX + money.length() * (PERIODX)), Game.height/2 - 20);
 	}
 	
 	public void drawInputBG(SpriteBatch sb){

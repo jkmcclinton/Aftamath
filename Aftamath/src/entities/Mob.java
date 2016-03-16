@@ -91,7 +91,7 @@ public class Mob extends Entity{
 	protected static final float DEFAULT_ATTACK_RANGE = 20;
 	protected static final float DEFAULT_VISION_RANGE = 10*Vars.TILE_SIZE;
 	protected static final float DEFAULT_AIM_THRESHOLD = .8f;
-	protected static final float DEFAULT_COOLDOWN = /*3f*/0;
+	protected static final float DEFAULT_COOLDOWN = 3f;
 	protected static final double DEFAULT_STRENGTH = 1;
 	protected static final double DAMAGE_THRESHOLD = 4;
 	protected static final int INTERACTION_SPACE = 17;
@@ -121,7 +121,6 @@ public class Mob extends Entity{
 	static{
 		for(int i = 0; i<Anim.values().length; i++){
 			animationIndicies.put(Anim.values()[i], i);
-//			System.out.println(Anim.values()[i]);
 		}
 	}
 	
@@ -183,7 +182,7 @@ public class Mob extends Entity{
 				} else
 					error = "("+((Mob)e).getName() + ", "+e.ID+")";
 			
-			if(conflict)
+			if(conflict && this.sceneID != -1)
 				System.out.println("Created mob with ID "+this.sceneID+" ("+ this.name +", "+ID+") when " +
 						error + " already exists");
 		}
@@ -238,7 +237,7 @@ public class Mob extends Entity{
 			if(aiming) {
 				aimTime+=dt;
 				if(aimTime>=aimMax && !aimSounded && powerCoolDown==0 && this.equals(main.character)){
-//					main.playSound("jump4");
+					main.playSound("jump4");
 					aimSounded = true;
 				}
 			}
@@ -542,10 +541,23 @@ public class Mob extends Entity{
 		}
 	}
 
+	public void moveToPath(Path path, boolean defaulted){
+		moveToPath(path);
+		if(defaulted){
+			currentState.resetType = ResetType.NEVER;
+			defaultState = currentState;
+		}
+	}
+	
 	public void moveToPath(Path path){
 		if(path!=null){
-			setState("MOVE");
-			currentState.path = path;
+			try{
+				AIType s = AIType.PATH;
+				controlled = true;
+				currentState = new MobAI(this, s, ResetType.ON_AI_COMPLETE, path);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -720,9 +732,10 @@ public class Mob extends Entity{
 					if(type!=DamageType.PHYSICAL)
 						script = supAttackScript;
 					
-					if(script!=null)
+					if(script!=null){
 						main.triggerScript(script);
-					else
+						watchPlayer();
+					}else
 						switch(getAttackType()){
 						case ENGAGE:
 						fight(owner);
@@ -792,6 +805,7 @@ public class Mob extends Entity{
 	}
 
 	public boolean setState(String type) {
+		if(frozen) return false;
 		try{
 			if (type.toUpperCase().equals(AIType.FOLLOWING.toString()))
 				follow(main.character);
@@ -810,6 +824,7 @@ public class Mob extends Entity{
 	}
 
 	public boolean setState(String type, Entity target) {
+		if(frozen) return false;
 		try{
 			if (type.toUpperCase().equals(AIType.FOLLOWING.toString()))
 				follow(target);
@@ -826,6 +841,7 @@ public class Mob extends Entity{
 	}
 
 	public boolean setState(String type, Vector2 goal){
+		if(frozen) return false;
 		boolean b = setState(type);
 		if(b) currentState.setGoal(goal);
 		return b;
@@ -1151,6 +1167,8 @@ public class Mob extends Entity{
 		if(snoozing) wake();
 		killVelocity();
 		interactable.killVelocity();
+		if(interactable instanceof Mob)
+			((Mob)interactable).watchPlayer();
 		return interactable.getScript();
 	}
 
@@ -1238,7 +1256,7 @@ public class Mob extends Entity{
 	}
 	
 	public void punch(){
-		setAnimation(Anim.PUNCHING, LoopBehavior.ONCE);
+		setAnimation(Anim.PUNCHING, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE/1.25f);
 		for(Entity e : attackables){
 			if(e instanceof Mob)
 				if(((Mob)e).getIFF()!=IFFTag.FRIENDLY)

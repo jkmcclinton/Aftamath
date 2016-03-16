@@ -1,0 +1,15 @@
+Script Main
+lockplayer
+SetSpeaker(partner)
+value(set, player.love, 2)
+
+if([player.love >= 2])
+ text(flirty, {Hey bae!~/lI love you!})
+end
+if([player.love = 0])
+ text(normal, {Hey /player.~ What's up?})
+end
+if([player.love < 0])
+ text(mad, {Don't talk to me.})
+end
+done

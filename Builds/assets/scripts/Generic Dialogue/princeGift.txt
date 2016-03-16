@@ -1,0 +1,10 @@
+Script Main
+lockplayer
+
+setSpeaker(this)
+text(happy, {There you are, my friend.})
+text(happy, {I am a man of my word. Here are the keys to the vessel.})
+text(happy, {Fare thee well!})
+playSound(ok2)
+
+done
