@@ -1,0 +1,6 @@
+Script Main
+lockplayer
+setSpeaker(narrator)
+text({It's a dumpster.})
+text({The words "Evil Donut" are spray painted onto it.})
+done

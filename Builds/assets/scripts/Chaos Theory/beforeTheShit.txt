@@ -1,0 +1,29 @@
+Script Main
+lockplayer
+setSpeaker(this)
+if(!explainedShit)
+	text({Yo, /player.})
+	text({Darrius is in there fo sho.})
+	text({Only problem is he's locked his bitch ass inside.})
+	text({If only we had sum type of key to get inside...})
+	
+	setSpeaker(narrator)
+	text({You know, now would be a good time to have a skeleton key...})
+	text(sad, {I would lend you mine but... I'm currently using it.})
+	text({What for?})
+	text(sad, {None of your business.})
+	setFlag(explainedShit, true)
+else
+	if(!darriusKey)
+		text({Yo, /player! How's it hangin'?})
+		text({D'you find dat skeleton key?})
+		setSpeaker(player)
+		text({No luck, bro. Sorry.})
+		setSpeaker(this)
+		text({Dat sucks, man.})
+	else
+		text({You gots the key?})
+		text(happy, {Let's go f^%$ shit up!})
+	end
+end
+done

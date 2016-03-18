@@ -71,7 +71,7 @@ public class Scene {
 	public Song[] DEFAULT_SONG;
 //	public boolean newSong; //tells us whether or not to fade music when loading scene from previous scene
 	public boolean outside; //controls whether or not to step weather time or to add the day/night cycle effect
-	public Color ambientLight;
+	public Color ambientLight, ambientOverlay;
 	
 	private float groundLevel;
 	private Main main;
@@ -220,22 +220,24 @@ public class Scene {
 			} catch(Exception e){ }
 		
 		try {
-			
-			// redo me
 			String light = "";
 			if((light = prop.get("ambient", String.class))!=null){
 				if(light.equals("daynight".toUpperCase())){
 					outside = true;
 					ambientLight = m.getColorOverlay();
+					ambientOverlay = sb.getOverlay();
 				}else{
 					Field f = Vars.class.getField(light+"_LIGHT");
 					ambientLight = (Color) f.get(f);
+					f = Vars.class.getField(light+"_OVERLAY");
+					ambientOverlay = (Color) f.get(f);
 					if(prop.get("outside", String.class)!=null)
 						outside=true;
 				}
 			}
 		} catch (Exception e){
 			ambientLight = Vars.DAY_OVERLAY;
+			ambientOverlay = Vars.DAY_OVERLAY;
 		}
 
 		//get scripts
@@ -441,7 +443,8 @@ public class Scene {
 		//add in entities loaded from save file
 		if (Scene.sceneToEntityIds.containsKey(this.ID)) {
 			for (int sid : Scene.sceneToEntityIds.get(this.ID)) {
-				this.entities.add(Entity.idToEntity.get(sid));
+				Entity e = Entity.idToEntity.get(sid);
+				this.entities.add(e);
 			}
 		}
 		
@@ -567,6 +570,7 @@ public class Scene {
 							String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
 							String name = object.getProperties().get("name", String.class);		//character name
 							String nickName = object.getProperties().get("nickName", String.class);
+							if(nickName==null) nickName = object.getProperties().get("nickname", String.class);
 							String state = object.getProperties().get("state", String.class);	//AI state
 							String focus = object.getProperties().get("focus", String.class);
 							String script = object.getProperties().get("script", String.class);
@@ -600,7 +604,7 @@ public class Scene {
 
 								if (sceneID==null)
 									System.out.println("'" + name + "', '"+ID+"' cannot be created without a sceneID!");
-								else if (Entity.idToEntity.containsKey(sceneIDParsed)) {
+								else if (Entity.idToEntity.containsKey(sceneIDParsed) && sceneIDParsed>=0) {
 									Entity c = Entity.idToEntity.get(sceneIDParsed);
 									boolean conflict = true;
 
@@ -637,8 +641,10 @@ public class Scene {
 									if(nickName!=null)
 										e.setNickName(nickName);
 
-									if(sceneIDParsed>0)
+									if(sceneIDParsed>=0){
 										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
+										Entity.idToEntity.put(sceneIDParsed, e);
+									}
 								}
 
 							} catch (NoSuchFieldException | SecurityException e) {
@@ -690,7 +696,7 @@ public class Scene {
 
 								if (sceneID==null)
 									System.out.println("'"+ID+"' cannot be created without a sceneID!");
-								else if (Entity.idToEntity.containsKey(sceneIDParsed)) {
+								else if (Entity.idToEntity.containsKey(sceneIDParsed)&& sceneIDParsed>=0) {
 									Entity c = Entity.idToEntity.get(sceneIDParsed);
 									boolean conflict = true;
 
@@ -727,8 +733,10 @@ public class Scene {
 									e.active = true;
 									entities.add(e);
 
-									if(sceneIDParsed>=0)
+									if(sceneIDParsed>=0){
 										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
+										Entity.idToEntity.put(sceneIDParsed, e);
+									}
 								}
 							} catch (NoSuchFieldException | SecurityException e) {
 								e.printStackTrace();
@@ -904,14 +912,14 @@ public class Scene {
 		//left spawner
 		Spawner s = new Spawner(0, groundLevel, "civilian", "movetopath", "genericCivilian", 
 				"onAttacked", null, null, null);
-//		entities.add(s);
+		entities.add(s);
 		Array<Vector2> points = new Array<>();
 		points.add(new Vector2(width-2*Vars.TILE_SIZE, groundLevel));
 		points.add(new Vector2(width, groundLevel));
 		Path p = new Path(ID, ID, points);
 		s.setPath(p);
 		s.setID("spawner "+ID+" :: left");
-		s.setMax(10); //should be relative to level size
+		s.setMax(4); //should be relative to level size
 		s.setGameState(main);
 		s.initOccupy(this);
 		
@@ -925,7 +933,7 @@ public class Scene {
 		p = new Path(ID, ID, points);
 		s.setPath(p);
 		s.setID("spawner "+ID+" :: right");
-		s.setMax(10); //should be relative to level size
+		s.setMax(4); //should be relative to level size
 		s.setGameState(main);
 		s.initOccupy(this);
 	}

@@ -20,10 +20,15 @@ public class History implements Serializable {
 		flagList = new HashMap<>();
 		variableList = new HashMap<>();
 		
-		flagList.put("true",true);
-		flagList.put("false",false);
+		//static script variables
+		variableList.put("true","true");
+		variableList.put("false","false");
 		variableList.put("male", "male");
 		variableList.put("female", "female");
+		variableList.put("time", 0);
+		variableList.put("day", 0);
+		variableList.put("noon", 1);
+		variableList.put("night", 2);
 		variableList.put("trainLoc", "CommercialDistrictNW");
 		variableList.put("trainDest", "nowhere");
 	}
@@ -49,7 +54,7 @@ public class History implements Serializable {
 		addFlag(flag, val);
 	}
 	
-	public void addFlag(String flag, boolean val){ 	
+	public void addFlag(String flag, boolean val){ 
 		for(String p : flagList.keySet())
 			if(p.equals(flag))
 				return;

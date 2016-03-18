@@ -191,9 +191,10 @@
   <object id="3" name="120" x="736" y="448" width="16" height="16">
    <properties>
     <property name="ID" value="120"/>
-    <property name="NPC" value="cashier"/>
+    <property name="NPC" value="burly2"/>
     <property name="layer" value="player"/>
     <property name="name" value="Argus"/>
+    <property name="nickname" value="Williams"/>
     <property name="script" value="factoryWorkerEntrance"/>
     <property name="state" value="faceplayer"/>
    </properties>

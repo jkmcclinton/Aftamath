@@ -77,6 +77,7 @@ if([player.niceness < 0])
 	eventMusic(Tension and Excitement)
 	text(mad, {What? What are you doing?})
 
+	removeFocus
 	setSpeaker(Villain)
 	text(sad, {What it looks like. Training a new recruit.})
 
@@ -89,14 +90,17 @@ if([player.niceness < 0])
 	end
 	
 	#hero runs to player
-	move(Hero, Villain)
+	move(Hero, 52, 78)
+	move(player, 50, 78, false)
 	#doAction(Villain, shoot, Hero)
 	attack(Villain, Hero)
 	
 	setSpeaker(Villain)
 	text(mad, {Hands off. ~This rookie's mine.})
 
+	face(player, Villain)
 	setSpeaker(Hero)
+	face(Hero)
 	text(sad, {You're not serious about joining her, are you? })
 	text(sad, {Listen, I know I'm not the smartest or the coolest guy around, but at least I have a heart.})
 	text(normal, {A life full of wrongdoings is not a life worth living. What good are powers if they're used for evil?})
@@ -207,6 +211,7 @@ else
 	eventMusic(Tension and Excitement)
 	text(sad, {Oh, you're here too...})
 
+	removeFocus
 	setSpeaker(Hero)
 	text(happy, {I'm here! ~Yes, I'm always here to save the day! That's why they call me a here-o.})
 	text(happy, {Get it? ~Hahahahaha!})

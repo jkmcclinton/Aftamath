@@ -96,6 +96,9 @@ public class Player implements Serializable {
 	}
 	
 	public void removePartner(){
+		if(myPartner==null) return;
+		main.character.removeFollower(myPartner);
+		myPartner.setState("STATIONARY", null, -1, "NEVER");
 		myPartner = null;
 		this.info = "";
 		this.partnerTitle = "";

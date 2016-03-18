@@ -377,12 +377,7 @@ public class Mob extends Entity{
 	}
 	
 	public void render(FadingSpriteBatch sb){
-		super.render(sb);;
-		
-//		if(isAttackable && !main.character.equals(this)){
-//			sb.draw(healthBar[health], getPosition().x * Vars.PPM- rw, 
-//					getPosition().y * Vars.PPM + rh + 3);
-//		}
+		super.render(sb);
 	}
 
 	/**units in pixels*/
@@ -725,14 +720,14 @@ public class Mob extends Entity{
 		}
 		main.addHealthBar(this);
 
-		if(owner.equals(main.character)){
+		if(owner.equals(main.character) && !frozen){
 				if(currentState.type!=AIType.FIGHTING){
 					Script script = attackScript;
 					
 					if(type!=DamageType.PHYSICAL)
 						script = supAttackScript;
 					
-					if(script!=null){
+					if(script!=null ){
 						main.triggerScript(script);
 						watchPlayer();
 					}else
@@ -1405,7 +1400,13 @@ public class Mob extends Entity{
 	}
 
 	public void setPositioningFocus(Entity e){ positioningFocus = e; }
-	public Entity getInteractable(){ return interactable; }
+	public Entity getInteractable(){
+		if(interactable!=null)
+			if(interactable.frozen) 
+				return null;
+		return interactable; 
+	}
+	
 	public void setInteractable( Entity d) { interactable = d; }
 	public void setInvulnerable(boolean val){
 		if(val){

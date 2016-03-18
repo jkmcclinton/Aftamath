@@ -32,6 +32,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
+import box2dLight.Light;
 import box2dLight.RayHandler;
 import entities.CamBot;
 import entities.Entity;
@@ -128,9 +129,9 @@ public class Main extends GameState {
 	private static final int NOON = 1;
 	private static final int NIGHT = 2;
 	private static final int TRANSITION_INTERVAL = /*60*/ 5;
-	public static final float DAY_TIME = 6.5f*60f; //10min
+	public static final float DAY_TIME = 6.55f*60f; //10min was the intended
 	public static final float NOON_TIME = DAY_TIME/3f;
-	public static final float NIGHT_TIME = 2*DAY_TIME/3f;
+	public static final float NIGHT_TIME = 1.75f*DAY_TIME/3f;
 	
 	public static float debugY = 1, debugX=1;
 	public static boolean dbRender 	= false, //render physics camera?
@@ -141,7 +142,7 @@ public class Main extends GameState {
 						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "Church"; //where the player starts
+	public static String debugLoadLoc = "CommercialDistrictNW"; //where the player starts
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 
 	public Main(GameStateManager gsm) {
@@ -177,8 +178,15 @@ public class Main extends GameState {
 		currentEmotion = Mob.NORMAL;
 		paused=analyzing=choosing=waiting=warping=warped=speaking=false;
 		waitTime=totalWait=speakTime=0;
-		dayTime = DAY_TIME+TRANSITION_INTERVAL;
-		dayState = DAY;
+		
+		if(debugging){
+			dayTime = NIGHT_TIME;
+			dayState = NIGHT;
+		} else {
+			dayTime = DAY_TIME+TRANSITION_INTERVAL;
+			dayState = DAY;
+			
+		}
 		
 		cam.reset();
 		b2dCam.reset();
@@ -380,6 +388,7 @@ public class Main extends GameState {
 
 		//transition ambient light an color overlay
 		Color ambient = scene.ambientLight;
+		drawOverlay = scene.ambientOverlay;
 		float t=dayTime,i;
 		if(scene.outside){
 			switch(dayState){
@@ -442,7 +451,7 @@ public class Main extends GameState {
 				break;
 			}
 		} else 
-			sb.setOverlay(Vars.DAY_OVERLAY);
+			sb.setOverlay(drawOverlay);
 		rayHandler.setAmbientLight(ambient);
 	}
 
@@ -589,7 +598,7 @@ public class Main extends GameState {
 			cam.zoom-=.01;
 			b2dCam.zoom-=.01;
 		}
-		if(MyInput.isPressed(Input.LIGHTS)) rayHandle = !rayHandle ;
+		if(MyInput.isPressed(Input.LIGHTS)) {rayHandle = !rayHandle ; sb.setOverlayDraw(rayHandle); }
 		if(MyInput.isPressed(Input.COLLISION)) dbRender = !dbRender ;
 		if(MyInput.isPressed(Input.RENDER)) render=!render;
 		if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
@@ -1290,7 +1299,14 @@ public class Main extends GameState {
 		return object;
 	}
 
-	public void removeBody(Body b){ bodiesToRemove.add(b);  }
+	public void removeBody(Body b){
+		bodiesToRemove.add(b); 
+		if(b!=null)
+			if(b.getUserData()!=null){
+				Light l = ((Entity) b.getUserData()).getLight();
+				if(l!=null) l.remove();
+			}
+	}
 	public ArrayList<Path> getPaths() {return paths; }
 	public Path getPath(String pathName){
 		for(Path p : paths){
@@ -1328,6 +1344,9 @@ public class Main extends GameState {
 				character = new Mob("You", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 //				createEmptyPlayer(scene.getSpawnPoint());
+				DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
+				int j = (int)(Math.random() * ((dm.length-1) + 1));
+				character.setPowerType(dm[j]);
 			} else {
 				//this spawns a camBot at its special location to take the place of 
 				//the player before it has been created by the introduction
@@ -1335,10 +1354,8 @@ public class Main extends GameState {
 					createEmptyPlayer(scene.getCBSP());
 				else
 					createEmptyPlayer(scene.getSpawnPoint());
-				
 				triggerScript("intro");
 			}
-			character.setPowerType("rock");
 		}
 
 		initEntities();
@@ -1380,12 +1397,6 @@ public class Main extends GameState {
 		b2dCam.setCharacter(character);
 		cam.locate(Vars.DT);
 		sortObjects();
-		
-		//TODO implement random powertyping
-
-		DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
-		int i = (int)(Math.random() * ((dm.length-1) + 1));
-		character.setPowerType(dm[i]);
 	}
 
 	public void createEmptyPlayer(Vector2 location){
@@ -1504,6 +1515,7 @@ public class Main extends GameState {
 		}
 
 		sortObjects();
+//		printObjects();
 		if(scene.loadScript.source!=null) 
 			doLoadScript(scene.loadScript);
 		
@@ -1539,6 +1551,7 @@ public class Main extends GameState {
 					((Mob)e).resetState();
 			}
 			e.setPosition(lastPos);
+			e.addLight(null);
 		}
 
 		//destroy all the bodies

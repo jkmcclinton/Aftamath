@@ -8,10 +8,12 @@ RobberIntro              : robbers1
 RogueTutorial            : afterTutorial
 VillainTut               : afterTutorial
 VillainTutGood           : afterTutorial
+apprehendedGangsta       : foundGangsta
 brokeAnOldLadyCurse      : Ms Pancakes Mishap
 brokeUpWithPartner       : attackedPartner
 brokeUpWithPartner       : supAttackedPartner
 credits                  : credits
+cursed                   : onAttackedWitch1
 gaveSoul                 : grimResponse
 goneInBar                : There's A Bar
 metTheWitch              : Ms Pancakes Mishap

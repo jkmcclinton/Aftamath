@@ -4,7 +4,7 @@
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="ocean"/>
   <property name="bgm day" value="Misdirection"/>
-  <property name="bgm night" value="Midnight Waves"/>
+  <property name="bgm night" value="Second Day"/>
   <property name="name" value="Pier"/>
   <property name="prevWarp" value="3"/>
   <property name="previous" value="Boardwalk"/>
@@ -192,7 +192,7 @@
     <property name="ID" value="2"/>
     <property name="next" value="Pier Boat"/>
     <property name="nextWarp" value="0"/>
-    <property name="warp" value=""/>
+    <property name="warp" value="ownBoat"/>
    </properties>
   </object>
   <object id="6" x="672" y="192" width="16" height="288">

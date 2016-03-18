@@ -53,6 +53,12 @@ public class MyContactListener implements ContactListener {
 		if(typeB.equalsIgnoreCase("textBox") && typeA.equalsIgnoreCase("textBox")){
 			((TextBox) entB).add(entA);
 			((TextBox) entA).add(entB);
+		} if(typeB.equals("wall") && entA instanceof Mob){
+			if(((Mob)entA).getName().toLowerCase().contains("civilian") && entA.getSceneID()==-1)
+				main.removeBody(entA.getBody());
+		} if(typeA.equals("wall") && entB instanceof Mob){
+			if(((Mob)entB).getName().toLowerCase().contains("civilian") && entB.getSceneID()==-1)
+				main.removeBody(entB.getBody());
 		} if(typeB.equals("foot") && !unstandable.contains(typeA, false) && 
 				!fb.getBody().getUserData().equals(typeA) && !(entA instanceof EventTrigger)) {
 			if(entA instanceof Ground)

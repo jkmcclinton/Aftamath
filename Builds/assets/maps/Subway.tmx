@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="30">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="31">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm day" value="Hawthorne"/>
@@ -399,7 +399,7 @@
   </object>
   <object id="5" name="26" x="368" y="160" width="16" height="16">
    <properties>
-    <property name="ID" value="33"/>
+    <property name="ID" value="-1"/>
     <property name="entity" value="subwaySign"/>
     <property name="layer" value="back"/>
     <property name="name" value="Train Selection"/>
@@ -448,6 +448,7 @@
    <properties>
     <property name="ID" value="26"/>
     <property name="NPC" value="hobo"/>
+    <property name="attackScript" value="onHoboAttacked"/>
     <property name="layer" value="front"/>
     <property name="loadCondition" value="[trainLoc = {BusinessDistrict}]"/>
     <property name="name" value="Hobo"/>
@@ -458,11 +459,13 @@
   </object>
   <object id="17" name="1" x="224" y="160" width="16" height="16">
    <properties>
-    <property name="ID" value="103"/>
+    <property name="ID" value="3"/>
     <property name="NPC" value="witch"/>
+    <property name="attackScript" value="onAttackedWitch1"/>
     <property name="layer" value="front"/>
-    <property name="name" value="yoko"/>
-    <property name="script" value="actionTest"/>
+    <property name="name" value="Witch"/>
+    <property name="nickname" value="The Wicked Ol' Witch"/>
+    <property name="script" value="genericWitch"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
@@ -549,10 +552,19 @@
   </object>
   <object id="29" name="26" x="139" y="126" width="16" height="16">
    <properties>
-    <property name="ID" value="33"/>
+    <property name="ID" value="-1"/>
     <property name="ad" value="subway"/>
     <property name="entity" value="subwayAd"/>
     <property name="layer" value="back"/>
+   </properties>
+  </object>
+  <object id="30" name="26" x="576" y="96" width="16" height="16">
+   <properties>
+    <property name="ID" value="-1"/>
+    <property name="entity" value="sewerSign"/>
+    <property name="layer" value="front"/>
+    <property name="loadCondition" value="[trainLoc = {BusinessDistrict}]"/>
+    <property name="name" value="Sewers"/>
    </properties>
   </object>
  </objectgroup>

@@ -4,11 +4,14 @@ import static handlers.Vars.PPM;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
+import box2dLight.Light;
+import box2dLight.PointLight;
 import handlers.FadingSpriteBatch;
 import handlers.PositionalAudio;
 import handlers.Vars;
@@ -21,6 +24,7 @@ public class DamageField extends Entity {
 	private DamageType damageType;
 	private HashMap<Entity, Float> victims;
 	private PositionalAudio damageSound;
+	private Light pL;
 	
 	protected static final float ANIM_RATE = 1/12f;
 
@@ -95,6 +99,8 @@ public class DamageField extends Entity {
 	}
 	
 	public void render(FadingSpriteBatch sb){
+		Color overlay = sb.getOverlay();
+		if(pL!=null)sb.setColor(Vars.DAY_OVERLAY);
 		switch(ID){
 		case "boulderFist":	
 			sb.draw(animation.getFrame(), x - width/2, y - rh - 2);
@@ -102,6 +108,8 @@ public class DamageField extends Entity {
 		default:	
 			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
 		}
+		if(sb.isDrawingOverlay())
+			sb.setColor(overlay);
 	}
 	
 	
@@ -260,13 +268,20 @@ public class DamageField extends Entity {
 		body.createFixture(fdef).setUserData("damageField");
 		
 		//make body do shit
-		//determine sound for creation and initial offset
+		//determine sound/light for creation and initial offset
+		Color c;
 		switch(ID){
 		case "electricField":
-			sound = "sparking"; 
+			sound = "sparking";
+			c = new Color(Vars.SUNSET_GOLD); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					200, x, y);
 			break;
 		case "fireyField":
 			sound = "crackling";
+			c = new Color(Vars.SUNSET_ORANGE); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					150, x, y);
 			break;
 		case "chillyWind":
 			sound = "air1"; 
@@ -289,6 +304,8 @@ public class DamageField extends Entity {
 				damageSound.stop();
 				main.removeSound(damageSound);
 			}
+			if(pL != null)
+				pL.remove();
 			
 		} catch (Throwable e) {
 			e.printStackTrace();

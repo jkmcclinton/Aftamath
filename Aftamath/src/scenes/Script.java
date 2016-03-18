@@ -13,6 +13,7 @@ import java.util.Stack;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -228,6 +229,22 @@ public class Script implements Serializable {
 			case "changeval":
 				changeValue(line);
 				break;
+			case "changesprite":
+				if(args.length!=2)
+					System.out.println("Invalid number of arguments;Line: "+(index+1)+"\tScript: "+ID);
+				else {
+					obj = findObject(args[0]);
+					if(obj!=null){
+						Texture t = Game.res.getTexture(args[1]);
+						if(t!=null){
+							obj.ID = args[1];
+							obj.loadSprite();
+						} else
+							System.out.println("\""+args[1]+"\" is not a valid sprite; Line: "+(index+1)+"\tScript: "+ID);
+					} else
+						System.out.println("Could not find \""+args[0]+"\" to change sprite; Line: "+(index+1)+"\tScript: "+ID);
+				}
+				break;
 			case "declare":
 				//declare(variableName, scope, type, initialValue)
 				String variableName = firstArg(line);
@@ -260,10 +277,8 @@ public class Script implements Serializable {
 					case"flag":
 						if(scope.equalsIgnoreCase("local")){
 							boolean b = false;
-							try{ b = Boolean.parseBoolean(value); }
-							catch(Exception e){
-								System.out.println("Invalid boolean for "+scope+" variable \"" + variableName + "\"; Line: "+(index+1)+"\tScript: "+ID);
-							}
+							if(Vars.isBoolean(value)) b = Boolean.parseBoolean(value);
+							else System.out.println("Invalid boolean for "+scope+" variable \"" + variableName + "\"; Line: "+(index+1)+"\tScript: "+ID);
 							declareVariable(variableName, b);
 						}else if (scope.equalsIgnoreCase("global")) main.history.addFlag(variableName, false);
 						else System.out.println("Invalid scope \"" + scope +"\"; Line: "+(index+1)+"\tScript: "+ID);
@@ -333,7 +348,7 @@ public class Script implements Serializable {
 								break;
 							} 
 							
-							System.out.println("ac: "+actionType+"\tt: "+target+"\tdt: "+time+"\trt: "+resetType+"\tw: "+wait);
+//							System.out.println("ac: "+actionType+"\tt: "+target+"\tdt: "+time+"\trt: "+resetType+"\tw: "+wait);
 							boolean success = m.setState(actionType, target, time, resetType);
 							if(wait && !resetType.toUpperCase().equals("NEVER") &&!resetType.toUpperCase().equals("ON_SCRIPT_END")
 									&& !resetType.toUpperCase().equals("ON_LEVEL_CHANGE")){
@@ -459,7 +474,8 @@ public class Script implements Serializable {
 				break;
 			case "focus":
 			case "focuscamera":
-				//focus(objectName, [wait]
+				//focus(objectName, [wait])
+				//focus(x, y, [wait])
 				bool = false;
 				
 				obj = findObject(args[0]);
@@ -470,13 +486,21 @@ public class Script implements Serializable {
 							bool = Boolean.parseBoolean(args[1]);
 						else System.out.println("Value \""+args[1]+"\" is not a boolean; Line: "+(index+1)+"\tScript: "+ID);
 							
-					
 					if(bool)
 						setActiveObj(main.getCam());
-				} else if (args.length==2) {
+				} else if (args.length>=2) {
 					loc = parseTiledVector(args, 0);
-					if(loc!=null)
+					if(loc!=null){
+						loc = new Vector2(loc.x*Vars.PPM, loc.y*Vars.PPM);
 						main.getCam().setFocus(loc);
+						if(args.length==3)
+							if(Vars.isBoolean(args[2]))
+								bool = Boolean.parseBoolean(args[2]);
+							else System.out.println("Value \""+args[2]+"\" is not a boolean; Line: "+(index+1)+"\tScript: "+ID);
+
+						if(bool)
+							setActiveObj(main.getCam());
+					}
 				}
 				break;
 			case "forcefollow":
@@ -594,6 +618,11 @@ public class Script implements Serializable {
 						Vars.PLAYER_SCENE_ID, main.getScene().getSpawnPoint(), Vars.BIT_PLAYER_LAYER);
 				main.createPlayer(main.getScene().getSpawnPoint());
 				main.addObject(main.character);
+
+				//TODO implement random powertyping
+				DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
+				int j = (int)(Math.random() * ((dm.length-1) + 1));
+				main.character.setPowerType(dm[j]);
 
 				main.setStateType(InputState.GENDERCHOICE);
 				break;
@@ -903,6 +932,7 @@ public class Script implements Serializable {
 			case "setdialog":
 			case "setdialogue":
 			case "setdialoguescript":
+			case "setdialogscript":
 				obj = findObject(firstArg(line));
 				
 				if(obj!=null){
@@ -933,15 +963,23 @@ public class Script implements Serializable {
 			case "setflag":
 				try{
 					bool = true;
-					if(args(line).length==2) 
-						bool = Boolean.parseBoolean(lastArg(line));
+					if(args.length==2)
+						if(Vars.isBoolean(args[1])) 
+							bool = Boolean.parseBoolean(args[1]);
+						else 
+							System.out.println("\""+args[1]+"\" is not a valid boolean to set flag; Line: "+(index+1)+"\tScript: "+ID);
 					
 					if(main.history.getFlag(firstArg(line))!=null)
 						main.history.setFlag(firstArg(line), bool);
 					else
 						main.history.addFlag(firstArg(line), bool);
 				} catch (Exception e){
-					System.out.println("Could not set flag \"" +firstArg(line) + "\" to value \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
+					e.printStackTrace();
+					if(args.length == 2)
+						System.out.println("Could not set flag \"" +firstArg(line) + "\" to value \""+lastArg(line)+"\"; Line: "+(index+1)+"\tScript: "+ID);
+					else
+						System.out.println("Could not set flag \"" +firstArg(line) + "\"; Line: "+(index+1)+"\tScript: "+ID);
+						
 				}
 				break;
 			case "setflamable":
@@ -1226,7 +1264,6 @@ public class Script implements Serializable {
 										main.initWarp(trigger);
 									} else {
 										int sceneID = obj.getSceneID();
-										Entity.idToEntity.remove(sceneID);
 
 										Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
 										set.remove(sceneID);
@@ -1256,7 +1293,6 @@ public class Script implements Serializable {
 								System.out.println("teleporting: "+obj);
 								if(!main.getScene().ID.equals(level)){
 									int sceneID = obj.getSceneID();
-									Entity.idToEntity.remove(sceneID);
 
 									Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
 									set.remove(sceneID);
@@ -1531,67 +1567,72 @@ public class Script implements Serializable {
 
 	//retrieve all the indicies for every operation used in script
 	private void findIndicies(){
-		subScripts = new LinkedHashMap<String, Pair<Integer, Integer>>();
-		checkpoints = new HashMap<>();
-		String line;
-		Pair<Integer, Integer> bounds, b;
-		int end = source.size-1;
+		try{
+			subScripts = new LinkedHashMap<String, Pair<Integer, Integer>>();
+			checkpoints = new HashMap<>();
+			String line;
+			Pair<Integer, Integer> bounds, b;
+			int end = source.size-1;
 
-		for (int i = 0; i< source.size; i++){
-			line = source.get(i).trim();
-			if(line.toLowerCase().startsWith("script"))
-				subScripts.put(line.substring("script ".length()), 
-						findBounds("script", i, end));
-			if(line.toLowerCase().startsWith("setchoice")){
-				bounds = findBounds("setchoice", i, end);
-				Array<Option> tmp = new Array<>();
-				String mes, num;
-				String[] messages, args = args(line);
-				HashMap<String, Integer> choices = new HashMap<>();
-				messages = new String[args.length];
+			for (int i = 0; i< source.size; i++){
+				line = source.get(i).trim();
+				if(line.toLowerCase().startsWith("script"))
+					subScripts.put(line.substring("script ".length()), 
+							findBounds("script", i, end));
+				if(line.toLowerCase().startsWith("setchoice")){
+					bounds = findBounds("setchoice", i, end);
+					Array<Option> tmp = new Array<>();
+					String mes, num;
+					String[] messages, args = args(line);
+					HashMap<String, Integer> choices = new HashMap<>();
+					messages = new String[args.length];
 
-				if (lastArg(line).toLowerCase().equals("yesno")){
-					messages = new String[2];
-					choices.put("yes", 6); messages[0] = "Yes";
-					choices.put("no", 7); messages[1] = "No";
-				} else 
-					for (int j = 0; j < args.length; j++){
-						num = args[j].split(":")[0];
-						mes = args[j].split(":")[1];
-						messages[j] = new String(mes);
-						choices.put(messages[j].toLowerCase(), Integer.parseInt(num.trim())); 
+					if (lastArg(line).toLowerCase().equals("yesno")){
+						messages = new String[2];
+						choices.put("yes", 6); messages[0] = "Yes";
+						choices.put("no", 7); messages[1] = "No";
+					} else 
+						for (int j = 0; j < args.length; j++){
+							num = args[j].split(":")[0];
+							mes = args[j].split(":")[1];
+							messages[j] = new String(mes);
+							choices.put(messages[j].toLowerCase(), Integer.parseInt(num.trim())); 
+						}
+
+					for(String m : messages){
+						if(!tmp.contains(new Option(m, this), false))
+							tmp.add(new Option(m, choices.get(m.toLowerCase()), this));
 					}
+					choiceIndicies.put(i, new Choice(bounds.getKey(), bounds.getValue(), tmp));
 
-				for(String m : messages){
-					if(!tmp.contains(new Option(m, this), false))
-						tmp.add(new Option(m, choices.get(m.toLowerCase()), this));
-				}
-				choiceIndicies.put(i, new Choice(bounds.getKey(), bounds.getValue(), tmp));
-
-				String s1;
-				//get choice handling indicies
-				for (int j = i+1;j<bounds.getValue();j++){
-					s1=source.get(j).trim();
-					if(s1.toLowerCase().startsWith("[choice")){;
-					for(String m : messages)
-						if(s1.substring(s1.toLowerCase().indexOf("[choice")+"[choice".length()+1,
-								s1.indexOf("]")).toLowerCase().equals(m.toLowerCase())){
-							b=findBounds("choice", j, bounds.getValue());
-							Option o = choiceIndicies.get(i).get(m);
-							o.setBounds(b);
-							if(s1.replace(" ", "").contains("](")){
-								String condition = s1.substring(s1.indexOf("(")+1, s1.indexOf(")"));
-								o.setCondition(condition);
+					String s1;
+					//get choice handling indicies
+					for (int j = i+1;j<bounds.getValue();j++){
+						s1=source.get(j).trim();
+						if(s1.toLowerCase().startsWith("[choice")){;
+						for(String m : messages)
+							if(s1.substring(s1.toLowerCase().indexOf("[choice")+"[choice".length()+1,
+									s1.indexOf("]")).toLowerCase().equals(m.toLowerCase())){
+								b=findBounds("choice", j, bounds.getValue());
+								Option o = choiceIndicies.get(i).get(m);
+								o.setBounds(b);
+								if(s1.replace(" ", "").contains("](")){
+									String condition = s1.substring(s1.indexOf("(")+1, s1.indexOf(")"));
+									o.setCondition(condition);
+								}
 							}
 						}
 					}
+				} if(line.toLowerCase().startsWith("if"))
+					conditions.put(i, findBounds("if", i, end));
+				if(line.toLowerCase().trim().startsWith("checkpoint")){
+					addCheckpoint(firstArg(line), i);
+					source.set(i, "#" + source.get(i));
 				}
-			} if(line.toLowerCase().startsWith("if"))
-				conditions.put(i, findBounds("if", i, end));
-			if(line.toLowerCase().trim().startsWith("checkpoint")){
-				addCheckpoint(firstArg(line), i);
-				source.set(i, "#" + source.get(i));
 			}
+		} catch(Exception e){
+			System.out.println("Error initializing script \""+ID+"\"; Make sure no choices contain commas!");
+//			e.printStackTrace();
 		}
 
 		//debug output
@@ -1902,7 +1943,7 @@ public class Script implements Serializable {
 		String value = lastArg(line);
 //		boolean successful = false;
 
-//		System.out.println(function +":"+target+":"+value);
+//		System.out.println(function +" : "+target+" : "+value);
 
 		if (value.contains("{") && value.contains("}")) {
 			//value is formatted as a string
@@ -1913,13 +1954,16 @@ public class Script implements Serializable {
 			if(value.contains("+")||value.contains("-")||value.contains("*")||value.contains("/")){
 				value = main.evaluator.evaluateExpression(value.substring(value.indexOf("[")+1, 
 						value.lastIndexOf("]")), this);
-			}else
+			}else{
 				//value is a variable
 				value = main.evaluator.determineValue(value, this);
-		} else 
+			}
+		} else {
 			//value is a variable
 			value = main.evaluator.determineValue(value, this);
+		}
 
+		
 		if(target.contains(".")){
 			String obj = target.substring(0, target.indexOf("."));
 			target = target.substring(target.indexOf(".")+1);
@@ -2072,7 +2116,6 @@ public class Script implements Serializable {
 			try{
 				//find local variable
 				Object obj = getVariable(target);
-
 				if(obj!=null){
 					switch(function.toLowerCase()){
 					case "add":
@@ -2157,34 +2200,6 @@ public class Script implements Serializable {
 		analyze();
 		index++;
 	}
-	
-	//combines the first and third elements of an array<> into a single boolean by the condition of the second element
-	//assumes values are boolean
-	//used in the evaluation of an if statement
-	public Array<String> combine(Array<String> arguments){
-		Array<String> result = new Array<>();
-		if(arguments.size<3)
-			return arguments;
-
-		boolean value1 = Boolean.parseBoolean(arguments.get(0));
-		boolean value2 = Boolean.parseBoolean(arguments.get(2));
-		Boolean combined = null;
-		String condition = arguments.get(1);
-
-		if(condition.equals("and"))
-			combined = value1 && value2;
-		if (condition.equalsIgnoreCase("or"))
-			combined = value1 || value2;
-		if(combined==null){
-			System.out.println("\""+condition+"\" is and invalid condition; Line: "+(index+1)+"\tScript: "+ID);
-			combined = false;
-		}
-
-		result.add(String.valueOf(combined));
-		for(int i=3; i<arguments.size;i++)
-			result.add(arguments.get(i));
-		return result;
-	}
 
 	//create instance of a local variable
 	public boolean declareVariable(String variableName, Object value){
@@ -2222,8 +2237,11 @@ public class Script implements Serializable {
 						if(type.toLowerCase().equals("string"))
 							localVars.put(p,(String) val);
 						if(type.toLowerCase().equals("boolean"))
-							localVars.put(p, (boolean) val);
-					} catch (Exception e){System.out.println("Wrong type");}
+							localVars.put(p, Boolean.parseBoolean(val.toString()));
+					} catch (Exception e){
+						System.out.println("Wrong type; "+type);
+						e.printStackTrace();
+						}
 				} else 
 					localVars.put(p,val);
 			}
@@ -2309,8 +2327,10 @@ public class Script implements Serializable {
 					e = new Mob(args[2].trim(), args[1].trim(), sceneID, loc.x, loc.y, layer);
 					((Mob)e).setState("FACEPLAYER", null, -1, ResetType.NEVER.toString());
 					e.setDialogueScript("generic_1");
-					if(sceneID>0)
+					if(sceneID>0){
 						Scene.sceneToEntityIds.get(main.getScene().ID).add(sceneID);
+						Entity.idToEntity.put(sceneID, e);
+					}
 				}
 			} else {
 				Entity.idToEntity.remove(e1.getSceneID());

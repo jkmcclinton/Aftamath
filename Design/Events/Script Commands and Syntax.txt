@@ -50,6 +50,7 @@ I've tried my best to add print statements to help you debug your script.
 	  addPartner
 	~ attack
 	  bufferFollow
+	  changeSprite
 	  checkPoint
 	  choice
 	  declare
@@ -134,6 +135,13 @@ bufferFollow:
 	if the boolean "buffer" is true, then the function will add. if it is false, the function will 
 	remove all gaps in the list
 	bufferFollow(objectName, buffer)
+changeSprite:
+	changes the sprite of the entity
+	if entity does not exist or the given sprite is not valid, the sprite is not changed
+	changeSprite(objectName, spriteName)
+
+	see the "Aftamath/assets/images/" subfolders for a list of sprites. The spritename should NOT include the
+	suffixes "base" or "face".
 checkPoint:
 	sets a point in the script to return to with "return()"
 	checkPoint(Name)

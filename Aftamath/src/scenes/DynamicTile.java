@@ -10,7 +10,7 @@ import main.Main;
 public class DynamicTile {
 	
 	private Cell cell;
-	private Main main;
+//	private Main main;
 	private Path path;
 	private boolean moving;
 	private TiledMapTile tile;
@@ -18,7 +18,7 @@ public class DynamicTile {
 	
 	DynamicTile(Cell cell, Main main){
 		this.cell = cell;
-		this.main = main;
+//		this.main = main;
 		tile = this.cell.getTile();
 	}
 	

@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
 
+import box2dLight.Light;
 import handlers.Animation;
 import handlers.FadingSpriteBatch;
 import handlers.JsonSerializer;
@@ -70,6 +71,7 @@ public class Entity implements Serializable {
 	protected MassData mdat = new MassData();
 	protected short layer, origLayer;
 	protected HashMap<Mob, Boolean> followers;
+	protected Light light;
 	
 	protected static final float MAX_DISTANCE = 65;
 	protected static final double DEFAULT_MAX_HEALTH = 20;
@@ -298,13 +300,20 @@ public class Entity implements Serializable {
 	}
 	
 	public void render(FadingSpriteBatch sb) {
-//		System.out.println(this);
 		Color overlay = sb.getColor();
-		if(frozen)
+		if(frozen){
+			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
 			sb.setColor(Vars.blendColors(Vars.FROZEN_OVERLAY, overlay));
+		} else {
+			if(light !=null)
+				sb.setColor(Vars.DAY_OVERLAY);
+			}
 		sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
-		if(frozen)
+		if(sb.isDrawingOverlay())
 			sb.setColor(overlay);
+		
+		if(light!=null)
+			light.setPosition(getPixelPosition());
 	}
 	
 	//used by scripts to change animations, possitbly??
@@ -379,6 +388,16 @@ public class Entity implements Serializable {
 	public Scene getCurrentScene(){ return currentScene; }
 	public int getSceneID(){ return sceneID; }
 	public void setSceneID(int ID){ sceneID = ID; }
+	public Light getLight(){ return this.light; }
+	public void addLight(Light light){
+		try{
+			if(this.light!=null)
+				this.light.remove();
+		} catch(Exception e){
+			//cannot remove light
+		}
+		this.light = light;
+	}
 	
 	/**units in pixels*/
 	public void setPosition(Vector2 location){
@@ -391,7 +410,6 @@ public class Entity implements Serializable {
 	private void respawn(){
 		dead = false;
 		animation.reset();
-//		System.out.println(body);
 		main.removeBody(body);
 		body.setUserData(this.copy());
 		create();
@@ -615,7 +633,8 @@ public class Entity implements Serializable {
 
 	public void removeFollower(Mob m){ 
 		followers.remove(m);
-		m.resetFollowIndex();
+		if(m!=null)
+			m.resetFollowIndex();
 	}
 	
 	public void addFollower(Mob m){ addFollower(m, false); }

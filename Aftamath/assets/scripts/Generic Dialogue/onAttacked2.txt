@@ -2,5 +2,5 @@ Script Main
 lockplayer
 facePlayer
 setSpeaker(this)
-text(mad, {UGH!/l/lRude!})
+text(mad, {UGH! Rude!})
 done

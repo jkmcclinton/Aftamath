@@ -267,6 +267,7 @@ public class Evaluator {
 	}
 	
 	//returns the solution to a set of mathematical operators
+	//TODO does not handle parsing of negative numbers!
 	private String evaluateExpression(String obj){
 		Array<String> arguments;
 		String result, res, val;
@@ -288,13 +289,14 @@ public class Evaluator {
 			}
 		}
 
-		//sort expressions
+		//TODO sort expressions
 		//not programmed, sorry
 
 		//evaluate
 		//separates all arguments and contstants from operators
 		arguments = new Array<>(tmp.split("(?<=[&+*/])|(?=[&+*/])"));
 		if(arguments.size<3||arguments.contains("", false)) return obj;
+//		System.out.println(arguments);
 
 		result = arguments.get(0);
 		if(!Vars.isNumeric(result)){
@@ -378,6 +380,7 @@ public class Evaluator {
 
 			arguments.removeIndex(1);
 			arguments.removeIndex(1);
+//			System.out.println("removing: "+arguments);
 		}
 
 		return result;

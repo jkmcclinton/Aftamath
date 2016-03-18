@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="12" tilewidth="16" tileheight="16" nextobjectid="3">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="12" tilewidth="16" tileheight="16" nextobjectid="4">
  <properties>
   <property name="ambient" value="DARK"/>
   <property name="bgm" value="Sewers"/>
@@ -268,12 +268,12 @@
  </layer>
  <layer name="ground" width="75" height="12">
   <data encoding="base64" compression="zlib">
-   eJzt0LkNAjEQhWFrXRIBBRBQB/d9F0BAHdz3XQABZRGQ8KdreWR2pc3mSV9gyU9jjzEajUbzfwpR/FyM/Pc0xkyd3cx0V2Jezm7euisxH2c3X92VmJyNn/PWfy+LlJhVRgVV1FBHA0200EYHXfSsv9PHAEOMMMYk0Ek6R5oRelua//g6cyywxAprbLDFDnsccMQJZ6FzwRU33PHAM9BJOkeaEXpbmv/4OhpNFvkBEjtV1w==
+   eJztz1sOgjAURdEmjFRUREVAGI9vAeWhU3QPoE0Dwb+zk/V5cltjlFJKKaXUnC0CY0IsscIaETaIscUOeyQ4BPZNigw5jihQejZj77hu+N425T+2zQlnXHDFDXc88ESFGg1eeDs2LTr0GPDB17MZe8d1w/e2Kf+xbZT6Rz/1WlBf
   </data>
  </layer>
  <layer name="ledge" width="75" height="12">
   <data encoding="base64" compression="zlib">
-   eJztwQEBAAAAgiD/r25IQAEAAPBoDhAAAQ==
+   eJxjYBgFo2AUDBfgzITKd2fCrm6w20EPUI/m7mYa+IMedtAD7EZz934a+IMedtADfEdz928a+IMedtADGDOj8s2Zsasb7HaMglEwCkbBUAcAarIK8Q==
   </data>
  </layer>
  <layer name="objects" width="75" height="12">
@@ -290,6 +290,17 @@
   <object id="2" x="128" y="112" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="3" name="276" x="256" y="112" width="16" height="16">
+   <properties>
+    <property name="ID" value="27"/>
+    <property name="NPC" value="reaper"/>
+    <property name="attackScript" value="onGrimAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Grim Reaper"/>
+    <property name="script" value="grimResponse"/>
+    <property name="state" value="FACELEFT"/>
    </properties>
   </object>
  </objectgroup>

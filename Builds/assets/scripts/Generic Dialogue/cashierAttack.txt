@@ -1,0 +1,22 @@
+Script Main
+lockplayer
+setSpeaker(Cashier, true)
+face(Cashier, player)
+face(player, Cashier)
+
+declare(c, local, integer, 0)
+value(add, c, 1)
+
+if([c < 3])
+	text({Ah!})
+	text({I call police on you!})
+else
+	text(mad, {You no steal my tings!})
+	text(mad, {I kill you first!})
+end
+
+if([player.niceness <= -3])
+	setSpeaker(player)
+	text({Go to hell. I do what I want.})
+end
+done

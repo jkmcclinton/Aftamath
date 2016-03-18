@@ -1,0 +1,5 @@
+Script Main
+lockplayer
+setSPeaker(this)
+text(mad, {Hey bro, F^&# YOU!})
+done

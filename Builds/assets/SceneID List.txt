@@ -1,43 +1,44 @@
 Scene ID                                Spawned by                         Script
+ 0-1 - breadstand                       : ResidentialDistrictN             : cart
+ 0-1 - dumpster                         : CommercialDistrictNW             : dumpster
+ 0-1 - sewerSign                        : Subway
+ 0-1 - subwayAd                         : Subway
  000 - 
  001 - Darrius; gangster1               : room1_1.tmx                      : realGangsta
- 002 - 
- 003 - 
+ 002 - Marquis; gangster3               : CommercialDistrictNW.tmx         : GangstaWar
+ 003 - Witch; witch                     : Subway.tmx                       : genericWitch
  004 - 
  005 - Sam; girlfriend2                 : ResidentialDistrictN.tmx         : ask out
  006 - John; logger                     : ResidentialDistrictN.tmx         : choice test
  007 - Olivierre; richGuy               : ResidentialDistrictN.tmx         : richComplaint
  008 - Donna; girlfriend1               : Ms Pancakes Mishap.txt           : ???
- 008 - Witch; witch                     : Ms Pancakes Mishap.txt           : ???
  009 - Ms. Pancakes; oldlady1           : ResidentialDistrictN.tmx         : generic_1
  010 - Narrator; narrator1              : ResidentialDistrictN.tmx         : intro
  011 - 
  012 - Hero; hero1                      : ResidentialDistrictN.tmx         : superGlare
- 013 - Doctor Disco; doctordisco        : ThaHood.tmx                      : disco
- 014 - 
+ 013 - Disco; villain3                  : ThaHood.tmx                      : disco
+ 014 - Sarge; burly2                    : CommercialDistrictNW.tmx         : sarge
  015 - Villain; villain1                : ResidentialDistrictN.tmx         : superGlare
  016 - 
  017 - 
  018 - 
  019 - 
  020 - Jessica; girlfriend3             : Lobby1.tmx                       : secretary
- 021 - 
- 022 - 
- 023 - 
+ 021 - Cashier; cashier                 : EZMart.tmx                       : cashierBuy
+ 022 - Shopper; femaleplayer4           : EZMart.tmx                       : shopper
+ 023 - Shopper; civilian3               : EZMart.tmx                       : shopper1
  024 - 
  025 - 
  026 - Hobo; hobo                       : Subway.tmx                       : hobo2
- 027 - 
+ 027 - Grim Reaper; reaper              : Sewers.tmx                       : grimResponse
  028 - Sasha; hippie                    : ThaHood.tmx                      : generic_1
  029 - 
  030 - 
- 031 - 
- 032 - 
- 033 - subwayAd                         : Subway
- 033 - subwaySign                       : Subway                           : trainSelection
+ 031 - shopAisle1                       : EZMart                           : cashierTouch
+ 032 - shopAisle1                       : EZMart                           : cashierTouch
  033 - trainCar                         : Subway
  034 - 
- 035 - 
+ 035 - subwaySign                       : Subway                           : trainSelection
  036 - 
  037 - 
  038 - 
@@ -57,7 +58,7 @@ Scene ID                                Spawned by                         Scrip
  052 - 
  053 - 
  054 - 
- 055 - breadstand                       : ResidentialDistrictN             : cart
+ 055 - 
  056 - 
  057 - 
  058 - 
@@ -106,7 +107,6 @@ Scene ID                                Spawned by                         Scrip
  101 - HAHAHAHAHA; witch                : Church.tmx                       : actionTest
  102 - Darth Droid; robot1              : Church.tmx                       : actionTest
  103 - Your Maker; reaper               : Church.tmx                       : actionTest
- 103 - yoko; witch                      : Subway.tmx                       : actionTest
  104 - 
  105 - 
  106 - 
@@ -123,7 +123,7 @@ Scene ID                                Spawned by                         Scrip
  117 - 
  118 - 
  119 - 
- 120 - Argus; cashier                   : Factory.tmx                      : factoryWorkerEntrance
+ 120 - Argus; burly2                    : Factory.tmx                      : factoryWorkerEntrance
  121 - 
  122 - 
  123 - 

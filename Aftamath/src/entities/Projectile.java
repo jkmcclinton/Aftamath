@@ -73,6 +73,8 @@ public class Projectile extends Entity {
 	}
 	
 	public void render(FadingSpriteBatch sb){
+		Color overlay = sb.getOverlay();
+		if(pL!=null) sb.setColor(Vars.DAY_OVERLAY);
 		switch(damageType){
 		case ELECTRO:
 		case ROCK:	
@@ -87,6 +89,8 @@ public class Projectile extends Entity {
 			break;
 		
 		}
+		if(sb.isDrawingOverlay())
+			sb.setColor(overlay);
 	}
 
 	//handling for when projectile collides with something

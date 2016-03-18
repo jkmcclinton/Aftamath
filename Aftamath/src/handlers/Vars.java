@@ -37,15 +37,18 @@ public class Vars {
 	public static final Color INDOOR_LIGHT = new Color(0, 0, 0, ALPHA);
 	public static final Color NIGHT_LIGHT = new Color (14/255f, 11/255f, 28/255f, ALPHA);
 	public static final Color DARK_LIGHT = new Color (1/255f, 1/255f, 1/255f, ALPHA);
+	public static final Color GHOSTLY_LIGHT = new Color(139/255f, 139/255f, 195/255f, .5f);
 	
 	public static final Color DAY_OVERLAY = new Color(1, 1, 1, ALPHA);
 	public static final Color SUNSET_GOLD = new Color(255/255f, 185/255f, 0/255f,ALPHA);
 	public static final Color SUNSET_ORANGE = new Color(255/255f, 124/255f, 0/255f, ALPHA);
 	public static final Color SUNSET_MAGENTA = new Color(213/255f, 37/255f, 109/255f, ALPHA);
 	public static final Color NIGHT_OVERLAY = new Color(44/255f, 48/255f, 107/255f, ALPHA);
-	public static final Color INDOOR = new Color(1, 1, 1, ALPHA);
+	public static final Color INDOOR_OVERLAY = new Color(1, 1, 1, ALPHA);
+	public static final Color DARK_OVERLAY = new Color(32/255f, 25/255f, 74/255f, ALPHA);
 	public static final Color SUNRISE = new Color(109/255f, 163/255f, 187/255f, ALPHA);
 	public static final Color FROZEN_OVERLAY = new Color(139/255f, 195/255f, 217/255f, ALPHA/2f);
+	public static final Color BURN_OVERLAY = new Color(Color.RED);
 	
 	public static final int PLAYER_SCENE_ID = 0;
 	public static final int NARRATOR_SCENE_ID = 1000;

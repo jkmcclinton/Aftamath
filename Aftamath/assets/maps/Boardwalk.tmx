@@ -4,7 +4,7 @@
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
   <property name="bgm day" value="Misdirection"/>
-  <property name="bgm night" value="Midnight Waves"/>
+  <property name="bgm night" value="Second Day"/>
   <property name="name" value="Boardwalk"/>
   <property name="next" value="Warehouse"/>
   <property name="previous" value="Hero HQ"/>

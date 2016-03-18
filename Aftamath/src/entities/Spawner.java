@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Array;
 
+import box2dLight.PointLight;
 import entities.MobAI.ResetType;
 import handlers.Vars;
 import main.Game;
@@ -123,13 +124,16 @@ public class Spawner extends Entity {
 			break;
 		case NIGHTER:
 			e = new Mob("", "nighter"+nighterType, -1, x, y, lyr);
-			e.setState("followplayer", null, -1, ResetType.NEVER.toString());
+			if(path!=null) e.moveToPath(path, true);
+			else e.setState("followplayer", null, -1, ResetType.NEVER.toString());
 			e.setGameState(main);
-			e.setDialogueScript("nighter"+nighterType);
-			e.setDiscoverScript("nighterSight"+nighterType);
+//			e.setDialogueScript("nighter"+nighterType);
+//			e.setDiscoverScript("nighterSight"+nighterType);
 			e.setResponseType("attack");
 			e.setAttackType("on_sight");
-			spawnDelay = nighterDelay; 
+			spawnDelay = nighterDelay;
+			e.addLight(new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, Vars.GHOSTLY_LIGHT,
+					100, x, y));
 			break;
 		case SPECIAL:
 			e = new Mob("", specialType, -1, x, y, lyr);
@@ -152,6 +156,11 @@ public class Spawner extends Entity {
 //		System.out.println(ID+": "+spawnedObjs.size());
 		Array<Entity> toRemove = new Array<>();
 		for(Entity e : spawnedObjs.keySet()){
+			if(!main.exists(e)){
+				toRemove.add(e);
+				continue;
+			}
+			
 			float life = spawnedObjs.get(e);
 			boolean alive = true;
 			if(life>=CIV_LIFETIME && spawnType==SpawnType.CIVILIAN)

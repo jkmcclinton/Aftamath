@@ -110,7 +110,7 @@ remove(barrier1)
 playSound(explosion2)
 wait(2)
 stopEventMusic
-setEvent(FellFromNowhere, "started the game")
+setEvent(FellFromNowhere, {started the game})
 
 text(happy, {Right, so this is "Big City"!})
 text(sad, {The locals decided to give it that original name, not me.})

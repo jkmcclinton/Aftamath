@@ -1,0 +1,153 @@
+Script Shocker
+lockplayer
+setSpeaker(this)
+
+declare(g, local, flag, false)
+if([player.gender = male])
+	value(set, g, true)
+end
+
+if(!talkedToGangsta)
+	text(mad, {F?&#, f@&%, f*$@, F$&#!!!!})
+	setChoice(3:What's up?, 4:Ignore Him)
+		[choice What's up?]
+			setFlag(talkedToGangsta, true)
+			value(add, player.bravery, 0.5)
+			setSpeaker(player)
+			declare(str, local, String, {})
+			if(g)
+				if([player.niceness < 0])
+					value(set, str ,{Wasup, my niggah})
+				else
+					value(set, str ,{What's up})
+				end
+			else
+				value(set, str ,{What's wrong, mistah})
+			end
+			text{/var[str]?}
+			
+			setSpeaker(this)
+			text(mad, {/var[str]!?})
+			text(mad, {Imma tell you wut tha f&#@ is wrong wit me!})
+			text(mad, {Dat snitch Darrius done told on my boys, now dey all in jail!})
+			text(mad, {What's worse, he keep stealin' all mah customers, talkin' bout he gots all tha dope and tha best crack on tha street...})
+			text(mad, {I gots all tha best goods right here! I been had dese since I gots mah first chain!})
+			text(mad, {It jus ain't right man, it ain't RIGHT!})
+			
+			setSpeaker(player)
+			setChoice(2:I feel you, 1:Um... sir?, 4:Oh...)
+				[choice Oh...]
+					if(g)
+						text({Okay, I just stepped in the middle of a drug war...})
+						text({Marquis, I don't think-}, false)
+					else
+						text({I... don't know if I follow you, Marquis.})
+					end
+					
+					setSpeaker(this)
+					text({Aw hell man, an' here I wuz thinkin' you was gon' hook a brotha up.})
+					text({Look man, alls I need is for you to come wit me to his crib and giv him wut's comin' to 'em.})
+					text({You in?})
+					setChoice(YesNo)
+						[Choice Yes]
+							setSpeaker(player)
+							setFlag(helpingMarquis)
+							if(g)
+								text({...I'm down.})
+							else
+								text({...Why the hell not?})
+							end
+						end
+						[Choice No]
+							setSpeaker(player)
+							text({Sorry but, no.})
+						end
+					end
+				end
+				
+				[choice I feel you]
+					SetSpeaker(this)
+					text(mad, {Dat's good, dat's good.})
+					text({Look man, my boys are locked up. So, I need a brutha to come wit me to sort dis shit out.})
+					text({You in?})
+					setChoice(YesNo)
+						[Choice Yes]
+							setSpeaker(player)
+							setFlag(helpingMarquis)
+							if(g)
+								text({I'm down.})
+							else
+								text({Sure, Marquis!})
+							end
+						end
+						[Choice No]
+							setSpeaker(player)
+							text({Sorry but, no.})
+						end
+					end
+				end
+				
+				[choice Um... sir?](player.niceness > 1)
+					value(add, player.bravery, 2)
+					text({Sir, I'm going to have to ask you to put your hands behind your back...})
+					
+					setSpeaker(this)
+					text(mad, {Wut?!})
+					text(mad, {Shit, man! Why didn't you tell me you wuz a cop?})
+					setSpeaker(player)
+					text({I'm not. I'm just doing my duty as a citizen to fight this war on drugs.})
+					setSpeaker(this)
+					text({War on drugs? Man, that's sum bullSHIT!})
+					text({This tha ghetto side of town, man, drugs is everawher.})
+					setSpeaker(player)
+					text({Stop wasting time, Marquis. You're going to jail whetha you want to or not.})
+					setSpeaker(this)
+					text(mad, {Hah! Bruh, you gots to catch me first!})
+					text(mad, {Peace, niggah!})
+					
+					setDialog(this, foundGangsta)
+					run(this, 57, 77)
+					teleport(this, ThaHood, 61, 28)
+					setFlag(mustApprehendGangsta, true)
+				end
+			end
+		end
+		[choice Ignore Him]
+			setSpeaker(player)
+			if(g)
+				text({I'm just going to pretend we didn't meet.})
+			else
+				text({I'm going to pretend I didn't hear all that.})
+			end
+		end
+	end
+else
+	text(mad, {I ain't gon' lie, bruh.})
+	text(mad, {If you cain't help a brutha out you best gitcho ass up on outta here.})
+	setChoice(1:I'll help, 4:No thanks)
+		[choice I'll help]
+			setFlag(helpingMarquis)
+		end
+		[choice No thanks]
+			text(mad, {Then shoo!})
+			doAction(this, shoot)
+			playsound(pistol, Trevon)
+			text(mad, {I needs suppot not ign'rance!})
+		end
+	end
+end
+
+if(helpingMarquis)
+	value(add, player.niceness, 1)
+	setSpeaker(this)
+	text(happy, {Alright, man!})
+	text(happy, {Let's go whoop sum ass!})
+	text({I'll meet you back in Tha Hood. Stay breezy!})
+	setDialog(this, beforeTheShit)
+		
+	hideDialog
+	face(player, this)
+	move(this, 57, 77)
+	teleport(this, ThaHood, 61, 28)
+end
+done

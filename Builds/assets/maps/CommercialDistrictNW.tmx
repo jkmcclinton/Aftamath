@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="9">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="14">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -173,7 +173,7 @@
  </layer>
  <layer name="fg" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJztz7ENgDAQBEE7phTKcSmUQ3k0QgVIDl6H9JqJN9kxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPjLUdglm65WYZdsuroLu2TT1VPYJZuuzlnXJZuurs33nS7ZAAAAAAAAAADw7QWUaQxt
+   eJztzTENgFAUBMFPjRTkIAU5SEEORrDwiksobqbeZNcCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4C97sGtuUs5g19yk3MGuuUl5g11zk3Jsua65SbmGr0nX3KQ8w9eka24AAAAAAAAAoN0HLkoc+Q==
   </data>
  </layer>
  <objectgroup name="entities">
@@ -198,10 +198,11 @@
     <property name="tutDistance" value="inSupTut"/>
    </properties>
   </object>
-  <object id="4" name="2" x="1104" y="1248" width="16" height="16">
+  <object id="4" name="2" x="1056" y="1248" width="16" height="16">
    <properties>
     <property name="ID" value="500"/>
     <property name="NPC" value="julian"/>
+    <property name="attackScript" value="creditsAttack"/>
     <property name="layer" value="front"/>
     <property name="name" value="Julian"/>
     <property name="nickName" value="Julian McClinton"/>
@@ -216,7 +217,7 @@
     <property name="tutDistance1" value="inSupTut"/>
    </properties>
   </object>
-  <object id="7" name="room1_1" x="360" y="1184" width="24" height="81">
+  <object id="7" name="room1_1" x="358" y="1184" width="24" height="81">
    <properties>
     <property name="ID" value="3"/>
     <property name="next" value="Bar"/>
@@ -228,6 +229,44 @@
    <properties>
     <property name="There's A Bar" value="!goneInBar"/>
     <property name="event" value=""/>
+   </properties>
+  </object>
+  <object id="9" name="room1_1" x="762" y="1195" width="28" height="68">
+   <properties>
+    <property name="ID" value="5"/>
+    <property name="next" value="EZMart"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value="[time != night]"/>
+   </properties>
+  </object>
+  <object id="10" name="2" x="256" y="1248" width="16" height="16">
+   <properties>
+    <property name="ID" value="14"/>
+    <property name="NPC" value="burly2"/>
+    <property name="attackScript" value="onAttacked1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Sarge"/>
+    <property name="script" value="sarge"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="11" x="944" y="1248" width="16" height="16">
+   <properties>
+    <property name="ID" value="-1"/>
+    <property name="entity" value="dumpster"/>
+    <property name="layer" value="back"/>
+    <property name="script" value="dumpster"/>
+   </properties>
+  </object>
+  <object id="13" name="2" x="1120" y="1248" width="16" height="16">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="NPC" value="gangster3"/>
+    <property name="attackScript" value="onAttackMarquis"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Marquis"/>
+    <property name="script" value="GangstaWar"/>
+    <property name="state" value="IDLEWALK"/>
    </properties>
   </object>
  </objectgroup>

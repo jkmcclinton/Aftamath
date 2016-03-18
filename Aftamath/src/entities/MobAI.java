@@ -42,8 +42,8 @@ public class MobAI {
 	private int repeat = -1;
 	private Main main; 
 	private Vector2 goalPosition, retLoc;
-	private float inactiveWait, inactiveTime, doTime, doDelay, time;
-	private boolean reached, attacked, AIPhase2, canPosition;
+	private float inactiveWait, inactiveTime, /*doTime, doDelay,*/ time;
+	private boolean reached, /*attacked,*/ AIPhase2, canPosition;
 	private Object data;
 
 	private static final float IDLE_DURATION = 8.33f; //maximum idle time
@@ -726,53 +726,54 @@ public class MobAI {
 	//TODO
 	public void fightAI(){
 //		System.out.println(owner.ID+": FIGHTING");
-		float dx, dy;
-		if(!attacked){
-//			System.out.println("!attacked");
-			if(owner.attackFocus!=null && doTime>=doDelay){
-				//System.out.println("attackFocus!=null && doTime>=doDelay");
-				dx = owner.attackFocus.getPixelPosition().x - owner.getPixelPosition().x;
-				dy = owner.attackFocus.getPixelPosition().y - owner.getPixelPosition().y;
-				float d = (float) Math.sqrt(dx*dx + dy+dy);
-
-				if(Math.abs(d)>owner.attackRange){
-					if(dx-1>0) owner.right();
-					if(dx+1<0) owner.left();
-				} else {
-					owner.attack();
-					attacked = true;
-					doDelay = (float) (Math.random()*3);
-					doTime = 0;
-				}
-			} /*else
-				System.out.println(doTime+":"+doDelay);*/
-		} else {
-			if(reached) inactiveWait++;
-			if(inactiveTime >= inactiveWait && reached) {
-				reached = false;
-				attacked = false;
-			}
-			if(!reached){
-				if (!owner.canMove()) {
-					setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
-					inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
-					inactiveTime = 0;
-					reached = true;
-				}
-				else {
-					dx = (goalPosition.x - owner.getPixelPosition().x) ;
-					if(dx < 1 && dx > -1){
-						setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
-						inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
-						inactiveTime = 0;
-						reached = true;
-					} else {
-						if(dx < 1) owner.left();
-						if(dx > -1) owner.right();
-					}
-				}
-			}
-		}
+		return;
+//		float dx, dy;
+//		if(!attacked){
+////			System.out.println("!attacked");
+//			if(owner.attackFocus!=null && doTime>=doDelay){
+//				//System.out.println("attackFocus!=null && doTime>=doDelay");
+//				dx = owner.attackFocus.getPixelPosition().x - owner.getPixelPosition().x;
+//				dy = owner.attackFocus.getPixelPosition().y - owner.getPixelPosition().y;
+//				float d = (float) Math.sqrt(dx*dx + dy+dy);
+//
+//				if(Math.abs(d)>owner.attackRange){
+//					if(dx-1>0) owner.right();
+//					if(dx+1<0) owner.left();
+//				} else {
+//					owner.attack();
+//					attacked = true;
+//					doDelay = (float) (Math.random()*3);
+//					doTime = 0;
+//				}
+//			} /*else
+//				System.out.println(doTime+":"+doDelay);*/
+//		} else {
+//			if(reached) inactiveWait++;
+//			if(inactiveTime >= inactiveWait && reached) {
+//				reached = false;
+//				attacked = false;
+//			}
+//			if(!reached){
+//				if (!owner.canMove()) {
+//					setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
+//					inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
+//					inactiveTime = 0;
+//					reached = true;
+//				}
+//				else {
+//					dx = (goalPosition.x - owner.getPixelPosition().x) ;
+//					if(dx < 1 && dx > -1){
+//						setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
+//						inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
+//						inactiveTime = 0;
+//						reached = true;
+//					} else {
+//						if(dx < 1) owner.left();
+//						if(dx > -1) owner.right();
+//					}
+//				}
+//			}
+//		}
 	}
 
 	public void begin(){
@@ -981,7 +982,7 @@ public class MobAI {
 	private void finish(){
 		finished = true;
 		owner.controlled = false;
-		System.out.println("AI finished: "+owner+";\t"+this.type);
+//		System.out.println("AI finished: "+owner+";\t"+this.type);
 		if(main.currentScript!=null)
 			if(owner.equals(main.currentScript.getActiveObject()))
 				main.currentScript.removeActiveObj();

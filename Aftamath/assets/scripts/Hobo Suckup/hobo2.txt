@@ -6,11 +6,16 @@ if(talkedToHobo)
 	setScript(Second)
 	goto(SecondStart)
 end
-setFlag(Hobo1, true)
-setSpeaker(Hobo)
-text(normal, {His eyes are bugged out at you...})
+if(Hobo1)
+	setSpeaker(Hobo)
+	text({mutter mutter... bread... mutter...})
+else
+	setFlag(Hobo1, true)
+	text(normal, {His eyes are bugged out at you...})
+end
 setChoice(1:Offer him money, 2:Talk to him)
 	[choice Offer him money]
+		value(add, player.niceness, 0.5)
 		setSpeaker(player)
 		text(normal, {Here's somthing to keep you going sir.})
 		setSpeaker(Hobo)
@@ -39,6 +44,7 @@ setChoice(1:Offer him money, 2:Talk to him)
 		setSpeaker(narrator)
 		text(normal, {Just kidding. Although... he doesn't seem like a normal person. I suggest you do it. No harm done.})
 		text(normal, {Of course, it's your life.})
+		
 		setFlag(talkedToHobo, true)
 		setScript(Second)
 	end
@@ -48,19 +54,25 @@ done
 
 Script Second
 checkpoint(SecondStart)
-setSpeaker(this)
+setSpeaker(Hobo)
 text(normal, {Did you get it?})
 if(!sawBread)
 	setChoice(1:Not yet)
 		[choice Not yet]
-			text(normal, {Bread, okay?})
+			setSpeaker(player)
+			text({...Where do I find bread?})
+			setSpeaker(Hobo)
+			text({mutter mutter...})
+			setSpeaker(narrator)
+			text(sad, {Well isn't he useless...})
+			text({Think back a little bit. Didn't you see a bread stand somewhere?})
 		end
 	end
 else
 	if(!tookBread)
 		setChoice(3:Well..., 1:Not yet)
 			[choice Not yet]
-				text(normal, {Bread, okay?})
+				text(normal, {... Something smells fishy...})
 			end
 			[choice Well...]
 				setSpeaker(player)
