@@ -3,17 +3,21 @@ package entities;
 import static handlers.Vars.PPM;
 import handlers.Animation.LoopBehavior;
 import handlers.FadingSpriteBatch;
+import handlers.JsonSerializer;
 import handlers.Vars;
 import main.Main;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 import entities.Entity.DamageType;
 import entities.Mob.Anim;
 
-public class MobAI {
+public class MobAI implements Serializable {
 	public static enum AIType {
 		AIM, ATTACK, BLOCKPATH, DANCING, DUCK, IDLE, IDLEWALK, EVADING, EVADING_ALL, 
 		FACELEFT, FACEOBJECT, FACEPLAYER, FACERIGHT, FIGHTING, FLAIL, FLY, FOLLOWING, 
@@ -30,9 +34,9 @@ public class MobAI {
 		technical.add(AIType.STOP);
 	}
 
-	public final Mob owner;
-	public final ResetType resetType;
-	public final float resetTime;
+	public Mob owner;
+	public ResetType resetType;
+	public float resetTime;
 	public Entity focus;
 	public AIType type;
 	public boolean finished = false;
@@ -50,6 +54,10 @@ public class MobAI {
 	private static final float FLAIL_RANGE = 8f; //maximum flail distance
 	private static final float DEFAULT_DURATION = 3; //length of time between events
 	private static final float POS_RANGE = 8; //maximum distance from return location before repositioning is active
+	
+	//used only by serializer
+	public MobAI() {
+	}
 	
 	public MobAI(Mob owner, AIType type, Entity focus){
 		this(owner, type, ResetType.ON_AI_COMPLETE, focus);
@@ -912,7 +920,7 @@ public class MobAI {
 		AIPhase2 = false;
 		repeat = -1;
 		finished = true;
-		System.out.println("This nigga finished");
+		//System.out.println("This nigga finished");
 	}
 
 	//ensure the mob can reach its destination
@@ -931,6 +939,12 @@ public class MobAI {
 
 	public Vector2 getGoal() { return goalPosition; }
 	public void setGoal(Vector2 goalPosition) { this.goalPosition = goalPosition; }
+	// used by serializer only
+	public void setOwnerInit(Mob owner) {
+		this.owner = owner;
+		this.main = owner.main;
+		begin();
+	}
 	
 	public boolean equals(Object o){
 		if(o instanceof MobAI){
@@ -940,7 +954,27 @@ public class MobAI {
 		return false;
 	}
 	
+	
 	public String toString(){
 		return "t: "+type+"    rt: "+resetType+"    t: "+time;
+	}
+
+	@Override
+	public void read(Json json, JsonValue val) {
+		this.resetType = ResetType.valueOf(val.getString("resetType"));
+		this.resetTime = val.getFloat("resetTime");
+		this.type = AIType.valueOf(val.getString("aiType"));
+		int focusID = val.getInt("focusID");
+		JsonSerializer.pushMobAiRef(this, focusID);
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("resetType", this.resetType);
+		json.writeValue("resetTime", this.resetTime);
+		json.writeValue("aiType", this.type);
+		json.writeValue("focusID", (this.focus != null) ? this.focus.getSceneID() : -1);
+		//
+		// TODO write data as array of strings if type == MOVE
 	}
 }

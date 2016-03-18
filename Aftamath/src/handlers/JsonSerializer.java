@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.JsonValue;
 
 import entities.Entity;
 import entities.Mob;
+import entities.MobAI;
 
 public class JsonSerializer {
 
@@ -29,11 +30,13 @@ public class JsonSerializer {
 	private static List<MobRef> mobRefLst;
 	private static List<EntityRef> entityRefLst;
 	private static List<PlayerRef> playerRefLst;	//this one is not actually necessary, using it for consistency
+	private static List<MobAIRef> mobAiRefLst;
 	
 	static {
 		mobRefLst = new LinkedList<MobRef>();
 		entityRefLst = new LinkedList<EntityRef>();
 		playerRefLst = new LinkedList<PlayerRef>();
+		mobAiRefLst = new LinkedList<MobAIRef>();
 	}
 	
 	public static void saveGameState(String filename) {
@@ -119,6 +122,13 @@ public class JsonSerializer {
 			}
 		}
 		playerRefLst.clear();
+		
+		for (MobAIRef ref : mobAiRefLst) {
+			if (ref.focus > -1) {
+				ref.orig.focus = Entity.idToEntity.get(ref.focus);
+			}
+		}
+		mobAiRefLst.clear();
 	}
 	
 	public static void pushMobRef(Mob mob2, int attackFocus, int aiFocus, int interactable) {
@@ -141,6 +151,12 @@ public class JsonSerializer {
 		ref.partner = partner;
 		playerRefLst.add(ref);
 	}
+	public static void pushMobAiRef(MobAI mobAi, int focus) {
+		MobAIRef ref = new MobAIRef();
+		ref.orig = mobAi;
+		ref.focus = focus;
+		mobAiRefLst.add(ref);
+	}
 	
 	private static class MobRef {
 		public Mob orig;
@@ -155,5 +171,9 @@ public class JsonSerializer {
 	private static class PlayerRef {
 		public Player orig;
 		public int partner;
+	}
+	private static class MobAIRef {
+		public MobAI orig;
+		public int focus;
 	}
 }

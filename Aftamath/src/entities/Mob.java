@@ -1540,18 +1540,17 @@ public class Mob extends Entity{
 	@Override
 	public void read(Json json, JsonValue val) {
 		super.read(json, val);
-		try {
-			//TODO figure out why this doesnt work
-			this.respawnPoint = json.fromJson(Vector2.class, val.get("respawnPoint").child().toString());
-		} catch (SerializationException | NullPointerException e) {
-		}
-		
+		float rx = val.getFloat("respawnPointX");
+		float ry = val.getFloat("respawnPointY");
+		this.respawnPoint = new Vector2(rx, ry);		
 		this.iff = IFFTag.valueOf(val.getString("iff"));
 		this.name = val.getString("name");
 		this.strength = val.getDouble("strength");
 		this.level = val.getInt("level");
 		this.experience = val.getFloat("experience");
-//		this.defaultState = MobAI.valueOf(val.getString("defaultState"));
+		this.defaultState = json.fromJson(MobAI.class, val.get("defaultState").toString());
+		this.defaultState.setOwnerInit(this);
+		this.currentState = this.defaultState;
 		this.powerType = Entity.DamageType.valueOf(val.getString("powerType"));
 		this.visionRange = val.getFloat("visionRange");
 		
@@ -1561,6 +1560,7 @@ public class Mob extends Entity{
 		if (attackFocusId > -1 || aiFocusId > -1 || interactableId > -1) {
 			JsonSerializer.pushMobRef(this, attackFocusId, aiFocusId, interactableId);
 		}
+		
 				
 		//other stuff that typically happens in constructor
 		Texture texture = Game.res.getTexture(ID + "face");
@@ -1574,7 +1574,8 @@ public class Mob extends Entity{
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue("respawnPoint", this.respawnPoint);
+		json.writeValue("respawnPointX", this.respawnPoint.x);
+		json.writeValue("respawnPointY", this.respawnPoint.y);
 		json.writeValue("iff", this.iff);
 		json.writeValue("name", this.name);
 		//json.writeValue("voice", this.voice);	//TODO: implement voice
