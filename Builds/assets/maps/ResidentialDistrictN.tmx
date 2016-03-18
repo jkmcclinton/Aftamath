@@ -298,7 +298,7 @@
     <property name="ID" value="2"/>
     <property name="next" value="Central Park"/>
     <property name="nextWarp" value="0"/>
-    <property name="warp" value="businessEvent"/>
+    <property name="warp" value="!rodeTrainFirstTime"/>
    </properties>
   </object>
   <object id="57" x="48" y="52" width="16" height="1516">
@@ -310,7 +310,7 @@
   </object>
   <object id="61" name="2" x="576" y="1552" width="16" height="16">
    <properties>
-    <property name="ID" value="55"/>
+    <property name="ID" value="-1"/>
     <property name="attackScript" value="attackCart"/>
     <property name="entity" value="breadstand"/>
     <property name="layer" value="back"/>
@@ -320,7 +320,7 @@
   </object>
   <object id="64" x="63" y="1392" width="16" height="176">
    <properties>
-    <property name="cantGoToThaHood" value=""/>
+    <property name="cantGoToThaHood" value="!rodeTrainFirstTime"/>
     <property name="event" value=""/>
    </properties>
   </object>

@@ -201,10 +201,11 @@
   <object id="4" name="1" x="720" y="448" width="16" height="16">
    <properties>
     <property name="ID" value="13"/>
-    <property name="NPC" value="doctordisco"/>
+    <property name="NPC" value="villain3"/>
     <property name="attackScript" value="discoResponse"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Doctor Disco"/>
+    <property name="name" value="Disco"/>
+    <property name="nickname" value="Doctor Disco"/>
     <property name="script" value="disco"/>
     <property name="state" value="faceplayer"/>
    </properties>

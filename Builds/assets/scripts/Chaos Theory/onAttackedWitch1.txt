@@ -1,0 +1,17 @@
+Script Main
+lockplayer
+setSpeaker(this)
+
+if(!cursed)
+	setEvent(cursed, {Witch cursed you to look like a dog!})
+	text({Ah!})
+	text({Prepare, mortal, for the curse of your lifetime!})
+	hidedialog
+	changeSprite(player, underdog)
+	text({How do you like that! You have now been eternallty cursed to appear as a cute dog!})
+	text({That'll teach you for trying to mess with me! HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAAAAAA!!!!})
+else
+	text({What, do you want to be cursed as an even CUTER monster?!})
+	text({Don't tempt me, child.})
+end
+done
