@@ -12,7 +12,9 @@ public class Path extends Entity {
 	private boolean forward = true, reached;
 	private Array<Vector2> points;
 	private Behavior behavior;
+	private float speed = DEFAULT_SPEED;
 	
+	private static final float DEFAULT_SPEED = 1;
 	
 	public enum Behavior {
 		ONCE, RETURN, MULTIPLE, CONTINUOUS
@@ -28,9 +30,13 @@ public class Path extends Entity {
 	}
 	
 	public Path(String pathName, String behavior, Array<Vector2> points, int maxRun){
-		this.points = points;
+		this.points = new Array<>(points);
 		this.maxRun = maxRun;
 		this.ID = pathName;
+		
+		Vector2 v = points.get(0);
+		x = v.x;
+		y = v.y;
 
 		try{
 			Behavior b = Behavior.valueOf(behavior.toUpperCase());
@@ -41,6 +47,8 @@ public class Path extends Entity {
 	}
 	
 	public Vector2 getCurrent(){ return points.get(current); }
+	public float getSpeed(){ return this.speed; }
+	public void setSpeed(float speed){ this.speed = speed; }
 	
 	//set the current node to the next possible point
 	public void stepIndex(){
@@ -97,6 +105,8 @@ public class Path extends Entity {
 				break;
 			}
 	}
+	
+	public Path copy(){ return new Path(ID, behavior.toString(), points); }
 	
 	public String toString(){
 		return ID+": ["+x+","+y+"]";

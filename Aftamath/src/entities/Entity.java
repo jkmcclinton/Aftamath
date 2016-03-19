@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
 
+import box2dLight.Light;
 import handlers.Animation;
 import handlers.FadingSpriteBatch;
 import handlers.JsonSerializer;
@@ -57,7 +58,7 @@ public class Entity implements Serializable {
 	protected double resistance = 1;
 	protected int sceneID;
 	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
-	protected float invulnerableTime;
+	protected float invulnerableTime, maxSpeed = MOVE_SPEED;
 	protected Texture texture;
 	protected boolean facingLeft, invulnerable;
 	protected World world;
@@ -70,17 +71,22 @@ public class Entity implements Serializable {
 	protected MassData mdat = new MassData();
 	protected short layer, origLayer;
 	protected HashMap<Mob, Boolean> followers;
+	protected Light light;
 	
+	protected static final float MAX_DISTANCE = 65;
+	protected static final double DEFAULT_MAX_HEALTH = 20;
+	
+	private Path path;
+	private boolean moving;
+	
+	private static final float MOVE_SPEED = .70f;
 	static {
 		idToEntity = new HashMap<Integer, Entity>();
 	}
 	
 	public enum DamageType{
-		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND;
+		PHYSICAL, BULLET, FIRE, ICE, ELECTRO, ROCK, WIND, DARKMAGIC;
 	}
-	
-	protected static final float MAX_DISTANCE = 65;
-	protected static final double DEFAULT_MAX_HEALTH = 20;
 
 	//no-arg should only be used by serializer
 	public Entity() {
@@ -91,7 +97,7 @@ public class Entity implements Serializable {
 		this(x, y, -1, -1, ID);
 	}
 	
-	public Entity(float x, float y, int width, int height, String ID) {
+	public Entity(float x, float y, float width, float height, String ID) {
 		this.init();
 		this.ID = ID;
 		this.x = x;
@@ -135,11 +141,13 @@ public class Entity implements Serializable {
 				frozen = false;
 		}
 		
+		//step invulnerability timer
 		if (invulnerable && invulnerableTime > 0) 
 			invulnerableTime-= dt;
 		else if (invulnerable && invulnerableTime <= 0 && invulnerableTime > -1) 
 			invulnerable = false;
 		
+		//apply burn effect
 		if(burning){
 			burnTime+=dt;
 			burnDelay+=dt;
@@ -151,15 +159,161 @@ public class Entity implements Serializable {
 				burnTime = 0;
 			}
 		}
+		
+		// make entity move to path
+		//NOTE, should be merged with AI state?
+		if(moving){
+			if(body.getType().equals(BodyType.KinematicBody)){
+//				System.out.println("moving kinematic entity");
+				moving = !moveToLoc(goalPosition);
+				if(!moving){
+					goalPosition = null;
+					if(path!=null){
+						path.stepIndex();
+						if(path.completed){
+							body.setLinearVelocity(new Vector2(0, 0));
+							moving = false;
+						} else{
+							moving = true;
+							goalPosition = path.getCurrent();
+						}
+					}
+				}
+			} else if(body.getType().equals(BodyType.DynamicBody)){
+//				System.out.println("moving dynamic entity");
+				moving = !moveToLoc(goalPosition.x);
+				if(!moving) {
+					goalPosition = null;
+					if(path!=null){
+						path.stepIndex();
+						if(path.completed){
+							Vector2 v = body.getLinearVelocity();
+							body.setLinearVelocity(new Vector2(v.x/2f, v.y));
+							moving = false;
+						} else {
+							moving = true;
+							goalPosition = path.getCurrent();
+						}
+					}
+				}
+			}
+			
+			if(!moving){
+				maxSpeed = MOVE_SPEED;
+				path = null;
+				Script s = main.currentScript;
+				if(s!=null)
+					if(s.getActiveObject()!=null)
+						if(s.getActiveObject().equals(this))
+							s.removeActiveObj();
+			}
+		}	
+	}
+	
+	//for entities w/ kinematic bodies
+	private boolean moveToLoc(Vector2 loc){
+		if(isReachable(loc)){
+			float dx = loc.x - getPixelPosition().x;
+			float dy = loc.y - getPixelPosition().y;
+			if(Math.abs(dx) > 2*maxSpeed || Math.abs(dy) > 2*maxSpeed){
+				Vector2 v = body.getLinearVelocity();
+				if (dx > 1.5f*maxSpeed) v.x = maxSpeed;
+				else if (dx < -1.5f*maxSpeed) v.x = -maxSpeed;
+				else setPosition(new Vector2(loc.x, getPixelPosition().y));
+
+				if (dy > 1.5f*maxSpeed) v.y = maxSpeed;
+				else if (dy < -1.5f*maxSpeed) v.y = -maxSpeed;
+				else setPosition(new Vector2(getPixelPosition().x, loc.y-rh));
+				body.setLinearVelocity(v);
+				return false;
+			} else {
+				body.setLinearVelocity(new Vector2(0,0));
+				return true;
+			}
+		}
+		body.setLinearVelocity(new Vector2(0, 0));
+		return true;
+	}
+	
+	private boolean moveToLoc(float gx){
+		if(isReachable(gx)){
+			float dx = gx - getPixelPosition().x;
+			if(Math.abs(dx) > 2){
+				if (dx > 0) right();
+				else left();
+			} else {
+				Vector2 v =body.getLinearVelocity();
+				body.setLinearVelocity(new Vector2(v.x/2f, v.y));
+				return true;
+			}
+			return false;
+		}
+		Vector2 v = body.getLinearVelocity();
+		body.setLinearVelocity(new Vector2(v.x/2f, v.y));
+		return true;
+	}
+	
+	public void left(){
+		if (!facingLeft) changeDirection();
+		if (body.getLinearVelocity().x > -maxSpeed) 
+			body.applyForceToCenter(-5f*x, 0, true);
+	}
+	
+	public void right(){
+		if (facingLeft) changeDirection();
+		if (body.getLinearVelocity().x < maxSpeed) 
+			body.applyForceToCenter(5f*x, 0, true);
+	}
+	
+	private boolean isReachable(Vector2 loc){
+		if(loc.x>getCurrentScene().width) return false;
+		if(loc.x<0) return false;
+		if(loc.y>getCurrentScene().height) return false;
+		if(loc.y<0) return false;
+		return true;
+	}
+	
+	private boolean isReachable(float x){
+//		if(!canMove())
+//			return false;
+		
+		//adjust goal if location is outside of level
+		if(x>getCurrentScene().width)
+			return false;
+		if(x<0)
+			return false;
+		return true;
+	}
+	
+	private Vector2 goalPosition;
+	public void move(Vector2 goal){
+		goalPosition = goal;
+		moving = true;
+	}
+	
+	public void moveToPath(Path path){
+		if (path==null) return;
+		this.path = path.copy();
+		moving = true;
+		maxSpeed = path.getSpeed();
+		goalPosition = path.getCurrent();
 	}
 	
 	public void render(FadingSpriteBatch sb) {
 		Color overlay = sb.getColor();
-		if(frozen)
+		if(frozen){
+			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
 			sb.setColor(Vars.blendColors(Vars.FROZEN_OVERLAY, overlay));
+		} else {
+			if(light !=null)
+				sb.setColor(Vars.DAY_OVERLAY);
+			}
 		sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
-		if(frozen)
+		if(sb.isDrawingOverlay())
 			sb.setColor(overlay);
+		
+		if(light!=null)
+			light.setPosition(getPixelPosition());
 	}
 	
 	//used by scripts to change animations, possitbly??
@@ -234,12 +388,41 @@ public class Entity implements Serializable {
 	public Scene getCurrentScene(){ return currentScene; }
 	public int getSceneID(){ return sceneID; }
 	public void setSceneID(int ID){ sceneID = ID; }
-	public void setPosition(Vector2 location){
-		x=location.x;
-		y=location.y;
+	public Light getLight(){ return this.light; }
+	public void addLight(Light light){
+		try{
+			if(this.light!=null)
+				this.light.remove();
+		} catch(Exception e){
+			//cannot remove light
+		}
+		this.light = light;
 	}
 	
-	public Vector2 getPosition(){ return body.getPosition(); }
+	/**units in pixels*/
+	public void setPosition(Vector2 location){
+		if(location==null) return;
+		x=location.x;
+		y=location.y+rh;
+		respawn();
+	}
+	
+	private void respawn(){
+		dead = false;
+		animation.reset();
+		main.removeBody(body);
+		body.setUserData(this.copy());
+		create();
+	}
+	
+	public Vector2 getPosition(){ 
+		if(body!=null) {
+			return body.getPosition();
+		}
+		else {
+			return new Vector2(x, y);
+		}
+	}
 	public Vector2 getPixelPosition(){ 
 		if(body!=null) {
 			return new Vector2(body.getPosition().x*Vars.PPM, body.getPosition().y*Vars.PPM);
@@ -359,18 +542,18 @@ public class Entity implements Serializable {
 		setDimensions(getWidth(ID), getHeight(ID));
 	}
 	
-	protected void setDimensions(int width, int height){
+	protected void setDimensions(float width, float height){
 		//if (width < 0 || height < 0) {
 		//	width = getWidth(this.ID);
 		//	height = getHeight(this.ID);
 		//}
 		
-		this.width = width; 
-		this.height = height;
+		this.width = (int) width; 
+		this.height = (int) height;
 
 		//units in pixels, measures radius of image
-		this.rw = width/2; 
-		this.rh = height/2;
+		this.rw = (int) width/2; 
+		this.rh = (int) height/2;
 	}
 	
 	protected static int getWidth(String ID){
@@ -387,7 +570,7 @@ public class Entity implements Serializable {
 		}
 	}
 
-	protected static int getHeight(String ID){
+	public static int getHeight(String ID){
 		try{
 			Texture src = Game.res.getTexture(ID+"base");
 			return src.getHeight();
@@ -450,7 +633,8 @@ public class Entity implements Serializable {
 
 	public void removeFollower(Mob m){ 
 		followers.remove(m);
-		m.resetFollowIndex();
+		if(m!=null)
+			m.resetFollowIndex();
 	}
 	
 	public void addFollower(Mob m){ addFollower(m, false); }
@@ -464,6 +648,7 @@ public class Entity implements Serializable {
 	public HashMap<Mob, Boolean> getFollowers(){ return followers; }
 
 	public int compareTo(Entity e){
+		if(e ==null) return 0;		
 		if (layer < e.layer) return 1;
 		if (layer > e.layer) return -1;
 		return 0;
@@ -497,7 +682,7 @@ public class Entity implements Serializable {
 		shape.setAsBox((rw)/PPM, (rh)/PPM);
 		
 		bdef.position.set(x/PPM, y/PPM);
-		bdef.type = BodyType.StaticBody;
+		bdef.type = BodyType.KinematicBody;
 		fdef.shape = shape;
 		body = world.createBody(bdef);
 		body.setUserData(this);

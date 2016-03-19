@@ -1,0 +1,5 @@
+Script Main
+lockplayer
+setSPeaker(this)
+text({I can't believe I dated you...})
+done

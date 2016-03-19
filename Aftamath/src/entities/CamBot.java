@@ -76,6 +76,6 @@ public class CamBot extends Mob {
 	}
 
 	public void follow(Entity focus) {}
-	public void stay() { } 
+	public boolean stay() { return false; } 
 	public Mob copy() { return new CamBot(0,0); }
 }

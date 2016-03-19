@@ -1,0 +1,13 @@
+Script Main
+
+if(VisitedPier)
+	declare(found, local, Flag, false)
+	wait(.01)
+	findObject(Prince of Nigeria, found)
+	if(!found)
+		spawn(NPC, bballer, Prince of Nigeria, 51, 78, 140)
+		setDialogue(Prince of Nigeria, {princeRandom})
+	end
+end
+
+done

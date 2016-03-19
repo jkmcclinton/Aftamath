@@ -1,0 +1,16 @@
+Script Main
+lockplayer
+face(this, player)
+face(player, this)
+if([player.niceness >= 0])
+	setSpeaker(Hero)
+	text(mad, {Where are you going? I'm trying to teach you somehing!})
+else
+	setSpeaker(Villain)
+	text(mad, {Where are hell do you think you're going? Get your but back over here!})
+end
+	
+move(player, 47.5, 78)
+done
+
+

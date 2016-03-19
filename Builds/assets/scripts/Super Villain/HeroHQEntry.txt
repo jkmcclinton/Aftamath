@@ -1,0 +1,121 @@
+Script
+lockplayer
+
+setSpeaker(Hero)
+Text(happy, {Home sweet home! Can't you smell the justice in the air?})
+
+setSpeaker(Player)
+setChoice(1:Totally!, 2:No)
+    [Choice Totally]
+	    setSpeaker(Hero)
+		Text({We're going to get along righteously!})
+	end
+	
+	[Choice No]
+	    setSpeaker(Hero)
+		Text({Worry not!})
+		Text({You'll soon learn to detect the aura of justice!})
+	end
+	
+setSpeaker(Narrator)
+Text({You certainly picked an interesting friend.})
+
+setSpeaker(Hero2)
+face(Hero2, Player)
+Text({Hail, friend.})
+Text({I see you have come to learn the arts of war.})
+Text(sad, {Although...you don't look like much.})
+
+setSpeaker(player)
+face(player, Hero2)
+setChoice(1:I'm not much., 2:Excuse me?)
+    [Choice I'm not much]
+	    setSpeaker(Hero2)
+		Text(happy, {Honesty, I respect that.})
+		Text({It seems we can expect great things from you.})
+	end
+	
+	[Choice Excuse me?]
+	    setSpeaker(Hero2)
+		Text(mad, {You will have a chance to prove yourself in due time.})
+		Text({Respect is earned around here.})
+	end
+
+setSpeaker(Hero3)
+face(Hero3, player)
+Text(happy, {Oh my gosh, oh my gosh, OH MY GOSH!})
+Text(happy, {Welcome to the best place on...uh...what planet are we on?})
+
+setSpeaker(Narrator)
+Text({This is a game, Aftamath. We're on whatever planet the player is on.})
+
+setSpeaker(Hero3)
+Text({Whoa...so like, you could be an alien?})
+Text({That's crazy! Are you an alien?})
+
+setSpeaker(Player)
+face(Player, Hero3)
+setChoice(1:No, 2:Yes)
+    [Choice No]
+	    setSpeaker(Hero3)
+		Text(normal, {Well, even if you're not an alien...})
+		Text(flirty, {Your looks are out of this world!})
+	end
+	
+	[Choice Yes]
+	    setSpeaker(Hero3)
+		Text({That's so cool! Promise me you'll tell me about your planet later!})
+		declare(a, global, Integer, 0)
+	    value(add, a, 1)
+		#when the player talks to him later, he will ask about the planet if this value = 1
+	end
+	
+setSpeaker(Hero4)
+Face(Hero4, Player)
+Text({A newbie. You look soft.})
+Text({You have to build up those muscles if you want to get ahead.})
+
+setSpeaker(Hero5)
+face(Hero5, Hero4)
+Text(mad, {Pah, sonny!})
+face(Hero5, Player)
+Text(happy, {Now, you just ignore him.})
+Text(happy, {He's all brawn and no brain.})
+Text(happy, {People like you and me, we know how to use our ol' noggins!})
+
+setSpeaker(Player)
+setChoice(6:You're right, 2:I'm not like you)
+    [Choice You're right]
+	    setSpeaker(Hero5)
+		Text({Har! I like you, kid!})
+	end
+	
+	[Choice I'm not like you]
+	    setSpeaker(Hero5)
+		Text(sad, {No? Well, we all must choose our own paths.})
+	end
+	
+setSpeaker(Hero6)
+face(Hero6, Player)
+Text({It is a pleasure to make your acquaintance.})
+
+setSpeaker(Player)
+face(Player, Hero6)
+setChoice(1:The pleasure is mine, 6:Aren't you a little out of place?)
+    [Choice The pleasure is mine]
+	    setSpeaker(Hero6)
+		Text({I hope you find your time here suitable.})
+	end
+	
+	[Choice Aren't you a little out of place?]
+	    setSpeaker(Hero6)
+		Text(mad, {Unlike for brutes like you, class and dignity are never out of place.})
+	end
+
+setSpeaker(Hero7)
+face(Hero7, Player)
+Text(happy, {Hello, little one. Make yourself at home.})
+
+done
+
+

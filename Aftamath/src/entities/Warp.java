@@ -1,20 +1,23 @@
 package entities;
 
-import handlers.Vars;
-import scenes.Scene;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
+import handlers.TextTrigger;
+import handlers.Vars;
+import scenes.Scene;
+
 public class Warp extends Entity {
 
 	public String next = null;
-	public Scene owner;
+//	public Scene owner;
+	public boolean outside;
 	public String locTitle;
 	public int warpID;
 	public boolean instant;
 	public TransType transitionType;
+	private TextTrigger tt;
 	
 	private String condition;
 	private Vector2 warpLoc, offset;
@@ -39,11 +42,17 @@ public class Warp extends Entity {
 		this.height = (int) h;
 		this.rw = width/2;
 		this.rh = height/2;
-		this.owner = owner;
+		this.outside = owner.outside;
 		this.offset = new Vector2(0, 0);
 		this.warpLoc = new Vector2(x, y-rh);
 		this.locTitle = owner.title;
 		loadSprite();
+	}
+	
+	public void setPosition(Vector2 location){
+		if(location==null) return;
+		x=location.x;
+		y=location.y;
 	}
 
 	//check if conditions in scene have been met
@@ -60,11 +69,11 @@ public class Warp extends Entity {
 
 	public Scene getNextScene(){
 		if (next!=null)
-			return owner.levelFromID(next, this, nextWarp);
+			return Scene.levelFromID(next, this, nextWarp);
 		return null;
 	}
 	
-	public void setOwner(Scene owner){ this.owner =owner; }
+//	public void setOwner(Scene owner){ this.owner =owner; }
 	public int getLinkID(){ return nextWarp; }
 	public Warp getLink() { return link; }
 	public void setLink(Warp link){this.link = link; }
@@ -76,6 +85,8 @@ public class Warp extends Entity {
 	
 	public Vector2 getOffset(){ return offset; }
 	public void setInstant(boolean instant){ this.instant = instant; }
+	public void setTextTrigger(TextTrigger tt){ this.tt = tt; }
+	public TextTrigger getTextTrigger(){ return tt; }
 
 	@Override
 	public void create() {

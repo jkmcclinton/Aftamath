@@ -1,0 +1,63 @@
+Script Main
+lockplayer
+setSpeaker(this)
+
+declare(punchC, local, integer, 0)
+value(add, punchC, 1)
+
+if([partner.title = {girlfriend}] or [partner.title = {boyfriend}])
+	value(add, player.love, -1)
+	value(add, player.niceness, -0.5)
+	declare(txt, local, integer, 0)
+	random(txt, 1, 6)
+	if([partner.gender = female])
+		if([txt = 1] or [txt = 4])
+			text(mad, {Hey!})
+			text(mad, {What was that for?})
+		end
+		if([txt = 2] or [txt = 5])
+			declare(m, local, string, {/playerg})
+			if([player.gender = male])
+				value(set, m, {man})
+			end
+			
+			text(mad, {Ow!})
+			text(sad, {You know, it hurts worse when your own /var[m] hits you.})
+		end
+		if([txt = 3] or [txt = 6])
+			text(mad, {UGGH!})
+			text(mad, {You do that one more time /player and I swear we're through!})
+		end
+		if([punchC = 6])
+			text(mad, {That's it, we're through!})
+			text(mad, {I'm not putting up with some /playerg who abuses their /partnert.})
+			removePartner
+			setDialog(this, exPartner)
+			setAttackScript(this, onAttacked)
+			setSuperAttackScript(this, null)
+		end
+	else
+		if([txt = 1] or [txt = 4])
+			text(mad, {Hey, man!})
+			text(mad, {What was that for?})
+		end
+		if([txt = 2] or [txt = 5])
+			text(mad, {Dude, not cool.})
+		end
+		if([txt = 3] or [txt = 6])
+			text(mad, {I swear, one of these days...})
+		end
+		if([punchC = 6])
+			text(mad, {Alright /player, I've had enough of your sass.})
+			text(mad, {Find some other man to go beat up.})
+			setEvent(brokeUpWithPartner, {Broke up with /partner})
+			removePartner
+			setDialog(this, exPartner)
+			setAttackScript(this, onAttacked)
+			setSuperAttackScript(this, null)
+		end
+	end
+else
+	text({Dude, don't hit me.})
+end
+done

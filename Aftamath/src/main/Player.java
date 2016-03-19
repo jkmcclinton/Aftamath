@@ -39,7 +39,7 @@ public class Player implements Serializable {
 	}
 	
 	private void init() {
-		money = goalMoney = 1500.00;
+		money = goalMoney = 500.00;
 		home = new House();
 		
 		L = 1; B = 1; N = 1;
@@ -85,17 +85,23 @@ public class Player implements Serializable {
 	
 	//following methods are getters and setters
 	
-	public void goOut(Mob newPartner, String info){
+	public void addPartner(Mob newPartner, String title, String info){
 		setPartner(newPartner);
 		this.info = info;
+		this.partnerTitle = title;
 		relationship = 0;
 		L = 0;
 		
 		main.history.setFlag("hasPartner", true);
 	}
 	
-	public void breakUp(){
+	public void removePartner(){
+		if(myPartner==null) return;
+		main.character.removeFollower(myPartner);
+		myPartner.setState("STATIONARY", null, -1, "NEVER");
 		myPartner = null;
+		this.info = "";
+		this.partnerTitle = "";
 		main.history.setFlag("hasPartner", false);
 	}
 	

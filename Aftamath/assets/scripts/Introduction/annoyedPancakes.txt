@@ -1,0 +1,12 @@
+Script Main
+lockplayer
+setSpeaker(this)
+
+declare(g, local, string,  {gentleman})
+if([player.gender = male])
+	value(set, g, {woman})
+end
+
+text({My, if it isn't the /var[g] who laughed at me!})
+text({Leave me alone! ~I'm waiting for the breadstand guy to come back.})
+done

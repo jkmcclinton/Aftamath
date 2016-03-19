@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="10" tilewidth="16" tileheight="16" nextobjectid="31">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="Train Tracks"/>
+ </properties>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
+  <tile id="900">
+   <animation>
+    <frame tileid="900" duration="33"/>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+   </animation>
+  </tile>
+  <tile id="901">
+   <animation>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+    <frame tileid="900" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="902">
+   <animation>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+    <frame tileid="900" duration="33"/>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="903">
+   <animation>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+    <frame tileid="900" duration="33"/>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="919">
+   <animation>
+    <frame tileid="900" duration="33"/>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+   </animation>
+  </tile>
+  <tile id="920">
+   <animation>
+    <frame tileid="977" duration="33"/>
+    <frame tileid="916" duration="33"/>
+    <frame tileid="978" duration="33"/>
+    <frame tileid="917" duration="33"/>
+    <frame tileid="979" duration="33"/>
+    <frame tileid="918" duration="33"/>
+    <frame tileid="976" duration="50"/>
+    <frame tileid="915" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="921">
+   <animation>
+    <frame tileid="916" duration="33"/>
+    <frame tileid="978" duration="33"/>
+    <frame tileid="917" duration="33"/>
+    <frame tileid="979" duration="33"/>
+    <frame tileid="918" duration="33"/>
+    <frame tileid="976" duration="50"/>
+    <frame tileid="915" duration="33"/>
+    <frame tileid="977" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="922">
+   <animation>
+    <frame tileid="978" duration="33"/>
+    <frame tileid="917" duration="33"/>
+    <frame tileid="979" duration="33"/>
+    <frame tileid="918" duration="33"/>
+    <frame tileid="976" duration="50"/>
+    <frame tileid="915" duration="33"/>
+    <frame tileid="977" duration="33"/>
+    <frame tileid="916" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="960">
+   <animation>
+    <frame tileid="960" duration="50"/>
+    <frame tileid="900" duration="33"/>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="961">
+   <animation>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+    <frame tileid="900" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="962">
+   <animation>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+    <frame tileid="900" duration="33"/>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="963">
+   <animation>
+    <frame tileid="963" duration="33"/>
+    <frame tileid="903" duration="33"/>
+    <frame tileid="960" duration="50"/>
+    <frame tileid="900" duration="33"/>
+    <frame tileid="961" duration="33"/>
+    <frame tileid="901" duration="33"/>
+    <frame tileid="962" duration="33"/>
+    <frame tileid="902" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="980">
+   <animation>
+    <frame tileid="917" duration="33"/>
+    <frame tileid="979" duration="33"/>
+    <frame tileid="918" duration="33"/>
+    <frame tileid="976" duration="50"/>
+    <frame tileid="915" duration="33"/>
+    <frame tileid="977" duration="33"/>
+    <frame tileid="916" duration="33"/>
+    <frame tileid="978" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="981">
+   <animation>
+    <frame tileid="979" duration="33"/>
+    <frame tileid="918" duration="33"/>
+    <frame tileid="976" duration="50"/>
+    <frame tileid="915" duration="33"/>
+    <frame tileid="977" duration="33"/>
+    <frame tileid="916" duration="33"/>
+    <frame tileid="978" duration="33"/>
+    <frame tileid="917" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="982">
+   <animation>
+    <frame tileid="918" duration="33"/>
+    <frame tileid="976" duration="50"/>
+    <frame tileid="915" duration="33"/>
+    <frame tileid="977" duration="33"/>
+    <frame tileid="916" duration="33"/>
+    <frame tileid="978" duration="33"/>
+    <frame tileid="917" duration="33"/>
+    <frame tileid="979" duration="33"/>
+   </animation>
+  </tile>
+  <tile id="983">
+   <animation>
+    <frame tileid="976" duration="200"/>
+    <frame tileid="915" duration="33"/>
+    <frame tileid="977" duration="33"/>
+    <frame tileid="916" duration="33"/>
+    <frame tileid="978" duration="33"/>
+    <frame tileid="917" duration="33"/>
+    <frame tileid="979" duration="33"/>
+    <frame tileid="918" duration="33"/>
+   </animation>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF9AKtzAwMbUDcDsQdQHwQiA8B8WEgPsJMnvwoGAWjYBQMFAAAibMNYw==
+  </data>
+ </layer>
+ <layer name="bg2" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztzts2lAEYx+GPOU4ilWrMoKLSzl0QbbRhjE3RRkV3E2UbinI3SlQUYzN2SQrHPZcwB99Ja/Vf6zl9318QZLZUVhAsssQyK6RZZY11NtjkB1v8ZJtf7PCbP+yyx35Whs8zWDQ7CIqIEaeYEko5xWnOUEY5ZznHeSq4wEUucZkrVGaH15dwq5EkTTTTQiv3uE8b7TzgIY94TAdPeMozOunieYh9L9zqpoeXvKKXPvoZYJAhXjPMCKO84S1jjPOO90yE2Dfp1gc+MsUnppnhM1/4yixzfOM78yyQYpElllkhHWLfgUgQ5HCQXA6RRz6HKeAIRzlGIcc5wUmiFBEjTjElkfD6qtyq5io11HKN69zgJnXc4jZ3uEs9DSRoJEkTzbSE2Pd//+b+Ah5uSz4=
+  </data>
+ </layer>
+ <layer name="ground" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYCAO6DLSBlMLyDJRzywYMKKimZE0cF8eFc2cSgP3raKimRdp4L5nVDSTl5l6ZsGAEhFmEpOfQOKeQLO8gNgbiH2A2BeI/YDYH4gDgDgQiIOAOBiIQ4A4FIjDgDgciCOAOBKIo4A4GohjgDgWiOOo6OfBXr4MdvcNFAAApa0Ygw==
+  </data>
+ </layer>
+ <layer name="fg" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBjewJiJOmpoBfKJsJsYNbQCq4mwmxg1tALPibCbGDW0AsrMmGIqzNjVrBkAd8ZjcV8CM3Y1LwYwHEfB4AQAlbkHqw==
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="26" name="outside" x="237" y="28.3333" width="40.25" height="68.9167">
+   <properties>
+    <property name="ID" value="0"/>
+    <property name="next" value="Subway"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value="notMoving"/>
+   </properties>
+  </object>
+  <object id="27" name="Spawn" x="304" y="79.5" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="29" name="276" x="352" y="80" width="16" height="16">
+   <properties>
+    <property name="ID" value="276"/>
+    <property name="NPC" value="logger"/>
+    <property name="attackScript" value="onSplashAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Passenger"/>
+    <property name="script" value="splash test"/>
+    <property name="state" value="SITTING"/>
+   </properties>
+  </object>
+  <object id="30" name="outside" x="380" y="28" width="40.25" height="68.9167">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="Subway"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value="notMoving"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

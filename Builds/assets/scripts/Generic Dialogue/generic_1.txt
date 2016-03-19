@@ -1,0 +1,12 @@
+Script Main
+lockplayer
+facePlayer(this)
+SetSpeaker(this)
+#text(normal, {Hello.})
+
+if([this.gender = male])
+ say(this, {Sup}, false)
+else
+ say(this, {Hi}, false)
+end
+done

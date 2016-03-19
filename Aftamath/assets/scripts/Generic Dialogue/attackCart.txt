@@ -1,0 +1,14 @@
+Script Main
+lockplayer
+setSpeaker(null)
+value(add, player.niceness, -0.1)
+value(add, player.bravery, .05)
+setFlag(damagedBread, true)
+
+if(!damagedBread)
+	text({The bread is now damaged.})
+else
+	text({You could go to jail for doing that!})
+end
+
+done

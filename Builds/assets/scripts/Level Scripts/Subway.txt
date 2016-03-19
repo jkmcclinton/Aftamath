@@ -1,0 +1,26 @@
+Script Main
+
+#zoom(close, true)
+setFlag(calledTrain, false)
+
+#got off train
+if(trainArrived)
+	setFlag(trainArrived, false)
+	#set train location to embark position
+	teleport(trainCar, Subway, 30, 10)
+	#move train to right side of level
+	move(trainCar, trainDeparture1)
+	move(trainCar, trainDeparture2)
+	move(trainCar, trainDeparture3)
+	move(trainCar, trainDeparture4)
+	move(trainCar, trainDeparture5)
+else
+	#set train to left side of level
+end
+
+if([trainLoc = {BusinessDistrict}])
+	remove(barrier1)
+else
+end
+
+done

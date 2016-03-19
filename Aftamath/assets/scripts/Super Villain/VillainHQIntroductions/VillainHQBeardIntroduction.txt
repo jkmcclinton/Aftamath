@@ -1,0 +1,31 @@
+Script
+lockplayer
+
+setSpeaker(This)
+face(This, Player)
+Text(happy, {Hey!})
+
+setSpeaker(Player)
+setChoice(1: Tell me about yourself, 2: Why are you afraid of the flying chick?)
+    [Choice Tell me about yourself]
+	    setSpeaker(This)
+		Text(happy, {I knew you thought I was cool. You could learn a lot from me, kid.})
+		setSpeaker(Player)
+		setChoice(1: But what can you do?, 2: I'm sure)
+		    [Choice But what can you do?]
+			setSpeaker(This)
+			Text(normal, {Do? Well, many things. People can do many things. In fact, I encourage you to do as much as you can. Doing is important in life.})
+			end
+			
+			[Choice I'm sure]
+			end
+	
+	[Choice Why are you afraid of the flying chick?]
+	    setSpeaker(This)
+		Text(mad, {Afraid? I'm not afraid of her. I was just afraid that I hurt her. It's not like she's better than me. Nobody's better than me.})
+	end
+	
+done
+
+
+	

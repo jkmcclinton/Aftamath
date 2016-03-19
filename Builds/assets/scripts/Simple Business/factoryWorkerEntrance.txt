@@ -1,0 +1,46 @@
+Script Main
+lockplayer
+
+setSpeaker(this)
+if(SBAgreedWork)
+	if([player.gender = male])
+		text(happy, {New guy, right? Come this way.})
+	else
+		text(happy, {New gal, right? Come this way.})	
+	end
+	setLayer(layer1)
+	move(this, 62, 78)
+	setScript(WorkInstructions)
+else
+	text(mad, {Get out! Non-employees not allowed!})
+end
+
+done
+
+
+Script WorkInstructions
+lockplayer
+
+setSpeaker(this)
+text(normal, {So... your job is going to be to create these microchips.~ They're these tiny widgets here.})
+text(normal, {How do you do it, you ask?})
+text(normal, {Well, so you start by (...boring stuff...)})
+#hideDialog()
+wait(2)
+text(normal, {...and that's about it. Got it?})
+
+#change this part to fit whatever action player should do
+setChoice(YesNo)
+	[choice Yes]
+	text(happy, {Great. All you need to do is push this button.})
+	end
+	[choice No]
+	text(sad, {Oh.~~ Well, basically you push this button and the microchips come out.})
+	end
+end
+text(normal, {Alright, well I'm out of here! Good luck.})
+move(this, 73, 78)
+remove(this)
+setFlag(SBCanPushButton, true)
+
+done

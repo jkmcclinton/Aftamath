@@ -1,0 +1,208 @@
+Script Main
+lockplayer
+declare(desc, local, string, {})
+focus(Ms. Pancakes)
+
+#enter old lady
+face(player, Ms. Pancakes)
+move(Ms. Pancakes, 54, 97)
+doAction(Ms. Pancakes, knockout, null, on_script_end, false)
+
+setSpeaker(Ms. Pancakes)
+text(sad, {Help! I've fallen and I can't get up!})
+
+removeFocus
+setSpeaker(narrator)
+text({Oh no, that poor old lady...})
+
+setSpeaker(Ms. Pancakes)
+text(sad, {Please! somebody help me up!})
+text(sad, {I can't seem to stand!})
+
+setSpeaker(narrator)
+text({Gosh... if only someone were around to, I don't know... ~/lHelp her up?})
+text({Before a car comes and runs her over?})
+
+declare(c, local, integer, 0)
+setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
+	[Choice Help her up]
+		setSpeaker(player)
+		value(set, desc, {Helped out up an old lady})
+		value(set, c, 1)
+		value(add, player.niceness, 2)
+		value(add, player.bravery, 1)
+		text({Don't worry ma'am, I'll help you out.})
+		
+		hidedialog
+		move(player, 53, 97)
+		
+		doAction(player, duck, 1.5, false)
+		doAction(Ms. Pancakes, recover)
+		wait(1.5)
+		
+		move(player, 50, 97)
+		face(player, Donna)
+		
+		setSpeaker(Ms. Pancakes)
+		text(happy, {Oh, thank you soo much (old person word for young person here)!})
+		
+		hidedialog
+		remove(Ms. Pancakes)
+		playSound(warp)
+		spawn(NPC, girlfriend1, Donna, 54, 97, 8)
+		setDialog(Donna, girlfriend)
+		setAttackScript(Donna, attackedPartner)
+		setSuperAttackScript(Donna, supAttackedPartner)
+			
+		setSpeaker(Donna)
+		text({Woah...})
+		text(happy, {I'm finally free of the witch's curse!})
+		text(happy, {Thank you so much!})
+		if([player.gender = male])
+			text({...})
+			text(flirty, {Hayyyy.... ~You're actually kind of cute...})
+			text(flirty, {Mind if I be your girlfriend for a while?})
+			
+			setSpeaker(player)
+			text({...um...})
+			
+			setSpeaker(narrator)
+			text(happy, {Haha!})
+			text({I know it's a little awkward seeing as how she was just old enough to be your grandmother and all, but...})
+			text(happy, {Just roll with it!})
+			
+			setSpeaker(player)
+			text({Okay, sure. ~What could go wrong?})
+			
+			addPartner(Donna, {girlfriend}, {Originally cursed by a witch to be old.})
+			value(set, Donna.nickname, {Cupcake})
+			setSpeaker(Donna)
+			text(happy, {Yay! ~ I'm sooo happy right now.})
+		else
+			text({If you ever need anything from me just call, kay?})
+			
+			setSpeaker(player)
+			text({Sure!})
+			setDefaultState(Donna, faceleft)
+			move(Donna, 38, 97)
+		end
+	end
+
+	[Choice Ask someone else]
+		setSpeaker(player)
+		value(set, desc, {Old lady turned out to be a witch! Who knew?})
+		value(add, player.bravery, -1)
+		value(set, c, 2)
+		text({What if a car ran over me too? ~What then?})
+		text({What happens to me then, Ms. Narrator?})
+		
+		setSpeaker(narrator)
+		text(sad, {Dammit, how could you tell?})
+		setSpeaker(player)
+		text({Wait, what?})
+		
+		setSpeaker(narrator)
+		text(sad, {I totally was going to have a car run you both over.})
+		text(happy, {But, now that that's out of the question, I have to go with plan B!})
+		
+		setSpeaker(player)
+		eventmusic(Silence)
+		text({Plan... B? ~Oh god...})
+		
+		hidedialog
+		remove(Ms. Pancakes)
+		playSound(warp)
+		spawn(NPC, witch, Witch, 54, 97, 8)
+		value(set, Witch.powertype, {darkMagic})
+		value(set, Witch.nickname, {The Wicked Ol' Witch})
+		setDialog(Witch, genericWitch)
+		eventMusic(Incinerated Lands)
+		
+		setSpeaker(Witch)
+		text({Hahahahahahahahahahahahahahahahahahahahahahhahahahaha!})
+		text({FOOOL!})
+		text({You should have helped me when you had the chance!})
+		
+		setSpeaker(player)
+		text({Woah woah, hang on!!! ~How does this have anything to do with my choice?!})
+		
+		setSpeaker(narrator)
+		text(happy, {Absolutely nothing!})
+		text({This just makes the game more enjoyable.})
+		
+		setSpeaker(Witch)
+		text(mad, {SILENCE!})
+		text({Say your prayers, dearie!})
+		
+		setSpeaker(player)
+		text({!!!}, false)
+		doAction(player, duck, false)
+		attack(Witch, player)
+		wait(.5)
+		attack(Witch, player)
+		wait(.5)
+		attack(Witch, player)
+		value(set, player.health, 5)
+		
+		#witch goes to bridge area
+		run(Witch, 37, 97)
+		teleport(Witch, UnderaBridge, 20, 28)
+		
+		setSpeaker(narrator)
+		text({Ah... such a pointless yet entertaining story we have developing here.})
+		
+		setSpeaker(player)
+		text({(pant), (pant)...})
+		text({That totally wasn't necessary...)})
+	end
+	
+	[Choice ROFL!]
+		setSpeaker(player)
+		value(add, player.niceness, -2)
+		value(set, desc, {Old lady falling on a banana? Hilarious!})
+		text({Hahaha! ~That just made my day!})
+		text({Could you do it again for me?})
+		
+		declare(name, local, String, {man})
+		if([player.gender = female])
+			value(set, name, {lady})
+		end
+		
+		setSpeaker(Ms. Pancakes)
+		text({I'm sorry?})
+		text(mad, {Don't laugh at your elders, young /var[name]!})
+		text(mad, {I could be dead any minute now!})
+		
+		setSpeaker(player)
+		text({Yeah whatever, old geezer.})
+		
+		doAction(Ms. Pancakes, recover)
+		setSpeaker(Ms. Pancakes)
+		text({Somehow... I was able to get back up.})
+		text({No thanks to you.})
+		doaction(player, faceObject, Ms. Pancakes, false)
+		move(Ms. Pancakes, 38, 97)
+		setDefaultState(Ms.Pancakes, faceLeft)
+		setDialog(Ms. Pancakes, annoyedPancakes)
+		setSpeaker(player)
+		text({...no comment from the peanut gallery?})
+		
+		setSpeaker(narrator)
+		text({No, no comment. ~I'm just going to ahh, let that one sink in for just a bit.})
+		
+		setSpeaker(player)
+		text({You have to admit though, that was kind of funny.})
+		
+		setSpeaker(narrator)
+		text({Not saying it wasn't.})
+	end
+end
+
+setEvent(msPancakesMishap, desc)
+if([c = 1])
+	setEvent(brokeAnOldLadyCurse, {Old lady turned out to be a under a spell! Who knew?})
+end
+if([c = 2])
+		setEvent(metTheWitch, {The witch was in disguise as an old lady.})
+end
+done

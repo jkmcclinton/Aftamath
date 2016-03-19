@@ -1,0 +1,64 @@
+<NotepadPlus>
+    <UserLang name="Aftamath Script" ext=".txt" udlVersion="2.1">
+        <Settings>
+            <Global caseIgnored="yes" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
+            <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="yes" Keywords5="no" Keywords6="yes" Keywords7="yes" Keywords8="yes" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Comments">00# 01 02 03 04</Keywords>
+            <Keywords name="Numbers, prefix1"></Keywords>
+            <Keywords name="Numbers, prefix2"></Keywords>
+            <Keywords name="Numbers, extras1"></Keywords>
+            <Keywords name="Numbers, extras2"></Keywords>
+            <Keywords name="Numbers, suffix1">,</Keywords>
+            <Keywords name="Numbers, suffix2"></Keywords>
+            <Keywords name="Numbers, range"></Keywords>
+            <Keywords name="Operators1"></Keywords>
+            <Keywords name="Operators2"></Keywords>
+            <Keywords name="Folders in code1, open"></Keywords>
+            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, close"></Keywords>
+            <Keywords name="Folders in code2, open"></Keywords>
+            <Keywords name="Folders in code2, middle"></Keywords>
+            <Keywords name="Folders in code2, close"></Keywords>
+            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, middle"></Keywords>
+            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Keywords1">attack&#x000D;&#x000A;teleport&#x000D;&#x000A;burn&#x000D;&#x000A;checkpoint&#x000D;&#x000A;print&#x000D;&#x000A;println&#x000D;&#x000A;bufferfollow&#x000D;&#x000A;stay&#x000D;&#x000A;facePlayer&#x000D;&#x000A;declare&#x000D;&#x000A;addpartner&#x000D;&#x000A;doaction&#x000D;&#x000A;kill&#x000D;&#x000A;setwarp&#x000D;&#x000A;dotimedaction&#x000D;&#x000A;eventmusic&#x000D;&#x000A;face&#x000D;&#x000A;faceobject&#x000D;&#x000A;focus&#x000D;&#x000A;focuscamera&#x000D;&#x000A;forcefollow&#x000D;&#x000A;follow&#x000D;&#x000A;freeze&#x000D;&#x000A;movecamera&#x000D;&#x000A;move&#x000D;&#x000A;moveobject&#x000D;&#x000A;playsound&#x000D;&#x000A;remove&#x000D;&#x000A;removeObject&#x000D;&#x000A;removepartner&#x000D;&#x000A;resetstate&#x000D;&#x000A;say&#x000D;&#x000A;setattacktype&#x000D;&#x000A;setchoice&#x000D;&#x000A;setdefaultstate&#x000D;&#x000A;setdialog&#x000D;&#x000A;setdialogue&#x000D;&#x000A;setflag&#x000D;&#x000A;setevent&#x000D;&#x000A;setlayer&#x000D;&#x000A;setmaxhealth&#x000D;&#x000A;setresponse&#x000D;&#x000A;setscript&#x000D;&#x000A;setspeaker&#x000D;&#x000A;setstate&#x000D;&#x000A;setvul&#x000D;&#x000A;setvulnerability&#x000D;&#x000A;spawn&#x000D;&#x000A;splash&#x000D;&#x000A;statupdate&#x000D;&#x000A;stopeventmusic&#x000D;&#x000A;text&#x000D;&#x000A;toggleStats&#x000D;&#x000A;playSound&#x000D;&#x000A;zoom&#x000D;&#x000A;setattackscript&#x000D;&#x000A;setsuperattackscript&#x000D;&#x000A;setNickName&#x000D;&#x000A;setDialogueScript</Keywords>
+            <Keywords name="Keywords2">sad&#x000D;&#x000A;normal&#x000D;&#x000A;happy&#x000D;&#x000A;mad&#x000D;&#x000A;flirty&#x000D;&#x000A;add&#x000D;&#x000A;set&#x000D;&#x000A;integer&#x000D;&#x000A;string&#x000D;&#x000A;float&#x000D;&#x000A;NPC&#x000D;&#x000A;NPC,&#x000D;&#x000A;sad,&#x000D;&#x000A;normal,&#x000D;&#x000A;happy,&#x000D;&#x000A;mad,&#x000D;&#x000A;flirty,&#x000D;&#x000A;add,&#x000D;&#x000A;set,&#x000D;&#x000A;integer,&#x000D;&#x000A;string,&#x000D;&#x000A;float</Keywords>
+            <Keywords name="Keywords3">value&#x000D;&#x000A;random&#x000D;&#x000A;changeval&#x000D;&#x000A;hasitem&#x000D;&#x000A;input&#x000D;&#x000A;goto&#x000D;&#x000A;find&#x000D;&#x000A;findobject</Keywords>
+            <Keywords name="Keywords4">/l&#x000D;&#x000A;/c&#x000D;&#x000A;/cc&#x000D;&#x000A;/player&#x000D;&#x000A;/playerg&#x000D;&#x000A;/playergpp&#x000D;&#x000A;/playergps&#x000D;&#x000A;/playergp&#x000D;&#x000A;/playergo&#x000D;&#x000A;/partner&#x000D;&#x000A;/partnerg&#x000D;&#x000A;/partnergpp&#x000D;&#x000A;/partnergps&#x000D;&#x000A;/partnergp&#x000D;&#x000A;/partnergo&#x000D;&#x000A;/partnert&#x000D;&#x000A;/home&#x000D;&#x000A;/address&#x000D;&#x000A;/variable[&#x000D;&#x000A;/var[&#x000D;&#x000A;~</Keywords>
+            <Keywords name="Keywords5">else&#x000D;&#x000A;end&#x000D;&#x000A;releaseplayer&#x000D;&#x000A;endgame&#x000D;&#x000A;hidestats&#x000D;&#x000A;hidedialog&#x000D;&#x000A;if&#x000D;&#x000A;lockplayer&#x000D;&#x000A;lock&#x000D;&#x000A;introevent&#x000D;&#x000A;unfocus&#x000D;&#x000A;unfocuscamera&#x000D;&#x000A;removefocus&#x000D;&#x000A;return&#x000D;&#x000A;showstats&#x000D;&#x000A;stop&#x000D;&#x000A;wait&#x000D;&#x000A;pause&#x000D;&#x000A;done&#x000D;&#x000A;script&#x000D;&#x000A;choice</Keywords>
+            <Keywords name="Keywords6">STATIONARY&#x000D;&#x000A;IDLEWALK&#x000D;&#x000A;EVADING_ALL&#x000D;&#x000A;DANCING&#x000D;&#x000A;BLOCKPATH&#x000D;&#x000A;JUMP&#x000D;&#x000A;DUCK&#x000D;&#x000A;FACERIGHT&#x000D;&#x000A;FACELEFT&#x000D;&#x000A;FLAIL&#x000D;&#x000A;IDLE&#x000D;&#x000A;AIM&#x000D;&#x000A;LOSEAIM&#x000D;&#x000A;LOOK_UP&#x000D;&#x000A;PATH&#x000D;&#x000A;PUNCH&#x000D;&#x000A;HUG&#x000D;&#x000A;KISS&#x000D;&#x000A;SNOOZE&#x000D;&#x000A;special1&#x000D;&#x000A;special2&#x000D;&#x000A;special3&#x000D;&#x000A;STOP&#x000D;&#x000A;attack&#x000D;&#x000A;evade&#x000D;&#x000A;talk&#x000D;&#x000A;ignore&#x000D;&#x000A;on_sight&#x000D;&#x000A;on_attacked&#x000D;&#x000A;on_defend&#x000D;&#x000A;random&#x000D;&#x000A;never&#x000D;&#x000A;do_battle&#x000D;&#x000A;do_it&#x000D;&#x000A;fight&#x000D;&#x000A;its_alive&#x000D;&#x000A;kick_ass&#x000D;&#x000A;kill_it&#x000D;&#x000A;wasted&#x000D;&#x000A;on_ai_complete&#x000D;&#x000A;on_anim_end&#x000D;&#x000A;on_script_end&#x000D;&#x000A;on_level_change&#x000D;&#x000A;shoot&#x000D;&#x000A;knockout&#x000D;&#x000A;recover&#x000D;&#x000A;</Keywords>
+            <Keywords name="Keywords7">local&#x000D;&#x000A;global&#x000D;&#x000A;this&#x000D;&#x000A;true&#x000D;&#x000A;false&#x000D;&#x000A;male&#x000D;&#x000A;female&#x000D;&#x000A;haspartner&#x000D;&#x000A;null&#x000D;&#x000A;player&#x000D;&#x000A;partner&#x000D;&#x000A;narrator&#x000D;&#x000A;</Keywords>
+            <Keywords name="Keywords8">Bar&#x000D;&#x000A;Boardwalk&#x000D;&#x000A;Bridge&#x000D;&#x000A;BusinessDistrict&#x000D;&#x000A;CentralPark&#x000D;&#x000A;CentralStation&#x000D;&#x000A;Church&#x000D;&#x000A;CommercialDistrictNW&#x000D;&#x000A;CommercialDistrictS&#x000D;&#x000A;Crosswalk&#x000D;&#x000A;Downtown&#x000D;&#x000A;Factory&#x000D;&#x000A;HeroHQ&#x000D;&#x000A;HighRise&#x000D;&#x000A;IslandBoat&#x000D;&#x000A;Mansion&#x000D;&#x000A;MunicipalDistrict&#x000D;&#x000A;Pier&#x000D;&#x000A;PierBoat&#x000D;&#x000A;ResidentialDistrictN&#x000D;&#x000A;ResidentialDistrictSE&#x000D;&#x000A;ResidentialDistrictSW&#x000D;&#x000A;room1_1&#x000D;&#x000A;Sewers&#x000D;&#x000A;Subway&#x000D;&#x000A;ThaHood&#x000D;&#x000A;TrainCar&#x000D;&#x000A;UnderaBridge&#x000D;&#x000A;VillainHQ&#x000D;&#x000A;Warehouse&#x000D;&#x000A;</Keywords>
+            <Keywords name="Delimiters">00( 01 02) 03{ 04 05} 06[ 07 08] 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" fgColor="FFFFFF" bgColor="293134" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="COMMENTS" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="LINE COMMENTS" fgColor="808080" bgColor="293134" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="NUMBERS" fgColor="FFCD22" bgColor="293134" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS1" fgColor="3E83D7" bgColor="293134" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS2" fgColor="FFCD22" bgColor="293134" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS3" fgColor="0080FF" bgColor="293134" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="EC7600" bgColor="293134" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS5" fgColor="67D257" bgColor="293134" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS6" fgColor="FFCD22" bgColor="293134" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS7" fgColor="67D257" bgColor="293134" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS8" fgColor="FF00FF" bgColor="293134" fontName="" fontStyle="7" nesting="0" />
+            <WordsStyle name="OPERATORS" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE1" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE2" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN COMMENT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS1" fgColor="FFFFFF" bgColor="293134" fontName="" fontStyle="0" nesting="67370503" />
+            <WordsStyle name="DELIMITERS2" fgColor="EC7600" bgColor="293134" fontName="" fontStyle="0" nesting="139280" />
+            <WordsStyle name="DELIMITERS3" fgColor="E8E2B7" bgColor="293134" fontName="" fontStyle="1" nesting="67190786" />
+            <WordsStyle name="DELIMITERS4" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS5" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS6" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS7" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS8" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+        </Styles>
+    </UserLang>
+</NotepadPlus>

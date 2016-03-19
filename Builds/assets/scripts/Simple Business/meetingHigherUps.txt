@@ -1,0 +1,133 @@
+Script Main
+lockplayer
+face(this)
+#player stands and listens, cant move
+setSpeaker(this)
+text({You are Lord of the Office, so you have security clearance for this information.})
+
+setSpeaker(player)
+text({What is this all of a sudden?})
+
+setSpeaker(this)
+text({Things are a bit … hostile with a group we call the Money Bags. I cannot give you detailed information on them, but we do believe you will help our cause.})
+
+setSpeaker(player)
+text({(Wow, first day of work and I already have a scandal on my hands.)})
+
+setSpeaker(this)
+text({You will proceed to a meeting with the highest on our business ladder. It is your job to persuade them that we are a loyal company.})
+
+setSpeaker(player)
+text({Why don't you do it?})
+
+setSpeaker(this)
+text({...})
+text({You, uh, are our most valuable asset.})
+
+#player should jump up in this next part of script
+setSpeaker(player)
+#doAction(jump)
+text({I never knew! Wow!})
+
+setSpeaker(this)
+text({Yes, you are the most esteemed of our group. Therefore, I would like to ask you to do this for us.})
+
+setSpeaker(player)
+text({All right, you can count on me! Business ace, going for the kill!})
+#boss turns around and leaves
+
+text({Well…I appreciated it, at least.})
+
+setSpeaker(Narrator)
+text({That doesn't make sense, does it? He's your boss!})
+#apostrophies dont show up in the in game text
+
+setSpeaker(player)
+text({Yeah… But it's fine, he believes in me! Who knows, maybe I'll get even more money!})
+setSpeaker(Narrator)
+text({… Don't get your head blown up by success.})
+
+setSpeaker(player)
+text({Not liking your attitude.})
+setSpeaker(Narrator)
+text({(sigh)})
+
+#Change to meeting room, player is among multiple people just like boss
+
+#spawn people 
+#spawn(person1, person2, person3)
+
+lockplayer
+face(this)
+
+setSpeaker(this)
+text({We will now conduct the meeting with our humble…comrades. Before we start, Lord of the Office, would you like to give a statement?})
+
+setChoice((!):text({I'll do my best!}), (!):text{I am here for the company, nothing else.} )
+#player text({I'll do my best!})
+	#setSpeaker(this)
+	#text({We'll see about that})
+#player text({I am here for the company, nothing else.})
+		#setSpeaker(this)
+		#text({We'll see about that})
+setSpeaker(this)
+text({Give us the state of the Money Bags, please.})
+#player choices
+#CHOICE 1: 
+#text({Who are the Money Bags?})
+	#new person each time?
+	#setSpeaker(1)
+		#text({Your rudeness is making me lose my composure.})
+	#setSpeaker(2)
+		#text({You would lose your composure over the Money Bags.})
+	#setSpeaker(3)
+		#text({Let us get through with this meeting. Lord of the Office, know your place and speak only when you are told.})
+	#setSpeaker(player)
+		#text({(They should take their stick out their ass. Looks like I damaged the mood. Oh well, worth a shot.)})
+#CHOICE 2
+	#... Stay Silent
+setSpeaker(this)
+text({The Money Bags are going to be quite silent for a while because of our little cold war this season.})
+
+#this might be a new person speaking
+setSpeaker(this)
+text({We should be more worried about The Fraternity, the impoverished scum. Recently, they have gained access to one of the microchips in our sales.})
+
+setSpeaker(this)
+text({Forgive me for saying this, but their complex composition can be figured out by just the over-the-average individual, and the materials can be found anywhere.})
+
+#text choice:
+
+setSpeaker(player)
+#That was the goal of the company, its cheap accessibility.
+	#setSpeaker(this)
+	#text({Yes, it is an admirably philanthropic goal, but our net worth would not increase from a product so cheap.})
+#I have to disagree, that thing is hard to put together.
+	#setSpeaker(this)
+	#text({We’d like to question your intelligence, then.})
+
+setSpeaker(this)
+text({The Fraternity is not trying to damage the business itself, but it is trying to remake the product and sell for cheaper, which is what will bring our business down!})
+
+#pretty sure this is a different person
+setSpeaker(this)
+text({And on the other side, the Money Bags are waiting for our mistake.})
+
+setSpeaker(this)
+text({Stop talking about the Money Bags, the Fraternity is the problem!})
+
+setSpeaker(player)
+text({(Looks like I don’t have much say in this … I’ll have to wait it out …)})
+
+setSpeaker(Narrator)
+text({It’s okay, though, because their anger led to you gaining information!})
+text({The Money Bags seem to be just some investors, and The Fraternity are just people trying to sell knockoffs!})
+
+setSpeaker(player)
+text({It’s time to make a plan.})
+
+done
+
+
+#save scripts in aftamath, assets, script, simple, bussiness
+#make sure to add .txt to any save to make it a text file

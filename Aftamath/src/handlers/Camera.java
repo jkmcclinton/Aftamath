@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 
 import entities.Entity;
-import entities.Mob;
 import scenes.Scene;
+import scenes.Script;
 
 public class Camera extends OrthographicCamera{
 
@@ -20,7 +20,7 @@ public class Camera extends OrthographicCamera{
 	private Boolean wasCharacterFacingLeft;
 	private Entity focus;
 	private Vector2 tmpFocus;
-	private Mob character;
+	private Entity character;
 	private RefocusTrigger trigger;
 //	private Camtrack currentTrack;
 
@@ -82,9 +82,11 @@ public class Camera extends OrthographicCamera{
 
 			if(Math.abs(dx) < .5f && Math.abs(dy) < .5f) {
 				moving = false;
-				if(character.getGameState().currentScript!=null)
-					if(character.getGameState().currentScript.getActiveObject().equals(this))
-						character.getGameState().currentScript.setActiveObj(new Entity());
+				Script script = character.getGameState().currentScript;
+				if(script!=null)
+					if(script.getActiveObject()!=null)
+					if(script.getActiveObject().equals(this))
+						script.setActiveObj(new Entity());
 			} else { 
 				float x1 = position.x + (dx * 5 / Vars.PPM);
 				float y1 = position.y + (dy * 5 / Vars.PPM);
@@ -295,12 +297,11 @@ public class Camera extends OrthographicCamera{
 	}
 
 	public void setLock(boolean val){ locked = val; }
-
 	public void setDefaultZoom(float zoom){ defaultZoom = zoom; }
 	public void setTrigger(RefocusTrigger trigger){ this.trigger = trigger; }
 	public RefocusTrigger getTrigger(){ return trigger; }
-	public void setCharacter(Mob character) { this.character = character; }  //set camera focus to the character
-	public Mob getCharacter(){ return character; }
+	public void setCharacter(Entity character) { this.character = character; }  //set camera focus to the character
+	public Entity getCharacter(){ return character; }
 
 	public float getDefaultZoom() { return defaultZoom; }
 }

@@ -1,0 +1,5 @@
+Script Main
+lockplayer
+setSpeaker(this)
+text(mad, {mutter mutter... Damn kids...})
+done

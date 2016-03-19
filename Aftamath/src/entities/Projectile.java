@@ -2,12 +2,13 @@ package entities;
 
 import static handlers.Vars.PPM;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
-import entities.Mob.IFFTag;
+import box2dLight.PointLight;
 import handlers.FadingSpriteBatch;
 import handlers.Vars;
 
@@ -23,6 +24,7 @@ public class Projectile extends Entity {
 	protected Vector2 velocity;
 	protected Mob owner;
 	protected DamageType damageType;
+	protected PointLight pL;
 	
 	public static enum ProjectileType{
 		FIREBALL, ICE_SPIKE, BOULDER, ELECTRO_BALL, SPELL, ITEM
@@ -63,26 +65,32 @@ public class Projectile extends Entity {
 		totKillTime+=dt;
 		if(totKillTime>=killTime && killType.equals(KillType.TIMED))
 			main.removeBody(getBody());
-		
+		if(pL!=null)
+			pL.setPosition(getPixelPosition());
 		if(body.getLinearVelocity().x < 0 && !isFacingLeft()) changeDirection();
 		else if(body.getLinearVelocity().x > 0 && isFacingLeft()) changeDirection();
 		animation.update(dt);
 	}
 	
 	public void render(FadingSpriteBatch sb){
+		Color overlay = sb.getOverlay();
+		if(pL!=null) sb.setColor(Vars.DAY_OVERLAY);
 		switch(damageType){
 		case ELECTRO:
-		case ROCK:	sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y-rh/4 - 1);
+		case ROCK:	
+			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y-rh/4 - 1);
 			break;
-		default:	sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y);
+		default:	
+			Vector2 loc = new Vector2(getPixelPosition().x - rw, getPixelPosition().y);
+			Vector2 vel = body.getLinearVelocity();
+			float angle = (float)(Math.atan(vel.y/vel.x)*180/Math.PI);
+			sb.draw(animation.getFrame(), loc.x, loc.y, rw, rh, width, height, 1, 1, angle);
+//			 draw(region, x, y, originX, originY,  width,  height, scaleX, scaleY, rotation)
 			break;
 		
 		}
-	
-//		Vector2 loc = new Vector2(getPixelPosition().x - rw, getPixelPosition().y);
-//		Vector2 vel = body.getLinearVelocity();
-//		float angle = (float)(Math.atan(vel.y/vel.x));
-//		sb.draw(animation.getFrame(), loc.x, loc.y, loc.x+rw, loc.y+rh, width, height, 1, 1, angle);
+		if(sb.isDrawingOverlay())
+			sb.setColor(overlay);
 	}
 
 	//handling for when projectile collides with something
@@ -121,9 +129,8 @@ public class Projectile extends Entity {
 		impacted = true;
 
 		if(target instanceof Mob){
-			if(((Mob)target).getIFF()!=IFFTag.FRIENDLY)
-				((Mob) target).damage(damageVal, damageType, owner);
-			else main.addHealthBar(target);
+			((Mob) target).damage(damageVal, damageType, owner);
+//			main.addHealthBar(target);
 			
 			if(damageType.equals(DamageType.ROCK) && target.equals(main.character))
 				main.getCam().shake();
@@ -137,6 +144,8 @@ public class Projectile extends Entity {
 	
 	public void kill(){
 		main.removeBody(getBody());
+		if(pL!=null)
+			main.getRayHandler().lightList.removeValue(pL, true);
 	}
 	
 	// give sound effect to collision based on damage type
@@ -146,6 +155,7 @@ public class Projectile extends Entity {
 		case ELECTRO:
 			sound = "noise1";
 			break;
+		case DARKMAGIC:
 		case FIRE:
 			sound = "explosion1";
 			break;
@@ -173,8 +183,7 @@ public class Projectile extends Entity {
 		case ITEM:
 			return "item";
 		case SPELL:
-//			return "something cool";
-			return "fireball";
+			return "greenfire";
 		case ELECTRO_BALL:
 			return "electroball";
 		default:
@@ -221,6 +230,12 @@ public class Projectile extends Entity {
 		switch(type){
 		case FIREBALL:
 			damageType = DamageType.FIRE;
+			damageVal = 1;
+			speed = 3;
+			restitution = 0.25f;
+			break;
+		case SPELL:
+			damageType = DamageType.DARKMAGIC;
 			damageVal = 1;
 			speed = 3;
 			restitution = 0.25f;
@@ -289,13 +304,32 @@ public class Projectile extends Entity {
 		body.setLinearVelocity(velocity);
 		
 		String sound;
+		Color c;
 		switch(damageType){
 		case ELECTRO:
-			sound = "chirp2"; break;
+			sound = "chirp2"; 
+			c = new Color(Vars.SUNSET_GOLD); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					100, x, y);
+			break;
+		case DARKMAGIC:
+			sound = "spooky";
+			c = new Color(Color.GREEN); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					75, x, y);
+			break;
 		case FIRE:
-			sound = "swish1"; break;
+			sound = "swish1"; 
+			c = new Color(Vars.SUNSET_ORANGE); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					75, x, y);
+			break;
 		case ICE:
-			sound = "sweep"; break;
+			sound = "sweep"; 
+			c = new Color(Color.CYAN); c.a =.5f;
+			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+					25, x, y);
+			break;
 		case ROCK:
 			sound = "rockShot"; break;
 		default:
@@ -303,5 +337,4 @@ public class Projectile extends Entity {
 		}
 		main.playSound(getPosition(), sound);
 	}
-	
 }

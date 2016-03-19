@@ -1,11 +1,8 @@
 package entities;
 
-import static handlers.Vars.PPM;
-
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -36,7 +33,7 @@ public class Mob extends Entity{
 	public Array<Entity> contacts;
 	public double strength = DEFAULT_STRENGTH;
 	public float attackRange = DEFAULT_ATTACK_RANGE, attackTime, attackDelay=DEFAULT_ATTACK_DELAY, aimMax = DEFAULT_AIM_THRESHOLD;;
-	public Sound voice;
+	public float voice;
 	public boolean canWarp, canClimb, wasOnGround, running;
 	public boolean climbing, falling, snoozing, knockedOut;
 	public float experience, aimTime, powerCoolDown;
@@ -49,7 +46,7 @@ public class Mob extends Entity{
 	
 	protected int level;
 	protected DamageType powerType;
-	protected IFFTag iff;
+	protected IFFTag iFF;
 	public Vector2 respawnPoint;
 	protected String groundType, gender, name, nickName;
 	protected float knockOutTime, idleTime, idleDelay;
@@ -68,7 +65,7 @@ public class Mob extends Entity{
 	protected static final int IDLE_LIMIT = 500;
 	protected static Array<Anim> immobileActions = new Array<>(); 
 
-	protected float inactiveWait, inactiveTime, doTime, doDelay, time;
+	protected float inactiveWait, doTime, doDelay, time;
 	protected boolean reached, locked, attacked;
 	protected Script discoverScript;
 	protected AttackType attackType;
@@ -94,7 +91,7 @@ public class Mob extends Entity{
 	protected static final float DEFAULT_ATTACK_RANGE = 20;
 	protected static final float DEFAULT_VISION_RANGE = 10*Vars.TILE_SIZE;
 	protected static final float DEFAULT_AIM_THRESHOLD = .8f;
-	protected static final float DEFAULT_COOLDOWN = /*3f*/0;
+	protected static final float DEFAULT_COOLDOWN = 3f;
 	protected static final double DEFAULT_STRENGTH = 1;
 	protected static final double DAMAGE_THRESHOLD = 4;
 	protected static final int INTERACTION_SPACE = 17;
@@ -124,7 +121,6 @@ public class Mob extends Entity{
 	static{
 		for(int i = 0; i<Anim.values().length; i++){
 			animationIndicies.put(Anim.values()[i], i);
-//			System.out.println(Anim.values()[i]);
 		}
 	}
 	
@@ -156,6 +152,9 @@ public class Mob extends Entity{
 		this.nickName = name;
 		this.layer = layer;
 		origLayer = layer;
+		try{
+			this.voice = Vars.VOICES.get(ID);
+		} catch(Exception e){voice = 0;}
 
 		determineGender();
 		this.powerType = type;
@@ -183,7 +182,7 @@ public class Mob extends Entity{
 				} else
 					error = "("+((Mob)e).getName() + ", "+e.ID+")";
 			
-			if(conflict)
+			if(conflict && this.sceneID != -1)
 				System.out.println("Created mob with ID "+this.sceneID+" ("+ this.name +", "+ID+") when " +
 						error + " already exists");
 		}
@@ -206,7 +205,7 @@ public class Mob extends Entity{
 		isAttackable = true;
 		destructable = true;
 		attackTime = attackDelay;
-		iff=IFFTag.FRIENDLY;
+		iFF=IFFTag.FRIENDLY;
 		health = maxHealth = DEFAULT_MAX_HEALTH;
 		defaultState = new MobAI(this, AIType.STATIONARY, null);
 		currentState = defaultState;
@@ -218,6 +217,12 @@ public class Mob extends Entity{
 
 	public void update(float dt){
 		attackTime+=dt;
+		
+		if(warp!=null)
+			if(!warp.conditionsMet()){
+				warp = null;
+				canWarp = false;
+			}
 		
 		if(frozen)
 			super.update(dt);
@@ -232,7 +237,7 @@ public class Mob extends Entity{
 			if(aiming) {
 				aimTime+=dt;
 				if(aimTime>=aimMax && !aimSounded && powerCoolDown==0 && this.equals(main.character)){
-//					main.playSound("jump4");
+					main.playSound("jump4");
 					aimSounded = true;
 				}
 			}
@@ -372,12 +377,7 @@ public class Mob extends Entity{
 	}
 	
 	public void render(FadingSpriteBatch sb){
-		super.render(sb);;
-		
-//		if(isAttackable && !main.character.equals(this)){
-//			sb.draw(healthBar[health], getPosition().x * Vars.PPM- rw, 
-//					getPosition().y * Vars.PPM + rh + 3);
-//		}
+		super.render(sb);
 	}
 
 	/**units in pixels*/
@@ -495,11 +495,11 @@ public class Mob extends Entity{
 	}
 	
 	public void watchPlayer(){
-		setState("FACEPLAYER", null, -1, "NEVER");
+		setState("FACEPLAYER", null, -1, "ON_SCRIPT_END");
 	}
 	
 	public void watchObject(Entity e){
-		setState("FACEOBJECT", e, -1, "NEVER");
+		setState("FACEOBJECT", e, -1, "ON_SCRIPT_END");
 	}
 
 	public MobAI getState(){ return currentState; }
@@ -536,10 +536,23 @@ public class Mob extends Entity{
 		}
 	}
 
+	public void moveToPath(Path path, boolean defaulted){
+		moveToPath(path);
+		if(defaulted){
+			currentState.resetType = ResetType.NEVER;
+			defaultState = currentState;
+		}
+	}
+	
 	public void moveToPath(Path path){
 		if(path!=null){
-			setState("MOVE");
-			currentState.path = path;
+			try{
+				AIType s = AIType.PATH;
+				controlled = true;
+				currentState = new MobAI(this, s, ResetType.ON_AI_COMPLETE, path);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -576,11 +589,13 @@ public class Mob extends Entity{
 	public void setFollowIndex(int index){ followIndex = index; }
 	public void resetFollowIndex(){ followIndex = -1; }
 
-	public void stay(){
-		if(currentState.equals(defaultState))
+	public boolean stay(){
+		if(!currentState.type.equals(AIType.FOLLOWING)) return false;
+		if(!currentState.equals(defaultState))
 			defaultState = currentState;
+		currentState.focus.removeFollower(this);
 		currentState = new MobAI(this, AIType.FACEPLAYER, main.character);
-		main.character.removeFollower(this);
+		return true;
 	}
 
 	public void fight(Entity d){
@@ -588,7 +603,7 @@ public class Mob extends Entity{
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
 		currentState = new MobAI(this, AIType.FIGHTING, d);
-		iff = IFFTag.HOSTILE; 
+		iFF = IFFTag.HOSTILE; 
 		doTime= (float) (Math.random()*3);
 		attacked = false;
 		reached = false;
@@ -672,7 +687,9 @@ public class Mob extends Entity{
 			if(!invulnerable){
 				if(type.equals(DamageType.PHYSICAL))
 					main.playSound(getPosition(), "damage");
-				health = health - val;
+
+				if(iFF!=IFFTag.FRIENDLY)
+					health = health - val;
 
 				if(type==DamageType.FIRE){
 					double chance = Math.random();
@@ -689,7 +706,7 @@ public class Mob extends Entity{
 
 				if(health<=0){
 					if(health<0)health = 0;
-					if(owner.equals(main.character) && this.iff!=IFFTag.FRIENDLY)
+					if(owner.equals(main.character) && this.iFF!=IFFTag.FRIENDLY)
 						owner.experience+= .15f/owner.level;
 					die();
 				}
@@ -703,16 +720,17 @@ public class Mob extends Entity{
 		}
 		main.addHealthBar(this);
 
-		if(owner.equals(main.character)){
+		if(owner.equals(main.character) && !frozen){
 				if(currentState.type!=AIType.FIGHTING){
 					Script script = attackScript;
 					
 					if(type!=DamageType.PHYSICAL)
 						script = supAttackScript;
 					
-					if(script!=null)
+					if(script!=null ){
 						main.triggerScript(script);
-					else
+						watchPlayer();
+					}else
 						switch(getAttackType()){
 						case ENGAGE:
 						fight(owner);
@@ -778,17 +796,19 @@ public class Mob extends Entity{
 	public void setGoal(float gx) {
 		if(currentState.equals(defaultState))
 			defaultState = currentState;
-		setState("MOVE", new Vector2((float) gx/PPM + getPosition().x, getPosition().y));
+		setState("MOVE", new Vector2((float) gx + getPosition().x, getPosition().y));
 	}
 
 	public boolean setState(String type) {
+		if(frozen) return false;
 		try{
 			if (type.toUpperCase().equals(AIType.FOLLOWING.toString()))
 				follow(main.character);
 			else {
 			AIType s = AIType.valueOf(type.toUpperCase());
-				if(currentState.equals(defaultState))
-					defaultState = currentState;
+//				if(currentState.equals(defaultState))
+//					defaultState = currentState;
+				controlled = true;
 				currentState = new MobAI(this, s, ResetType.ON_AI_COMPLETE, null);
 			}
 			return true;
@@ -799,13 +819,13 @@ public class Mob extends Entity{
 	}
 
 	public boolean setState(String type, Entity target) {
+		if(frozen) return false;
 		try{
 			if (type.toUpperCase().equals(AIType.FOLLOWING.toString()))
 				follow(target);
 			else {
-			AIType s = AIType.valueOf(type.toUpperCase());
-				if(currentState.equals(defaultState))
-					defaultState = currentState;
+				AIType s = AIType.valueOf(type.toUpperCase());
+				controlled = true;
 				currentState = new MobAI(this, s, ResetType.ON_AI_COMPLETE, target);
 			}
 			return true;
@@ -816,12 +836,14 @@ public class Mob extends Entity{
 	}
 
 	public boolean setState(String type, Vector2 goal){
+		if(frozen) return false;
 		boolean b = setState(type);
 		if(b) currentState.setGoal(goal);
 		return b;
 	}
 	
 	public boolean setState(String state, Entity target, float time, String resetType) {
+		if(frozen) return false;
 		try{
 			AIType s = AIType.valueOf(state.toUpperCase());
 			ResetType type = ResetType.valueOf(resetType.toUpperCase());
@@ -830,8 +852,9 @@ public class Mob extends Entity{
 			else {
 				if(time==-1){
 					this.currentState = new MobAI(this, s, type, target);
-					if(type.equals(ResetType.NEVER) && !MobAI.technical.contains(s, false))
+					if(type.equals(ResetType.NEVER) && !MobAI.technical_types.contains(s, false))
 						defaultState = currentState;
+					else controlled = true;
 				} else
 					currentState = new MobAI(this, s, time, target);
 			}
@@ -859,7 +882,7 @@ public class Mob extends Entity{
 	public void setDefaultState(String s) {
 		try{
 			AIType type = AIType.valueOf(s.toUpperCase());
-			if(!MobAI.technical.contains(type, false))
+			if(!MobAI.technical_types.contains(type, false))
 				defaultState = new MobAI(this, type, ResetType.NEVER, null);
 		} catch(Exception e){
 			
@@ -902,23 +925,51 @@ public class Mob extends Entity{
 			wake();
 			return;
 		}
-//		if(lookingUp)
-//		unLookUp();
+		
+		//shorten body height
+		if(body.getFixtureList().get(0).getUserData().equals(Vars.trimNumbers(ID))){
+			PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
+			shape.setAsBox(w/Vars.PPM, (rh)/(Vars.PPM*1.75f), new Vector2(0, -(rh)/(Vars.PPM*2.25f)), 0);
+		} 
+		
 		ducking = true;
 		aiming = true;
 		setTransAnimation(Anim.DUCK, Anim.DUCKING);
 	}
 	
 	public void unDuck(){
-		//normalize body shape
+		//normalize body height
+
+		if(body.getFixtureList().get(0).getUserData().equals(Vars.trimNumbers(ID))){
+			PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
+			shape.setAsBox(w/Vars.PPM, (rh)/Vars.PPM);
+		} 
+		
 		aiming = false;
 		ducking = false;
 		setAnimation(Anim.DUCK, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 	}
 	
+	public void knockOut(){
+		snoozing = false;
+		knockedOut = true;
+		setTransAnimation(Anim.STUMBLE, Vars.ACTION_ANIMATION_RATE, Anim.KNOCKED_OUT, 
+				Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
+	}
+	
+	public void recover(){
+		aiming = false;
+		knockedOut = false;
+		setAnimation(Anim.RECOVER, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+	}
+	
+	private void resetIdle(){
+		idleTime = 0;
+		timesIdled = 0;
+	}
+	
 	public void snooze(){
 		setTransAnimation(Anim.GET_DOWN, Vars.ACTION_ANIMATION_RATE, Anim.SNOOZING, Vars.ANIMATION_RATE);
-		timesIdled = 0;
 		snoozing = true;
 	}
 	
@@ -926,6 +977,7 @@ public class Mob extends Entity{
 		animation.reset();
 		setAnimation(Anim.GET_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 		snoozing = false;
+		resetIdle();
 	}
 	
 	public void embrace(AIType type){
@@ -946,8 +998,7 @@ public class Mob extends Entity{
 
 	public void jump() {
 		main.getCam().removeFocus();
-		inactiveTime = 0;
-		timesIdled=0;
+		resetIdle();
 		if(snoozing){
 			wake();
 			return;
@@ -973,14 +1024,6 @@ public class Mob extends Entity{
 		if (facingLeft) {d = 1; }
 		facingLeft = !facingLeft;
 		
-//		try{
-//			Vector2 n = null;
-//			System.out.println(n.x);
-//		} catch(Exception e){
-//			if(ID.contains("femaleplayer"))
-//			e.printStackTrace();
-//		}
-		
 		int max = body.getFixtureList().size;
 		float w1;
 		PolygonShape shape;
@@ -999,7 +1042,7 @@ public class Mob extends Entity{
 			}
 		if(max >=5)
 			if(body.getFixtureList().get(4).getUserData().equals("vision")){
-				int h = main.getScene().height/4;
+				int h = 6*Vars.TILE_SIZE;
 				w1 = w + visionRange;
 				shape = (PolygonShape) body.getFixtureList().get(4).getShape();
 				shape.setAsBox((w1/2f+rh)/Vars.PPM, h/Vars.PPM, new Vector2((d*visionRange/2-d*w)/Vars.PPM, (h-height)/(Vars.PPM)), 0);
@@ -1015,8 +1058,7 @@ public class Mob extends Entity{
 	}
 
 	public boolean canMove() {
-		inactiveTime = 0;
-		timesIdled=0;
+		resetIdle();
 		if(snoozing){
 			//force mob to wake up
 			wake();
@@ -1113,7 +1155,6 @@ public class Mob extends Entity{
 	}
 
 	public void climb(){ }
-
 	public void descend(){ }
 
 	public Script interact(){
@@ -1121,11 +1162,18 @@ public class Mob extends Entity{
 		if(snoozing) wake();
 		killVelocity();
 		interactable.killVelocity();
+		if(interactable instanceof Mob)
+			((Mob)interactable).watchPlayer();
 		return interactable.getScript();
 	}
 
 	public TextureRegion getFace(int face){
-		if (this.face != null) return this.face[face];
+		try{
+			if (this.face != null)
+				if(face>=this.face.length)
+					return this.face[0];
+				return this.face[face];
+		} catch(Exception e){}
 		return null;
 	}
 
@@ -1141,7 +1189,6 @@ public class Mob extends Entity{
 			this.gender = gender;
 	}
 	
-	public float getinactiveTime(){ return inactiveTime; }
 	public int getTimesIdled(){ return timesIdled; }
 
 	public void addAttackable(Entity e){
@@ -1204,7 +1251,7 @@ public class Mob extends Entity{
 	}
 	
 	public void punch(){
-		setAnimation(Anim.PUNCHING, LoopBehavior.ONCE);
+		setAnimation(Anim.PUNCHING, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE/1.25f);
 		for(Entity e : attackables){
 			if(e instanceof Mob)
 				if(((Mob)e).getIFF()!=IFFTag.FRIENDLY)
@@ -1230,6 +1277,7 @@ public class Mob extends Entity{
 		else{
 			aimTime = 0;
 			switch (powerType){
+			case DARKMAGIC:
 			case ELECTRO:
 			case FIRE: 
 			case ICE:
@@ -1256,12 +1304,9 @@ public class Mob extends Entity{
 		
 		DamageField dF = null;
 		switch(powerType){
+		case DARKMAGIC:
 		case ELECTRO:
-			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
-			break;
 		case FIRE:
-			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
-			break;
 		case ICE:
 			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
 			break;
@@ -1293,66 +1338,40 @@ public class Mob extends Entity{
 				getPixelPosition().y+4);
 
 		Projectile p = null;
+		ProjectileType pT = null;
 		switch (powerType){
-		case FIRE:
-			p = new Projectile(this, ProjectileType.FIREBALL, spawnLoc.x, spawnLoc.y, target);
-			break;
-		case ICE:
-			p = new Projectile(this, ProjectileType.ICE_SPIKE, spawnLoc.x, spawnLoc.y, target);
-			break;
+		case DARKMAGIC: pT = ProjectileType.SPELL; break;
+		case FIRE: 	pT = ProjectileType.FIREBALL; break;
+		case ICE: pT = ProjectileType.ICE_SPIKE; break;
 		case BULLET:
 //			item = bullet
 //			p = new Projectile(this, ProjectileType.ITEM, spawnLoc.x, spawnLoc.y, target);
 			break;
-		case ELECTRO:
-			p = new Projectile(this, ProjectileType.ELECTRO_BALL, spawnLoc.x, spawnLoc.y, target);
-			break;
+		case ELECTRO: pT = ProjectileType.ELECTRO_BALL; break;
 		case PHYSICAL:
 			//find equipped throwable item
 			//throw item
 			//if no throwable item, play empty clip sound
 			break;
-		case ROCK:
-			p = new Projectile(this, ProjectileType.BOULDER, spawnLoc.x, spawnLoc.y, target);
-			break;
-		case WIND:
-			break;
+		case ROCK: pT = ProjectileType.BOULDER; break;
+		case WIND: break;
 		}
 		
-		p.setGameState(this.main);
-		p.setDirection(facingLeft);
-		p.create();
+		if(pT!=null){
+			p = new Projectile(this, pT, spawnLoc.x, spawnLoc.y, target);
+			p.setGameState(this.main);
+			p.setDirection(facingLeft);
+			p.create();
+		}
 		return p;
-	}
-	
-	public Particle special(){
-		switch(powerType){
-		case BULLET:
-			break;
-		case ELECTRO:
-			break;
-		case FIRE:
-			break;
-		case ICE:
-			break;
-		case ROCK:
-			break;
-		case WIND:
-			break;
-		default:
-			break;
-		}
-		
-//		setTransAnimation(Anim.AIM_TRANS, Anim.ATTACKING);
-		return null;
 	}
 
 	public void levelUp(){
 		if(level < 20) level++;
 	}
 	
-	public IFFTag getIFF(){return iff;}
-	public void setIFF(IFFTag tag){iff=tag;}
+	public IFFTag getIFF(){return iFF;}
+	public void setIFF(IFFTag tag){iFF=tag;}
 	public void setIFF(String tag){
 		try{
 			IFFTag i = IFFTag.valueOf(tag);
@@ -1381,7 +1400,13 @@ public class Mob extends Entity{
 	}
 
 	public void setPositioningFocus(Entity e){ positioningFocus = e; }
-	public Entity getInteractable(){ return interactable; }
+	public Entity getInteractable(){
+		if(interactable!=null)
+			if(interactable.frozen) 
+				return null;
+		return interactable; 
+	}
+	
 	public void setInteractable( Entity d) { interactable = d; }
 	public void setInvulnerable(boolean val){
 		if(val){
@@ -1407,15 +1432,25 @@ public class Mob extends Entity{
 	
 	//allows the mob to automatically target something to shoot at
 	public Vector2 target(){
+		float distance = main.getScene().width;
+		Entity target = null;
 		if(discovered.size>=0){
-			float dx;
+			float dx, dy, d;
 			for(Entity e: discovered){
 				if(e.getBody()==null/* || !e.destructable*/) continue;
 				dx = e.getPosition().x - getPosition().x;
-				if((dx<0 && facingLeft) || (dx>=0 && !facingLeft))
-					return e.getPixelPosition();
+				if((dx<0 && facingLeft) || (dx>=0 && !facingLeft)){
+					dy = e.getPosition().y - getPosition().y;
+					d = (float) Math.sqrt(dx*dx + dy*dy);
+					if(d<distance/* && e is attackable?*/){
+						distance = d;
+						target = e;
+					}
+				}
 			}
 		}
+		
+		if(target!=null) return target.getPixelPosition();
 
 		int x = 3;
 		if(facingLeft) x *= -1;
@@ -1496,7 +1531,7 @@ public class Mob extends Entity{
 	
 	protected void createVisionSensor(){
 		float w1 = w + visionRange;
-		int d = 1, h = main.getScene().height/8;
+		int d = 1, h = 6*Vars.TILE_SIZE;
 		if(facingLeft) d = -1;
 		
 		
@@ -1542,8 +1577,8 @@ public class Mob extends Entity{
 		super.read(json, val);
 		float rx = val.getFloat("respawnPointX");
 		float ry = val.getFloat("respawnPointY");
-		this.respawnPoint = new Vector2(rx, ry);		
-		this.iff = IFFTag.valueOf(val.getString("iff"));
+		this.respawnPoint = new Vector2(rx, ry);				
+		this.iFF = IFFTag.valueOf(val.getString("iff"));
 		this.name = val.getString("name");
 		this.strength = val.getDouble("strength");
 		this.level = val.getInt("level");
@@ -1576,7 +1611,7 @@ public class Mob extends Entity{
 		super.write(json);
 		json.writeValue("respawnPointX", this.respawnPoint.x);
 		json.writeValue("respawnPointY", this.respawnPoint.y);
-		json.writeValue("iff", this.iff);
+		json.writeValue("iff", this.iFF);
 		json.writeValue("name", this.name);
 		//json.writeValue("voice", this.voice);	//TODO: implement voice
 		json.writeValue("strength", this.strength);
@@ -1690,7 +1725,7 @@ public class Mob extends Entity{
 			3, /*SPECIAL2*/
 			3, /*SPECIAL3*/
 			3}; /*SPECIAL3_TRANS*/
-	protected static final int[] actionLengths =    {0,
+	protected static final int[] actionLengths =    {16,
 			8,  /*WALKING*/
 			8,  /*RUNNING*/
 			3,  /*JUMPING*/
@@ -1732,6 +1767,6 @@ public class Mob extends Entity{
 			1,  /*TURN_SWIM*/
 			1,  /*SPECIAL1*/
 			1,  /*SPECIAL2*/
-			1,  /*SPECIAL3*/
-			1}; /*SPECIAL3_TRANS*/
+			16,  /*SPECIAL3*/
+			3}; /*SPECIAL3_TRANS*/
 }

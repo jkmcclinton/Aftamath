@@ -21,17 +21,18 @@ public class MobAI implements Serializable {
 	public static enum AIType {
 		AIM, ATTACK, BLOCKPATH, DANCING, DUCK, IDLE, IDLEWALK, EVADING, EVADING_ALL, 
 		FACELEFT, FACEOBJECT, FACEPLAYER, FACERIGHT, FIGHTING, FLAIL, FLY, FOLLOWING, 
-		HUG, JUMP, KISS, LOSEAIM, LOOK_UP, MOVE, RUN, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING,
+		HUG, JUMP, KISS, KNOCKOUT, LOSEAIM, LOOK_UP, MOVE, RUN, RECOVER, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING,
 		SNOOZE, SPECIAL1, SPECIAL2, SPECIAL3, STATIONARY, STOP
 	}
 
 	public static enum ResetType {
 		ON_ANIM_END, ON_SCRIPT_END, ON_AI_COMPLETE, ON_LEVEL_CHANGE, ON_TIME, NEVER;
 	}
-	public static final Array<AIType> technical = new Array<>();
+	public static final Array<AIType> technical_types = new Array<>();
 	static{
-		technical.add(AIType.LOSEAIM);
-		technical.add(AIType.STOP);
+		technical_types.add(AIType.LOSEAIM);
+		technical_types.add(AIType.STOP);
+		technical_types.add(AIType.RECOVER);
 	}
 
 	public Mob owner;
@@ -45,8 +46,8 @@ public class MobAI implements Serializable {
 	private int repeat = -1;
 	private Main main; 
 	private Vector2 goalPosition, retLoc;
-	private float inactiveWait, inactiveTime, doTime, doDelay, time;
-	private boolean reached, attacked, AIPhase2, canPosition;
+	private float inactiveWait, inactiveTime, /*doTime, doDelay,*/ time;
+	private boolean reached, /*attacked,*/ AIPhase2, canPosition;
 	private Object data;
 
 	private static final float IDLE_DURATION = 8.33f; //maximum idle time
@@ -85,8 +86,19 @@ public class MobAI implements Serializable {
 		begin();
 	}
 	
+	//initializing Path AIs
+	public MobAI(Mob owner, AIType type, ResetType resetType, Path path) {
+		this.owner = owner;
+		this.type = type;
+		this.resetType = resetType;
+		this.resetTime = -1;
+		this.main = owner.main;
+		this.path = path;
+		begin();
+	}
+	
 	public void update(float dt){
-		if(!resetType.equals(ResetType.NEVER) && time<15) 
+		if(!resetType.equals(ResetType.NEVER)) 
 			time+=dt;
 		position();
 		
@@ -121,7 +133,7 @@ public class MobAI implements Serializable {
 			if(Math.abs(dx) < POS_RANGE && !owner.aiming)
 				owner.aim();
 			if(focus!=null){
-				//watch focus if Mob doesn't need to reposisition
+				//watch focus if Mob doesn't need to reposition
 				if((canPosition && Math.abs(dx) < POS_RANGE) || !canPosition)
 					owner.faceObject(focus);
 			}
@@ -131,7 +143,7 @@ public class MobAI implements Serializable {
 					owner.unAim();
 					finish();
 				}
-			} else if(resetType!=ResetType.NEVER){
+			} else if(resetType==ResetType.ON_ANIM_END || resetType==ResetType.ON_AI_COMPLETE){
 				inactiveTime += dt;
 				if(inactiveTime>=inactiveWait){
 					owner.unAim();
@@ -195,7 +207,7 @@ public class MobAI implements Serializable {
 					owner.unDuck();
 					finish();
 				}
-			} else if(resetType!=ResetType.NEVER){
+			} else if(resetType==ResetType.ON_ANIM_END || resetType==ResetType.ON_AI_COMPLETE){
 				inactiveTime += dt;
 				if(inactiveTime>=inactiveWait){
 					owner.unDuck();
@@ -331,8 +343,8 @@ public class MobAI implements Serializable {
 			owner.faceObject(focus);
 			dx = focus.getPosition().x - owner.body.getPosition().x;
 
-			float m = Entity.MAX_DISTANCE * (owner.followIndex+1);
-			
+			float m = Entity.MAX_DISTANCE * (owner.followIndex);
+			if(Math.abs(dx) > (m + 2*Entity.MAX_DISTANCE)/PPM) 	owner.run();
 			if(dx > m/PPM) owner.right();
 			else if (dx < -1 * m/PPM) owner.left();
 			break;
@@ -457,6 +469,20 @@ public class MobAI implements Serializable {
 				}
 			}
 			break;
+		case KNOCKOUT:
+			if (resetType.equals(ResetType.ON_TIME)){
+				if(time>=resetTime-1){
+					owner.recover();
+					finish();
+				}
+			} else if(resetType==ResetType.ON_ANIM_END || resetType==ResetType.ON_AI_COMPLETE){
+				inactiveTime += dt;
+				if(inactiveTime>=inactiveWait){
+					owner.recover();
+					finish();
+				}
+			}
+			break;
 		case LOOK_UP:
 			canPosition = false;
 
@@ -489,19 +515,24 @@ public class MobAI implements Serializable {
 			break;
 		case LOSEAIM:
 			owner.unAim();
+			if(owner.defaultState.type==AIType.AIM)
+				owner.setDefaultState((MobAI) owner.defaultState.data);
 			finish();
 			break;
 		case RUN:
 			owner.run();
 		case MOVE:
-			if(moveToLoc(goalPosition))
+			if(moveToLoc(goalPosition)){
+				owner.respawnPoint = new Vector2(goalPosition);
 				finish();
+			}
 			break;
 		case PATH:
 			if (!owner.canMove()){ 
 				path.stepIndex();
 				if(path.completed){
-					path = null;
+					if(resetType!=ResetType.NEVER)
+						path = null;
 					finish();
 				} else {
 					setGoal(path.getCurrent());
@@ -511,7 +542,8 @@ public class MobAI implements Serializable {
 				reached = moveToLoc(goalPosition);
 				if(reached) {
 					if(path.completed){
-						path = null;
+						if(resetType!=ResetType.NEVER)
+							path = null;
 						finish();
 					} else {
 						setGoal(path.getCurrent());
@@ -527,6 +559,15 @@ public class MobAI implements Serializable {
 					!resetType.equals(ResetType.ON_ANIM_END))
 				strictAnim = Anim.PUNCHING;
 			anim = Anim.PUNCHING;
+			break;
+		case RECOVER:
+			owner.recover();
+			System.out.println("find data from: "+owner.defaultState);
+			if(owner.defaultState.type==AIType.KNOCKOUT){
+				owner.setDefaultState((MobAI) owner.defaultState.data);
+				System.out.println("found data: "+owner.defaultState.data);
+			}
+			finish();
 			break;
 		case SHOOT:
 			if(!resetType.equals(ResetType.ON_AI_COMPLETE) && 
@@ -627,6 +668,7 @@ public class MobAI implements Serializable {
 			}
 			break;
 		case STOP:
+			finish();
 			break;
 		}
 		
@@ -658,6 +700,7 @@ public class MobAI implements Serializable {
 	//relocate mob to original location
 	public void position(){
 		if(!canPosition) return;
+//		System.out.println("positioning: "+owner);
 		float dx = retLoc.x - owner.getPixelPosition().x;
 		if(Math.abs(dx)>= POS_RANGE)
 			moveToLoc(retLoc);
@@ -691,64 +734,71 @@ public class MobAI implements Serializable {
 	//TODO
 	public void fightAI(){
 //		System.out.println(owner.ID+": FIGHTING");
-		float dx, dy;
-		if(!attacked){
-//			System.out.println("!attacked");
-			if(owner.attackFocus!=null && doTime>=doDelay){
-				//System.out.println("attackFocus!=null && doTime>=doDelay");
-				dx = owner.attackFocus.getPixelPosition().x - owner.getPixelPosition().x;
-				dy = owner.attackFocus.getPixelPosition().y - owner.getPixelPosition().y;
-				float d = (float) Math.sqrt(dx*dx + dy+dy);
-
-				if(Math.abs(d)>owner.attackRange){
-					if(dx-1>0) owner.right();
-					if(dx+1<0) owner.left();
-				} else {
-					owner.attack();
-					attacked = true;
-					doDelay = (float) (Math.random()*3);
-					doTime = 0;
-				}
-			} /*else
-				System.out.println(doTime+":"+doDelay);*/
-		} else {
-			if(reached) inactiveWait++;
-			if(inactiveTime >= inactiveWait && reached) {
-				reached = false;
-				attacked = false;
-			}
-			if(!reached){
-				if (!owner.canMove()) {
-					setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
-					inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
-					inactiveTime = 0;
-					reached = true;
-				}
-				else {
-					dx = (goalPosition.x - owner.getPixelPosition().x) ;
-					if(dx < 1 && dx > -1){
-						setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
-						inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
-						inactiveTime = 0;
-						reached = true;
-					} else {
-						if(dx < 1) owner.left();
-						if(dx > -1) owner.right();
-					}
-				}
-			}
-		}
+		return;
+//		float dx, dy;
+//		if(!attacked){
+////			System.out.println("!attacked");
+//			if(owner.attackFocus!=null && doTime>=doDelay){
+//				//System.out.println("attackFocus!=null && doTime>=doDelay");
+//				dx = owner.attackFocus.getPixelPosition().x - owner.getPixelPosition().x;
+//				dy = owner.attackFocus.getPixelPosition().y - owner.getPixelPosition().y;
+//				float d = (float) Math.sqrt(dx*dx + dy+dy);
+//
+//				if(Math.abs(d)>owner.attackRange){
+//					if(dx-1>0) owner.right();
+//					if(dx+1<0) owner.left();
+//				} else {
+//					owner.attack();
+//					attacked = true;
+//					doDelay = (float) (Math.random()*3);
+//					doTime = 0;
+//				}
+//			} /*else
+//				System.out.println(doTime+":"+doDelay);*/
+//		} else {
+//			if(reached) inactiveWait++;
+//			if(inactiveTime >= inactiveWait && reached) {
+//				reached = false;
+//				attacked = false;
+//			}
+//			if(!reached){
+//				if (!owner.canMove()) {
+//					setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
+//					inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
+//					inactiveTime = 0;
+//					reached = true;
+//				}
+//				else {
+//					dx = (goalPosition.x - owner.getPixelPosition().x) ;
+//					if(dx < 1 && dx > -1){
+//						setGoal(new Vector2((float) (((Math.random() * 6)+owner.x)), owner.y));
+//						inactiveWait = (float)(Math.random() *(owner.attackRange) + 100);
+//						inactiveTime = 0;
+//						reached = true;
+//					} else {
+//						if(dx < 1) owner.left();
+//						if(dx > -1) owner.right();
+//					}
+//				}
+//			}
+//		}
 	}
 
 	public void begin(){
 		canPosition = true;
-		retLoc = owner.respawnPoint;
+//		if(owner.respawnPoint!=null)
+//			retLoc = owner.respawnPoint.cpy();
+//		else
+//			retLoc = new Vector2(owner.x, owner.y);
+		
+		retLoc = owner.getPixelPosition().cpy();
 		Anim anim = null;
-//		float r, max;
 
 		switch(type){
 		case AIM:
 			data = owner.defaultState;
+			if(resetType!=ResetType.ON_AI_COMPLETE && resetType!=ResetType.ON_ANIM_END)
+				owner.defaultState = this;
 			owner.aim();
 			inactiveWait = DEFAULT_DURATION;
 			break;
@@ -798,7 +848,6 @@ public class MobAI implements Serializable {
 		case IDLEWALK:
 			findNewLoc(IDLE_RANGE, false);
 			inactiveWait = (float)(Math.random() * IDLE_DURATION + 1);
-//			canPosition = false;
 			retLoc = goalPosition;
 			break;
 		case HUG:
@@ -807,6 +856,7 @@ public class MobAI implements Serializable {
 			inactiveWait = 2;
 			if(resetType.equals(ResetType.NEVER)){
 				AIPhase2 = true;
+				reached = true;
 				owner.embrace(type);
 			}else{
 				if(focus!=null && focus!=owner){
@@ -815,9 +865,17 @@ public class MobAI implements Serializable {
 					goalPosition = new Vector2(focus.getPixelPosition().x - a*d, focus.getPixelPosition().y);
 				} else {
 					AIPhase2 = true;
+					reached = true;
 					owner.embrace(type);
 				}
 			}
+			break;
+		case KNOCKOUT:
+			data = owner.defaultState;
+			if(resetType!=ResetType.ON_AI_COMPLETE && resetType!=ResetType.ON_ANIM_END)
+				owner.defaultState = this;
+			owner.knockOut();
+			inactiveWait = DEFAULT_DURATION;
 			break;
 		case JUMP:
 			canPosition = false;
@@ -827,11 +885,23 @@ public class MobAI implements Serializable {
 			owner.lookUp();
 			inactiveWait = DEFAULT_DURATION;
 			break;
+		case LOSEAIM:
+			if(!owner.aiming) finish();
+			break;
+		case RUN:
+		case MOVE:
+			canPosition = false;
+			break;
 		case PATH:
 			canPosition = false;
+			goalPosition = path.getCurrent();
+			retLoc = goalPosition;
 			break;
 		case PUNCH:
 			anim = Anim.PUNCHING;
+			break;
+		case RECOVER:
+			if(!owner.knockedOut) finish();
 			break;
 		case SHOOT:
 			canPosition = false;
@@ -902,9 +972,12 @@ public class MobAI implements Serializable {
 		case FOLLOWING:
 			focus.removeFollower(owner);
 			break;
-		case LOSEAIM:
-			if(owner.defaultState.type==AIType.AIM)
-				owner.setDefaultState((MobAI) owner.defaultState.data);
+		case MOVE:
+			if(owner.positioning && owner.positioningFocus!=null){
+				owner.faceObject(owner.positioningFocus);
+				owner.positioning = false;
+				owner.positioningFocus = null;
+			}
 			break;
 		case PATH_PAUSE:
 			break;
@@ -915,12 +988,12 @@ public class MobAI implements Serializable {
 
 	//conclude any controlled actions for mob
 	private void finish(){
-		goalPosition = null;
-		owner.controlled = false;
-		AIPhase2 = false;
-		repeat = -1;
 		finished = true;
-		//System.out.println("This nigga finished");
+		owner.controlled = false;
+//		System.out.println("AI finished: "+owner+";\t"+this.type);
+		if(main.currentScript!=null)
+			if(owner.equals(main.currentScript.getActiveObject()))
+				main.currentScript.removeActiveObj();
 	}
 
 	//ensure the mob can reach its destination
@@ -954,10 +1027,7 @@ public class MobAI implements Serializable {
 		return false;
 	}
 	
-	
-	public String toString(){
-		return "t: "+type+"    rt: "+resetType+"    t: "+time;
-	}
+	public String toString(){ return "t: "+type+"    rt: "+resetType+"    t: "+time; }
 
 	@Override
 	public void read(Json json, JsonValue val) {

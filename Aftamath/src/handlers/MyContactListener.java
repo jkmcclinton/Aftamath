@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
 
+import entities.Barrier;
 import entities.DamageField;
 import entities.Entity;
 import entities.Ground;
@@ -29,7 +30,7 @@ public class MyContactListener implements ContactListener {
 	static {
 		//objects that cannot be stood ontop of
 		unstandable.addAll("wall", "foot", "interact", "attack", "center", "vision", 
-				"tiledobject", "refocusTrigger", "texttrigger");
+				"tiledobject", "refocusTrigger", "texttrigger", "warp");
 		unHittable.addAll("warp", "eventTrigger", "texttrigger", "refocusTrigger", "damageField",
 				"foot", "interact", "attack", "center", "vision","tiledobject");
 	}
@@ -46,20 +47,34 @@ public class MyContactListener implements ContactListener {
 		String typeA = (String) fa.getUserData();
 		Entity entB = (Entity) fb.getBody().getUserData();
 		String typeB = (String) fb.getUserData();
+		
+		if(entA==null || entB==null) return;
 
 		if(typeB.equalsIgnoreCase("textBox") && typeA.equalsIgnoreCase("textBox")){
 			((TextBox) entB).add(entA);
 			((TextBox) entA).add(entB);
+		} if(typeB.equals("wall") && entA instanceof Mob){
+			if(((Mob)entA).getName().toLowerCase().contains("civilian") && entA.getSceneID()==-1)
+				main.removeBody(entA.getBody());
+		} if(typeA.equals("wall") && entB instanceof Mob){
+			if(((Mob)entB).getName().toLowerCase().contains("civilian") && entB.getSceneID()==-1)
+				main.removeBody(entB.getBody());
 		} if(typeB.equals("foot") && !unstandable.contains(typeA, false) && 
 				!fb.getBody().getUserData().equals(typeA) && !(entA instanceof EventTrigger)) {
 			if(entA instanceof Ground)
 				((Mob) entB).setGround(((Ground) entA).getType());
+			if(entA instanceof Barrier)
+				((Mob) entB).setGround(((Barrier) entA).getType());
+			
 			if(!((Mob)entB).contacts.contains(entA, false))
 				((Mob) entB).contacts.add(entA);
 		} if(typeA.equals("foot") && !unstandable.contains(typeB, false) && 
 				!fa.getBody().getUserData().equals(typeB) && !(entB instanceof EventTrigger)) {
 			if(entB instanceof Ground)
 				((Mob) entA).setGround(((Ground) entB).getType());
+			if(entB instanceof Barrier)
+				((Mob) entA).setGround(((Barrier) entB).getType());
+			
 			if(!((Mob)entA).contacts.contains(entB, false))
 				((Mob) entA).contacts.add(entB);
 		} if(typeB.equals("projectile") && !unHittable.contains(typeA, false)) {
@@ -107,10 +122,10 @@ public class MyContactListener implements ContactListener {
 		}if(typeB.equals("attack") && !fa.isSensor() && entA.isAttackable){ 
 			((Mob) entB).addAttackable(entA);
 		}if(typeA.equals("vision")){
-			if(!fb.isSensor())
+			if(!fb.isSensor() && !(entB instanceof Ground))
 				((Mob) entA).discover(entB);
 		}if(typeB.equals("vision")){ 
-			if(!fa.isSensor())
+			if(!fa.isSensor() && !(entA instanceof Ground))
 			((Mob) entB).discover(entA);
 		}if(typeA.equals("warp") && typeB.equals("foot")){
 			if(((Warp) entA).conditionsMet()) {
@@ -121,7 +136,7 @@ public class MyContactListener implements ContactListener {
 				} else {
 					if (entB.equals(main.character)){
 						if(((Warp)entA).getLink()!=null){
-							if(((Warp)entA).getLink().owner.outside && ((Warp)entA).owner.outside){
+							if(((Warp)entA).getLink().outside && ((Warp)entA).outside){
 								String message = "To " + ((Warp)entA).getLink().locTitle;
 								(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y
 										+ entA.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
@@ -144,7 +159,7 @@ public class MyContactListener implements ContactListener {
 				} else {
 					if (entA.equals(main.character)){
 						if(((Warp)entB).getLink()!=null){
-							if(((Warp)entB).getLink().owner.outside && ((Warp)entB).owner.outside){
+							if(((Warp)entB).getLink().outside && ((Warp)entB).outside){
 								String message = "To " + ((Warp)entB).getLink().locTitle;
 								(new SpeechBubble(entB, entB.getPixelPosition().x, entB.getPixelPosition().y
 										+ entB.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();

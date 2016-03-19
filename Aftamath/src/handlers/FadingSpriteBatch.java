@@ -1,16 +1,16 @@
 package handlers;
 
-import box2dLight.RayHandler;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import box2dLight.RayHandler;
 
 public class FadingSpriteBatch extends SpriteBatch {
 
 	public boolean fading;
 	
 	private RayHandler rh;
-	private Color rhAmbient, overlay;
+	private Color overlay;
 	private boolean overlayDraw;
 	private float fadeTime = 0, fadeInterval;
 	private int fadeType;
@@ -31,7 +31,6 @@ public class FadingSpriteBatch extends SpriteBatch {
 		
 		if (fading) {
 			fadeTime += dt;
-
 			float t;
 			if(fadeType == FADE_IN)
 				t = fadeTime;
@@ -46,20 +45,22 @@ public class FadingSpriteBatch extends SpriteBatch {
 				if(overlayDraw)
 					setColor(Vars.blendColors(fadeTime, 0, end, overlay, Color.BLACK));
 				else
-					setColor(Vars.blendColors(fadeTime, 0, end, Vars.DAYLIGHT, Color.BLACK));
+					setColor(Vars.blendColors(fadeTime, 0, end, Vars.DAY_OVERLAY, Color.BLACK));
 			else
 				if(overlayDraw)
 					setColor(Vars.blendColors(fadeTime, 0, end, Color.BLACK, overlay));
 				else
-					setColor(Vars.blendColors(fadeTime, 0, end, Color.BLACK, Vars.DAYLIGHT));
+					setColor(Vars.blendColors(fadeTime, 0, end, Color.BLACK, Vars.DAY_OVERLAY));
 			
 			
-			//fade rayHandler as well
+			//fade rayHandler as well?
 			//to be perfected
 			if(rh!=null){
-				rh.setAmbientLight(rhAmbient.r-t, rhAmbient.g-t, 
-						rhAmbient.b-t, Vars.ALPHA);
-//				System.out.println(rhAmbient.r+":\t"+(rhAmbient.r-color)+":\t"+Color.BLACK.r);
+//				rh.setAmbientLight(rhAmbient.r-t, rhAmbient.g-t, 
+//						rhAmbient.b-t, Vars.ALPHA);
+//				for(Light l :rh.lightList){
+//					l.setColor(Vars.blendColors(l.getColor(), Color.BLACK));
+//				}
 			}
 				
 			if(fadeTime >= end){
@@ -72,7 +73,8 @@ public class FadingSpriteBatch extends SpriteBatch {
 					setColor(1, 1, 1, Vars.ALPHA);
 				}
 			}
-		}
+		} else
+			setColor(overlay);
 		
 		return faded;
 	}
@@ -93,8 +95,8 @@ public class FadingSpriteBatch extends SpriteBatch {
 	}
 	
 	public void setRayHandler(RayHandler rh){ this.rh = rh; }
-	public void setRHAmbient(Color ambient){ rhAmbient = ambient; }
 	public void setOverlay(Color overlay){ this.overlay = overlay; }
+	public Color getOverlay(){return overlay; }
 	public boolean isDrawingOverlay(){ return overlayDraw; }
 	public void setOverlayDraw(boolean val){ 
 		overlayDraw = val; 
