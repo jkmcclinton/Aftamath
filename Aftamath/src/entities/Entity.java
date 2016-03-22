@@ -538,7 +538,7 @@ public class Entity implements Serializable {
 	public boolean getDirection(){ return isFacingLeft(); }
 	
 
-	protected void setDimensions(){
+	public void setDimensions(){
 		setDimensions(getWidth(ID), getHeight(ID));
 	}
 	

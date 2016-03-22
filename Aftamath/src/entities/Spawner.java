@@ -153,7 +153,6 @@ public class Spawner extends Entity {
 	
 	//step lifetimes of spawned entities
 	private void updateSpawned(float dt){
-//		System.out.println(ID+": "+spawnedObjs.size());
 		Array<Entity> toRemove = new Array<>();
 		for(Entity e : spawnedObjs.keySet()){
 			if(!main.exists(e)){
@@ -194,6 +193,11 @@ public class Spawner extends Entity {
 	
 	// spawn a few mobs in to occupy level
 	public void initOccupy(Scene s){
+		if(main.dayTime>=Main.NIGHT_TIME && spawnType==SpawnType.CIVILIAN)
+			spawnType = SpawnType.NIGHTER;
+		else if(main.dayTime<Main.NIGHT_TIME && spawnType==SpawnType.NIGHTER)
+			spawnType = SpawnType.CIVILIAN;
+		
 		int toSpawn = (int)(Math.random()*(3) +1);
 		for(int i = 0; i<toSpawn; i++){
 			float x = (float)(Math.random()*s.width);

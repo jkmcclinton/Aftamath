@@ -543,7 +543,7 @@ public class Scene {
 //		}
 		
 		if(outside)
-			initCivSpawner();
+			initSpawner();
 
 		if(tileMap.getLayers().get("entities")!=null){
 			MapObjects objects = tileMap.getLayers().get("entities").getObjects();
@@ -604,7 +604,7 @@ public class Scene {
 
 								if (sceneID==null)
 									System.out.println("'" + name + "', '"+ID+"' cannot be created without a sceneID!");
-								else if (Entity.idToEntity.containsKey(sceneIDParsed) && sceneIDParsed>=0) {
+								else if (Entity.idToEntity.containsKey(sceneIDParsed) && sceneIDParsed>0) {
 									Entity c = Entity.idToEntity.get(sceneIDParsed);
 									boolean conflict = true;
 
@@ -899,7 +899,7 @@ public class Scene {
 	}
 	
 	//these spawners are placed at both ends of the level and spawn civilians who walk left and right
-	private void initCivSpawner(){
+	private void initSpawner(){
 		// TODO get map properties relating to spawner
 		MapProperties prop = tileMap.getProperties();
 		 String en = prop.get("spawners", String.class);

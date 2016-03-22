@@ -98,14 +98,14 @@ public class Projectile extends Entity {
 	public void impact(Entity target) {
 		if(target==null) return;
 		if(!(target instanceof Mob))
-		
-		//forced bounce
-		if(!killType.equals(KillType.ON_IMPACT)){
-			int x = 1;
-			if(facingLeft) x = -1;
 
-			body.setLinearVelocity(speed*x, 4*restitution);
-		}
+			//forced bounce
+			if(!killType.equals(KillType.ON_IMPACT)){
+				int x = 1;
+				if(facingLeft) x = -1;
+
+				body.setLinearVelocity(speed*x, 4*restitution);
+			}
 
 		//conditions for removing projectile
 		if(owner.equals(target)) return;
@@ -122,8 +122,8 @@ public class Projectile extends Entity {
 			break;
 		}
 
-		if(!(target instanceof Ground)) playCollideSound();
-		if(impacted) return;
+		if(!(target.destructable) && !(target instanceof Ground)) playCollideSound();
+		if(impacted || !target.destructable) return;
 		
 		//apply damage to object
 		impacted = true;

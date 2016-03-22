@@ -3,6 +3,7 @@ Scene ID                                Spawned by                         Scrip
  0-1 - dumpster                         : CommercialDistrictNW             : dumpster
  0-1 - sewerSign                        : Subway
  0-1 - subwayAd                         : Subway
+ 0-1 - subwaySign                       : Subway                           : trainSelection
  000 - 
  001 - Darrius; gangster1               : room1_1.tmx                      : realGangsta
  002 - Marquis; gangster3               : CommercialDistrictNW.tmx         : GangstaWar
@@ -38,7 +39,7 @@ Scene ID                                Spawned by                         Scrip
  032 - shopAisle1                       : EZMart                           : cashierTouch
  033 - trainCar                         : Subway
  034 - 
- 035 - subwaySign                       : Subway                           : trainSelection
+ 035 - 
  036 - 
  037 - 
  038 - 
@@ -107,11 +108,11 @@ Scene ID                                Spawned by                         Scrip
  101 - HAHAHAHAHA; witch                : Church.tmx                       : actionTest
  102 - Darth Droid; robot1              : Church.tmx                       : actionTest
  103 - Your Maker; reaper               : Church.tmx                       : actionTest
- 104 - 
- 105 - 
- 106 - 
- 107 - 
- 108 - 
+ 104 - TEST; maleplayer1                : Church.tmx                       : actionTest
+ 105 - TEST; maleplayer2                : Church.tmx                       : actionTest
+ 106 - TEST; maleplayer3                : Church.tmx                       : actionTest
+ 107 - TEST; maleplayer4                : Church.tmx                       : actionTest
+ 108 - Gigi; femaleplayer1              : Church.tmx                       : actionTest
  109 - 
  110 - HLRMS-110; robot1                : BusinessDistrict.tmx             : getMail
  111 - 

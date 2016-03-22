@@ -238,6 +238,7 @@ public class Script implements Serializable {
 						Texture t = Game.res.getTexture(args[1]);
 						if(t!=null){
 							obj.ID = args[1];
+							obj.setDimensions();
 							obj.loadSprite();
 						} else
 							System.out.println("\""+args[1]+"\" is not a valid sprite; Line: "+(index+1)+"\tScript: "+ID);
@@ -807,7 +808,11 @@ public class Script implements Serializable {
 				if (obj!= null){
 					main.removeBody(obj.getBody());
 					Entity.idToEntity.remove(obj.getSceneID());
+					try{
 					Scene.sceneToEntityIds.get(main.getScene().ID).remove(obj.getSceneID());
+					} catch(Exception e){
+						
+					}
 				}else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
@@ -2328,6 +2333,7 @@ public class Script implements Serializable {
 					((Mob)e).setState("FACEPLAYER", null, -1, ResetType.NEVER.toString());
 					e.setDialogueScript("generic_1");
 					if(sceneID>0){
+						System.out.println(main.getScene());
 						Scene.sceneToEntityIds.get(main.getScene().ID).add(sceneID);
 						Entity.idToEntity.put(sceneID, e);
 					}
