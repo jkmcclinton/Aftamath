@@ -3,7 +3,7 @@ lockplayer
 setSpeaker(Cashier, true)
 face(Cashier, player)
 face(player, Cashier)
-
+playsound(dontTouch)
 declare(touchedC, global, integer, 0)
 value(add, touchedC, 1)
 

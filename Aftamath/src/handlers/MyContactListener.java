@@ -106,14 +106,14 @@ public class MyContactListener implements ContactListener {
 		} if(typeB.equals("interact") && !fa.isSensor())
 			if(entA.isInteractable && !main.analyzing){
 				((Mob) entB).setInteractable(entA);
-				if(entB.equals(main.character)) 
+				if(entB.equals(main.character))
 					new SpeechBubble(entA, entA.getPixelPosition().x + 6, entA.rh +
 							entA.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
 			}
 		 if(typeA.equals("interact") && !fb.isSensor())
 				if(entB.isInteractable && !main.analyzing){
 					((Mob) entA).setInteractable(entB);
-					if(entA.equals(main.character)) 
+					if(entA.equals(main.character))
 						new SpeechBubble(entB, entB.getPixelPosition().x + 6, entB.rh +
 								entB.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
 				}

@@ -13,7 +13,7 @@ public class CamBot extends Mob {
 	public static int DEFAULT_SPEED = 1;
 
 	public CamBot(float x, float y) {
-		super("CamBot", "camBot", 0, x, y, Vars.BIT_LAYER1);
+		super("CamBot", "camBot", -1, x, y, Vars.BIT_LAYER1);
 		width = height = 5;
 		rh = rw = width/2;
 		

@@ -216,6 +216,11 @@ public class Mob extends Entity{
 	}
 
 	public void update(float dt){
+		if(dead && Mob.getAnimName(animation.getCurrentType()).equals(Anim.DEAD)){
+			main.removeBody(getBody());
+			return;
+		}
+
 		attackTime+=dt;
 		
 		if(warp!=null)
@@ -374,6 +379,13 @@ public class Mob extends Entity{
 				running = false; maxSpeed=WALK_SPEED;
 			}
 		}
+	}
+	
+	public void collisionUpdate(){
+		if(interactable!=null);
+//			if(this.equals(main.character)){
+////			interactPair = null;
+//			}
 	}
 	
 	public void render(FadingSpriteBatch sb){
@@ -1161,8 +1173,10 @@ public class Mob extends Entity{
 		if (interactable == null) return null;
 		if(snoozing) wake();
 		killVelocity();
+		
+		Entity interactable = getInteractable();
 		interactable.killVelocity();
-		if(interactable instanceof Mob)
+		if(getInteractable() instanceof Mob)
 			((Mob)interactable).watchPlayer();
 		return interactable.getScript();
 	}
@@ -1401,13 +1415,13 @@ public class Mob extends Entity{
 
 	public void setPositioningFocus(Entity e){ positioningFocus = e; }
 	public Entity getInteractable(){
-		if(interactable!=null)
-			if(interactable.frozen) 
-				return null;
+		if(interactable==null) return null;
+		if(interactable.frozen) 
+			return null;
 		return interactable; 
 	}
 	
-	public void setInteractable( Entity d) { interactable = d; }
+	public void setInteractable(Entity e) { interactable = e; }
 	public void setInvulnerable(boolean val){
 		if(val){
 			invulnerable = true;
@@ -1623,7 +1637,7 @@ public class Mob extends Entity{
 		
 		json.writeValue("attackFocus", (this.attackFocus != null) ? this.attackFocus.sceneID : -1);
 		json.writeValue("AIfocus", (this.AIfocus != null) ? this.AIfocus.sceneID : -1);	
-		json.writeValue("interactable", (this.interactable != null) ? this.interactable.sceneID : -1);
+		json.writeValue("interactable", (this.interactable != null) ? this.getInteractable().sceneID : -1);
 		
 		//other fields probably necessary
 		

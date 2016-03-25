@@ -139,10 +139,10 @@ public class Main extends GameState {
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
 						debugging   = false,	 //in debug mode?
-						cwarps      = true,	 //create warps?
+						cwarps      = false,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "CommercialDistrictNW"; //where the player starts
+	public static String debugLoadLoc = "Bridge"; //where the player starts
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 
 	public Main(GameStateManager gsm) {
@@ -171,6 +171,8 @@ public class Main extends GameState {
 		b2dr = new Box2DDebugRenderer();
 		rayHandler = new RayHandler(world);
 		
+		Scene.sceneToEntityIds.clear();
+		Entity.idToEntity.clear();
 		speakText = null;
 		currentScript = null;
 		pixel = Game.res.getTexture("pixel");
@@ -229,7 +231,7 @@ public class Main extends GameState {
 			debugText = "";
 			player.updateMoney();
 
-			handleDayCycle(dt);
+//			handleDayCycle(dt);
 			if(!random && !tempSong && !scene.DEFAULT_SONG[dayState].equals(music))
 				changeSong(scene.DEFAULT_SONG[dayState]);
 			if(scene.outside) {
@@ -562,13 +564,15 @@ public class Main extends GameState {
 //			Vars.NIGHT_LIGHT.r+=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
 			debugY += .005f;
-			System.out.println(debugY);
+			character.damage(-1);
+			System.out.println(character.getHealth());
 		} if(MyInput.isDown(Input.DEBUG_DOWN)){
 //			player.addFunds(-100d);
 //			Vars.NIGHT_LIGHT.r-=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
 			debugY -= .005f;
-			System.out.println(debugY);
+			character.damage(1);
+			System.out.println(character.getHealth());
 		} if(MyInput.isDown(Input.DEBUG_LEFT)) {
 			Vars.NIGHT_LIGHT.b-=r;
 			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
@@ -824,7 +828,7 @@ public class Main extends GameState {
 				}
 				if(MyInput.isDown(Input.LEFT)) character.left();
 				if(MyInput.isDown(Input.RIGHT)) character.right();
-				if(MyInput.isPressed(Input.JUMP) && !speaking && buttonTime >= DELAY) {
+				if((MyInput.isPressed(Input.JUMP) || MyInput.isPressed(Input.ENTER)) && !speaking && buttonTime >= DELAY) {
 					if(hud.raised) playSound(character.getPosition(), "ok1");
 
 					if(displayText.isEmpty()) {
@@ -877,7 +881,7 @@ public class Main extends GameState {
 				if(MyInput.isPressed(Input.PAUSE) && !quitting) pause();
 
 				if(currentScript!=null)
-					if(/*currentScript.dialog &&*/ MyInput.isPressed(Input.JUMP)){
+					if(/*currentScript.dialog &&*/ (MyInput.isPressed(Input.JUMP) || MyInput.isPressed(Input.ENTER))){
 						if(!speaking && buttonTime >= DELAY){
 							if(hud.raised) playSound(character.getPosition(), "ok1");
 							if(currentScript.getActiveObject() instanceof TextBox){
@@ -931,7 +935,7 @@ public class Main extends GameState {
 							choices[choiceIndex].expand();
 							choices[prevIndex].collapse();
 						}
-					} else if(MyInput.isPressed(Input.JUMP)){
+					} else if(MyInput.isPressed(Input.JUMP) || MyInput.isPressed(Input.ENTER)){
 						playSound("ok1");
 
 						currentScript.paused = choosing = false;
@@ -1341,7 +1345,7 @@ public class Main extends GameState {
 			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
 //				character = new Mob("'Normal' person with a name (YOU)", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
-				character = new Mob("You", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+				character = new Mob("You", "underdog", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 //				createEmptyPlayer(scene.getSpawnPoint());
 				DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
@@ -1543,6 +1547,7 @@ public class Main extends GameState {
 		//record last position of entity so it can be saved
 		for (Entity e : objects) {
 			if(e==null) continue;
+			if(e.getBody()==null) continue;
 			Vector2 lastPos = e.getBody().getPosition();
 			lastPos.x *= Vars.PPM;
 			lastPos.y *= Vars.PPM;
@@ -1581,11 +1586,16 @@ public class Main extends GameState {
 	}
 	
 	public RayHandler getRayHandler(){return rayHandler; }
-	public void setScene(Scene s){ scene = s; System.out.println(scene.ID); }
+	public void setScene(Scene s){ 
+		if (scene == null)return;
+		scene = s; 
+		System.out.println("set Scene: "+scene.ID); 
+	}
 	public Scene getScene(){ return scene; }
 	public World getWorld(){ return world; }
 	public HUD getHud() { return hud; }
 	public Camera getCam(){ return cam; }
+	public MyContactListener getContactListener(){ return this.cl; }
 
 	//sort by objects' layer
 	public void sortObjects(){
@@ -1675,6 +1685,9 @@ public class Main extends GameState {
 						String name = object.getProperties().get("name", String.class);		//character name
 						String script = object.getProperties().get("script", String.class);		
 						if(ID!=null && sceneID!=null && name!=null){
+							if(Vars.isNumeric(sceneID))
+								if(Integer.parseInt(sceneID)<0)
+									continue;
 							String s = " ";
 							s = Vars.formatHundreds(s, sceneID.trim().length());
 							s+=sceneID+" - "+name+"; "+ID;
@@ -1702,6 +1715,9 @@ public class Main extends GameState {
 						String name = object.getProperties().get("name", String.class);
 
 						if(ID!=null && sceneID!=null){
+							if(Vars.isNumeric(sceneID))
+								if(Integer.parseInt(sceneID)<0)
+									continue;
 							String s = " ";
 							s = Vars.formatHundreds(s, sceneID.trim().length());
 							s+=sceneID+" - "+ID;

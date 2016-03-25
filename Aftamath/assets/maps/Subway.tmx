@@ -465,6 +465,7 @@
     <property name="layer" value="front"/>
     <property name="name" value="Witch"/>
     <property name="nickname" value="The Wicked Ol' Witch"/>
+    <property name="powerType" value="DARKMAGIC"/>
     <property name="script" value="genericWitch"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>

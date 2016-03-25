@@ -262,7 +262,7 @@ public class SpeechBubble extends Entity {
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 	}
 	
-	protected void setDimensions(){
+	public void setDimensions(){
 		setDimensions(getWidth(ID), getHeight(ID));	
 	}
 	

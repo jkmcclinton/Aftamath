@@ -164,7 +164,8 @@ public class HUD {
 	}
 	
 	public void drawStats(SpriteBatch sb) {
-		sb.draw(hearts[(int)(character.getHealth()/3)], Game.width/2 - 24, Game.height/2 - 24 * 2);
+		int health = (int)(character.getHealth()/hearts.length);
+		sb.draw(hearts[health], Game.width/2 - 24, Game.height/2 - 24 * 2);
 		sb.draw(cash, Game.width/2 - 24, Game.height/2 - 24);
 		
 		String money = NumberFormat.getCurrencyInstance().format(main.player.getMoney());
