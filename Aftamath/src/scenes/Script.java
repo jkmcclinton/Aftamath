@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Stack;
@@ -1302,6 +1303,10 @@ public class Script implements Serializable {
 									Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
 									set.remove(sceneID);
 									set = Scene.sceneToEntityIds.get(level);
+									if (set == null) {
+										set = new HashSet<Integer>();
+										Scene.sceneToEntityIds.put(level, set);
+									}
 									set.add(sceneID);
 
 									main.removeBody(obj.getBody());
