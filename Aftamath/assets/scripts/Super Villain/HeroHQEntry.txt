@@ -87,7 +87,7 @@ setSpeaker(Player)
 setChoice(6:You're right, 2:I'm not like you)
     [Choice You're right]
 	    setSpeaker(Hero5)
-		Text({Har! I like you, kid!})
+		Text(happy, {Har! I like you, kid!})
 	end
 	
 	[Choice I'm not like you]
@@ -112,9 +112,6 @@ setChoice(1:The pleasure is mine, 6:Aren't you a little out of place?)
 		Text(mad, {Unlike for brutes like you, class and dignity are never out of place.})
 	end
 
-setSpeaker(Hero7)
-face(Hero7, Player)
-Text(happy, {Hello, little one. Make yourself at home.})
 
 done
 

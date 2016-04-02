@@ -1,0 +1,29 @@
+Script ManlyManIntroduction
+lockplayer
+face(This, player)
+
+setSpeaker(This)
+Text({How ya doing, rookie?})
+Text({What are you up to?})
+
+setSpeaker(Player)
+setChoice(1:Tell me about yourself, 2:Nevermind)
+
+[Choice Tell me about yourself]
+    setSpeaker(This)
+	Text({I spent my days like a real man should.})
+	Text({I fished, I hunted with my bare hands, I fought in every war there ever was.})
+	Text({Those without supapowers are soft. That's why I'm here.})
+end
+
+[Choice Nevermind]
+    setSpeaker(This)
+	Text(mad, {Hmph.})
+end
+end
+
+
+
+
+done
+
