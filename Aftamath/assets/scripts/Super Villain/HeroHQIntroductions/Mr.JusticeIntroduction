@@ -1,0 +1,116 @@
+Script Mr.JusticeIntroduction
+lockplayer
+
+setSpeaker(This)
+face(Player,This)
+Text(happy, {Here's my favorite pal!})
+
+setSpeaker(Player)
+setChoice(1:Tell me about yourself, 2:Tell me about the headquarters, 3:What do I do now?)
+    [Choice Tell me about yourself]
+	    setSpeaker(This)
+		Text({Oh, where to start? It all began when I was born.})
+		Text ({The doctors claimed they had never seen anything like me before.})
+		Text({I was the epitome of health, strong, and extraordinarily handsome!})
+		Text({As a baby, I could lift an entire chair!})
+		Text(happy, {They say that as my mother was crying when she saw me, I lifted my hands and wiped away her tears.})
+		Text(normal, {I was destined to be a hero.})
+		
+		setSpeaker(Player)
+		setChoice(1:That's impressive! 2:You're obviously exaggerating)
+		    [Choice That's impressive!]
+			    setSpeaker(This)
+				Text(happy, {Oh, thank you! I'm sure you have an amazing story as well.})
+				Text({You might even be stronger than me!})
+			end
+			
+			[Choice You're obviously exaggerating]
+			 setSpeaker(This)
+				Text(sad, {You don't believe me? Don't worry, I will teach you faith and confidence!})
+			end 
+	end
+	
+	[Choice Tell me about the headquarters]
+	    setSpeaker(This)
+		Text(happy, {This is your new home! You'll find everything you want around here.})
+		Text({Friends, no, family! Jobs on the bulletin board!})
+		Text(normal, {In fact, you can have everything except those donuts over there.})
+		
+		setSpeaker(Player)
+		setChoice(1:Thank you, 2:Why not the donuts?)
+		    [Choice Thank you]
+			    setSpeaker(This)
+				Text({You're welcome!})
+			end
+			
+			[Choice Why not the donuts?]
+			    setSpeaker(This)
+				Text({Those donuts belong to the big muscular guy.})
+				Text(sad, {Trust me, you don't want to make him angry.})
+			end
+	end
+	
+	[Choice What do I do now?]
+	    setSpeaker(This)
+		Text({I have the feeling that you're new to the city.})
+		Text({Uh, lady, is that right?})
+		
+		setSpeaker(Narrator)
+		Text(mad, {You mean me? Yes, this one is new to the city.})
+		
+		setSpeaker(This)
+		Text({Okay, thanks. You know...})
+		Text(sad, {Don't tell anyone but... Sometimes I hear a voice in my head.})
+		Text({A woman's voice.})
+		Text({And a huge box comes up over there, on the floor. And I see her face!})
+		Text({Scary, right?})
+		
+		setSpeaker(Player)
+		setChoice(2:I see her too, 1:Wow, that is scary)
+		    [Choice I see her too]
+			    setSpeaker(This)
+				Text(happy, {Oh! I'm not crazy! Thank goodness!})
+				Text({But who is she? What do you think?})
+				
+				setSpeaker(Player)
+				setChoice(1:The narrator, 2:Maybe she's god, 3:A ghost, 4:I don't know)
+				[Choice The narrator]
+				    setSpeaker(This)
+				    Text({The narrator? Oh...right...})
+				end
+				
+				[Choice Maybe she's god]
+				    setSpeaker(This)
+					Text({Wow! Then I must be an angel or something!})
+					Text({I knew I was great, but this tops it all!})
+				end
+				
+				[Choice A ghost]
+				    setSpeaker(This)
+					Text(sad, {Oh no! That gives me the creeps!})
+					Text({You think you could get rid of her?})
+					Text({Oh, what am I saying!})
+				end
+				
+				[Choice I don't know]
+				    setSpeaker(This)
+					Text({Of course you wouldn't. Why did I bother asking?})
+				end
+			end
+			
+			[Choice Wow, that is scary]
+			    setSpeaker(This)
+				Text(sad, {Oh no! I knew I was going crazy! Don't tell anyone, okay?})
+			end		
+					
+		setSpeaker(This)
+		Text(happy, {Anyways, since you're new here, you should explore the city a bit!})
+		Text({Once you're comfortable, you can come back here and I'll give you a job.})
+	end
+end
+
+
+done
+
+				
+				

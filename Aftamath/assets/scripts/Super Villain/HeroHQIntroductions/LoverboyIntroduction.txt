@@ -1,0 +1,91 @@
+Script LoverboyIntroduction
+lockplayer
+face(This, Player)
+
+setSpeaker(This)
+Text(happy, {Oh my gosh! You came to talk to me!})
+
+setSpeaker(Player)
+If(flag planet)
+    setChoice(1:Tell me about yourself, 2:About my planet, 3:Nevermind)
+	
+	[Choice Tell me about yourself]
+	    setSpeaker(This)
+	    Text({Let's see. I joined the supaheroes because I lost the love of my life.})
+	    Text(sad, {She was so beautiful, her eyes, especially...})
+	    Text({They sparkled whenever I looked at her.})
+	    Text({She was amazing.})
+	    Text({But, one day, she never came home.})
+	    Text({I decided to devote my life to fighting crime, so no one else would have to lose the ones they love!})
+	end
+	
+	[Choice About my planet]
+	    setSpeaker(This)
+		Text(happy, {Oh yeah! Tell me! Tell me!})
+		Text({Tell me what it's like!})
+		
+		setSpeaker(Player)
+		setChoice(1:Cold and icy, 2:Hot and arid, 3:Jungle, 4:Urban, 5:Indescribable)
+		
+		[Choice Cold and icy]
+		    setSpeaker(This)
+			Text({Brr! I don't know if I would like that!})
+			Text({You must be like an abominable snowman then!})
+		end
+		
+		[Choice Hot and arid]
+		    setSpeaker(This)
+			Text({Ouch! I hate the heat!})
+			Text({I prefer the game. Although, I don't think I can feel temperature...})
+		end
+		
+		[Choice Jungle]
+		    setSpeaker(This)
+			Text({Wow! I bet there were all kinds of amazing animals in there!})
+			Text({Are there giant beetles? And flying cats?})
+		end
+	
+		[Choice Urban]
+		    setSpeaker(This)
+			Text({That's so cool! You must have advanced technology!})
+			Text({Can you build me a flying car? Pretty please?})
+		end
+	
+		[Choice Indescribable]
+		    setSpeaker(This)
+			Text({It must be nothing like the game.})
+			Text({The mystery makes it even cooler!})
+		end
+
+	[Choice Nevermind]
+	    setSpeaker(This)
+		Text({Oh, okay. See you later, then.})
+	end
+end
+end
+
+Else(setChoice(1:Tell me about yourself, 2:Nevermind))
+	
+	[Choice Tell me about yourself]
+	    setSpeaker(This)
+	    Text({Let's see. I joined the supaheroes because I lost the love of my life.})
+	    Text(sad, {She was so beautiful, her eyes, especially...})
+	    Text({They sparkled whenever I looked at her.})
+	    Text({She was amazing.})
+	    Text({But, one day, she never came home.})
+	    Text({I decided to devote my life to fighting crime, so no one else would have to lose the ones they love!})
+	end
+	
+	[Choice Nevermind]
+	    setSpeaker(This)
+		Text({Oh, okay. See you later, then.})
+	end
+end
+
+
+
+done
+
+	
+		
+	

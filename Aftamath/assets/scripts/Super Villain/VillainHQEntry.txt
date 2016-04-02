@@ -23,10 +23,6 @@ eventMusic(Fun Villain Music)
 setSpeaker(Villain)
 Text(happy, {Look guys, we have a new pet.})
 
-face(player, Villain2)
-setSpeaker(Villain2)
-Text({Aw naw, look what the cat dragged in!})
-
 face(player, Villain3)
 setSpeaker(Villain3)
 Text({Baby! Look at this stone cold fox!})
@@ -53,13 +49,18 @@ setChoice(2:Use Superpowers on Villain5, 1:I don't want to fight you)
 	end
 
 #Villain5 uses projectile supapower, misses player, and accidentally hits Villain
+doAction(Villain5, aim, Villain, never)
+doAction(Villain5, shoot)
+wait(.25)
 
 face(Villain, Villain5)
 
 setSpeaker(Villain5)
 Text(sad, {...Uh oh...})
 
-#Villain6 appears right behind the player
+#Villain6 appears right behind the player, NEEDS TO BE UPDATED WITH CORRECT LOCATION
+spawn(NPC, Villain6, 12, 95)
+face(Villain6, Player)
 
 face(Villain6, Player)
 

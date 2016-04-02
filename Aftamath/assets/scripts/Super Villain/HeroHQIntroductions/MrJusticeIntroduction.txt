@@ -1,0 +1,63 @@
+Script Mr.JusticeIntroduction
+lockplayer
+
+setSpeaker(This)
+face(Player,This)
+Text(happy, {Here's my favorite pal!})
+
+setSpeaker(Player)
+setChoice(1:Tell me about yourself, 2:About the headquarters, 3:What do I do now?)
+	[Choice Tell me about yourself]
+	    setSpeaker(This)
+		Text({Oh, where to start? It all began when I was born.})
+		Text ({The doctors claimed they had never seen anything like me before.})
+		Text({I was the epitome of health, strong, and extraordinarily handsome!})
+		Text({As a baby, I could lift an entire chair!})
+		Text(happy, {They say that as my mother was crying when she saw me, I lifted my hands and wiped away her tears.})
+		Text(normal, {I was destined to be a hero.})
+	end
+	
+	[Choice About the headquarters]
+	    setSpeaker(This)
+		Text(happy, {This is your new home! You'll find everything you want around here.})
+		Text({Friends, no, family! Jobs on the bulletin board!})
+		Text(normal, {In fact, you can have everything except those donuts over there.})
+	    
+		setSpeaker(Player)
+		setChoice(1:Thank you, 2:Donuts?)
+		   
+	    [Choice Thank you]
+		   setSpeaker(This)
+		   Text({Of course!})
+	    end
+		   
+	    [Choice Donuts?]
+		    setSpeaker(This)
+		    Text({Those donuts belong to the big muscular guy.})
+			Text({Trust me, you don't want to make him angry.})
+		end
+
+	[Choice What do I do now?]
+	    setSpeaker(This)
+		Text({I have the feeling that you're new to the city.})
+		Text({Uh, lady, is that right?})
+		
+		setSpeaker(Narrator)
+		Text(mad, {You mean me? Yes, this one is new to the city.})
+		
+		setSpeaker(This)
+		Text({Okay, thanks. You know...})
+		Text(sad, {Don't tell anyone but... Sometimes I hear a voice in my head.})
+		Text({A woman's voice.})
+		Text({And a huge box comes up over there, on the floor. And I see her face!})
+		Text({Scary, right?})
+		Text(happy, {Anyways, since you're new here, you should explore the city a bit!})
+		Text({Once you're comfortable, you can come back here and I'll give you a job.})
+	end
+end
+
+
+	
+done
+				
+				
