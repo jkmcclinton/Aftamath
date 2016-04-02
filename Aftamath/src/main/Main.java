@@ -171,8 +171,8 @@ public class Main extends GameState {
 		b2dr = new Box2DDebugRenderer();
 		rayHandler = new RayHandler(world);
 		
-		Scene.sceneToEntityIds.clear();
-		Entity.idToEntity.clear();
+		Scene.clearEntityMapping();
+		Entity.clearMapping();
 		speakText = null;
 		currentScript = null;
 		pixel = Game.res.getTexture("pixel");
@@ -1331,8 +1331,8 @@ public class Main extends GameState {
 			music.pause();
 			scene.create();
 
-			narrator = (Mob)Entity.idToEntity.get(Vars.NARRATOR_SCENE_ID);
-			character = (Mob)Entity.idToEntity.get(Vars.PLAYER_SCENE_ID);
+			narrator = (Mob)Entity.getMapping(Vars.NARRATOR_SCENE_ID);
+			character = (Mob)Entity.getMapping(Vars.PLAYER_SCENE_ID);
 			createPlayer(character.getPixelPosition().add(new Vector2(0, -character.rh)));	//TODO normalize dealing with height offset
 		} else {
 			//TODO normalize narrator reference (should exist regardless of what level the player's on)
@@ -1493,8 +1493,7 @@ public class Main extends GameState {
 		Array<Entity> toRemove = new Array<>();
 		for(Mob m : f.keySet()){
 			if(f.get(m)){
-				Scene.sceneToEntityIds.get(m.getCurrentScene().ID).remove(m.getSceneID());
-				Scene.sceneToEntityIds.get(scene.ID).add(m.getSceneID());
+				Scene.switchEntityMapping(m.getCurrentScene().ID, scene.ID, m.getSceneID());
 				m.setPosition(character.getPixelPosition());
 				objects.add(m);
 			} else

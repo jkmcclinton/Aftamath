@@ -36,7 +36,7 @@ import scenes.Script.ScriptType;
 public class Entity implements Serializable {
 	
 	//global mapping of IDs (in Tiled, custom prop "ID") to an Entity reference
-	public static Map<Integer, Entity> idToEntity;
+	private static Map<Integer, Entity> idToEntity;
 	
 	public String ID;
 	public Animation animation;
@@ -82,6 +82,36 @@ public class Entity implements Serializable {
 	private static final float MOVE_SPEED = .70f;
 	static {
 		idToEntity = new HashMap<Integer, Entity>();
+	}
+	
+	public static void addMapping(int id, Entity entity) {
+		idToEntity.put(id, entity);
+	}
+	
+	public static void removeMapping(int id) {
+		if (hasMapping(id)) {
+			idToEntity.remove(id);
+		}
+	}
+	
+	public static void clearMapping() {
+		idToEntity.clear();
+	}
+	
+	public static boolean hasMapping(int id) {
+		return idToEntity.containsKey(id);
+	}
+	
+	public static Entity getMapping(int id) {
+		if (!hasMapping(id)) {
+			System.out.print("Entity:getMapping - No mapping exists with id "+id);
+			return null;
+		}
+		return idToEntity.get(id);
+	}
+
+	public static Map<Integer, Entity> getIDToEntityMapping() {
+		return idToEntity;
 	}
 	
 	public enum DamageType{

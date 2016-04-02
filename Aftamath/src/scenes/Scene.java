@@ -65,7 +65,8 @@ import scenes.Script.ScriptType;
 public class Scene {
 	
 	// global mapping of scenes to the entities they contain
-	public static Map<String, Set<Integer>> sceneToEntityIds;
+	private static Map<String, Set<Integer>> sceneToEntityIds;
+	
 	public Script loadScript;
 	public int width, height;
 	public String title, ID;
@@ -102,6 +103,44 @@ public class Scene {
 	
 	static {
 		sceneToEntityIds = new HashMap<String, Set<Integer> >();
+	}
+	
+	public static void addEntityMapping(String sceneID, int entityID) {
+		if (!sceneToEntityIds.containsKey(sceneID)) {
+			sceneToEntityIds.put(sceneID, new HashSet<Integer>());
+		}
+		sceneToEntityIds.get(sceneID).add(entityID);
+	}
+	
+	public static void removeEntityMapping(String sceneID, int entityID) {
+		if (!sceneToEntityIds.containsKey(sceneID)) {
+			sceneToEntityIds.put(sceneID, new HashSet<Integer>());
+			return;
+		}
+		if (sceneToEntityIds.get(sceneID).contains(entityID)) {
+			sceneToEntityIds.get(sceneID).remove(entityID);
+		}
+	}
+	
+	public static void switchEntityMapping(String srcSceneID, String dstSceneID, int entityID) {
+		removeEntityMapping(srcSceneID, entityID);
+		addEntityMapping(dstSceneID, entityID);
+	}
+		
+	public static void clearEntityMapping() {
+		sceneToEntityIds.clear();
+	}
+	
+	//these accessors are meant to be readonly - do not modify the return value directly, use the other methods
+	public static Set<Integer> getEntityMapping(String sceneID) {
+		if (!sceneToEntityIds.containsKey(sceneID)) {
+			sceneToEntityIds.put(sceneID, new HashSet<Integer>());
+		}
+		return sceneToEntityIds.get(sceneID);
+	}
+	
+	public static Map<String, Set<Integer>> getSceneToEntityMapping() {
+		return sceneToEntityIds;
 	}
 	
 	public String toString(){
@@ -158,12 +197,7 @@ public class Scene {
 
 		title = prop.get("name", String.class);
 		if(title==null) title = ID;
-		
-		//add empty set of existing entities in static map
-		if (!sceneToEntityIds.containsKey(this.ID)) {
-			sceneToEntityIds.put(this.ID, new HashSet<Integer>());
-		}
-		
+				
 		// Create Music
 		String[] bgm = {"","",""};
 		bgm[DAY] = prop.get("bgm day", String.class);
@@ -447,11 +481,9 @@ public class Scene {
 		TiledMapTileLayer ob = (TiledMapTileLayer) tileMap.getLayers().get("objects");
 		
 		//add in entities loaded from save file
-		if (Scene.sceneToEntityIds.containsKey(this.ID)) {
-			for (int sid : Scene.sceneToEntityIds.get(this.ID)) {
-				Entity e = Entity.idToEntity.get(sid);
-				this.entities.add(e);
-			}
+		for (int sid : Scene.getEntityMapping(this.ID)) {
+			Entity e = Entity.getMapping(sid);
+			this.entities.add(e);
 		}
 		
 		Ground g;
@@ -610,8 +642,8 @@ public class Scene {
 
 								if (sceneID==null)
 									System.out.println("'" + name + "', '"+ID+"' cannot be created without a sceneID!");
-								else if (Entity.idToEntity.containsKey(sceneIDParsed) && sceneIDParsed>0) {
-									Entity c = Entity.idToEntity.get(sceneIDParsed);
+								else if (Entity.hasMapping(sceneIDParsed) && sceneIDParsed>0) {
+									Entity c = Entity.getMapping(sceneIDParsed);
 									boolean conflict = true;
 
 									if(c instanceof Mob)
@@ -648,8 +680,8 @@ public class Scene {
 										e.setNickName(nickName);
 
 									if(sceneIDParsed>=0){
-										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
-										Entity.idToEntity.put(sceneIDParsed, e);
+										Scene.addEntityMapping(this.ID, sceneIDParsed);
+										Entity.addMapping(sceneIDParsed, e);
 									}
 								}
 
@@ -702,8 +734,8 @@ public class Scene {
 
 								if (sceneID==null)
 									System.out.println("'"+ID+"' cannot be created without a sceneID!");
-								else if (Entity.idToEntity.containsKey(sceneIDParsed)&& sceneIDParsed>=0) {
-									Entity c = Entity.idToEntity.get(sceneIDParsed);
+								else if (Entity.hasMapping(sceneIDParsed)&& sceneIDParsed>=0) {
+									Entity c = Entity.getMapping(sceneIDParsed);
 									boolean conflict = true;
 
 									//this is the same object we're looking at, therefore no conflict
@@ -740,8 +772,8 @@ public class Scene {
 									entities.add(e);
 
 									if(sceneIDParsed>=0){
-										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
-										Entity.idToEntity.put(sceneIDParsed, e);
+										Scene.addEntityMapping(this.ID, sceneIDParsed);
+										Entity.addMapping(sceneIDParsed, e);
 									}
 								}
 							} catch (NoSuchFieldException | SecurityException e) {

@@ -46,8 +46,8 @@ public class JsonSerializer {
 			writer.setWriter(fout);
 			writer.writeObjectStart();
 			writer.writeValue("levelID", gMain.getScene().ID);
-			writer.writeValue("sceneToEntityIds", Scene.sceneToEntityIds);
-			writer.writeValue("idToEntity", Entity.idToEntity);
+			writer.writeValue("sceneToEntityIds", Scene.getSceneToEntityMapping());
+			writer.writeValue("idToEntity", Entity.getIDToEntityMapping());
 			writer.writeValue("playerData", gMain.player);
 			writer.writeValue("history", gMain.history);
 			writer.writeObjectEnd();
@@ -63,18 +63,16 @@ public class JsonSerializer {
 			Json reader = new Json();
 			
 			// build the associative arrays through iteration
-			Scene.sceneToEntityIds.clear();
+			Scene.clearEntityMapping();
 			for (JsonValue child = root.get("sceneToEntityIds").child(); child != null; child = child.next()) {
-				Set<Integer> entityIds = new HashSet<Integer>();
 				for (JsonValue child2 = child.child(); child2 != null; child2 = child2.next())
-					entityIds.add(child2.getInt("value"));
-				Scene.sceneToEntityIds.put(child.name(), entityIds);
+					Scene.addEntityMapping(child.name(), child2.getInt("value"));
 			}
 			
-			Entity.idToEntity.clear();
+			Entity.clearMapping();
 			for (JsonValue child = root.get("idToEntity").child(); child != null; child = child.next()) {
 				Entity e = reader.fromJson(Entity.class, child.toString());
-				Entity.idToEntity.put(Integer.parseInt(child.name()), e);
+				Entity.addMapping(Integer.parseInt(child.name()), e);
 			}
 			
 			if (gMain != null) {
@@ -102,7 +100,7 @@ public class JsonSerializer {
 				//TODO: use doTimedAction()?
 			}
 			if (ref.interactable > -1) {
-				ref.orig.setInteractable(Entity.idToEntity.get(ref.interactable));
+				ref.orig.setInteractable(Entity.getMapping(ref.interactable));
 			}
 		}
 		mobRefLst.clear();
@@ -111,21 +109,21 @@ public class JsonSerializer {
 			for (int i : ref.followers) {
 				if (i == -1)
 					continue;
-				ref.orig.addFollower((Mob)Entity.idToEntity.get(i));
+				ref.orig.addFollower((Mob)Entity.getMapping(i));
 			}
 		}
 		entityRefLst.clear();
 		
 		for (PlayerRef ref : playerRefLst) {
 			if (ref.partner > -1) {
-				ref.orig.setPartner((Mob)Entity.idToEntity.get(ref.partner));
+				ref.orig.setPartner((Mob)Entity.getMapping(ref.partner));
 			}
 		}
 		playerRefLst.clear();
 		
 		for (MobAIRef ref : mobAiRefLst) {
 			if (ref.focus > -1) {
-				ref.orig.focus = Entity.idToEntity.get(ref.focus);
+				ref.orig.focus = Entity.getMapping(ref.focus);
 			}
 		}
 		mobAiRefLst.clear();

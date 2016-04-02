@@ -808,12 +808,8 @@ public class Script implements Serializable {
 				obj = findObject(firstArg(line));
 				if (obj!= null){
 					main.removeBody(obj.getBody());
-					Entity.idToEntity.remove(obj.getSceneID());
-					try{
-					Scene.sceneToEntityIds.get(main.getScene().ID).remove(obj.getSceneID());
-					} catch(Exception e){
-						
-					}
+					Entity.removeMapping(obj.getSceneID());
+					Scene.removeEntityMapping(main.getScene().ID, obj.getSceneID());
 				}else
 					System.out.println("Cannot find \""+firstArg(line)+"\" to remove; Line: "+(index+1)+"\tScript: "+ID);
 				break;
@@ -1271,12 +1267,9 @@ public class Script implements Serializable {
 									} else {
 										int sceneID = obj.getSceneID();
 
-										Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
-										set.remove(sceneID);
-										set = Scene.sceneToEntityIds.get(level);
-										set.add(sceneID);
+										Scene.switchEntityMapping(obj.getCurrentScene().ID, level, sceneID);
 
-//										obj.setPosition(new Vector2(loc.x, loc.y));
+										//obj.setPosition(new Vector2(loc.x, loc.y));
 										//obj.setState("MOVETOWARP", w)
 										main.removeBody(obj.getBody());
 									}
@@ -1300,14 +1293,7 @@ public class Script implements Serializable {
 								if(!main.getScene().ID.equals(level)){
 									int sceneID = obj.getSceneID();
 
-									Set<Integer> set = Scene.sceneToEntityIds.get(obj.getCurrentScene().ID);
-									set.remove(sceneID);
-									set = Scene.sceneToEntityIds.get(level);
-									if (set == null) {
-										set = new HashSet<Integer>();
-										Scene.sceneToEntityIds.put(level, set);
-									}
-									set.add(sceneID);
+									Scene.switchEntityMapping(obj.getCurrentScene().ID, level, sceneID);
 
 									main.removeBody(obj.getBody());
 								}
@@ -2304,8 +2290,8 @@ public class Script implements Serializable {
 			boolean copied = false;
 			Entity e1 = null;
 			if(sceneID==-1)
-				for(int i : Entity.idToEntity.keySet()){
-					e1 = Entity.idToEntity.get(i);
+				for(int i : Entity.getIDToEntityMapping().keySet()){
+					e1 = Entity.getMapping(i);
 					if(e1 instanceof Mob)
 						if(e1.ID.equals(args[1].trim()) && ((Mob)e1).getName().equals(args[2].trim())){
 							copied = true;
@@ -2315,9 +2301,9 @@ public class Script implements Serializable {
 			
 			if(!copied){
 				boolean found=false;
-				if(Entity.idToEntity.containsKey(sceneID)){
+				if(Entity.hasMapping(sceneID)){
 					//sceneID already exists
-					Entity temp = Entity.idToEntity.get(sceneID);
+					Entity temp = Entity.getMapping(sceneID);
 					
 					if(temp instanceof Mob){ 
 						if(((Mob)temp).getName().equals(args[2].trim()) && temp.ID.equals( args[1].trim())
@@ -2339,16 +2325,13 @@ public class Script implements Serializable {
 					e.setDialogueScript("generic_1");
 					if(sceneID>0){
 						System.out.println(main.getScene());
-						Scene.sceneToEntityIds.get(main.getScene().ID).add(sceneID);
-						Entity.idToEntity.put(sceneID, e);
+						Scene.addEntityMapping(main.getScene().ID, sceneID);
+						Entity.addMapping(sceneID, e);
 					}
 				}
 			} else {
-				Entity.idToEntity.remove(e1.getSceneID());
-				Set<Integer> set = Scene.sceneToEntityIds.get(e1.getCurrentScene().ID);
-				set.remove(e1.getSceneID());
-				set = Scene.sceneToEntityIds.get(main.getScene().ID);
-				set.add(e1.getSceneID());
+				Entity.removeMapping(e1.getSceneID());
+				Scene.switchEntityMapping(e1.getCurrentScene().ID, main.getScene().ID, e1.getSceneID());
 				
 				e = ((Mob) e1).copy();
 				e.setPosition(new Vector2(loc.x, loc.y));
@@ -2363,16 +2346,13 @@ public class Script implements Serializable {
 	}
 	
 	public Entity pullEntity(int sceneID, Vector2 loc){
-		Entity temp = Entity.idToEntity.get(sceneID);
+		Entity temp = Entity.getMapping(sceneID);
 		Entity e;
-		Entity.idToEntity.remove(sceneID);
-		
-		Set<Integer> set = Scene.sceneToEntityIds.get(temp.getCurrentScene().ID);
-		set.remove(sceneID);
-		set = Scene.sceneToEntityIds.get(main.getScene().ID);
-		set.add(sceneID);
-
 		e = temp.copy();
+		Entity.removeMapping(sceneID);
+		
+		Scene.switchEntityMapping(temp.getCurrentScene().ID, main.getScene().ID, sceneID);
+		
 		e.setPosition(new Vector2(loc.x, loc.y));
 		if(e instanceof Mob)
 			((Mob) e).resetState();

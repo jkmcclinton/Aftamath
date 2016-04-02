@@ -168,17 +168,17 @@ public class Mob extends Entity{
 		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
 		
 		this.sceneID = sceneID;
-		if (!Entity.idToEntity.containsKey(this.sceneID)) {
-			Entity.idToEntity.put(this.sceneID, this);
+		if (!Entity.hasMapping(this.sceneID)) {
+			Entity.addMapping(this.sceneID, this);
 		} else {
-			Entity e = Entity.idToEntity.get(sceneID);
+			Entity e = Entity.getMapping(sceneID);
 			boolean conflict = true;
 			String error = e.ID;
 			
 			if(e instanceof Mob)
 				if(this.getName().equals(((Mob) e).getName()) && ID.equals(e.ID)){
 					conflict = false;
-					Entity.idToEntity.put(sceneID, this);
+					Entity.addMapping(sceneID, this);
 				} else
 					error = "("+((Mob)e).getName() + ", "+e.ID+")";
 			

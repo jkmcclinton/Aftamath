@@ -161,8 +161,6 @@ public class Game implements ApplicationListener {
 				if(f.extension().equals("tmx")){
 					String l = f.nameWithoutExtension();
 					LEVEL_NAMES.add(l);
-					if (!Scene.sceneToEntityIds.containsKey(l))
-						Scene.sceneToEntityIds.put(l, new HashSet<Integer>());
 				}
 		}
 		
