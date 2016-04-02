@@ -1,0 +1,28 @@
+Script GothicManIntroduction
+lockplayer
+Face(This, Player)
+
+setSpeaker(This)
+Text({Greetings, good sir.})
+
+setSpeaker(Player)
+setChoice(1:Tell me about yourself, 2:Nevermind)
+
+[Choice Tell me about yourself]
+setSpeaker(This)
+Text({I am merely a weary soul in the midst of chaos.})
+Text({All around me I see the abandonment of class and dignity.})
+Text({It pains me to imagine the circumstances that led to this new culture.})
+Text({Swag, vibes, yolos, all pathetic.})
+Text({The new culture is especially prominent in the criminals.})
+Text({I instill proper etiquette among these vagabonds.})
+end
+
+[Choice Nevermind]
+setSpeaker(This)
+Text(mad, {Leave off, sir!})
+end
+end
+
+
+done

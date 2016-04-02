@@ -65,8 +65,7 @@ setChoice(1:No, 2:Yes)
 	[Choice Yes]
 	    setSpeaker(Hero3)
 		Text({That's so cool! Promise me you'll tell me about your planet later!})
-		declare(a, global, Integer, 0)
-	    value(add, a, 1)
+		setflag(planet, true)
 		#when the player talks to him later, he will ask about the planet if this value = 1
 	end
 	

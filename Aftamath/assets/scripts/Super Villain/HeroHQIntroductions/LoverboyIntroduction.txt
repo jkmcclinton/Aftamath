@@ -6,7 +6,7 @@ setSpeaker(This)
 Text(happy, {Oh my gosh! You came to talk to me!})
 
 setSpeaker(Player)
-If(a>=1)
+If(flag planet)
     setChoice(1:Tell me about yourself, 2:About my planet, 3:Nevermind)
 	
 	[Choice Tell me about yourself]
@@ -62,8 +62,9 @@ If(a>=1)
 		Text({Oh, okay. See you later, then.})
 	end
 end
+end
 
-Else (setChoice(1:Tell me about yourself, 2:Nevermind))
+Else(setChoice(1:Tell me about yourself, 2:Nevermind))
 	
 	[Choice Tell me about yourself]
 	    setSpeaker(This)
