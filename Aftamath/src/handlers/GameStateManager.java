@@ -99,8 +99,9 @@ public class GameStateManager {
 	private void pushState(int state, Object... args) {
 		if(gameStates.size() == 2)
 			return;
-		
-		gameStates.add(initState(state, args));
+		GameState gs = initState(state, args);
+		gs.getSpriteBatch().setGameState(gs);
+		gameStates.add(gs);
 	}
 	
 	private void popState() {

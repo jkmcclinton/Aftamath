@@ -179,15 +179,5 @@
     <property name="spawn" value=""/>
    </properties>
   </object>
-  <object id="4" name="31" x="640" y="448" width="16" height="16">
-   <properties>
-    <property name="ID" value="100"/>
-    <property name="NPC" value="villain3"/>
-    <property name="layer" value="front"/>
-    <property name="name" value="TEST"/>
-    <property name="script" value="actionTest"/>
-    <property name="state" value="FACEPLAYER"/>
-   </properties>
-  </object>
  </objectgroup>
 </map>

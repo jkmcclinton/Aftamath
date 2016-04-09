@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="10" tilewidth="16" tileheight="16" nextobjectid="36">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="Justice Lobby"/>
+  <property name="name" value="Upper Hall"/>
+ </properties>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
+ </tileset>
+ <tileset firstgid="2881" name="tileset" tilewidth="16" tileheight="16" tilecount="10000">
+  <image source="tilesets/HeroHQ.png" width="1600" height="1600"/>
+  <tile id="3769">
+   <properties>
+    <property name="light" value="pool"/>
+   </properties>
+  </tile>
+  <tile id="3770">
+   <properties>
+    <property name="light" value="pool"/>
+   </properties>
+  </tile>
+  <tile id="3860">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3861">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3862">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3863">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3864">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3865">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3866">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3867">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3868">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3869">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3870">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3871">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3872">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3873">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3874">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3875">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3876">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3877">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3878">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3879">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3880">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3881">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3882">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3883">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3884">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3885">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3886">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3960">
+   <properties>
+    <property name="light" value="justice_hall"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="75" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFtAD/xIcnpgVIkhiemBbgmMTwxLQAWpLDE9MC9EkOT0wL8ElyeGJagDCp4YlHwSgYSAAARHoEXA==
+  </data>
+ </layer>
+ <layer name="bg2" width="75" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztjrERgkAUBX+CUsIdXQi0A5KitiPYlGA7goHbwiWfF9zObLgza5ZRoAhmJzxjGXQ7BUZ+b3jHR8K7d6fAm98FV/wkvHt3ClyiWY0NtlG3U+DJ74QzvhLevTsFvvxuuOMv4d27U6CrzHq84lDpdpnMkfwBU98wrw==
+  </data>
+ </layer>
+ <layer name="ground" width="75" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztzbsNgDAQBNGjDXqgHMjApPxM/5mHEhAXoRnphauNMDMzM8tr7COml2YsKFg/7DbsOHDiQsWd9PfIbOj+zXJrWxAjkA==
+  </data>
+ </layer>
+ <layer name="ledge" width="75" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYCAOrBQf3pia4C+VzRtMQFKCuuYlUtm8wQRqqey3o8M4rB5S2W+aktQ1bzABVyr7rXcYh9VKIv2my4iKcan5OIzDildqoF0wdEDhaFiNggEEAA0hMtQ=
+  </data>
+ </layer>
+ <layer name="objects" width="75" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztk8kJAlEQRAs0iO4RM3ALx2WObuG4JWMGOhqOOh4t+HNrBA+t0PIfFNVQ1K/TBzLfpCVAW/4382TFjfWbnU+zOX1BLcXvTa89L44FcOHGVdJ9op+pSmwWsedJtwMMFRhpunv0PjVQm0XsebPnxkHTvaFvqZ3aLGrPk5obz2bnRr9TD7VZ1J4nM/7xsvnnY/qEmhY2i9rLZH7JC7Zpew8=
+  </data>
+ </layer>
+ <layer name="fg" width="75" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20ND6AAAIB3Awu4AAE=
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="30" name="outside" x="167" y="54" width="17.2878" height="63.9394">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="HeroLobby"/>
+    <property name="nextWarp" value="4"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="31" name="outside" x="258" y="53" width="31" height="57.9394">
+   <properties>
+    <property name="ID" value="3"/>
+    <property name="next" value="HeroRoom_4"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="32" name="outside" x="482" y="54" width="31" height="57.9394">
+   <properties>
+    <property name="ID" value="4"/>
+    <property name="next" value="HeroRoom_5"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="33" name="outside" x="706" y="54" width="31" height="57.9394">
+   <properties>
+    <property name="ID" value="5"/>
+    <property name="next" value="HeroRoom_6"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="34" name="outside" x="930" y="54" width="31" height="57.9394">
+   <properties>
+    <property name="ID" value="6"/>
+    <property name="next" value="JusticeCloset"/>
+    <property name="nextWarp" value="2"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

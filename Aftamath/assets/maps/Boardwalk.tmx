@@ -16,6 +16,246 @@
     <property name="light" value="boardwalk"/>
    </properties>
   </tile>
+  <tile id="23">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="24">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="25">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="26">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="27">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="28">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="35">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="36">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="37">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="38">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="39">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="40">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="41">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="42">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="43">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="44">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="86">
+   <properties>
+    <property name="bench" value=""/>
+   </properties>
+  </tile>
+  <tile id="87">
+   <properties>
+    <property name="bench" value=""/>
+   </properties>
+  </tile>
+  <tile id="107">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="108">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="109">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="110">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="111">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="112">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="113">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="114">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="115">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="116">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="179">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="180">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="181">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="182">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="183">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="184">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="185">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="186">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="187">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="188">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="251">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="252">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="253">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="254">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="255">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="256">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="257">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="258">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="259">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="260">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="bg1" width="75" height="50">
   <data encoding="base64" compression="zlib">

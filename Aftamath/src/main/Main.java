@@ -20,8 +20,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -45,6 +47,7 @@ import entities.Mob;
 import entities.Mob.Anim;
 import entities.MobAI.AIType;
 import entities.MobAI.ResetType;
+import entities.Particle;
 import entities.Path;
 import entities.Projectile;
 import entities.SpeechBubble;
@@ -100,6 +103,7 @@ public class Main extends GameState {
 	private Array<Body> bodiesToRemove;
 	private ArrayList<Entity> objects, objsToAdd/*, UIobjects, UItoRemove*/;
 	private ArrayList<Path> paths;
+	private ArrayList<Particle> particles, ptclsToAdd, ptclsToRemove;
 	private ArrayList<LightObj> lights;
 	private ArrayList<PositionalAudio> sounds;
 	private Hashtable<String, Warp> warps;
@@ -138,11 +142,12 @@ public class Main extends GameState {
 						rayHandle   = true, //include lighting?
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
-						debugging   = false,	 //in debug mode?
-						cwarps      = false,	 //create warps?
+						debugging   = true,	 //in debug mode?
+						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "Bridge"; //where the player starts
+	public static String debugLoadLoc = "HeroHQ"; //where the player starts
+	public static String debugPlayerType = "maleplayer4"; //what the player looks like in debug mode
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 
 	public Main(GameStateManager gsm) {
@@ -154,10 +159,14 @@ public class Main extends GameState {
 		this.gameFile = gameFile;
 		JsonSerializer.gMain = this;
 	}
-
+	
+	
 	public void create(){
+		ptclsToRemove = new ArrayList<>();
 		displayText = new ArrayDeque<>();
 		bodiesToRemove = new Array<>();
+		ptclsToAdd = new ArrayList<>();
+		particles = new ArrayList<>();
 		objsToAdd = new ArrayList<>();
 		healthBars = new HashMap<>();
 		objects = new ArrayList<>();
@@ -170,6 +179,9 @@ public class Main extends GameState {
 		world = new World(new Vector2 (0, Vars.GRAVITY), true);
 		b2dr = new Box2DDebugRenderer();
 		rayHandler = new RayHandler(world);
+		lightBuffer = new FrameBuffer(Format.RGBA8888, Vars.PowerOf2(Game.width), 
+				Vars.PowerOf2(Game.height), false);
+		//lightBufferRegion = new TextureRegion(Game.res.getTexture("lightMap"));
 		
 		Scene.sceneToEntityIds.clear();
 		Entity.idToEntity.clear();
@@ -187,18 +199,21 @@ public class Main extends GameState {
 		} else {
 			dayTime = DAY_TIME+TRANSITION_INTERVAL;
 			dayState = DAY;
-			
 		}
 		
 		cam.reset();
 		b2dCam.reset();
-		rayHandler.setShadows(true);;
+		rayHandler.setShadows(false);
+		rayHandler.setBlur(false);
+		RayHandler.setGammaCorrection(true);
+		RayHandler.useDiffuseLight(false);
+		rayHandler.setAmbientLight(1);
 		world.setContactListener(cl);
 		b2dr.setDrawVelocities(true);
 
 		if(cwarps)
 			System.out.println("Don't Panic! The game is just linking levels together!");
-		drawString(sb, "Loading...", Game.width/4, Game.height/4);
+		//drawString(sb, "Loading...", Game.width/4, Game.height/4);
 
 		if(document) documentVariables();
 		if(cwarps) catalogueWarps();
@@ -231,7 +246,7 @@ public class Main extends GameState {
 			debugText = "";
 			player.updateMoney();
 
-//			handleDayCycle(dt);
+			handleDayCycle(dt);
 			if(!random && !tempSong && !scene.DEFAULT_SONG[dayState].equals(music))
 				changeSong(scene.DEFAULT_SONG[dayState]);
 			if(scene.outside) {
@@ -274,8 +289,7 @@ public class Main extends GameState {
 			Array<Entity> toRemove = new Array<>();
 			for(Entity e: healthBars.keySet()){
 				float time = healthBars.get(e);
-				
-				if(time-dt<=0)
+				if(time-dt<=0 || !exists(e))
 					toRemove.add(e);
 				else
 					healthBars.put(e, time-dt);
@@ -293,10 +307,8 @@ public class Main extends GameState {
 					//find bodies that are out of bounds
 					if (e.getPixelPosition().x > scene.width + 50 || e.getPixelPosition().x < -50 || 
 							e.getPixelPosition().y > scene.height + 100 || e.getPixelPosition().y < -50) {
-						if (e instanceof Projectile){
+						if (e instanceof Projectile)
 							((Projectile) e).kill();
-//							removeBody(e.getBody());
-						}
 					}
 				}
 			}
@@ -310,11 +322,13 @@ public class Main extends GameState {
 			for (Body b : bodiesToRemove){
 				if (b != null) {
 					if (b.getUserData() != null){
-						Object e = b.getUserData();
+						Entity e = (Entity) b.getUserData();
 						if(cam.getFocus().equals(e))
 							cam.removeFocus();
 						objects.remove(e);
-						if(e.equals(character))
+						//ensures player still has access to the character
+						//after hitting "repsawn"
+						if(e.equals(character)) 
 							addObject((Entity) e);
 						world.destroyBody(b);
 					}
@@ -322,6 +336,15 @@ public class Main extends GameState {
 			}
 
 			bodiesToRemove.clear();
+			
+			//particle stuff
+			particles.addAll(ptclsToAdd);
+			ptclsToAdd.clear();
+			for(Particle p : particles)
+				p.update(dt);
+			
+			particles.removeAll(ptclsToRemove);
+			ptclsToRemove.clear();
 
 			//apply steps to transport to next level
 			if(warping){
@@ -391,70 +414,109 @@ public class Main extends GameState {
 		//transition ambient light an color overlay
 		Color ambient = scene.ambientLight;
 		drawOverlay = scene.ambientOverlay;
-		float t=dayTime,i;
 		if(scene.outside){
+			ambient = getAmbientLight();
+			getColorOverlay();
+			
+			float t=dayTime,i;
+			i = DAY_TIME/12f;
 			switch(dayState){
 			case DAY:
-				ambient = Vars.DAY_LIGHT;
-				if(!sb.fading){
 					sb.setOverlay(Vars.DAY_OVERLAY);
 					if(sb.isDrawingOverlay()) 
 						sb.setOverlayDraw(false);
-				}
 				break;
 			case NOON:
-				i = DAY_TIME/12f;
-				drawOverlay = Vars.DAY_OVERLAY;
-				ambient = Vars.blendColors(t, NIGHT_TIME-i, NIGHT_TIME, 
-						Vars.DAY_LIGHT, Vars.NIGHT_LIGHT);
-
-				//complicated color overlay for sunset
 				if(t>NIGHT_TIME-i){
-					if(t>NIGHT_TIME-i)
-						drawOverlay = Vars.blendColors(t, NIGHT_TIME-i, NIGHT_TIME-i+i/4f, 
-								Vars.DAY_OVERLAY, Vars.SUNSET_GOLD);
-					if(t>NIGHT_TIME-i+i/4f)
-						drawOverlay = Vars.blendColors(t, NIGHT_TIME-i+i/4f, NIGHT_TIME-i+2*i/4f, 
-								Vars.SUNSET_GOLD, Vars.SUNSET_ORANGE);
-					if(t>NIGHT_TIME-i+2*i/4f)
-						drawOverlay = Vars.blendColors(t, NIGHT_TIME-i+2*i/4f, NIGHT_TIME-i+3*i/4f, 
-								Vars.SUNSET_ORANGE, Vars.SUNSET_MAGENTA);
-					if(t>NIGHT_TIME-i+3*i/4f)
-						drawOverlay = Vars.blendColors(t, NIGHT_TIME-i+3*i/4f, NIGHT_TIME, 
-								Vars.SUNSET_MAGENTA, Vars.NIGHT_OVERLAY);
-					if(!sb.fading) {
 						sb.setOverlay(drawOverlay);
 						if(!sb.isDrawingOverlay())
 							sb.setOverlayDraw(true);
-					}
 				}
 
 				break;
 			case NIGHT:
-				i = TRANSITION_INTERVAL;
-				ambient = Vars.blendColors(t, DAY_TIME-i, DAY_TIME, 
-						Vars.NIGHT_LIGHT, Vars.DAY_LIGHT);
-
-				if(t>DAY_TIME-i){
-					if(t>DAY_TIME-i)
-						drawOverlay = Vars.blendColors(t, DAY_TIME-i, DAY_TIME-i/2f, 
-								Vars.NIGHT_OVERLAY, Vars.SUNRISE);
-					if(t>DAY_TIME-i/2f)
-						drawOverlay = Vars.blendColors(t, DAY_TIME-i/2f, DAY_TIME, 
-								Vars.SUNRISE, Vars.DAY_OVERLAY);
-				} else
-					drawOverlay = Vars.NIGHT_OVERLAY;
-
-				if(!sb.fading){
 					sb.setOverlay(drawOverlay);
 					if(!sb.isDrawingOverlay())
 						sb.setOverlayDraw(true);
-				}
 				break;
 			}
+			
 		} else 
 			sb.setOverlay(drawOverlay);
+		if(!rayHandle) sb.setOverlayDraw(false);
 		rayHandler.setAmbientLight(ambient);
+	}
+	
+	/**
+	 * produces spritebatch color overlay relative to day time
+	 * @return
+	 */
+	public Color getColorOverlay(){
+		float t=dayTime,i;
+		switch(dayState){
+		case DAY:
+			drawOverlay = Vars.DAY_OVERLAY;
+			break;
+		case NOON:
+			i = DAY_TIME/12f;
+			drawOverlay = Vars.DAY_OVERLAY;
+			//complicated color overlay for sunset
+			if(t>NIGHT_TIME-i){
+				if(t>NIGHT_TIME-i)
+					drawOverlay = Vars.blendColors(t, NIGHT_TIME-i, NIGHT_TIME-i+i/4f, 
+							Vars.DAY_OVERLAY, Vars.SUNSET_GOLD);
+				if(t>NIGHT_TIME-i+i/4f)
+					drawOverlay = Vars.blendColors(t, NIGHT_TIME-i+i/4f, NIGHT_TIME-i+2*i/4f, 
+							Vars.SUNSET_GOLD, Vars.SUNSET_ORANGE);
+				if(t>NIGHT_TIME-i+2*i/4f)
+					drawOverlay = Vars.blendColors(t, NIGHT_TIME-i+2*i/4f, NIGHT_TIME-i+3*i/4f, 
+							Vars.SUNSET_ORANGE, Vars.SUNSET_MAGENTA);
+				if(t>NIGHT_TIME-i+3*i/4f)
+					drawOverlay = Vars.blendColors(t, NIGHT_TIME-i+3*i/4f, NIGHT_TIME, 
+							Vars.SUNSET_MAGENTA, Vars.NIGHT_OVERLAY);
+			}
+
+			break;
+		case NIGHT:
+			i = TRANSITION_INTERVAL;
+			if(t>DAY_TIME-i){
+				if(t>DAY_TIME-i)
+					drawOverlay = Vars.blendColors(t, DAY_TIME-i, DAY_TIME-i/2f, 
+							Vars.NIGHT_OVERLAY, Vars.SUNRISE);
+				if(t>DAY_TIME-i/2f)
+					drawOverlay = Vars.blendColors(t, DAY_TIME-i/2f, DAY_TIME, 
+							Vars.SUNRISE, Vars.DAY_OVERLAY);
+			} else
+				drawOverlay = Vars.NIGHT_OVERLAY;
+			break;
+		}
+		return drawOverlay;
+	}
+	
+/**
+ * return 
+ * @return day time associated ambient lighting
+ */
+	public Color getAmbientLight(){
+		Color ambient = null;
+		float t=dayTime,i;
+		switch(dayState){
+		case DAY:
+			ambient = Vars.DAY_LIGHT;
+			break;
+		case NOON:
+			i = DAY_TIME/12f;
+			drawOverlay = Vars.DAY_OVERLAY;
+			ambient = Vars.blendColors(t, NIGHT_TIME-i, NIGHT_TIME, 
+					Vars.DAY_LIGHT, Vars.NIGHT_LIGHT);
+			break;
+		case NIGHT:
+			i = TRANSITION_INTERVAL;
+			ambient = Vars.blendColors(t, DAY_TIME-i, DAY_TIME, 
+					Vars.NIGHT_LIGHT, Vars.DAY_LIGHT);
+			break;
+		}
+		return ambient;
 	}
 
 	public void render() {
@@ -482,7 +544,10 @@ public class Main extends GameState {
 				if(e.getLayer()!=Vars.BIT_LAYERSPECIAL)
 					e.render(sb);
 			}
+			
 			drawHealthBars(sb);
+			for(Particle p : particles)
+				p.render(sb);
 			sb.end();
 
 			scene.renderFG(sb);
@@ -497,7 +562,10 @@ public class Main extends GameState {
 		}
 
 		if (speaking) speak();
-		if (rayHandle) rayHandler.updateAndRender();
+		if (rayHandle) {
+			rayHandler.updateAndRender();
+//			renderLighting(sb);
+		}
 
 		boolean o = sb.isDrawingOverlay();
 		if(o) sb.setOverlayDraw(false);
@@ -520,8 +588,59 @@ public class Main extends GameState {
 		}
 
 		if(dbtrender) updateDebugText();
-
 		if(o) sb.setOverlayDraw(true);
+	}
+	
+	public void renderLighting(FadingSpriteBatch sb){
+//TODO
+		//start rendering to the lightBuffer
+		lightBuffer.begin();
+
+		//setup the right blending
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+
+		//set the ambient color values, this is the "global" light of your scene
+		//imagine it being the sun.  Usually the alpha value is just 1, and you change the darkness/brightness with the Red, Green and Blue values for best effect
+
+		Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		//start rendering the lights to our spriteBatch
+		sb.begin();
+
+		//set the color of your light (red,green,blue,alpha values)
+		sb.setColor(0.9f, 0.4f, 0f, 1f);
+
+		//tx and ty contain the center of the light source
+		float tx= (Game.width/2);
+		float ty= (Game.height/2);
+
+		//tw will be the size of the light source based on the "distance"
+		//(the light image is 128x128)
+		//and 96 is the "distance"  
+		//Experiment with this value between based on your game resolution 
+		//my lights are 8 up to 128 in distance
+		float tw=(128/100f)*96;
+
+		//make sure the center is still the center based on the "distance"
+		tx=tx-(tw/2);
+		ty=ty-(tw/2);
+
+		//and render the sprite
+//		batch.draw(sprite, tx,ty,tw,tw,0,0,128,128,false,true);
+		sb.end();
+		lightBuffer.end();
+
+		//now we render the lightBuffer to the default "frame buffer"
+		//with the right blending !
+		Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+		sb.begin();
+		sb.draw(lightBufferRegion, 0, 0,Game.width,Game.height);               
+		sb.end();
+
+		//post light-rendering
+		//you might want to render your statusbar stuff here
 	}
 
 	//everything that needs to be displayed constantly for debug tracking is
@@ -532,7 +651,7 @@ public class Main extends GameState {
 		debugText+= "/l"+Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
 		debugText += "/lLevel: " + scene.title;
 		debugText += "/lSong: " + music;
-		debugText += "/lDebugY: " + debugY;
+		debugText += "/lcontacts: " + character.contacts;
 
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM  /*/Vars.TILE_SIZE*/) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
@@ -563,16 +682,12 @@ public class Main extends GameState {
 //			player.addFunds(100d);
 //			Vars.NIGHT_LIGHT.r+=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-			debugY += .005f;
 			character.damage(-1);
-			System.out.println(character.getHealth());
 		} if(MyInput.isDown(Input.DEBUG_DOWN)){
 //			player.addFunds(-100d);
 //			Vars.NIGHT_LIGHT.r-=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-			debugY -= .005f;
 			character.damage(1);
-			System.out.println(character.getHealth());
 		} if(MyInput.isDown(Input.DEBUG_LEFT)) {
 			Vars.NIGHT_LIGHT.b-=r;
 			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
@@ -664,6 +779,10 @@ public class Main extends GameState {
 				}
 			}
 		} else{ 
+			boolean canWarp = false;
+			if(character.getWarp()!=null)
+				canWarp = character.getWarp().conditionsMet();
+			
 			switch (stateType){
 			case KEYBOARD:
 				//allows the player to input text 
@@ -740,15 +859,15 @@ public class Main extends GameState {
 				if(/*cam.focusing||*/warping||quitting||waiting||character.dead||character.frozen) return;
 				if(MyInput.isPressed(Input.JUMP)) character.jump();
 				if(MyInput.isDown(Input.UP)) {
-					if(character.canWarp && character.isOnGround() && !character.snoozing){ 
+					if(canWarp && character.isOnGround() && !character.snoozing){ 
 						if(!character.getWarp().instant) {
 							initWarp(character.getWarp());
 							character.killVelocity();
 						}
-					}else if(character.canClimb) character.climb();
+					} else if(character.canClimb) character.climb();
 					else {
 						Vector2 f = new Vector2(character.getPixelPosition().x, 
-								character.getPixelPosition().y + 4.5f*Vars.TILE_SIZE*cam.zoom + cam.offsetY);
+								character.getPixelPosition().y + 4.5f*Vars.TILE_SIZE*cam.zoom + cam.yOff);
 						cam.setFocus(f);
 						b2dCam.setFocus(f);
 						character.lookUp();
@@ -810,7 +929,7 @@ public class Main extends GameState {
 				if(MyInput.isPressed(Input.PAUSE)) pause();
 				if(cam.moving/*||cam.focusing*/||warping||quitting||character.dead/*||waiting*/||character.frozen) return;
 				if(MyInput.isDown(Input.UP)) {
-					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+					if(canWarp && character.isOnGround() && !character.snoozing && 
 							!character.getWarp().instant) {
 						initWarp(character.getWarp());
 						character.killVelocity();
@@ -845,13 +964,13 @@ public class Main extends GameState {
 				}
 
 				if(MyInput.isDown(Input.UP)) {
-					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+					if(canWarp && character.isOnGround() && !character.snoozing && 
 							!character.getWarp().instant) {
 					}
 					else if(character.canClimb) character.climb();
 					else {
 						Vector2 f = new Vector2(character.getPixelPosition().x, 
-								character.getPixelPosition().y + 4.5f*Vars.TILE_SIZE*cam.zoom + cam.offsetY);
+								character.getPixelPosition().y + 4.5f*Vars.TILE_SIZE*cam.zoom + cam.yOff);
 						cam.setFocus(f);
 						b2dCam.setFocus(f);
 						character.lookUp();
@@ -859,7 +978,7 @@ public class Main extends GameState {
 				}
 
 				if(MyInput.isPressed(Input.UP)) {
-					if(character.canWarp && character.isOnGround() && !character.snoozing && 
+					if(canWarp && character.isOnGround() && !character.snoozing && 
 							!character.getWarp().instant) {
 						initWarp(character.getWarp());
 						character.killVelocity();
@@ -1272,6 +1391,13 @@ public class Main extends GameState {
 			e.setGameState(this);
 		}
 	}
+	
+	public void addParticle(Particle p){ 
+		if(p==null) return;
+			ptclsToAdd.add(p); 
+	}
+	
+	public void removeParticle(Particle p){ ptclsToRemove.add(p); }
 
 	public Entity findObject(String objectName){
 		Entity object = null;
@@ -1308,7 +1434,8 @@ public class Main extends GameState {
 		if(b!=null)
 			if(b.getUserData()!=null){
 				Light l = ((Entity) b.getUserData()).getLight();
-				if(l!=null) l.remove();
+				if(l != null)
+					rayHandler.lightList.removeValue(l, true);
 			}
 	}
 	public ArrayList<Path> getPaths() {return paths; }
@@ -1345,7 +1472,7 @@ public class Main extends GameState {
 			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
 //				character = new Mob("'Normal' person with a name (YOU)", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
-				character = new Mob("You", "underdog", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+				character = new Mob("You", debugPlayerType, Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 //				createEmptyPlayer(scene.getSpawnPoint());
 				DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
@@ -1378,6 +1505,7 @@ public class Main extends GameState {
 			w = s.createWarps();
 			for(Warp i : w)
 				warps.put(l+i.warpID, i);
+			
 		}
 
 		//link all warps together
@@ -1548,9 +1676,7 @@ public class Main extends GameState {
 		for (Entity e : objects) {
 			if(e==null) continue;
 			if(e.getBody()==null) continue;
-			Vector2 lastPos = e.getBody().getPosition();
-			lastPos.x *= Vars.PPM;
-			lastPos.y *= Vars.PPM;
+			Vector2 lastPos = e.getPixelPosition();
 			if (e instanceof Mob) {
 				lastPos.y -= ((Mob)e).rh;	//this offset allows entity to be spawned from right location
 				if(((Mob)e).getCurrentState().resetType.equals(ResetType.ON_LEVEL_CHANGE))
@@ -1582,7 +1708,6 @@ public class Main extends GameState {
 
 	public Warp findWarp(String levelID, int warpID){
 		return warps.get(levelID + warpID);
-
 	}
 	
 	public RayHandler getRayHandler(){return rayHandler; }
@@ -1625,6 +1750,7 @@ public class Main extends GameState {
 		return false;
 	}
 
+	public ArrayList<LightObj> getLights(){ return lights; }
 	public ArrayList<Entity> getObjects(){ return objects;	}
 	public void printObjects() {
 		for(Entity e:objects){
@@ -1655,11 +1781,7 @@ public class Main extends GameState {
 		if(!e.equals(character) || !e.destructable)
 			healthBars.put(e, 3f);
 	}
-
-	public Color getColorOverlay(){
-		// should be dependant on time;
-		return new Color(2,2,2,Vars.ALPHA);
-	}
+	
 	
 	
 	//create a file listing all used scene IDs from game

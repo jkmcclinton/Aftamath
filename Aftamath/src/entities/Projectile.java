@@ -24,7 +24,6 @@ public class Projectile extends Entity {
 	protected Vector2 velocity;
 	protected Mob owner;
 	protected DamageType damageType;
-	protected PointLight pL;
 	
 	public static enum ProjectileType{
 		FIREBALL, ICE_SPIKE, BOULDER, ELECTRO_BALL, SPELL, ITEM
@@ -65,8 +64,8 @@ public class Projectile extends Entity {
 		totKillTime+=dt;
 		if(totKillTime>=killTime && killType.equals(KillType.TIMED))
 			main.removeBody(getBody());
-		if(pL!=null)
-			pL.setPosition(getPixelPosition());
+		if(light!=null)
+			light.setPosition(getPixelPosition());
 		if(body.getLinearVelocity().x < 0 && !isFacingLeft()) changeDirection();
 		else if(body.getLinearVelocity().x > 0 && isFacingLeft()) changeDirection();
 		animation.update(dt);
@@ -74,7 +73,7 @@ public class Projectile extends Entity {
 	
 	public void render(FadingSpriteBatch sb){
 		Color overlay = sb.getOverlay();
-		if(pL!=null) sb.setColor(Vars.DAY_OVERLAY);
+		if(light!=null) sb.setColor(Vars.DAY_OVERLAY);
 		switch(damageType){
 		case ELECTRO:
 		case ROCK:	
@@ -89,7 +88,6 @@ public class Projectile extends Entity {
 			break;
 		
 		}
-		if(sb.isDrawingOverlay())
 			sb.setColor(overlay);
 	}
 
@@ -144,8 +142,34 @@ public class Projectile extends Entity {
 	
 	public void kill(){
 		main.removeBody(getBody());
-		if(pL!=null)
-			main.getRayHandler().lightList.removeValue(pL, true);
+		
+		//spawn particle effect
+		switch(type){
+		case BOULDER:
+			new Particle(main, getPixelPosition().x, getPixelPosition().y, 
+					"rock_break", facingLeft);
+			break;
+		case ELECTRO_BALL:
+			new Particle(main, getPixelPosition().x, getPixelPosition().y, 
+					"dissipation", facingLeft);
+			break;
+		case FIREBALL:
+			new Particle(main, getPixelPosition().x, getPixelPosition().y, 
+					"embers", facingLeft);
+			break;
+		case ICE_SPIKE:
+			new Particle(main, getPixelPosition().x, getPixelPosition().y, 
+					"ice_shards", facingLeft);
+			break;
+		case ITEM:
+			new Particle(main, getPixelPosition().x, getPixelPosition().y, 
+					"debris", facingLeft);
+			break;
+		case SPELL:
+			new Particle(main, getPixelPosition().x, getPixelPosition().y, 
+					"spell_fizz", facingLeft);
+			break;
+		}
 	}
 	
 	// give sound effect to collision based on damage type
@@ -309,25 +333,25 @@ public class Projectile extends Entity {
 		case ELECTRO:
 			sound = "chirp2"; 
 			c = new Color(Vars.SUNSET_GOLD); c.a =.5f;
-			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+			light = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
 					100, x, y);
 			break;
 		case DARKMAGIC:
 			sound = "spooky";
 			c = new Color(Color.GREEN); c.a =.5f;
-			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+			light = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
 					75, x, y);
 			break;
 		case FIRE:
 			sound = "swish1"; 
 			c = new Color(Vars.SUNSET_ORANGE); c.a =.5f;
-			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+			light = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
 					75, x, y);
 			break;
 		case ICE:
 			sound = "sweep"; 
 			c = new Color(Color.CYAN); c.a =.5f;
-			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+			light = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
 					25, x, y);
 			break;
 		case ROCK:

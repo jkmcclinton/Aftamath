@@ -225,6 +225,18 @@ public class Script implements Serializable {
 					obj.ignite();
 
 				break;
+			case "camerashake":
+				s = args[0];
+				float strength = Camera.DEFAULT_SHAKE;
+				switch(s.trim().toLowerCase()){
+				case"calm": strength = Camera.CALM_SHAKE; break;
+				case"violent":strength = Camera.VIOLENT_SHAKE; break;
+				case"default": break;
+				default:
+					System.out.println("Invalid camera shake type; Line: "+(index+1)+"\tScript: "+ID);
+				}
+				main.getCam().shake(strength);
+				break;
 			case "value":
 			case "changeval":
 				changeValue(line);
@@ -436,8 +448,7 @@ public class Script implements Serializable {
 						if(e instanceof DamageField)
 							if(((DamageField)e).getOwner().equals(main.character)){
 								found = true;
-								main.removeBody(e.getBody());
-								((DamageField) e).finalize();
+								((DamageField) e).kill();
 								break;
 							}
 					}
@@ -1438,8 +1449,7 @@ public class Script implements Serializable {
 		if(this.equals(main.currentScript)){
 			main.setStateType(InputState.MOVE);
 			main.analyzing = false;
-			if(main.getHud().raised)
-				main.getHud().hide();
+			main.getHud().hide();
 
 			if(main.tempSong && main.getSong().looping)
 				main.removeTempSong();
@@ -1509,6 +1519,20 @@ public class Script implements Serializable {
 				if (main.character.getInteractable() == owner)
 					new SpeechBubble(owner, owner.getPixelPosition().x + 6, owner.rh + 5  +
 							owner.getPixelPosition().y, 0, "...", PositionType.LEFT_MARGIN);
+			
+			//redisplay warp indicator
+//			if(main.character.getWarp()!=null){
+//				Warp w = main.character.getWarp();
+//				SpeechBubble cb = null;
+//				if(w.getLink().outside && w.outside){
+//					String message = "To " + w.getLink().locTitle;
+//					cb = new SpeechBubble(w, w.getPixelPosition().x, w.getPixelPosition().y
+//							+ w.rh, 6, message, SpeechBubble.PositionType.CENTERED);
+//				} else
+//					cb = new SpeechBubble(w, w.getPixelPosition().x, w.rh +
+//							w.getPixelPosition().y, "arrow");
+//				main.character.setWarp(w, cb);
+//			}
 		} else if(this.equals(main.loadScript)){
 			main.loading = false;
 			main.loadScript=null;

@@ -10,7 +10,7 @@ import scenes.Script;
 public class Camera extends OrthographicCamera{
 
 	public boolean reached, focusing, moving, zooming, constrained;
-	public float offsetY = 20f; //offset camera up
+	public float yOff = 20f; //offset camera up
 
 	private float minx, maxx, miny, maxy, amplitude, shakeTime, phaseX, phaseY;
 	private float frequency = 150*1000; // in Hertz
@@ -25,11 +25,15 @@ public class Camera extends OrthographicCamera{
 //	private Camtrack currentTrack;
 
 	public static final float ZOOM_CLOSE = .75f;
+	public static final float ZOOM_PETITE = .91f;
 	public static final float ZOOM_NORMAL = 1.2f;
 	public static final float ZOOM_FAR = 2f;
 	public static final float ZOOM_VERYFAR = 3.35f;
 	public static final float ZOOM_MAX = 4.25f;
 	public static final float DEFAULT_ZOOM_TIME	= 1f;
+	public static final float DEFAULT_SHAKE = 3;
+	public static final float CALM_SHAKE = 1.5f;
+	public static final float VIOLENT_SHAKE = 5;
 
 	public Camera(){
 		this(0, 0, 0, 0);
@@ -68,7 +72,7 @@ public class Camera extends OrthographicCamera{
 					focus = character;
 				
 				if(focus.getBody()!=null)
-					setPosition(focus.getPixelPosition().x, focus.getPixelPosition().y + offsetY);
+					setPosition(focus.getPixelPosition().x, focus.getPixelPosition().y + yOff);
 			}
 		else {
 			float dx, dy;
@@ -77,7 +81,7 @@ public class Camera extends OrthographicCamera{
 				dy = tmpFocus.y - position.y;
 			} else {
 				dx = focus.getPixelPosition().x - position.x;
-				dy = focus.getPixelPosition().y - position.y + offsetY;
+				dy = focus.getPixelPosition().y - position.y + yOff;
 			}
 
 			if(Math.abs(dx) < .5f && Math.abs(dy) < .5f) {
@@ -154,6 +158,8 @@ public class Camera extends OrthographicCamera{
 	
 	public void shake(float maxAmp){
 		if(amplitude >= maxAmp) return;
+		if(maxAmp > VIOLENT_SHAKE) maxAmp = VIOLENT_SHAKE;
+		if(maxAmp < 0) maxAmp = 0;
 		amplitude = maxAmp;
 		shakeTime = 0;
 		shaking = true;
@@ -179,11 +185,11 @@ public class Camera extends OrthographicCamera{
 
 	public void fixOffset(){
 		if (zoom<=.8){
-			offsetY = 0;
+			yOff = 0;
 		} else if (zoom>=1.2f){ 
-			offsetY = 36;
+			yOff = 36;
 		} else {
-			offsetY = 92.5f*zoom-74;
+			yOff = 92.5f*zoom-74;
 		}
 	}
 
@@ -230,7 +236,7 @@ public class Camera extends OrthographicCamera{
 	}
 
 	public Entity getFocus() {return focus;}
-	public void setVerticalOffset(float y){ offsetY = y; }
+	public void setVerticalOffset(float y){ yOff = y; }
 	public void setPosition(Vector2 v){ setPosition(v.x, v.y); }
 	public void setPosition(float x, float y) {
 		Vector2 v = new Vector2(x, y);

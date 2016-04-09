@@ -1,0 +1,6 @@
+Script Main
+
+declare(jElevatorLoc, global, string, {nowhere})
+value(set, jElevatorLoc, {HeroLowerHall})
+
+done

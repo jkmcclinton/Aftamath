@@ -3,6 +3,7 @@ package handlers;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -89,6 +90,31 @@ public class Vars {
 	}
 	
 	/**
+	 * shortens the array of frames to the length of the animation;
+	 * used to ensure no empty frames get displayed in animations
+	 * @param orig the base array of frames
+	 * @param length the length of the animation without any empty frames
+	 * @return the resulting array of frames
+	 */
+	public static TextureRegion[] removeEmptyFrames(TextureRegion[] orig, int length){
+		TextureRegion[] primeArr = new TextureRegion[length];
+		Array<TextureRegion> frames = new Array<>();
+		frames.addAll(orig);
+		for(int i = 0; i < length; i++)
+			primeArr[i] = frames.get(i);
+		return primeArr;
+	}
+	
+	/**
+	 * takes a floating point number and return the closest power of two integer
+	 * @param num original number
+	 * @return closest power of two
+	 */
+	public static int PowerOf2(double num){
+		return (int) num;
+	}
+	
+	/**
 	 * limits each line of text to a maximum width
 	 * @param dialog the original text
 	 * @param hud if true, the maximum width is adjusted to the screen's width. else, the maximum width is adjusted to a textbox
@@ -135,6 +161,12 @@ public class Vars {
 		return result;
 	}
 	
+	/**
+	 * Simple function used in SceneID documentation
+	 * @param s
+	 * @param length
+	 * @return
+	 */
 	public static String formatHundreds(String s, int length){
 		switch(length){
 		case 1:
@@ -145,6 +177,12 @@ public class Vars {
 		return s;
 	}
 	
+	/**
+	 * this function adds spaces to the string to make it the goal length
+	 * @param orig original string
+	 * @param length goal length of string
+	 * @return
+	 */
 	public static String addSpaces(String orig, int length){
 		String spaces = "";
 		for(int i = 0; i<length-orig.length(); i++)
@@ -244,25 +282,25 @@ public class Vars {
 	}
 	
 	/**
-	 * mixes the RGB values of the two colors
+	 * mixes the RGB values of the two colors using an average
 	 * @param first 
 	 * @param second
 	 * @return the mixed color
-	 * @see blendColors
+	 * @see blendColors 
 	 */
 	public static Color blendColors(Color first, Color second){
 		return blendColors(1, 0, 2, first, second);
 	}
 	
 	/**
-	 * linearly mixes the RGB values of the two colors with relation to time
+	 * linearly interpolates the RGB values of the two colors with relation to time
 	 * @param t the current time; if outside the parameters start and end, the value is constained automatically
 	 * @param start initial time
 	 * @param end maximum time
 	 * @param first the beginning color
 	 * @param last the final color
 	 * @return the mixed color; if either color is null, the resulting color is the instantiated one. 
-	 * If both are null, the resulting color is Color.WHITE
+	 * If both are null, the resulting color is Color.WHITE, with RGBA values of 1
 	 */
 	public static Color blendColors(float t, float start, float end, Color first, Color last){
 		if(first==null || last==null){
@@ -273,14 +311,17 @@ public class Vars {
 			return first;
 		}
 		
+		//bounds validation
 		if(t>end) t = end;
 		if(t<start) t = start;
 		
+		//slope calculation
 		float mr = (last.r - first.r)/(float)(end - start);
 		float mg = (last.g - first.g)/(float)(end - start);
 		float mb = (last.b - first.b)/(float)(end - start);
 		float ma = (last.a - first.a)/(float)(end - start);
 
+		//interpolation
 		return new Color (
 				mr*(t-start)+first.r, 
 				mg*(t-start)+first.g, 

@@ -70,7 +70,7 @@ public class Scene {
 	public String title, ID;
 	public Song[] DEFAULT_SONG;
 //	public boolean newSong; //tells us whether or not to fade music when loading scene from previous scene
-	public boolean outside; //controls whether or not to step weather time or to add the day/night cycle effect
+	public boolean outside, limitPower; //controls whether or not to step weather time or to add the day/night cycle effect
 	public Color ambientLight, ambientOverlay;
 	
 	private float groundLevel;
@@ -118,21 +118,30 @@ public class Scene {
 		title = prop.get("name", String.class);
 		if(title==null) title = ID;
 		
-		String light= "";
-		if((light=prop.get("ambient", String.class))!=null){
-			if(light.equals("daynight".toUpperCase()))
+		//determine if scen is outside
+		String light,s;
+		if((light = prop.get("ambient", String.class))!=null){
+			if(light.toLowerCase().trim().equals("daynight")){
 				outside = true;
-			else
-				if(prop.get("outside", String.class)!=null)
-					outside = true;
-		}
+				if((s = prop.get("outside", String.class))!=null){
+					if(Vars.isBoolean(s))
+						outside = Boolean.parseBoolean(s);
+				}
+			} else {
+				outside = false;
+				if((s = prop.get("outside", String.class))!=null){
+					if(Vars.isBoolean(s))
+						outside = Boolean.parseBoolean(s);
+				}
+			}
+		} else
+			outside = false;
 	}
 	
 	public Scene(World world, Main m, String ID) {
 		this.world = world;
 		this.main = m;
 		sb = m.getSpriteBatch();
-//		character = m.character;
 		DEFAULT_SONG = new Song[3];
 		gravity = new Vector2(0, Vars.GRAVITY);
 
@@ -176,6 +185,15 @@ public class Scene {
 			
 		} else {
 			if((bgm[0] = prop.get("bgm", String.class))!=null){
+				//give level a random song according to type
+				if(bgm[0].trim().toLowerCase().equals("elevator")){
+					int i = (int)(Math.random() * ((2) + 1));
+					if(i==0) bgm[0] = "Bossa Elevator";
+					else bgm[0] = "Elevator Music";
+				} if(bgm[0].trim().toLowerCase().equals("radio")){
+					int i = (int)(Math.random() * ((Game.SONG_LIST.size - 1) + 1));
+					bgm[0] = Game.SONG_LIST.get(i);
+				}
 				//sets all songs to the same song; no song changing
 				DEFAULT_SONG[DAY] = new Song(bgm[0]);
 				DEFAULT_SONG[NOON] = new Song(bgm[0]);
@@ -203,7 +221,7 @@ public class Scene {
 		
 		//set a local zoom for the camera
 		String zoom; float areaZoom;
-		if((zoom = prop.get("tileBG", String.class))!=null){
+		if((zoom = prop.get("zoom", String.class))!=null){
 			try{
 				Field f = Camera.class.getField(zoom);
 				areaZoom = f.getFloat(f);
@@ -215,35 +233,50 @@ public class Scene {
 		
 		String bool;
 		if((bool = prop.get("tileBG", String.class))!=null)
-			try{
+			if(Vars.isBoolean(bool))
 				tileBG = Boolean.parseBoolean(bool);
-			} catch(Exception e){ }
 		
+		
+		//determine ambient lighting and spritebatch overlay
+		ambientLight = Vars.DAY_LIGHT;
+		ambientOverlay = Vars.DAY_OVERLAY;
 		try {
-			String light = "";
+			String s;
+			String light;
 			if((light = prop.get("ambient", String.class))!=null){
-				if(light.equals("daynight".toUpperCase())){
+				if(light.toLowerCase().trim().equals("daynight")){
+					ambientLight = m.getAmbientLight();
+					ambientOverlay = m.getColorOverlay();
 					outside = true;
-					ambientLight = m.getColorOverlay();
-					ambientOverlay = sb.getOverlay();
-				}else{
+					if((s = prop.get("outside", String.class))!=null){
+						if(Vars.isBoolean(s))
+							outside = Boolean.parseBoolean(s);
+					}
+
+					sb.setOverlayDraw(true);
+				} else {
 					Field f = Vars.class.getField(light+"_LIGHT");
 					ambientLight = (Color) f.get(f);
+					
 					f = Vars.class.getField(light+"_OVERLAY");
 					ambientOverlay = (Color) f.get(f);
-					if(prop.get("outside", String.class)!=null)
-						outside=true;
+					outside = false;
+					if((s = prop.get("outside", String.class))!=null){
+						if(Vars.isBoolean(s))
+							outside = Boolean.parseBoolean(s);
+					}
 				}
 			}
-		} catch (Exception e){
-			ambientLight = Vars.DAY_OVERLAY;
-			ambientOverlay = Vars.DAY_OVERLAY;
-		}
-
+			
+			if(!outside) limitPower = true;
+			if((bool = prop.get("limitPower", String.class))!=null)
+				if(Vars.isBoolean(bool))
+					limitPower = Boolean.parseBoolean(bool);
+		} catch (Exception e){ }
+		
 		//get scripts
 		Iterator<String> it = prop.getKeys();
 		String script, condition;
-
 		while(it.hasNext()){
 			script = it.next();
 			if(Game.res.getScript(script)==null)
@@ -258,7 +291,7 @@ public class Scene {
 	}
 	
 	
-	//trigger any script stuff
+	//trigger any conditional script stuff
 	public void update(float dt){
 		Evaluator e = new Evaluator(main);
 		for(Script s : conditionalScripts.keySet())
@@ -274,9 +307,9 @@ public class Scene {
 		float z = cam.zoom;
 		float w = cam.viewportWidth;
 		float h = cam.viewportHeight;
-		boolean overlay = sb.isDrawingOverlay();
-
-		if(overlay) sb.setOverlayDraw(false);
+		
+		Color color = sb.getColor();
+		if(!sb.fading) sb.setColor(Vars.DAY_OVERLAY);
 
 		//draw sky stuff
 		sb.begin();
@@ -323,7 +356,7 @@ public class Scene {
 			}
 		}
 
-		if(overlay) sb.setOverlayDraw(true);
+		sb.setColor(color);
 
 		if(background!=null){
 			float rate = 1/2f;
@@ -438,6 +471,7 @@ public class Scene {
 		TiledMapTileLayer g2 = (TiledMapTileLayer) tileMap.getLayers().get("ledge");
 		TiledMapTileLayer fg = (TiledMapTileLayer) tileMap.getLayers().get("fg");
 		TiledMapTileLayer bg1 = (TiledMapTileLayer) tileMap.getLayers().get("bg1");
+		TiledMapTileLayer bg2 = (TiledMapTileLayer) tileMap.getLayers().get("bg2");
 		TiledMapTileLayer ob = (TiledMapTileLayer) tileMap.getLayers().get("objects");
 		
 		//add in entities loaded from save file
@@ -445,12 +479,14 @@ public class Scene {
 			for (int sid : Scene.sceneToEntityIds.get(this.ID)) {
 				Entity e = Entity.idToEntity.get(sid);
 				this.entities.add(e);
+				System.out.println("Pulling: "+e);
 			}
 		}
 		
-		Ground g;
+		//initialize ground tiles
 		for (int y = 0; y < ground.getHeight(); y++)
 			for(int x = 0; x < ground.getWidth(); x++){
+				Ground g;
 				Cell cell = ground.getCell(x, y);
 				Vector2 location = new Vector2((x+.5f) * Vars.TILE_SIZE / Vars.PPM,
 						y * Vars.TILE_SIZE / Vars.PPM);
@@ -518,6 +554,24 @@ public class Scene {
 							tiles.add(new DynamicTile(cell, main));
 					}
 
+				if(bg2!=null){
+					cell = bg2.getCell(x, y);
+					if (cell != null) 
+						if (cell.getTile() != null) {
+							Object b = cell.getTile().getProperties().get("sound");
+							if(b!=null){
+								String src = cell.getTile().getProperties().get("sound", String.class);
+								if(src!=null) new PositionalAudio(new Vector2(location.x, location.y), src, main);
+							}
+
+							if(cell.getTile().getProperties().get("light")!=null) 
+								initLight(cell, x, y);
+							b = cell.getTile().getProperties().get("dynamic");
+							if(b!=null)
+								tiles.add(new DynamicTile(cell, main));
+						}
+				}
+
 				if(ob!=null){
 					cell = ob.getCell(x, y);
 					if (cell != null) 
@@ -536,11 +590,6 @@ public class Scene {
 						}
 				}
 			}
-
-//		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("fg");
-//		if(layer!=null){
-		
-//		}
 		
 		if(outside)
 			initSpawner();
@@ -570,6 +619,7 @@ public class Scene {
 							String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
 							String name = object.getProperties().get("name", String.class);		//character name
 							String nickName = object.getProperties().get("nickName", String.class);
+							String iff =  object.getProperties().get("iff", String.class);      //iff tag
 							if(nickName==null) nickName = object.getProperties().get("nickname", String.class);
 							String state = object.getProperties().get("state", String.class);	//AI state
 							String focus = object.getProperties().get("focus", String.class);
@@ -640,6 +690,8 @@ public class Scene {
 										fociToAdd.put(e, focus);
 									if(nickName!=null)
 										e.setNickName(nickName);
+									if(iff!=null)
+										e.setIFF(iff);
 
 									if(sceneIDParsed>=0){
 										Scene.sceneToEntityIds.get(this.ID).add(sceneIDParsed);
@@ -786,9 +838,8 @@ public class Scene {
 
 							while(it.hasNext()){
 								script = it.next();
-								if(script.equals("x") || script.equals("y") || script.equals("event")
-										|| script.equals("retriggerable") || script.equals("avoidHalt")
-										|| script.equals("loadCondition"))
+								//ignore invalid script names
+								if(Game.res.getScript(script)==null)
 									continue;
 								condition = object.getProperties().get(script, String.class);
 								et.addEvent(script, condition);
@@ -872,14 +923,35 @@ public class Scene {
 		if(Main.cwarps)entities.addAll(retrieveSideWarps());
 	}
 	
+	//create a static/dynamic lighting object according to cell property
 	private void initLight(Cell cell, float x, float y){
 		String type = cell.getTile().getProperties().get("light", String.class);
-		Light l = null; boolean scheduled = true;
+		Light l = null; boolean scheduled = true; Color c;
 		type = type.toLowerCase().trim();
 		switch(type){
 		case"street":
 			l = new ConeLight(rayHandler, Vars.LIGHT_RAYS, Vars.SUNSET_GOLD, 
 					200, (x*Vars.TILE_SIZE + 13f), (y*Vars.TILE_SIZE + 14), 270, 35);
+			break;
+		case"justice":
+			c = new Color(Vars.SUNSET_GOLD);
+			c.a = 200/255f;
+			l = new ConeLight(rayHandler, Vars.LIGHT_RAYS, c, 
+					200, (x*Vars.TILE_SIZE + 12f), (y*Vars.TILE_SIZE + 11), 270, 90);
+			break;
+//		case "poolIn
+		case "pool":
+			c = new Color(Vars.FROZEN_OVERLAY);
+			c.a = 30/255f;
+			l = new PointLight(rayHandler, Vars.LIGHT_RAYS, c,
+					225, (x*Vars.TILE_SIZE + 8.1f), (y*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f));
+			scheduled = false;
+			break;
+		case"justice_hall":
+			c = new Color(207/255f, 236/255f, 255/255f, 15/255f);
+			l = new PointLight(rayHandler, Vars.LIGHT_RAYS, c,
+					225, (x*Vars.TILE_SIZE + 8.1f), (y*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f));
+			scheduled = false;
 			break;
 		case "window":
 			break;
@@ -891,6 +963,10 @@ public class Scene {
 		case "boardwalk":
 			l = new PointLight(rayHandler, Vars.LIGHT_RAYS, new Color(120/255f, 128/255f, 121/255f, 200/255f),
 					275, (x*Vars.TILE_SIZE + 8.1f), (y*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f));
+			break;
+		case "spotlight":
+			l = new ConeLight(rayHandler, Vars.LIGHT_RAYS, new Color(120/255f, 128/255f, 121/255f, 200/255f), 
+				275, (x*Vars.TILE_SIZE + 8.1f), (y*Vars.TILE_SIZE + Vars.TILE_SIZE/3.6f), 90, 35);
 			break;
 		}
 
@@ -909,6 +985,9 @@ public class Scene {
 		
 		 if(!enabled) return;
 		 
+		 // spawn density set to 1 mob per 10 tiles in scene
+		 int spawnMax = width / (Vars.TILE_SIZE*10);
+		 
 		//left spawner
 		Spawner s = new Spawner(0, groundLevel, "civilian", "movetopath", "genericCivilian", 
 				"onAttacked", null, null, null);
@@ -919,7 +998,7 @@ public class Scene {
 		Path p = new Path(ID, ID, points);
 		s.setPath(p);
 		s.setID("spawner "+ID+" :: left");
-		s.setMax(4); //should be relative to level size
+		s.setMax(spawnMax/2);
 		s.setGameState(main);
 		s.initOccupy(this);
 		
@@ -933,7 +1012,7 @@ public class Scene {
 		p = new Path(ID, ID, points);
 		s.setPath(p);
 		s.setID("spawner "+ID+" :: right");
-		s.setMax(4); //should be relative to level size
+		s.setMax(spawnMax/2);
 		s.setGameState(main);
 		s.initOccupy(this);
 	}
@@ -1018,7 +1097,6 @@ public class Scene {
 		if(prop.get("next")!=null){
 			w = main.findWarp(ID, 1);
 			w.setOffset(-4*Vars.TILE_SIZE, this.groundLevel);
-//			w.setOwner(this);
 			warps.add(w);
 			// adds a trigger to show the title of the next location
 			if(w.getLink().outside){
@@ -1030,7 +1108,6 @@ public class Scene {
 		} if(prop.get("previous")!=null){
 			w = main.findWarp(ID, 0);
 			w.setOffset(4*Vars.TILE_SIZE, this.groundLevel);
-//			w.setOwner(this);
 			warps.add(w);
 			if(w.getLink().outside){
 				TextTrigger tt = new TextTrigger(w.getWarpLoc().x - Vars.TILE_SIZE, w.getWarpLoc().y+

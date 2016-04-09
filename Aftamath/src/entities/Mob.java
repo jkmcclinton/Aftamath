@@ -34,9 +34,11 @@ public class Mob extends Entity{
 	public double strength = DEFAULT_STRENGTH;
 	public float attackRange = DEFAULT_ATTACK_RANGE, attackTime, attackDelay=DEFAULT_ATTACK_DELAY, aimMax = DEFAULT_AIM_THRESHOLD;;
 	public float voice;
-	public boolean canWarp, canClimb, wasOnGround, running;
+	public boolean ducking;
+	public boolean canClimb, wasOnGround, running;
 	public boolean climbing, falling, snoozing, knockedOut;
 	public float experience, aimTime, powerCoolDown;
+	public Vector2 respawnPoint;
 
 	//used for adjusting the distance between the character
 	//and the object currently being interacted with
@@ -47,13 +49,10 @@ public class Mob extends Entity{
 	protected int level;
 	protected DamageType powerType;
 	protected IFFTag iFF;
-	public Vector2 respawnPoint;
 	protected String groundType, gender, name, nickName;
 	protected float knockOutTime, idleTime, idleDelay;
 	protected float stepTime, maxSpeed = WALK_SPEED;
-	protected boolean aiming;
-	public boolean ducking;
-	protected boolean ctrlReached;
+	protected boolean aiming, sitting;
 	protected boolean aimSounded=false;
 	protected int timesIdled, followIndex = -1;
 	protected TextureRegion[] face, healthBar;
@@ -63,14 +62,16 @@ public class Mob extends Entity{
 	protected float visionRange = DEFAULT_VISION_RANGE;
 	protected Entity interactable;
 	protected static final int IDLE_LIMIT = 500;
-	protected static Array<Anim> immobileActions = new Array<>(); 
-
+	protected static Array<Anim> immobileActions = new Array<>();
 	protected float inactiveWait, doTime, doDelay, time;
 	protected boolean reached, locked, attacked;
 	protected Script discoverScript;
 	protected AttackType attackType;
 	protected SightResponse responseType;
 	protected MobAI currentState, defaultState;
+	
+	private Vector2 fallLoc;
+	private SpeechBubble warpArr;
 
 	//emotion indicies
 	public static final int NORMAL = 0;
@@ -91,7 +92,8 @@ public class Mob extends Entity{
 	protected static final float DEFAULT_ATTACK_RANGE = 20;
 	protected static final float DEFAULT_VISION_RANGE = 10*Vars.TILE_SIZE;
 	protected static final float DEFAULT_AIM_THRESHOLD = .8f;
-	protected static final float DEFAULT_COOLDOWN = 3f;
+	protected static final float DEFAULT_COOLDOWN = 3f*0;
+	protected static final float DEFAULT_KNOCKOUT_TIME = 3f;
 	protected static final double DEFAULT_STRENGTH = 1;
 	protected static final double DAMAGE_THRESHOLD = 4;
 	protected static final int INTERACTION_SPACE = 17;
@@ -217,18 +219,35 @@ public class Mob extends Entity{
 
 	public void update(float dt){
 		if(dead && Mob.getAnimName(animation.getCurrentType()).equals(Anim.DEAD)){
-			main.removeBody(getBody());
+			if(!died){
+				died = true;
+				if(sceneID==-1)
+					main.removeBody(getBody());
+			}
 			return;
 		}
 
 		attackTime+=dt;
 		
-		if(warp!=null)
-			if(!warp.conditionsMet()){
-				warp = null;
-				canWarp = false;
-			}
-		
+		//validate warp indicator
+		if(this.equals(main.character))
+			if(warp!=null)
+				if(!warp.conditionsMet()){
+					if(warpArr!=null){
+						warpArr.kill();
+						warpArr = null;
+					}
+				} else 
+					if(warpArr==null && warp.getLink()!=null && !main.analyzing){
+						if(warp.getLink().outside && warp.outside){
+							String message = "To " + warp.getLink().locTitle;
+							warpArr = new SpeechBubble(warp, warp.getPixelPosition().x, warp.getPixelPosition().y
+									+ warp.rh, 6, message, SpeechBubble.PositionType.CENTERED);
+							warpArr.expand();
+						} else
+							warpArr = new SpeechBubble(warp, warp.getPixelPosition().x, warp.rh +
+									warp.getPixelPosition().y, "arrow");
+					}
 		if(frozen)
 			super.update(dt);
 		else{
@@ -279,7 +298,7 @@ public class Mob extends Entity{
 			} else if(controlled)
 				currentState.update(dt);
 
-			// idle player actions
+			// idle animations
 			if (getAction() == Anim.STANDING && main.currentScript==null) {
 				idleTime+=dt;
 				if(idleTime>=idleDelay){
@@ -288,8 +307,7 @@ public class Mob extends Entity{
 					if(timesIdled >=4 && main.character.equals(this) && 
 							(main.stateType==InputState.MOVE || main.stateType==InputState.MOVELISTEN)){
 						snooze();
-					}
-					else{
+					} else {
 						if(this.equals(main.character))
 							if(Math.random()>.25d)
 								setAnimation(Anim.IDLE, LoopBehavior.ONCE);
@@ -301,25 +319,40 @@ public class Mob extends Entity{
 				}
 			}
 
-			//do stuff for if the mob is knocked
+			//do stuff for if the mob is knocked out
 			if(knockedOut){
-				knockOutTime+=dt;
-				if(knockOutTime>=3f)
-					setAnimation(Anim.RECOVER, LoopBehavior.ONCE);
-				else if(getAction()!=Anim.RECOVER && getAction()!=Anim.STUMBLE)
-					setAnimation(Anim.KNOCKED_OUT, LoopBehavior.CONTINUOUS);
-			}else if(knockedOut && getAction()==Anim.RECOVER)
-				if(animationIndicies.get(Anim.RECOVER)<=actionLengths.length)
-					if(animation.getIndex()==actionLengths[animationIndicies.get(Anim.RECOVER)]-1){
-						knockedOut = controlled = false;
-					}
+				knockOutTime-=dt;
+				if(knockOutTime<=0)
+					recover();
+			} 
 
-			if (!isOnGround()) 
-			setTransAnimation(Anim.FALL_TRANS, Vars.ACTION_ANIMATION_RATE, Anim.FALLING, 
-					Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
-			if(isOnGround() && !wasOnGround && (getAction()==Anim.FALLING||
-					getAction()==Anim.FALL_TRANS))
-				setAnimation(Anim.LANDING, LoopBehavior.ONCE);
+			//fall distance shit
+			if(!isOnGround() &&wasOnGround){
+				fallLoc = getPixelPosition();
+				falling = true;
+			} if(!isOnGround() && !wasOnGround){
+				if(fallLoc==null) fallLoc = getPixelPosition();
+				else if(getPixelPosition().y>fallLoc.y) fallLoc = getPixelPosition();
+			} if (!isOnGround()) 
+				setTransAnimation(Anim.FALL_TRANS, Vars.ACTION_ANIMATION_RATE, Anim.FALLING, 
+						Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
+			if(isOnGround() && !wasOnGround){
+				if(fallLoc!=null){
+					float dy = fallLoc.y - getPixelPosition().y;
+					if(dy>0){
+						if(this.equals(main.character))
+								main.getCam().shake(dy / (Vars.TILE_SIZE*8));
+//						System.out.println("fallD: "+(dy / (Vars.TILE_SIZE*8)) + "\t"+this);
+						if(dy>=Vars.TILE_SIZE*8)
+							knockOut();
+					}
+				}
+				
+				fallLoc = null;
+				if(getAction()==Anim.FALLING || getAction()==Anim.FALL_TRANS)
+					setAnimation(Anim.LANDING, LoopBehavior.ONCE);
+			}
+			
 
 			if (!climbing)
 				animation.update(dt);
@@ -381,6 +414,7 @@ public class Mob extends Entity{
 		}
 	}
 	
+	//validate interactable/attackable data
 	public void collisionUpdate(){
 		if(interactable!=null);
 //			if(this.equals(main.character)){
@@ -420,16 +454,12 @@ public class Mob extends Entity{
 		int type = animationIndicies.get(anim);
 		int priority = actionPriorities[type];
 		int length = actionLengths[type];
-		TextureRegion[] primeArr = new TextureRegion[length];
 		
 		if(this.equals(main.character) && getAction()==Anim.LOOKING_UP)
 			main.getCam().removeFocus();
 		try{
-			Array<TextureRegion> frames = new Array<>();
-			frames.addAll(TextureRegion.split(texture, width, height)[type]);
-			for(int i = 0; i < length; i++)
-				primeArr[i] = frames.get(i);
-			animation.setFrames(primeArr, delay, priority, type, loop, time, backwards);
+			animation.setFrames(Vars.removeEmptyFrames(TextureRegion.split(texture, width, height)[type], length),
+					delay, priority, type, loop, time, backwards);
 		} catch(Exception e){
 //			e.printStackTrace();
 		}
@@ -659,7 +689,7 @@ public class Mob extends Entity{
 			if(!invulnerable){
 				if(type.equals(DamageType.PHYSICAL))
 					main.playSound(getPosition(), "damage");
-				health = health - val;
+				modifyHealth(-val);
 
 				if(type==DamageType.FIRE){
 					double chance = Math.random();
@@ -701,7 +731,7 @@ public class Mob extends Entity{
 					main.playSound(getPosition(), "damage");
 
 				if(iFF!=IFFTag.FRIENDLY)
-					health = health - val;
+					modifyHealth(-val);
 
 				if(type==DamageType.FIRE){
 					double chance = Math.random();
@@ -786,20 +816,14 @@ public class Mob extends Entity{
 	//create the mob in its last saved position
 	public void respawn(){
 		if (respawnPoint!=null){
-			System.out.println("respawning");
 			contacts.truncate(0);
 			setPosition(respawnPoint);
-			dead = false;
-			animation.reset();
+			super.respawn();
 
 			if(main.character.equals(this)){
 				main.getCam().resetZoom();
 				main.getB2dCam().resetZoom();
 			}
-			
-			main.removeBody(body);
-			body.setUserData(this.copy());
-			create();
 		}
 	}
 
@@ -902,6 +926,7 @@ public class Mob extends Entity{
 	}
 
 	public void lookUp(){
+		if(knockedOut) return;
 		if(snoozing){
 			wake();
 			return;
@@ -915,6 +940,7 @@ public class Mob extends Entity{
 	}
 	
 	public void aim(){
+		if(knockedOut) return;
 		if(snoozing){
 			wake();
 		} else {
@@ -931,13 +957,31 @@ public class Mob extends Entity{
 		aiming = aimSounded = false;
 		setAnimation(Anim.AIM_TRANS, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
 	}
+	
+	public void sit(){
+		if(knockedOut) return;
+		if(snoozing){
+			wake();
+		} else {
+//			if(lookingUp)
+//				unLookUp();
+			sitting = true;
+			setTransAnimation(Anim.SIT_DOWN, Vars.ACTION_ANIMATION_RATE, Anim.SITTING, 
+					Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
+		}
+	}
+	
+	public void unSit(){
+		sitting = false;
+		setAnimation(Anim.SIT_DOWN, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE, true);
+	}
 
 	public void duck(){
+		if(knockedOut) return;
 		if(snoozing){
 			wake();
 			return;
 		}
-		
 		//shorten body height
 		if(body.getFixtureList().get(0).getUserData().equals(Vars.trimNumbers(ID))){
 			PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
@@ -965,6 +1009,7 @@ public class Mob extends Entity{
 	public void knockOut(){
 		snoozing = false;
 		knockedOut = true;
+		knockOutTime = DEFAULT_KNOCKOUT_TIME;
 		setTransAnimation(Anim.STUMBLE, Vars.ACTION_ANIMATION_RATE, Anim.KNOCKED_OUT, 
 				Vars.ANIMATION_RATE, LoopBehavior.CONTINUOUS, -1);
 	}
@@ -1235,10 +1280,10 @@ public class Mob extends Entity{
 			return discovered.get(0);
 		return null;
 	}
-	
 	public Array<Entity> getDiscovered(){ return discovered; }
 
 	public void attack(Vector2 focus){
+		if(knockedOut) return;
 		if(attackTime < attackDelay) return;
 		attackTime = 0;
 		
@@ -1252,6 +1297,7 @@ public class Mob extends Entity{
 	}
 	
 	public void attack(){
+		if(knockedOut) return;
 		if(attackTime < attackDelay) return;
 		attackTime = 0;
 		
@@ -1265,6 +1311,7 @@ public class Mob extends Entity{
 	}
 	
 	public void punch(){
+		if(knockedOut) return;
 		setAnimation(Anim.PUNCHING, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE/1.25f);
 		for(Entity e : attackables){
 			if(e instanceof Mob)
@@ -1285,7 +1332,7 @@ public class Mob extends Entity{
 	}
 
 	public void powerAttack(Vector2 target){
-		if(powerCoolDown!=0) return;
+		if(powerCoolDown!=0 || knockedOut) return;
 		if(aiming && aimTime>aimMax)
 			superAttack();
 		else{
@@ -1309,6 +1356,7 @@ public class Mob extends Entity{
 	
 	//stronger, low range, multi target attack
 	public void superAttack(){
+		if(knockedOut) return;
 		int x = 1;
 		if(facingLeft) x = -1;
 		Vector2 spawnLoc = new Vector2(getPixelPosition().x + x*rw, 
@@ -1325,7 +1373,7 @@ public class Mob extends Entity{
 			dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
 			break;
 		case ROCK:
-			if(main.getScene().outside){
+			if(!main.getScene().limitPower){
 				main.getCam().shake(1.5f);
 				dF = new DamageField(spawnLoc.x, spawnLoc.y, level+1, this, powerType);
 			}else
@@ -1388,7 +1436,7 @@ public class Mob extends Entity{
 	public void setIFF(IFFTag tag){iFF=tag;}
 	public void setIFF(String tag){
 		try{
-			IFFTag i = IFFTag.valueOf(tag);
+			IFFTag i = IFFTag.valueOf(tag.trim().toUpperCase());
 			setIFF(i);
 		}catch(Exception e){
 			setIFF(IFFTag.FRIENDLY);
@@ -1434,7 +1482,7 @@ public class Mob extends Entity{
 
 	public void setGround(String type){ this.groundType = type; }
 	public Warp getWarp(){ return warp; }
-	public void setWarp(Warp warp){ this.warp = warp; }
+	public void setWarp(Warp warp, SpeechBubble cb){ this.warp = warp; this.warpArr = cb; }
 	public boolean aiming(){ return aiming; }
 	public boolean aimSounded(){ return aimSounded; }
 
@@ -1502,7 +1550,7 @@ public class Mob extends Entity{
 
 	protected void createFootSensor(){
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox((rw - 5)/Vars.PPM, 2/Vars.PPM, new Vector2(0, -1 * rh/Vars.PPM), 0);
+		shape.setAsBox((Vars.TILE_SIZE*w/12f)/Vars.PPM, 2/Vars.PPM, new Vector2(0, -1 * rh/Vars.PPM), 0);
 		fdef.shape = shape;
 
 		fdef.isSensor = true;
@@ -1520,8 +1568,6 @@ public class Mob extends Entity{
 		shape.setAsBox((w1/2f)/Vars.PPM, (rh+1)/Vars.PPM, new Vector2(d*INTERACTION_SPACE/(2*Vars.PPM), 0), 0);
 		fdef.shape = shape;
 		
-		
-
 		fdef.isSensor = true;
 		fdef.filter.categoryBits = Vars.BIT_GROUND | Vars.BIT_HALFGROUND | Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3;
 		fdef.filter.maskBits = Vars.BIT_LAYER1 | Vars.BIT_PLAYER_LAYER | Vars.BIT_LAYER3;
@@ -1761,9 +1807,9 @@ public class Mob extends Entity{
 			4,  /*TURN_RUN*/
 			8,  /*ON_FIRE*/
 			1,  /*FLINCHING*/
-			1,  /*STUMBLE*/
+			3,  /*STUMBLE*/
 			16, /*KNOCKED_OUT*/
-			1,  /*RECOVER*/
+			6,  /*RECOVER*/
 			3,  /*AIM_TRANS*/
 			16,  /*AIMING*/
 			3,  /*ATTACKING*/

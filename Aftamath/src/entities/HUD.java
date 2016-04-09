@@ -164,7 +164,7 @@ public class HUD {
 	}
 	
 	public void drawStats(SpriteBatch sb) {
-		int health = (int)(character.getHealth()/hearts.length);
+		int health = (int)(character.getHealth()/ character.getMaxHealth()* (hearts.length-1));
 		sb.draw(hearts[health], Game.width/2 - 24, Game.height/2 - 24 * 2);
 		sb.draw(cash, Game.width/2 - 24, Game.height/2 - 24);
 		
