@@ -196,7 +196,9 @@ public class Mob extends Entity{
 		gender = "n/a";	
 	}
 
+	@Override
 	protected void init() {
+		super.init();
 		attackables = new Array<>();
 		discovered = new Array<>();
 		contacts = new Array<>();
@@ -213,6 +215,7 @@ public class Mob extends Entity{
 		responseType = SightResponse.IGNORE;
 		inactiveWait = (float)(Math.random() *(IDLE_LIMIT)+100);
 		time = 0;
+		this.active = true;
 	}
 
 	public void update(float dt){
@@ -1471,13 +1474,14 @@ public class Mob extends Entity{
 		return new Vector2(getPixelPosition().x + x, getPixelPosition().y);
 	}
 
-	private final float w = (width-30)/2f;
+	private float w = (width-30)/2f;
 	public void create(){
 		init = true;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 
 		//hitbox
+		w = (width-30)/2f;
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(w/Vars.PPM, (rh)/Vars.PPM);
 
@@ -1489,6 +1493,7 @@ public class Mob extends Entity{
 		body.setUserData(this);
 		fdef.filter.maskBits = (short) (Vars.BIT_GROUND | Vars.BIT_BATTLE);
 		fdef.filter.categoryBits = layer;
+		
 		body.createFixture(fdef).setUserData(Vars.trimNumbers(ID));
 		body.setFixedRotation(true);
 		body.setMassData(mdat);
@@ -1618,6 +1623,7 @@ public class Mob extends Entity{
 		if (texture != null) healthBar = TextureRegion.split(texture, 12, 1)[0];
 		determineGender();
 		idleDelay = 3*Vars.ANIMATION_RATE*animation.getDefaultLength();
+		w = (width-30)/2f;
 	}
 
 	@Override

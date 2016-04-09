@@ -85,7 +85,8 @@ public class JsonSerializer {
 			initReferences();
 			
 			String level = root.getString("levelID");
-			gMain.setScene(new Scene(gMain.getWorld(), gMain, level));
+			Scene scene = new Scene(gMain.getWorld(), gMain, level);
+			gMain.setScene(scene);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

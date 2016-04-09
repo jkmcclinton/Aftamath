@@ -139,7 +139,7 @@ public class Main extends GameState {
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
 						debugging   = false,	 //in debug mode?
-						cwarps      = false,	 //create warps?
+						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
 	public static String debugLoadLoc = "Bridge"; //where the player starts
@@ -286,8 +286,9 @@ public class Main extends GameState {
 
 			for (Entity e : objects){
 				if (!(e instanceof Ground)) {
-					if(!e.init && e.getBody()==null)
-						e.create();
+					if(!e.init && e.getBody()==null) {
+						e.create();					
+					}
 					e.update(dt);
 
 					//find bodies that are out of bounds
@@ -1586,7 +1587,8 @@ public class Main extends GameState {
 	
 	public RayHandler getRayHandler(){return rayHandler; }
 	public void setScene(Scene s){ 
-		if (scene == null)return;
+		if (s == null)
+			return;
 		scene = s; 
 		System.out.println("set Scene: "+scene.ID); 
 	}

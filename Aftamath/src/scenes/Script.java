@@ -804,8 +804,9 @@ public class Script implements Serializable {
 				break;
 			case "remove":
 			case "removeObject":
-				//remove object from existance
+				//remove object from existence
 				obj = findObject(firstArg(line));
+				System.out.println("remove: " + obj);
 				if (obj!= null){
 					main.removeBody(obj.getBody());
 					Entity.removeMapping(obj.getSceneID());
@@ -2324,7 +2325,7 @@ public class Script implements Serializable {
 					((Mob)e).setState("FACEPLAYER", null, -1, ResetType.NEVER.toString());
 					e.setDialogueScript("generic_1");
 					if(sceneID>0){
-						System.out.println(main.getScene());
+						//System.out.println(main.getScene().ID);
 						Scene.addEntityMapping(main.getScene().ID, sceneID);
 						Entity.addMapping(sceneID, e);
 					}

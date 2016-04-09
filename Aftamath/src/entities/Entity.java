@@ -56,7 +56,7 @@ public class Entity implements Serializable {
 	protected double health;
 	protected double maxHealth;
 	protected double resistance = 1;
-	protected int sceneID;
+	protected int sceneID = -1;
 	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
 	protected float invulnerableTime, maxSpeed = MOVE_SPEED;
 	protected Texture texture;
@@ -104,7 +104,7 @@ public class Entity implements Serializable {
 	
 	public static Entity getMapping(int id) {
 		if (!hasMapping(id)) {
-			System.out.print("Entity:getMapping - No mapping exists with id "+id);
+			System.out.println("Entity:getMapping - No mapping exists with id "+id);
 			return null;
 		}
 		return idToEntity.get(id);
@@ -770,8 +770,7 @@ public class Entity implements Serializable {
 		this.burnDelay = val.getFloat("burnDelay");
 		this.facingLeft = val.getBoolean("facingLeft");
 		this.isInteractable = val.getBoolean("isInteractable");
-		this.layer = val.getShort("layer");
-		this.origLayer = val.getShort("origLayer");
+		this.origLayer = this.layer = val.getShort("layer");
 		
 		try {
 			this.script = json.fromJson(Script.class, val.get("script").toString());
