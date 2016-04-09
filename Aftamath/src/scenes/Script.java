@@ -6,9 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Set;
 import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
@@ -2509,6 +2507,11 @@ public class Script implements Serializable {
 
 	@Override
 	public void read(Json json, JsonValue val) {
+		choiceIndicies = new HashMap<>();
+		conditions = new LinkedHashMap<>();
+		operations = new Stack<>();
+		localVars = new HashMap<>();
+
 		this.ID = val.getString("ID");
 		this.type = ScriptType.valueOf(val.getString("type"));
 		this.index = this.current = val.getInt("current");

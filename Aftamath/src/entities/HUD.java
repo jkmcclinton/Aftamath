@@ -280,7 +280,7 @@ public class HUD {
 		for (int i = 0; i < speakText.length; i++){
 			int o = 0;
 			if (speakText[i] == null) {
-				System.out.println(i+ "\n" + true);
+				System.out.println("speakText has null entry at index " + i);
 				return;
 			}
 			for (int j = 0; j < speakText[i].length(); j++){

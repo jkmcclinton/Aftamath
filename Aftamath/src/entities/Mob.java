@@ -1644,6 +1644,7 @@ public class Mob extends Entity{
 		float ry = val.getFloat("respawnPointY");
 		this.respawnPoint = new Vector2(rx, ry);				
 		this.iFF = IFFTag.valueOf(val.getString("iff"));
+		this.nickName = val.getString("nickName");
 		this.name = val.getString("name");
 		this.strength = val.getDouble("strength");
 		this.level = val.getInt("level");
@@ -1678,6 +1679,7 @@ public class Mob extends Entity{
 		json.writeValue("respawnPointX", this.respawnPoint.x);
 		json.writeValue("respawnPointY", this.respawnPoint.y);
 		json.writeValue("iff", this.iFF);
+		json.writeValue("nickName", this.nickName);
 		json.writeValue("name", this.name);
 		//json.writeValue("voice", this.voice);	//TODO: implement voice
 		json.writeValue("strength", this.strength);
