@@ -22,7 +22,7 @@ public class MobAI implements Serializable {
 		AIM, ATTACK, BLOCKPATH, DANCING, DUCK, IDLE, IDLEWALK, EVADING, EVADING_ALL, 
 		FACELEFT, FACEOBJECT, FACEPLAYER, FACERIGHT, FIGHTING, FLAIL, FLY, FOLLOWING, 
 		HUG, JUMP, KISS, KNOCKOUT, LOSEAIM, LOOK_UP, MOVE, RUN, RECOVER, PATH, PATH_PAUSE, PUNCH, SHOOT, SLEEPING,
-		SNOOZE, SPECIAL1, SPECIAL2, SPECIAL3, STATIONARY, STOP
+		SNOOZE, SPECIAL1, SPECIAL2, SPECIAL3, STATIONARY, STOP, SEARCH
 	}
 
 	public static enum ResetType {
@@ -669,6 +669,8 @@ public class MobAI implements Serializable {
 			break;
 		case STOP:
 			finish();
+			break;
+		case SEARCH:
 			break;
 		}
 		

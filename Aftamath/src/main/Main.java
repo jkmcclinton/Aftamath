@@ -162,6 +162,7 @@ public class Main extends GameState {
 	
 	
 	public void create(){
+		super.create();
 		ptclsToRemove = new ArrayList<>();
 		displayText = new ArrayDeque<>();
 		bodiesToRemove = new Array<>();

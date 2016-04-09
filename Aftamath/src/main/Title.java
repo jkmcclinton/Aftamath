@@ -161,6 +161,7 @@ public class Title extends GameState {
 
 	@Override
 	public void create() {
+		super.create();
 		Song song = new Song("Title");
 		setSong(song, false);
 		sb.setOverlay(Color.WHITE);

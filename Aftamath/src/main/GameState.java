@@ -358,8 +358,10 @@ public abstract class GameState {
 	public abstract void handleInput();
 	public abstract void render();
 	public abstract void dispose();
-	public abstract void create();
 	public void renderLighting(FadingSpriteBatch sb){}
+	public void create(){ 
+		sb.setGameState(this);
+	}
 
 	public Song getSong() {
 		return music;
