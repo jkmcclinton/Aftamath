@@ -142,7 +142,7 @@ public class Main extends GameState {
 						rayHandle   = true, //include lighting?
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
-						debugging   = true,	 //in debug mode?
+						debugging   = false,	 //in debug mode?
 						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
@@ -162,6 +162,7 @@ public class Main extends GameState {
 	
 	
 	public void create(){
+		super.create();
 		ptclsToRemove = new ArrayList<>();
 		displayText = new ArrayDeque<>();
 		bodiesToRemove = new Array<>();
