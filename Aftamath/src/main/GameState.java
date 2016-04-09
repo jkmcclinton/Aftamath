@@ -5,9 +5,12 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -36,6 +39,8 @@ public abstract class GameState {
 	protected Song music, nextSong, prevSong, tmp;
 	protected static TextureRegion[] font;
 
+	protected FrameBuffer lightBuffer;
+	protected TextureRegion lightBufferRegion;
 	protected FadingSpriteBatch sb;
 	protected Camera cam;
 	protected Camera b2dCam;
@@ -154,6 +159,16 @@ public abstract class GameState {
 
 		music.fadeIn();
 	}
+	
+	public void resize(){
+		// Fakedlight system (alpha blending)
+		// if lightBuffer was created before, dispose, we recreate a new one
+		if (lightBuffer!=null) lightBuffer.dispose();
+		lightBuffer = new FrameBuffer(Format.RGBA8888, Vars.PowerOf2(Game.width), Vars.PowerOf2(Game.height), false);
+		lightBuffer.getColorBufferTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		lightBufferRegion = new TextureRegion(lightBuffer.getColorBufferTexture(),0,lightBuffer.getHeight()-Game.height,Game.width,Game.height);
+		lightBufferRegion.flip(false, false);
+	}
 
 	// UI sound
 	public void playSound(String src) {
@@ -198,7 +213,7 @@ public abstract class GameState {
 	public void playSound(Vector2 position, Sound sound, float pitch) {
 		position = new Vector2(position.x * Vars.PPM, position.y * Vars.PPM);
 		float dx = cam.position.x - position.x;
-		float dy = cam.position.y - cam.offsetY - position.y;
+		float dy = cam.position.y - cam.yOff - position.y;
 		float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
 		float pan;
@@ -218,7 +233,7 @@ public abstract class GameState {
 	public void updateSound(Vector2 position, Music sound) {
 		position = new Vector2(position.x * Vars.PPM, position.y * Vars.PPM);
 		float dx = cam.position.x - position.x;
-		float dy = cam.position.y - cam.offsetY - position.y;
+		float dy = cam.position.y - cam.yOff - position.y;
 		float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
 		float pan;
@@ -341,12 +356,10 @@ public abstract class GameState {
 	}
 
 	public abstract void handleInput();
-
 	public abstract void render();
-
 	public abstract void dispose();
-
 	public abstract void create();
+	public void renderLighting(FadingSpriteBatch sb){}
 
 	public Song getSong() {
 		return music;

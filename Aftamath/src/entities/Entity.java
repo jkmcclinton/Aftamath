@@ -60,7 +60,7 @@ public class Entity implements Serializable {
 	protected float burnTime, burnDelay, totBurnLength, frozenTime, totFreezeLength;
 	protected float invulnerableTime, maxSpeed = MOVE_SPEED;
 	protected Texture texture;
-	protected boolean facingLeft, invulnerable;
+	protected boolean facingLeft, invulnerable, died;
 	protected World world;
 	protected Main main;
 	protected Scene currentScene;
@@ -249,11 +249,11 @@ public class Entity implements Serializable {
 				Vector2 v = body.getLinearVelocity();
 				if (dx > 1.5f*maxSpeed) v.x = maxSpeed;
 				else if (dx < -1.5f*maxSpeed) v.x = -maxSpeed;
-				else setPosition(new Vector2(loc.x, getPixelPosition().y));
+//				else setPosition(new Vector2(loc.x, getPixelPosition().y));
 
 				if (dy > 1.5f*maxSpeed) v.y = maxSpeed;
 				else if (dy < -1.5f*maxSpeed) v.y = -maxSpeed;
-				else setPosition(new Vector2(getPixelPosition().x, loc.y-rh));
+//				else setPosition(new Vector2(getPixelPosition().x, loc.y-rh));
 				body.setLinearVelocity(v);
 				return false;
 			} else {
@@ -419,6 +419,11 @@ public class Entity implements Serializable {
 	public int getSceneID(){ return sceneID; }
 	public void setSceneID(int ID){ sceneID = ID; }
 	public Light getLight(){ return this.light; }
+	
+	/**
+	 * links the entity to a light, 
+	 * @param light
+	 */
 	public void addLight(Light light){
 		try{
 			if(this.light!=null)
@@ -437,12 +442,15 @@ public class Entity implements Serializable {
 		respawn();
 	}
 	
-	private void respawn(){
-		dead = false;
+	public void respawn(){
+//		if(!(this instanceof SpeechBubble))
+//			System.out.println("respawning: "+this);
+		dead = died = false;
 		animation.reset();
 		main.removeBody(body);
 		body.setUserData(this.copy());
 		create();
+		modifyHealth(maxHealth);
 	}
 	
 	public Vector2 getPosition(){ 
@@ -626,9 +634,7 @@ public class Entity implements Serializable {
 	}
 	
 	public void heal(double healVal, boolean playSound){
-		health += healVal;
-		if (health > maxHealth) 
-			health = maxHealth;
+		modifyHealth(Math.abs(healVal));
 		if (playSound)
 			main.playSound(getPosition(), "heal");
 	}
@@ -654,6 +660,11 @@ public class Entity implements Serializable {
 		this.maxHealth = maxHealth;
 	}
 	
+	protected void modifyHealth(double val){
+		health = health + val;
+		if(health>maxHealth) 
+			health = maxHealth;
+	}
 	public double getHealth() { return health; }
 	public boolean isVulnerable(){ return !invulnerable; }
 	public void setDestructability(boolean val){

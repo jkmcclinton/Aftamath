@@ -94,17 +94,19 @@ public class SpeechBubble extends Entity {
 		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text5.png")), 7, 9 )[0];
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture(ID), width, height)[0];
 		setDefaultAnimation(sprites, Vars.ACTION_ANIMATION_RATE*2);
-		animation.setFrames(TextureRegion.split(texture, width, height)[1],
-				Vars.ACTION_ANIMATION_RATE/2f,1, determineLength(ID), LoopBehavior.ONCE, false);
+		animation.setFrames(Vars.removeEmptyFrames(TextureRegion.split(texture, width, height)[1], determineLength(ID)),
+				Vars.ACTION_ANIMATION_RATE/2f, 1, 1, LoopBehavior.ONCE, false);
 	}
 
 	public void update(float dt){
 		animation.update(dt);
 		
+		//if this is a warp arrow bubble and warp availability has been 
+		//invalidated, remove the arrow
 		if(ID.contains("arrow") && owner instanceof Mob){
 			System.out.println("removed invalid warp identifyer arrow");
 			if(((Mob)owner).getWarp()==null)
-				main.removeBody(body);
+				kill();
 		}
 		
 		//calculations for hovering
@@ -134,7 +136,7 @@ public class SpeechBubble extends Entity {
 		
 		//destroy object if interaction has lost contact
 		if(body != null && main.character.getInteractable() != owner && ID.equals("speechBubble0")) 
-			main.removeBody(body);
+			kill();
 	}
 	
 	public void render(FadingSpriteBatch sb){
@@ -148,24 +150,6 @@ public class SpeechBubble extends Entity {
 			if(getBody()==null)
 				create();
 			drawBacking(innerWidth, sb);
-//			switch(positioningType){
-//				case LEFT_MARGIN:
-//					sb.draw(left, getPosition().x*Vars.PPM - rw, getPosition().y*Vars.PPM-rh);
-//					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth + 3, getPosition().y*Vars.PPM-rh);
-//					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
-//					break;
-//				case CENTERED:
-//					sb.draw(left, getPosition().x*Vars.PPM - rw - innerWidth/2 + 1, getPosition().y*Vars.PPM-rh);
-//					sb.draw(right, getPosition().x*Vars.PPM - rw + innerWidth/2 +3, getPosition().y*Vars.PPM-rh);
-//					sb.draw(middle, getPosition().x*Vars.PPM - rw + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
-//					sb.draw(middle, getPosition().x*Vars.PPM - rw - innerWidth/2 + 3, getPosition().y*Vars.PPM-rh, innerWidth/2, middle.getRegionHeight());
-//					break;
-//				case RIGHT_MARGIN:
-//					sb.draw(left, getPosition().x*Vars.PPM + rw - innerWidth - 5, getPosition().y*Vars.PPM-rh);
-//					sb.draw(right, getPosition().x*Vars.PPM + rw - 3, getPosition().y*Vars.PPM-rh);
-//					sb.draw(middle, getPosition().x*Vars.PPM + rw - innerWidth - 3, getPosition().y*Vars.PPM-rh, innerWidth, middle.getRegionHeight());
-//					break;
-//				}
 			if(expanded){
 				float x = 0;
 				if (positioningType==PositionType.RIGHT_MARGIN) 
@@ -222,6 +206,10 @@ public class SpeechBubble extends Entity {
 		if(!ID.startsWith("speechBubble")) return;
 		sizingState = COLLAPSING; 
 		expanded = false;
+	}
+	
+	public void kill(){
+		main.removeBody(body);
 	}
 	
 	//floating arround algorithm

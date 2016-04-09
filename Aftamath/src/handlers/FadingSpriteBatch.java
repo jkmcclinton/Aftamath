@@ -3,7 +3,12 @@ package handlers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import box2dLight.Light;
 import box2dLight.RayHandler;
+import entities.Entity;
+import entities.LightObj;
+import main.GameState;
+import main.Main;
 
 public class FadingSpriteBatch extends SpriteBatch {
 
@@ -14,6 +19,7 @@ public class FadingSpriteBatch extends SpriteBatch {
 	private boolean overlayDraw;
 	private float fadeTime = 0, fadeInterval;
 	private int fadeType;
+	private GameState gs;
 
 	public static final int FADE_OUT = -1;
 	public static final int FADE_IN = 1;
@@ -41,26 +47,37 @@ public class FadingSpriteBatch extends SpriteBatch {
 			if (t < 0)
 				t = 0;
 
-			if(fadeType == FADE_OUT)
+			if(fadeType == FADE_OUT){
 				if(overlayDraw)
 					setColor(Vars.blendColors(fadeTime, 0, end, overlay, Color.BLACK));
 				else
 					setColor(Vars.blendColors(fadeTime, 0, end, Vars.DAY_OVERLAY, Color.BLACK));
-			else
+				
+				//fade out entity lights as well
+				if(gs instanceof Main){
+					Main m = (Main) gs;
+					for(Entity e : m.getObjects()){
+						Light l = e.getLight();
+						if(l!=null){
+							Color c = new Color(Color.BLACK);
+							c.a = l.getColor().a;
+							l.setColor(Vars.blendColors(l.getColor(), c));
+						}
+					}
+				}
+			}else
 				if(overlayDraw)
 					setColor(Vars.blendColors(fadeTime, 0, end, Color.BLACK, overlay));
 				else
 					setColor(Vars.blendColors(fadeTime, 0, end, Color.BLACK, Vars.DAY_OVERLAY));
 			
-			
-			//fade rayHandler as well?
-			//to be perfected
 			if(rh!=null){
-//				rh.setAmbientLight(rhAmbient.r-t, rhAmbient.g-t, 
-//						rhAmbient.b-t, Vars.ALPHA);
-//				for(Light l :rh.lightList){
-//					l.setColor(Vars.blendColors(l.getColor(), Color.BLACK));
-//				}
+				if(gs instanceof Main){
+					Main m = (Main) gs;
+					for(LightObj l : m.getLights()){
+						l.fade(fadeTime, end, fadeType);
+					}
+				}
 			}
 				
 			if(fadeTime >= end){
@@ -70,11 +87,21 @@ public class FadingSpriteBatch extends SpriteBatch {
 					fadeType = FADE_IN;
 				else  {
 					fading = false;
-					setColor(1, 1, 1, Vars.ALPHA);
+					if(overlayDraw) setColor(overlay);
+					else setColor(Vars.DAY_OVERLAY);
+					
+					if(gs instanceof Main){
+						Main m = (Main) gs;
+						for(LightObj l : m.getLights()){
+							l.resetColor();
+						}
+					}
 				}
 			}
-		} else
+
+		} else if(overlay!=null){
 			setColor(overlay);
+		}
 		
 		return faded;
 	}
@@ -94,6 +121,7 @@ public class FadingSpriteBatch extends SpriteBatch {
 		fade(4f);
 	}
 	
+	public void setGameState(GameState gs){ this.gs = gs; }
 	public void setRayHandler(RayHandler rh){ this.rh = rh; }
 	public void setOverlay(Color overlay){ this.overlay = overlay; }
 	public Color getOverlay(){return overlay; }

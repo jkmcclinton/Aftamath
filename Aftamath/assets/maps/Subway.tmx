@@ -559,7 +559,7 @@
     <property name="layer" value="back"/>
    </properties>
   </object>
-  <object id="30" name="26" x="576" y="96" width="16" height="16">
+  <object id="30" name="26" x="576" y="98" width="16" height="16">
    <properties>
     <property name="ID" value="-1"/>
     <property name="entity" value="sewerSign"/>

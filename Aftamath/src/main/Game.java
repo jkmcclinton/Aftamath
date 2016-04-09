@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
+import box2dLight.Light;
 import handlers.Camera;
 import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
@@ -117,6 +118,15 @@ public class Game implements ApplicationListener {
 			input = input.substring(0, inputIndex - 1) + input.substring(inputIndex);
 			inputIndex--;
 		}
+	}
+	
+	/**
+	 * Use this method to immediately halt the program and print out a stack trace
+	 */
+	@SuppressWarnings("null")
+	public static void halt(){
+		Light N = null;
+		System.out.println(N.getX());
 	}
 
 	public static void setInput(String i){input = i; }

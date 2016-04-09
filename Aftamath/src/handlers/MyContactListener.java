@@ -127,54 +127,52 @@ public class MyContactListener implements ContactListener {
 		}if(typeB.equals("vision")){ 
 			if(!fa.isSensor() && !(entA instanceof Ground))
 			((Mob) entB).discover(entA);
-		}if(typeA.equals("warp") && typeB.equals("foot")){
-			if(((Warp) entA).conditionsMet()) {
-				if(((Warp)entA).instant){
-					if (entB.equals(main.character))
-						main.initWarp((Warp) entA);
-					else; //move the Mob to that Level
-				} else {
-					if (entB.equals(main.character)){
-						if(((Warp)entA).getLink()!=null){
-							if(((Warp)entA).getLink().outside && ((Warp)entA).outside){
-								String message = "To " + ((Warp)entA).getLink().locTitle;
-								(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y
-										+ entA.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
-							} else
-								new SpeechBubble(entA, entA.getPixelPosition().x, entA.rh +
-										entA.getPixelPosition().y, "arrow");
-						}
-						Mob m = (Mob) entB;
-						m.canWarp = true;
-						m.setWarp((Warp) entA);
-					}
+		} if(typeA.equals("warp") && typeB.equals("foot")){
+			Mob m = (Mob) entB;
+			Warp w = (Warp) entA;
+			SpeechBubble cb = null;
+			
+			//determine indicator
+			if(m.equals(main.character))
+				if(w.getLink()!=null){
+					if(w.getLink().outside && w.outside){
+						String message = "To " + w.getLink().locTitle;
+						cb = new SpeechBubble(w, w.getPixelPosition().x, w.getPixelPosition().y
+								+ w.rh, 6, message, SpeechBubble.PositionType.CENTERED);
+						cb.expand();
+					} else
+						cb = new SpeechBubble(w, w.getPixelPosition().x, w.rh +
+								w.getPixelPosition().y, "arrow");
 				}
-			}
+			m.setWarp(w, cb);
+			
+			if(w.instant)
+				if (m.equals(main.character))
+					main.initWarp(w);
+				else; //move the Mob to that Level
 		} if(typeB.equals("warp") && typeA.equals("foot")){
-			if(((Warp) entB).conditionsMet()) {
-				if(((Warp)entB).instant){
-					if (entA.equals(main.character))
-						main.initWarp((Warp) entB);
-					else; //move the Mob to that Level
-				} else {
-					if (entA.equals(main.character)){
-						if(((Warp)entB).getLink()!=null){
-							if(((Warp)entB).getLink().outside && ((Warp)entB).outside){
-								String message = "To " + ((Warp)entB).getLink().locTitle;
-								(new SpeechBubble(entB, entB.getPixelPosition().x, entB.getPixelPosition().y
-										+ entB.rh, 6, message, SpeechBubble.PositionType.CENTERED)).expand();
-							} else
-								new SpeechBubble(entB, entB.getPixelPosition().x, entB.rh +
-										entB.getPixelPosition().y, "arrow");
-						}
-						Mob m = (Mob) entA;
-						m.canWarp = true;
-						m.setWarp((Warp) entB);
-						if(((Warp)entB).instant && entA.equals(main.character))
-							main.initWarp(((Warp)entB));
-					}
+			Mob m = (Mob) entA;
+			Warp w = (Warp) entB;
+			SpeechBubble cb = null;
+			
+			//determine indicator
+			if(m.equals(main.character))
+				if(w.getLink()!=null){
+					if(w.getLink().outside && w.outside){
+						String message = "To " + w.getLink().locTitle;
+						cb = new SpeechBubble(w, w.getPixelPosition().x, w.getPixelPosition().y
+								+ w.rh, 6, message, SpeechBubble.PositionType.CENTERED);
+						cb.expand();
+					} else
+						cb = new SpeechBubble(w, w.getPixelPosition().x, w.rh +
+								w.getPixelPosition().y, "arrow");
 				}
-			}
+			m.setWarp(w, cb);
+			
+			if(w.instant)
+				if (m.equals(main.character))
+					main.initWarp(w);
+				else; //move the Mob to that Level
 		} if(typeA.equals("texttrigger") && typeB.equals("foot")){
 			if (entB.equals(main.character))
 				(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y
@@ -256,8 +254,7 @@ public class MyContactListener implements ContactListener {
 			Mob m = (Mob) entB;
 			if(m.getWarp()!=null)
 				if(m.getWarp().equals(entA)) {
-					m.setWarp(null);
-					m.canWarp = false;
+					m.setWarp(null, null);
 				}
 			
 			if(entB.equals(main.character))
@@ -269,8 +266,7 @@ public class MyContactListener implements ContactListener {
 			Mob m = (Mob) entA;
 			if(m.getWarp()!=null)
 				if(m.getWarp().equals(entB)) {
-					m.setWarp(null);
-					m.canWarp = false;
+					m.setWarp(null, null);
 				}  
 			
 			if(entA.equals(main.character))

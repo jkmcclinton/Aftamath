@@ -10,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
-import box2dLight.Light;
 import box2dLight.PointLight;
 import handlers.FadingSpriteBatch;
 import handlers.PositionalAudio;
@@ -24,7 +23,6 @@ public class DamageField extends Entity {
 	private DamageType damageType;
 	private HashMap<Entity, Float> victims;
 	private PositionalAudio damageSound;
-	private Light pL;
 	
 	protected static final float ANIM_RATE = 1/12f;
 
@@ -93,14 +91,13 @@ public class DamageField extends Entity {
 		}
 
 		if(lifeTime>=duration){
-			main.removeBody(body);
-			finalize();
+			kill();
 		}
 	}
 	
 	public void render(FadingSpriteBatch sb){
 		Color overlay = sb.getOverlay();
-		if(pL!=null)sb.setColor(Vars.DAY_OVERLAY);
+		if(light!=null)sb.setColor(Vars.DAY_OVERLAY);
 		switch(ID){
 		case "boulderFist":	
 			sb.draw(animation.getFrame(), x - width/2, y - rh - 2);
@@ -218,17 +215,17 @@ public class DamageField extends Entity {
 		case "fireyField":
 		case "chillyWind":
 			duration = 3;
-			damageStrength = 1;
+			damageStrength = 1.5f;
 			break;
 		case "electricField":
 			duration = 3;
-			damageStrength = 1.1f;
+			damageStrength = 1.8f;
 			break;
 		case "boulderFist":
 			//only lasts as long as the animation
 //			duration = animation.getFrames().size*animation.getSpeed();
 			duration = .45f;
-			damageStrength = 1.1f;
+			damageStrength = 5f;
 			isSensor = false;
 			break;
 		default:	
@@ -274,13 +271,13 @@ public class DamageField extends Entity {
 		case "electricField":
 			sound = "sparking";
 			c = new Color(Vars.SUNSET_GOLD); c.a =.5f;
-			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+			light = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
 					200, x, y);
 			break;
 		case "fireyField":
 			sound = "crackling";
 			c = new Color(Vars.SUNSET_ORANGE); c.a =.5f;
-			pL = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
+			light = new PointLight(main.getRayHandler(), Vars.LIGHT_RAYS, c,
 					150, x, y);
 			break;
 		case "chillyWind":
@@ -297,16 +294,13 @@ public class DamageField extends Entity {
 			damageSound = new PositionalAudio(getPosition(), sound, main);
 	}
 	
-	public void finalize(){
+	public void kill(){
 		try {
-			super.finalize();
+			main.removeBody(body);
 			if(damageSound!=null){
 				damageSound.stop();
 				main.removeSound(damageSound);
 			}
-			if(pL != null)
-				pL.remove();
-			
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

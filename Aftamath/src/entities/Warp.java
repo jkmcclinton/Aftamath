@@ -23,6 +23,7 @@ public class Warp extends Entity {
 	private Vector2 warpLoc, offset;
 	private int nextWarp;
 	private Warp link;
+//	private boolean prevAvail = false;
 	
 	public enum TransType {
 		HORIZONTAL_BARS, PINHOLE, ZOOM, BLACKOUT, FADE, FADE_WHITE,
