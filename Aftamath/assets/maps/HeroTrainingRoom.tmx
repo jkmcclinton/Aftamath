@@ -461,7 +461,7 @@
  </layer>
  <layer name="objects" width="64" height="17">
   <data encoding="base64" compression="zlib">
-   eJztzrkNADAMxLBbwcPnGTcewkAaElCvBAAAgGmrkt2d7tbvG+ABXtMCnw==
+   eJztzrENACAMBLFfIcMT1gV2QEpjS9dfAgAAwG+rkr7tmj4BngMJ/gH2
   </data>
  </layer>
  <layer name="fg" width="64" height="17">

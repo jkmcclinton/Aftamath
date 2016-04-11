@@ -11,7 +11,6 @@ SBDidMenialLabor         : flag     : global   : firstTask
 SBReceivedPromotion1     : flag     : global   : bossPromotion1
 SupaRewarded             : flag     : global   : foundHQ
 VisitedPier              : flag     : global   : Pier
-a                        : integer  : global   : HeroHQEntry
 address                  : string   : local    : choice test
 ask                      : integer  : local    : afterTutorial
 asked                    : integer  : global   : ask out
@@ -57,6 +56,9 @@ i                        : integer  : local    : genericCivilian
 i                        : integer  : local    : genericWitch
 inSupTut                 : flag     : global   : afterTutorial
 inSupTut                 : flag     : global   : superTutIntro
+jElevatorLoc             : string   : global   : HeroLowerHall
+jElevatorLoc             : string   : global   : JusticeRoom
+jElevatorMoving          : flag     : global   : justiceElevatorSelection
 limitCounter             : integer  : local    : trainSelection
 loc                      : string   : local    : trainSelection
 lvC                      : float    : local    : girlfriend
@@ -81,6 +83,7 @@ num                      : integer  : local    : superGlare
 pC                       : integer  : local    : onAttackedDisappointed
 pC                       : integer  : local    : supAttackedPartner
 part                     : integer  : local    : actionTest
+planet                   : flag     : global   : HeroHQEntry
 playergender             : string   : local    : intro
 playertype               : integer  : local    : intro
 punchC                   : integer  : local    : attackedPartner

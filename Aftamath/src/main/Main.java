@@ -142,12 +142,12 @@ public class Main extends GameState {
 						rayHandle   = true, //include lighting?
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
-						debugging   = false,	 //in debug mode?
+						debugging   = true,	 //in debug mode?
 						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "HeroHQ"; //where the player starts
-	public static String debugPlayerType = "maleplayer4"; //what the player looks like in debug mode
+	public static String debugLoadLoc = "Church"; //where the player starts
+	public static String debugPlayerType = "femaleplayer2"; //what the player looks like in debug mode
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 
 	public Main(GameStateManager gsm) {
@@ -194,13 +194,13 @@ public class Main extends GameState {
 		paused=analyzing=choosing=waiting=warping=warped=speaking=false;
 		waitTime=totalWait=speakTime=0;
 		
-		if(debugging){
-			dayTime = NIGHT_TIME;
-			dayState = NIGHT;
-		} else {
+//		if(debugging){
+//			dayTime = NIGHT_TIME;
+//			dayState = NIGHT;
+//		} else {
 			dayTime = DAY_TIME+TRANSITION_INTERVAL;
 			dayState = DAY;
-		}
+//		}
 		
 		cam.reset();
 		b2dCam.reset();

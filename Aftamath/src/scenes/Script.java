@@ -26,6 +26,7 @@ import entities.HUD.SplashType;
 import entities.Mob;
 import entities.MobAI.ResetType;
 import entities.Path;
+import entities.Path.Behavior;
 import entities.SpeechBubble;
 import entities.SpeechBubble.PositionType;
 import entities.TextBox;
@@ -689,7 +690,7 @@ public class Script implements Serializable {
 					target = findPath(args[1]);
 					if(target != null){
 						Path path = (Path) target;
-						if(wait) setActiveObj(obj);
+						if(wait && !path.getBehavior().equals(Behavior.CONTINUOUS)) setActiveObj(obj);
 						obj.moveToPath(path);
 						break;
 					}

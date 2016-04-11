@@ -1,9 +1,4 @@
 Scene ID                                Spawned by                         Script
- 0-1 - breadstand                       : ResidentialDistrictN             : cart
- 0-1 - dumpster                         : CommercialDistrictNW             : dumpster
- 0-1 - sewerSign                        : Subway
- 0-1 - subwayAd                         : Subway
- 0-1 - subwaySign                       : Subway                           : trainSelection
  000 - 
  001 - Darrius; gangster1               : room1_1.tmx                      : realGangsta
  002 - Marquis; gangster3               : CommercialDistrictNW.tmx         : GangstaWar
@@ -113,17 +108,17 @@ Scene ID                                Spawned by                         Scrip
  106 - TEST; maleplayer3                : Church.tmx                       : actionTest
  107 - TEST; maleplayer4                : Church.tmx                       : actionTest
  108 - Gigi; femaleplayer1              : Church.tmx                       : actionTest
- 109 - 
+ 109 - Attack Dummy; dummy1             : Church.tmx                       : actionTest
  110 - HLRMS-110; robot1                : BusinessDistrict.tmx             : getMail
- 111 - 
- 112 - 
- 113 - 
- 114 - 
- 115 - 
- 116 - 
- 117 - 
- 118 - 
- 119 - 
+ 111 - Attack Dummy; dummy2             : Church.tmx                       : actionTest
+ 112 - TEST; hero2                      : Church.tmx                       : actionTest
+ 113 - TEST; hero3                      : Church.tmx                       : actionTest
+ 114 - TEST; hero4                      : Church.tmx                       : actionTest
+ 115 - TEST; hero5                      : Church.tmx                       : actionTest
+ 116 - Attack Dummy; villain2           : Church.tmx                       : actionTest
+ 117 - Attack Dummy; villain4           : Church.tmx                       : actionTest
+ 118 - Attack Dummy; villain3           : Church.tmx                       : actionTest
+ 119 - Attack Dummy; villain5           : Church.tmx                       : actionTest
  120 - Argus; burly2                    : Factory.tmx                      : factoryWorkerEntrance
  121 - 
  122 - 

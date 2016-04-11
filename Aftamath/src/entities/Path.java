@@ -46,6 +46,7 @@ public class Path extends Entity {
 		}
 	}
 	
+	public Behavior getBehavior(){ return behavior; }
 	public Vector2 getCurrent(){ return points.get(current); }
 	public float getSpeed(){ return this.speed; }
 	public void setSpeed(float speed){ this.speed = speed; }
