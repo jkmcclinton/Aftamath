@@ -1,14 +1,18 @@
 package handlers;
 
 import handlers.MyInput.Input;
+import handlers.MyInput.XBox360Pad;
 import main.Game;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.PovDirection;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-public class MyInputProcessor extends InputAdapter {
-	
+public class MyInputProcessor extends InputAdapter implements ControllerListener {
 	public int mode = 0;
 	public void keyboardMode(){ mode = 1; }
 	public void gameMode(){ mode = 0; }
@@ -133,6 +137,137 @@ public class MyInputProcessor extends InputAdapter {
 		return true;
 	}
 	
+	public boolean buttonDown(Controller controller, int code) {
+		switch(code){
+		case XBox360Pad.BUTTON_A: MyInput.setKey(Input.JUMP, true); break;
+		case XBox360Pad.BUTTON_X: MyInput.setKey(Input.INTERACT, true); break;
+		case XBox360Pad.BUTTON_RB: MyInput.setKey(Input.ATTACK, true); break;
+		case XBox360Pad.BUTTON_Y: MyInput.setKey(Input.USE, true); break;
+		case XBox360Pad.BUTTON_BACK: MyInput.setKey(Input.RESPAWN, true); break;
+		case XBox360Pad.BUTTON_START: MyInput.setKey(Input.PAUSE, true); break;
+		case XBox360Pad.BUTTON_LB: MyInput.setKey(Input.DOWN, true); break;
+		}
+		return false;
+	}
+
+	public boolean buttonUp(Controller controller, int code) {
+		switch(code){
+		case XBox360Pad.BUTTON_A: MyInput.setKey(Input.JUMP, false); break;
+		case XBox360Pad.BUTTON_X: MyInput.setKey(Input.INTERACT, false); break;
+		case XBox360Pad.BUTTON_RB: MyInput.setKey(Input.ATTACK, false); break;
+		case XBox360Pad.BUTTON_Y: MyInput.setKey(Input.USE, false); break;
+		case XBox360Pad.BUTTON_BACK: MyInput.setKey(Input.RESPAWN, false); break;
+		case XBox360Pad.BUTTON_START: MyInput.setKey(Input.PAUSE, false); break;
+		case XBox360Pad.BUTTON_LB: MyInput.setKey(Input.DOWN, false); break;
+		}
+		return false;
+	}
+	
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+        // This is your analog stick
+        // Value will be from -1 to 1 depending how far left/right, up/down the stick is
+        // For the Y translation, I use a negative because I like inverted analog stick
+        // Like all normal people do! ;)
+
+        // Left Stick
+        if(axisCode == XBox360Pad.AXIS_LEFT_X){
+        	if(value<=-Vars.THUMBSTICK_SENSITIVITY) {
+        		MyInput.setKey(Input.LEFT, true);
+        		MyInput.setKey(Input.RIGHT, false);
+        	} else if (value>=Vars.THUMBSTICK_SENSITIVITY) {
+        		MyInput.setKey(Input.RIGHT, true);
+        		MyInput.setKey(Input.LEFT, false);
+        	} else { // axis is not being moved
+        		MyInput.setKey(Input.LEFT, false);
+        		MyInput.setKey(Input.RIGHT, false);
+        	}
+        }  if(axisCode == XBox360Pad.AXIS_LEFT_Y){
+        	if(value<=-2*Vars.THUMBSTICK_SENSITIVITY) {
+        		MyInput.setKey(Input.UP, true);
+        	} else if (value>=2*Vars.THUMBSTICK_SENSITIVITY) {
+        		MyInput.setKey(Input.UP, false);
+        	} else { // axis is not being moved
+        		MyInput.setKey(Input.UP, false);
+        	}
+        }
+        
+        //triggers
+        if(axisCode == XBox360Pad.AXIS_LEFT_TRIGGER){
+        	if(value >= Vars.SENSITIVITY)
+        		MyInput.setKey(Input.SPECIAL, true);
+        	else
+        		MyInput.setKey(Input.SPECIAL, false);
+        } if(axisCode == XBox360Pad.AXIS_RIGHT_TRIGGER){
+        	if(value <= -Vars.SENSITIVITY)
+        		MyInput.setKey(Input.RUN, true);
+        	else
+        		MyInput.setKey(Input.RUN, false);
+        }
+        
+        // Right stick
+        if(axisCode == XBox360Pad.AXIS_RIGHT_X){
+        	
+        }
+        
+        return false;
+	}
+	
+	public void connected(Controller controller) {  Game.hasControllers = true; }
+	public void disconnected(Controller controller) { Game.hasControllers = false; }
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		MyInput.setKey(Input.LEFT, false);
+		MyInput.setKey(Input.RIGHT, false);
+		MyInput.setKey(Input.UP, false);
+		MyInput.setKey(Input.DOWN, false);
+		
+		switch(value){
+		case east:
+			MyInput.setKey(Input.RIGHT, true);
+			break;
+		case north:
+			MyInput.setKey(Input.UP, true);
+			break;
+		case northEast:
+			MyInput.setKey(Input.UP, true);
+			MyInput.setKey(Input.RIGHT, true);
+			break;
+		case northWest:
+			MyInput.setKey(Input.UP, true);
+			MyInput.setKey(Input.LEFT, true);
+			break;
+		case south:
+			MyInput.setKey(Input.DOWN, true);
+			break;
+		case southEast:
+			MyInput.setKey(Input.DOWN, true);
+			MyInput.setKey(Input.RIGHT, true);
+			break;
+		case southWest:
+			MyInput.setKey(Input.DOWN, true);
+			MyInput.setKey(Input.LEFT, true);
+			break;
+		case west:
+			MyInput.setKey(Input.LEFT, true);
+			break;
+		default:
+			break;
+		}
+		
+		return false;
+	}
+
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		return false;
+	}
+	
+	public boolean ySliderMoved(Controller controller, int arg1sliderCode, boolean value) {
+		return false;
+	}
+
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		return false;
+	}
+
 	private static Array<Integer> ignoreKeys = new Array<>();
 	static{
 		ignoreKeys.add(Keys.ALT_LEFT);
@@ -198,5 +333,4 @@ public class MyInputProcessor extends InputAdapter {
 		ignoreKeys.removeValue(32, false);
 		ignoreKeys.removeValue(16, false);
 	}
-
 }

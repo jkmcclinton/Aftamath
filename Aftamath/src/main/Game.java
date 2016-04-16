@@ -3,11 +3,13 @@ package main;
 import static handlers.Vars.PPM;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Stack;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,9 +21,7 @@ import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyInput;
 import handlers.MyInputProcessor;
-import scenes.Scene;
 import scenes.Song;
-
 
 /*
  * Name: Game.java
@@ -38,8 +38,10 @@ public class Game implements ApplicationListener {
 	public static final float STEP = 1 / 60f;
 	public static final float DEFAULT_ZOOM = 3f;
 	public static final int MAX_INPUT_LENGTH = 20;
+	
 
 	public static Assets res = new Assets();
+	public static boolean hasControllers, fullscreen;
 	public static float musicVolume = 1f;
 	public static float soundVolume = .75f;
 	public Stack<Song> song;
@@ -55,7 +57,9 @@ public class Game implements ApplicationListener {
 
 	public void create() {
 //		Texture.setEnforcePotImages(false);
-		Gdx.input.setInputProcessor(new MyInputProcessor());
+		MyInputProcessor iP = new MyInputProcessor();
+		Gdx.input.setInputProcessor(iP);
+		Controllers.addListener(iP);
 
 		res.loadTextures();
 		res.loadMusic();
@@ -70,6 +74,10 @@ public class Game implements ApplicationListener {
 		b2dCam.setToOrtho(false, width/3/PPM, height/3/PPM);
 		sb = new FadingSpriteBatch();
 		gsm = new GameStateManager(this);
+		
+        if(Controllers.getControllers().size == 0)
+            hasControllers = false;
+        else hasControllers = true;
 	}
 
 	public void render() {
@@ -77,6 +85,15 @@ public class Game implements ApplicationListener {
 		gsm.render();
 		MyInput.update();
 //		System.out.println("managed textures: "+Texture.getNumManagedTextures());
+		
+		 if (Gdx.input.isKeyPressed(Input.Keys.F5)) {
+	            fullscreen = !fullscreen;
+	            DisplayMode currentMode = Gdx.graphics.getDesktopDisplayMode();
+	            if(fullscreen)
+	            	Gdx.graphics.setDisplayMode(currentMode.width, currentMode.height, fullscreen);
+	            else
+	            	Gdx.graphics.setDisplayMode(width, height, fullscreen);
+		 }
 	}
 
 	public void update() {}
@@ -198,7 +215,7 @@ public class Game implements ApplicationListener {
 				if(f.extension().equals("png")){
 					key = f.nameWithoutExtension();
 					tex =  new Texture(Gdx.files.internal(f.path()));
-//System.out.println(key);
+//					System.out.println(key);
 					textures.put(key, tex);
 				}
 			}

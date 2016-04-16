@@ -10,6 +10,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
  */
 public class AftamathDesktop {
 
+	public LwjglApplicationConfiguration cfg;
+	
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration(); //Configuration file in LibGDX used to start the game
 		cfg.title = Game.TITLE; //Sets the title of the game
@@ -19,9 +21,9 @@ public class AftamathDesktop {
 		cfg.vSyncEnabled = true; // vSync makes frames load better
 //		cfg.useGL20 = true;  
 //		cfg.fullscreen = true; // Forces the game screen into fullscreen
+		Game.fullscreen = cfg.fullscreen;
 		cfg.addIcon("assets/images/Icon.png", Files.FileType.Internal); 
 
 		new LwjglApplication(new Game(), cfg); //Creates and launches the game file using the previous settings
-
 	}
 }

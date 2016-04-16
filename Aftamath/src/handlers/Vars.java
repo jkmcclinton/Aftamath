@@ -51,12 +51,17 @@ public class Vars {
 	public static final Color FROZEN_OVERLAY = new Color(139/255f, 195/255f, 217/255f, ALPHA/2f);
 	public static final Color BURN_OVERLAY = new Color(Color.RED);
 	
+	// sensitivity of the controller thumbstick and triggers
+	// value during gameplay can range from 0 to ~1, where 0 is more sensitive
+	public static final float SENSITIVITY = 0.2f;
+	public static float THUMBSTICK_SENSITIVITY = SENSITIVITY; 
+	
 	public static final int PLAYER_SCENE_ID = 0;
 	public static final int NARRATOR_SCENE_ID = 1000;
 	public static final Array<Color> DEFAULT_COLOR_LIST = new Array<Color>();
 	public static final Array<String> MALES = new Array<String>(new String[] {"doctordisco","narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
 					"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2","maleplayer1","maleplayer2","maleplayer3","maleplayer4",
-					"bballer","boss1","boss2","cashier","hero1","hero2", "hobo","villain3", "villain4","biker1","robot1","policeman1",
+					"bballer","boss1","boss2","cashier","hero1","hero3","hero4","hero5", "hobo","villain3", "villain4","biker1","robot1","policeman1",
 					"policeman2","civilian1","civilian2","civilian3","civilian4"});
 	public static final HashMap<String, Float> VOICES = new HashMap<>();
 
@@ -424,9 +429,10 @@ public class Vars {
 		VOICES.put("robot1", .05f);
 		VOICES.put("robot2", -.01f);
 		VOICES.put("hero1", -.18f);
-		VOICES.put("hero2", -.1f);
-		VOICES.put("hero3", .1f);
-		VOICES.put("hero4", .1f);
+		VOICES.put("hero2", .32f);
+		VOICES.put("hero3", -.22f);
+		VOICES.put("hero4", -.38f);
+		VOICES.put("hero5", -.1f);
 		VOICES.put("villain1", .01f);
 		VOICES.put("villain2", .1f);
 		VOICES.put("villain3", -.145f);

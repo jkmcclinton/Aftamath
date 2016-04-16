@@ -680,50 +680,53 @@ public class Main extends GameState {
 	public void handleInput() {
 		DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
 		float r = .005f;
-		if(MyInput.isDown(Input.DEBUG_UP)) {
+		
+		if(debugging){
+			if(MyInput.isDown(Input.DEBUG_UP)) {
 //			player.addFunds(100d);
 //			Vars.NIGHT_LIGHT.r+=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-			character.damage(-1);
-		} if(MyInput.isDown(Input.DEBUG_DOWN)){
+				character.damage(-1);
+			} if(MyInput.isDown(Input.DEBUG_DOWN)){
 //			player.addFunds(-100d);
 //			Vars.NIGHT_LIGHT.r-=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-			character.damage(1);
-		} if(MyInput.isDown(Input.DEBUG_LEFT)) {
-			Vars.NIGHT_LIGHT.b-=r;
-			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-		} if(MyInput.isDown(Input.DEBUG_RIGHT)) {
-			Vars.NIGHT_LIGHT.b+=r;
-			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-		} if (MyInput.isPressed(Input.DEBUG_LEFT2)) {
-			debugX = debugX>0 ? debugX - 1 : dm.length-1;
-			character.setPowerType(dm[(int) debugX]);
-			System.out.println(debugX+"\t"+dm[(int) debugX]);
+				character.damage(1);
+			} if(MyInput.isDown(Input.DEBUG_LEFT)) {
+				Vars.NIGHT_LIGHT.b-=r;
+				rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
+			} if(MyInput.isDown(Input.DEBUG_RIGHT)) {
+				Vars.NIGHT_LIGHT.b+=r;
+				rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
+			} if (MyInput.isPressed(Input.DEBUG_LEFT2)) {
+				debugX = debugX>0 ? debugX - 1 : dm.length-1;
+				character.setPowerType(dm[(int) debugX]);
+				System.out.println(debugX+"\t"+dm[(int) debugX]);
 //			Vars.NIGHT_LIGHT.g-=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);;
-		} if (MyInput.isPressed(Input.DEBUG_RIGHT2)) {
-			debugX = debugX<dm.length-1 ? debugX + 1 : 0;
-			character.setPowerType(dm[(int) debugX]);
-			System.out.println(debugX+"\t"+dm[(int) debugX]);
+			} if (MyInput.isPressed(Input.DEBUG_RIGHT2)) {
+				debugX = debugX<dm.length-1 ? debugX + 1 : 0;
+				character.setPowerType(dm[(int) debugX]);
+				System.out.println(debugX+"\t"+dm[(int) debugX]);
 //			Vars.NIGHT_LIGHT.g+=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-		} if(MyInput.isPressed(Input.DEBUG_CENTER)) {
-			random=true;
-			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
-			changeSong(new Song(Game.SONG_LIST.get(current)));
-		} if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
-			cam.zoom+=.01;
-			b2dCam.zoom+=.01;
-		} if(MyInput.isDown(Input.ZOOM_IN /*|| Gdx.input.getInputProcessor().scrolled(1)*/)) {
-			cam.zoom-=.01;
-			b2dCam.zoom-=.01;
+			} if(MyInput.isPressed(Input.DEBUG_CENTER)) {
+				random=true;
+				int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
+				changeSong(new Song(Game.SONG_LIST.get(current)));
+			} if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
+				cam.zoom+=.01;
+				b2dCam.zoom+=.01;
+			} if(MyInput.isDown(Input.ZOOM_IN /*|| Gdx.input.getInputProcessor().scrolled(1)*/)) {
+				cam.zoom-=.01;
+				b2dCam.zoom-=.01;
+			}
+			if(MyInput.isPressed(Input.LIGHTS)) {rayHandle = !rayHandle ; sb.setOverlayDraw(rayHandle); }
+			if(MyInput.isPressed(Input.COLLISION)) dbRender = !dbRender ;
+			if(MyInput.isPressed(Input.RENDER)) render=!render;
+			if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
+			if(MyInput.isPressed(Input.RESPAWN)) character.respawn();
 		}
-		if(MyInput.isPressed(Input.LIGHTS)) {rayHandle = !rayHandle ; sb.setOverlayDraw(rayHandle); }
-		if(MyInput.isPressed(Input.COLLISION)) dbRender = !dbRender ;
-		if(MyInput.isPressed(Input.RENDER)) render=!render;
-		if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
-		if(MyInput.isPressed(Input.RESPAWN)) character.respawn();
 
 		if (paused){
 			if (stateType == InputState.PAUSED) {
