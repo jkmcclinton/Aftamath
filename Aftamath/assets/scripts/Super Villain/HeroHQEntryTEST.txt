@@ -1,23 +1,24 @@
-Script HeroHQEntry
+Script HeroHQEntryTEST
 lockplayer
 
-setSpeaker(MrJustice)
+setSpeaker(OldMan)
+Face(Player, OldMan)
 Text(happy, {Home sweet home! Can't you smell the justice in the air?})
 
 setSpeaker(Player)
 setChoice(1:Totally!, 2:Not at all)
     [Choice Totally!]
-	    setSpeaker(Hero)
+	    setSpeaker(OldMan)
 		Text({We're going to get along righteously!})
 	end
 	
 	[Choice Not at all]
-	    setSpeaker(MrJustice)
+	    setSpeaker(OldMan)
 		Text({Worry not!})
 		Text({You'll soon learn to detect the aura of justice!})
 	end
-end
-	
+end 
+
 setSpeaker(Narrator)
 Text({You certainly picked an interesting friend.})
 
@@ -53,23 +54,19 @@ end
 focus(Gothicman)	
 setSpeaker(Gothicman)
 face(Player, Gothicman)
-Text({Another member. That's cool, I guess...})
+Text({It is a pleasure to make your acquaintance.})
 
 setSpeaker(Player)
 face(Player, Gothicman)
-setChoice(1:Nice to meet you, 6:Out of place?)
-    [Choice Nice to meet you]
+setChoice(1:The pleasure is mine, 6:Out of place?)
+    [Choice The pleasure is mine]
 	    setSpeaker(Gothicman)
-		Text({I hope you have a good time...})
-		Text(sad, {Unlike me...})
+		Text({I hope you find your time here suitable.})
 	end
 	
 	[Choice Out of place?]
 	    setSpeaker(Gothicman)
-		Text(mad, {I'm not out of place. I love justice, or whatever. Um...})
-		Text({Listen, it's just that I'm a complicated soul.})
-		Text({A dark growing ember inside me ignites for goodness and truth!})
-		Text({Or something like that...})
+		Text(mad, {Unlike for brutes like you, class and dignity are never out of place.})
 	end
 end 
 

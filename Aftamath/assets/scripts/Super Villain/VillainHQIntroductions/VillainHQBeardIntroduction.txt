@@ -26,6 +26,3 @@ setChoice(1: Tell me about yourself, 2: Why are you afraid of the flying chick?)
 	end
 	
 done
-
-
-	

@@ -1,4 +1,4 @@
-Script LoverboyIntroduction
+Script LovergirlIntroduction
 lockplayer
 face(This, Player)
 
@@ -7,15 +7,15 @@ Text(happy, {Oh my gosh! You came to talk to me!})
 
 setSpeaker(Player)
 If(flag planet)
-    setChoice(1:Tell me about yourself, 2:About my planet, 3:Nevermind)
+    setChoice(1:About you, 2:About my planet, 3:Nevermind)
 	
-	[Choice Tell me about yourself]
+	[Choice About you]
 	    setSpeaker(This)
 	    Text({Let's see. I joined the supaheroes because I lost the love of my life.})
-	    Text(sad, {She was so beautiful, her eyes, especially...})
-	    Text({They sparkled whenever I looked at her.})
-	    Text({She was amazing.})
-	    Text({But, one day, she never came home.})
+	    Text(sad, {He was so handsome, his eyes, especially...})
+	    Text({They sparkled whenever I looked at him.})
+	    Text({He was amazing.})
+	    Text({But, one day, he never came home.})
 	    Text({I decided to devote my life to fighting crime, so no one else would have to lose the ones they love!})
 	end
 	
@@ -64,15 +64,15 @@ If(flag planet)
 end
 end
 
-Else(setChoice(1:Tell me about yourself, 2:Nevermind))
+Else(setChoice(1:About you, 2:Nevermind))
 	
-	[Choice Tell me about yourself]
+	[Choice About you]
 	    setSpeaker(This)
 	    Text({Let's see. I joined the supaheroes because I lost the love of my life.})
-	    Text(sad, {She was so beautiful, her eyes, especially...})
-	    Text({They sparkled whenever I looked at her.})
-	    Text({She was amazing.})
-	    Text({But, one day, she never came home.})
+	    Text(sad, {He was so beautiful, his eyes, especially...})
+	    Text({They sparkled whenever I looked at him.})
+	    Text({He was amazing.})
+	    Text({But, one day, he never came home.})
 	    Text({I decided to devote my life to fighting crime, so no one else would have to lose the ones they love!})
 	end
 	
@@ -84,8 +84,4 @@ end
 
 
 
-done
-
-	
-		
-	
+done 
