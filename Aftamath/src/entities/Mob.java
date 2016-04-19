@@ -33,8 +33,7 @@ public class Mob extends Entity{
 	public double strength = DEFAULT_STRENGTH;
 	public float attackRange = DEFAULT_ATTACK_RANGE, attackTime, attackDelay=DEFAULT_ATTACK_DELAY, aimMax = DEFAULT_AIM_THRESHOLD;;
 	public float voice;
-	public boolean ducking;
-	public boolean canClimb, wasOnGround, running;
+	public boolean canClimb, wasOnGround, running,ducking, canIdle;
 	public boolean climbing, falling, snoozing, knockedOut;
 	public float experience, aimTime, powerCoolDown;
 	public Vector2 respawnPoint;
@@ -207,6 +206,7 @@ public class Mob extends Entity{
 		flamable = true;
 		isAttackable = true;
 		destructable = true;
+		canIdle = true;
 		attackTime = attackDelay;
 		iFF=IFFTag.FRIENDLY;
 		health = maxHealth = DEFAULT_MAX_HEALTH;
@@ -301,7 +301,7 @@ public class Mob extends Entity{
 				currentState.update(dt);
 
 			// idle animations
-			if (getAction() == Anim.STANDING && main.currentScript==null) {
+			if (getAction() == Anim.STANDING && main.currentScript==null && canIdle) {
 				idleTime+=dt;
 				if(idleTime>=idleDelay){
 					timesIdled +=1;
@@ -710,15 +710,10 @@ public class Mob extends Entity{
 					if(health<0)health = 0;
 					die();
 				}
-				else if(val<=DAMAGE_THRESHOLD)
-					setAnimation(Anim.FLINCHING, LoopBehavior.ONCE);
-				else {
-					setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
-				}
 			}
 			
 			if(val<=DAMAGE_THRESHOLD){
-				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE);
+				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE*2);
 			} else {
 				setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
 			}
@@ -757,7 +752,7 @@ public class Mob extends Entity{
 			}
 			
 			if(val<=DAMAGE_THRESHOLD){
-				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE);
+				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE*2);
 			} else {
 				setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
 			}

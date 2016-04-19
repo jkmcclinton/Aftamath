@@ -515,7 +515,7 @@
     <property name="ID" value="112"/>
     <property name="NPC" value="hero2"/>
     <property name="layer" value="front"/>
-    <property name="name" value="TEST"/>
+    <property name="name" value="Star"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
@@ -525,7 +525,7 @@
     <property name="ID" value="116"/>
     <property name="NPC" value="villain2"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Attack Dummy"/>
+    <property name="name" value="Killr"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
@@ -535,7 +535,7 @@
     <property name="ID" value="117"/>
     <property name="NPC" value="villain4"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Attack Dummy"/>
+    <property name="name" value="Tiny"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
@@ -545,7 +545,7 @@
     <property name="ID" value="118"/>
     <property name="NPC" value="villain3"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Attack Dummy"/>
+    <property name="name" value="DoctorDisco"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
@@ -555,7 +555,7 @@
     <property name="ID" value="119"/>
     <property name="NPC" value="villain5"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Attack Dummy"/>
+    <property name="name" value="Wannabe Villain"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
@@ -565,7 +565,7 @@
     <property name="ID" value="113"/>
     <property name="NPC" value="hero3"/>
     <property name="layer" value="front"/>
-    <property name="name" value="TEST"/>
+    <property name="name" value="Elder Man"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
@@ -575,7 +575,7 @@
     <property name="ID" value="114"/>
     <property name="NPC" value="hero4"/>
     <property name="layer" value="front"/>
-    <property name="name" value="TEST"/>
+    <property name="name" value="Manly Man"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
@@ -585,7 +585,7 @@
     <property name="ID" value="115"/>
     <property name="NPC" value="hero5"/>
     <property name="layer" value="front"/>
-    <property name="name" value="TEST"/>
+    <property name="name" value="Kris Devil"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
