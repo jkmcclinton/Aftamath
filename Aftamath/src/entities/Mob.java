@@ -19,7 +19,6 @@ import entities.MobAI.AIType;
 import entities.MobAI.ResetType;
 import entities.Projectile.ProjectileType;
 import handlers.Animation.LoopBehavior;
-import handlers.FadingSpriteBatch;
 import handlers.JsonSerializer;
 import handlers.Vars;
 import main.Game;
@@ -423,10 +422,6 @@ public class Mob extends Entity{
 ////			interactPair = null;
 //			}
 	}
-	
-	public void render(FadingSpriteBatch sb){
-		super.render(sb);
-	}
 
 	/**units in pixels*/
 	public void setPosition(Vector2 location){
@@ -457,9 +452,9 @@ public class Mob extends Entity{
 		int priority = actionPriorities[type];
 		int length = actionLengths[type];
 		
-		if(this.equals(main.character) && getAction()==Anim.LOOKING_UP)
-			main.getCam().removeFocus();
 		try{
+			if(this.equals(main.character) && getAction()==Anim.LOOKING_UP)
+				main.getCam().removeFocus();
 			animation.setFrames(Vars.removeEmptyFrames(TextureRegion.split(texture, width, height)[type], length),
 					delay, priority, type, loop, time, backwards);
 		} catch(Exception e){
@@ -1160,6 +1155,7 @@ public class Mob extends Entity{
 		maxSpeed = RUN_SPEED;
 	}
 
+	private static final float s = Vars.ACTION_ANIMATION_RATE*.80f;
 	public void left(){
 		if(this.equals(main.character))
 			main.getCam().removeFocus();
@@ -1176,8 +1172,8 @@ public class Mob extends Entity{
 		if(running) x = 2;
 		if (body.getLinearVelocity().x > -maxSpeed) body.applyForceToCenter(-5f*x, 0, true);
 		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f)
-			setAnimation(Anim.RUNNING, LoopBehavior.ONCE);
-		else setAnimation(Anim.WALKING, LoopBehavior.ONCE);
+			setAnimation(Anim.RUNNING, LoopBehavior.ONCE, s);
+		else setAnimation(Anim.WALKING, LoopBehavior.ONCE, s);
 
 		if (!(this.equals(main.character)) && mustJump()){
 			jump();
@@ -1200,8 +1196,8 @@ public class Mob extends Entity{
 		if(running) x = 2;
 		if (body.getLinearVelocity().x < maxSpeed) body.applyForceToCenter(5f*x, 0, true);
 		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f) 
-			setAnimation(Anim.RUNNING, LoopBehavior.ONCE);
-		else setAnimation(Anim.WALKING, LoopBehavior.ONCE);
+			setAnimation(Anim.RUNNING, LoopBehavior.ONCE, s);
+		else setAnimation(Anim.WALKING, LoopBehavior.ONCE, s);
 
 		if (!(this.equals(main.character)) && mustJump()){
 			jump();
@@ -1217,8 +1213,8 @@ public class Mob extends Entity{
 		killVelocity();
 		
 		Entity interactable = getInteractable();
-		interactable.killVelocity();
-		if(getInteractable() instanceof Mob)
+		if(interactable!=null) interactable.killVelocity();
+		if(interactable instanceof Mob)
 			((Mob)interactable).watchPlayer();
 		return interactable.getScript();
 	}

@@ -172,7 +172,7 @@
  </layer>
  <layer name="ledge" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt1kENACAMBMEKQF7xb4WaaAlkJlkB97sIAAAAAH6Q1Wpsz00BALiq+1f5YQAAAAAAAAC87AAgwgQL
+   eJzt1lEJADAMQ8EKqLzNv5VNRaDlDp6A/KUKAAAAgA3Or4PdzCwAgLj0r/K7AAAAAAAAAJjkAam7BDs=
   </data>
  </layer>
  <layer name="objects" width="75" height="50">
@@ -372,7 +372,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="25" name="29" x="704" y="448" width="16" height="16">
+  <object id="25" name="29" x="416" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="98"/>
     <property name="NPC" value="hero1"/>
@@ -382,7 +382,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="26" name="30" x="736" y="448" width="16" height="16">
+  <object id="26" name="30" x="576" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="99"/>
     <property name="NPC" value="villain1"/>
@@ -510,7 +510,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="43" name="31" x="416" y="224" width="16" height="16">
+  <object id="43" name="31" x="448" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="112"/>
     <property name="NPC" value="hero2"/>
@@ -520,7 +520,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="47" name="31" x="544" y="224" width="16" height="16">
+  <object id="47" name="31" x="608" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="116"/>
     <property name="NPC" value="villain2"/>
@@ -530,7 +530,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="48" name="31" x="576" y="224" width="16" height="16">
+  <object id="48" name="31" x="640" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="117"/>
     <property name="NPC" value="villain4"/>
@@ -540,7 +540,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="49" name="31" x="608" y="224" width="16" height="16">
+  <object id="49" name="31" x="672" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="118"/>
     <property name="NPC" value="villain3"/>
@@ -550,7 +550,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="50" name="31" x="640" y="224" width="16" height="16">
+  <object id="50" name="31" x="704" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="119"/>
     <property name="NPC" value="villain5"/>
@@ -560,7 +560,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="52" name="31" x="448" y="224" width="16" height="16">
+  <object id="52" name="31" x="480" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="113"/>
     <property name="NPC" value="hero3"/>
@@ -570,7 +570,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="53" name="31" x="480" y="224" width="16" height="16">
+  <object id="53" name="31" x="512" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="114"/>
     <property name="NPC" value="hero4"/>
@@ -580,7 +580,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="54" name="31" x="512" y="224" width="16" height="16">
+  <object id="54" name="31" x="544" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="115"/>
     <property name="NPC" value="hero5"/>

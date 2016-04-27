@@ -15,8 +15,8 @@ public class AftamathDesktop {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration(); //Configuration file in LibGDX used to start the game
 		cfg.title = Game.TITLE; //Sets the title of the game
-		cfg.width = Game.width * Game.scale; //Sets the width of the game screen
-		cfg.height = Game.height * Game.scale; //Sets the height of the game screen
+		cfg.width = Game.width; //Sets the width of the game screen
+		cfg.height = Game.height; //Sets the height of the game screen
 //		cfg.resizable = false; // Allows the game screen to be resizable
 		cfg.vSyncEnabled = true; // vSync makes frames load better
 //		cfg.useGL20 = true;  

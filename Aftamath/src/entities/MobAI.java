@@ -907,6 +907,7 @@ public class MobAI implements Serializable {
 			break;
 		case PATH:
 			canPosition = false;
+			if(path==null) {finish();break;} // TODO JSON Path referenc
 			goalPosition = path.getCurrent();
 			retLoc = goalPosition;
 			break;
@@ -1011,6 +1012,7 @@ public class MobAI implements Serializable {
 		finished = true;
 		owner.controlled = false;
 //		System.out.println("AI finished: "+owner+";\t"+this.type);
+		if(main!=null)
 		if(main.currentScript!=null)
 			if(owner.equals(main.currentScript.getActiveObject()))
 				main.currentScript.removeActiveObj();

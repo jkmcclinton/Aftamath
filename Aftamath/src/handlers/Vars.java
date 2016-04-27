@@ -32,6 +32,8 @@ public class Vars {
 	public static final int OBJ_SCALE = 2;
 	public static final int LIGHT_RAYS = 150;
 	public static final int TILE_SIZE = 16;
+	public static final int TEXT_PERIODX = 6;
+	public static final int TEXT_PERIODY = -12;
 	
 	//light colors
 	public static final Color DAY_LIGHT = new Color(0, 0, 0, ALPHA);
@@ -95,6 +97,13 @@ public class Vars {
 	}
 	
 	/**
+	 * count the occurrence of the substring in the given string
+	 */
+	public static int countReg(String s, String regex){
+		return s.split(regex).length-1;
+	}
+	
+	/**
 	 * shortens the array of frames to the length of the animation;
 	 * used to ensure no empty frames get displayed in animations
 	 * @param orig the base array of frames
@@ -116,6 +125,7 @@ public class Vars {
 	 * @return closest power of two
 	 */
 	public static int PowerOf2(double num){
+		//TODO
 		return (int) num;
 	}
 	
@@ -126,11 +136,13 @@ public class Vars {
 	 * @return the original text with '/l' values inserted at the proper locations
 	 */
 	public static String formatDialog(String dialog, boolean hud){
-		Array<String> text = new Array<>(dialog.split("/l"));
-		
-		int max;
+		int max = 20;
 		if(hud) max = 50;
-		else max = 20;
+		return formatDialog(dialog, max, 4);
+	}
+	
+	public static String formatDialog(String dialog, int w, int h){
+		Array<String> text = new Array<>(dialog.split("/l"));
 		
 		String s;
 		int lastSpace = 0;
@@ -140,14 +152,14 @@ public class Vars {
 			for(int x = 0; x< s.length(); x++){
 				if (s.substring(x, x + 1).equals(" "))
 					lastSpace = x;
-				if(x > max){
+				if(x > w){
 					String extra = "";
 					if(lastSpace!=0){
 						extra = text.get(y).substring(lastSpace+1);
 						text.set(y,  text.get(y).substring(0, lastSpace));
 					} else {
-						extra = text.get(y).substring(max+1);
-						text.set(y, text.get(y).substring(0, max) + "-");
+						extra = text.get(y).substring(w+1);
+						text.set(y, text.get(y).substring(0, w) + "-");
 					}
 					
 					if(y <= text.size - 2)

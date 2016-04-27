@@ -11,9 +11,12 @@ import com.badlogic.gdx.utils.Json.Serializable;
 //class that contains minor handling for all events and flags
 public class History implements Serializable {
 
-	private Map<String, String> eventList;
 	public HashMap<String, Boolean> flagList;
+	public float playTime;
+	
+	private Map<String, String> eventList;
 	private HashMap<String, Object> variableList;
+	
 	
 	public History(){
 		eventList = new HashMap<>();
@@ -157,7 +160,9 @@ public class History implements Serializable {
 		for (JsonValue child = val.getChild("variableList"); child != null; child = child.next()) {
 			Object obj = json.fromJson(Object.class, child.toString());
 			this.variableList.put(child.name(), obj);
-		}			
+		}
+		
+		playTime = val.getInt("playTime");
 	}
 
 	@Override
@@ -165,5 +170,6 @@ public class History implements Serializable {
 		json.writeValue("eventList", this.eventList);
 		json.writeValue("flagList", this.flagList);
 		json.writeValue("variableList", this.variableList);
+		json.writeValue("playTime", this.playTime);
 	}
 }

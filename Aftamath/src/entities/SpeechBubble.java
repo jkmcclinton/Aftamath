@@ -2,7 +2,6 @@ package entities;
 
 import static handlers.Vars.PPM;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -68,7 +67,7 @@ public class SpeechBubble extends Entity {
 		center = new Vector2(x/PPM, y/PPM);
 		v = new Vector2(center.x - owner.getPosition().x, center.y - owner.getPosition().y);
 
-		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text5.png")), 7, 9 )[0];
+		font = TextureRegion.split(Game.res.getTexture("text5"), 7, 9 )[0];
 		left = new TextureRegion(Game.res.getTexture("speechBubble"), 10, 96, 3, 12);
 		middle = new TextureRegion(Game.res.getTexture("speechBubble"), 14, 96, 1, 12);
 		right = new TextureRegion(Game.res.getTexture("speechBubble"), 29, 96, 3, 12);
@@ -91,7 +90,7 @@ public class SpeechBubble extends Entity {
 		center = new Vector2(x/PPM, y/PPM);
 		v = new Vector2(center.x - owner.getPosition().x, center.y - owner.getPosition().y);
 
-		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text5.png")), 7, 9 )[0];
+		font = TextureRegion.split(Game.res.getTexture("text5"), 7, 9 )[0];
 		TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture(ID), width, height)[0];
 		setDefaultAnimation(sprites, Vars.ACTION_ANIMATION_RATE*2);
 		animation.setFrames(Vars.removeEmptyFrames(TextureRegion.split(texture, width, height)[1], determineLength(ID)),

@@ -16,6 +16,7 @@ public class MyInputProcessor extends InputAdapter implements ControllerListener
 	public int mode = 0;
 	public void keyboardMode(){ mode = 1; }
 	public void gameMode(){ mode = 0; }
+	public static boolean menu = false;
 	
 	public boolean keyDown(int k) {
 		if(mode==0){
@@ -140,12 +141,20 @@ public class MyInputProcessor extends InputAdapter implements ControllerListener
 	public boolean buttonDown(Controller controller, int code) {
 		switch(code){
 		case XBox360Pad.BUTTON_A: MyInput.setKey(Input.JUMP, true); break;
-		case XBox360Pad.BUTTON_X: MyInput.setKey(Input.INTERACT, true); break;
+		case XBox360Pad.BUTTON_X: 
+			if(!menu)
+				MyInput.setKey(Input.INTERACT, true); 
+			break;
 		case XBox360Pad.BUTTON_RB: MyInput.setKey(Input.ATTACK, true); break;
 		case XBox360Pad.BUTTON_Y: MyInput.setKey(Input.USE, true); break;
 		case XBox360Pad.BUTTON_BACK: MyInput.setKey(Input.RESPAWN, true); break;
 		case XBox360Pad.BUTTON_START: MyInput.setKey(Input.PAUSE, true); break;
-		case XBox360Pad.BUTTON_LB: MyInput.setKey(Input.DOWN, true); break;
+		case XBox360Pad.BUTTON_LB: 
+			if(menu)
+				MyInput.setKey(Input.INTERACT, true); 
+			else
+				MyInput.setKey(Input.DOWN, true); 
+			break;
 		}
 		return false;
 	}

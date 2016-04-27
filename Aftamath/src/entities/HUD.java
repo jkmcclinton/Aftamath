@@ -2,7 +2,6 @@ package entities;
 
 import java.text.NumberFormat;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -29,7 +28,7 @@ public class HUD {
 	private Main main;
 	private Texture textures;
 	private TextureRegion[] hearts, cubeFrames, btnHighFrames, emotions;
-	private TextureRegion cash, /*faceHud,*/ textHud, pauseHud, inputBGLeft, inputBGMid, inputBGRight;
+	private TextureRegion cash, /*faceHud,*/ textHud, /*pauseHud,*/ inputBGLeft, inputBGMid, inputBGRight;
 	private Animation cube, buttonHigh;
 	private String[] speakText; //amount of text already displaying
 	private Splash splash;
@@ -38,8 +37,6 @@ public class HUD {
 	
 	public static final int HUDX = 82;
 	public static final int HUDY = -16;
-	public static final int PERIODX = 6;
-	public static final int PERIODY = -12;
 	 
 	//positions to control dialog
 	public int x;
@@ -55,17 +52,16 @@ public class HUD {
 		this.main = main;
 		this.character = main.character;
 		
-		//font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text.png")), 8, 11)[0];
-		//font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text2.png")), 7, 12)[0];
-		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text3.png")), 7, 9 )[0];
-		font2 = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text3.png")), 7, 9 )[1];
-		font4 = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text4.png")), 14, 20 )[0];
+		//font = TextureRegion.split(Game.res.getTexture("text"), 8, 11)[0];
+		//font = TextureRegion.split(Game.res.getTexture("text2"), 7, 12)[0];
+		font = TextureRegion.split(Game.res.getTexture("text3"), 7, 9 )[0];
+		font2 = TextureRegion.split(Game.res.getTexture("text3"), 7, 9 )[1];
+		font4 = TextureRegion.split(Game.res.getTexture("text4"), 14, 20 )[0];
 		textures = Game.res.getTexture("hudTextures");
 		
 		hearts = new TextureRegion[9];
-		for (int i = 0; i < hearts.length; i++){
+		for (int i = 0; i < hearts.length; i++)
 			hearts[i] = new TextureRegion(textures, i * 19, 78, 19, 19);
-		}
 		
 		cubeFrames = new TextureRegion[10];
 		for (int i = 0; i < cubeFrames.length; i++)
@@ -83,7 +79,6 @@ public class HUD {
 		inputBGMid = new TextureRegion(textures, 308, 78, 1, 18);
 		inputBGRight = new TextureRegion(textures, 309, 78, 6, 18);
 		
-		
 		Texture emote = Game.res.getTexture("emotion");
 		if (emote != null) emotions = TextureRegion.split(emote, 64, 64)[0];
 		
@@ -91,7 +86,7 @@ public class HUD {
 //		faceHud = new TextureRegion(textures, 0, 0, 72, 78);
 //		textHud = new TextureRegion(textures, 72, 0, 361, 78);
 		textHud = new TextureRegion(textures, 0, 0, 433, 78);
-		pauseHud = new TextureRegion(textures, 96, 166, 240, 139);
+//		pauseHud = new TextureRegion(textures, 96, 166, 240, 139);
 		hide();
 	}
 	
@@ -126,26 +121,9 @@ public class HUD {
 			if(locationTime>0)
 				main.drawString(sb, main.getScene().title, 5, Game.height/2 - 5 - font[0].getRegionHeight());
 			
-			if (main.paused && main.getStateType() == InputState.PAUSED)
-				drawPauseMenu(sb);
+//			if (main.paused && main.getStateType() == InputState.PAUSED)
+//				drawPauseMenu(sb);
 		sb.end();
-	}
-	
-	public void drawPauseMenu(SpriteBatch sb) {
-		Vector2 temp = getCenter(pauseHud);
-		sb.draw(pauseHud, temp.x, temp.y);
-		int x, y;
-		
-		for (int j = 0; j <= main.menuMaxY; j++)
-			for (int i = 0; i <= main.menuMaxX; i++) {
-				x = (Game.width/2 - main.menuOptions[i][j].length() * PERIODX -PERIODX/2)/2 ;
-				y = (Game.height/2 + pauseHud.getRegionY())/2 + (j + main.menuMaxY) * PERIODY + 12;
-				
-				if (i == main.menuIndex[0] && j == main.menuIndex[1])
-					sb.draw(buttonHigh.getFrame(), (Game.width/2 - pauseHud.getRegionWidth())/2 - PERIODX + 1, y - 1); // draw menu button highlight
-				
-				main.drawString(sb, main.menuOptions[i][j], x, y); // draw menu buttons
-			}
 	}
 	
 	//draw dialog graphics
@@ -172,7 +150,7 @@ public class HUD {
 		if (money.startsWith("(")) money = "-" + money.substring(1, money.indexOf(")"));
 
 		main.drawString(sb, money, Game.width/2 - 10 - cash.getRegionWidth() -
-				(PERIODX + money.length() * (PERIODX)), Game.height/2 - 20);
+				(Vars.TEXT_PERIODX + money.length() * (Vars.TEXT_PERIODX)), Game.height/2 - 20);
 	}
 	
 	public void drawInputBG(SpriteBatch sb){
@@ -288,7 +266,7 @@ public class HUD {
 				if(c == 'i') o -=3;
 				if(c == 'l' || c == 'r' || c == 'T' || c == 'l' || c == 'I') o -=1;
 				if (c != " ".charAt(0) && c+Vars.FONT_OFFSET<font2.length) 
-					sb.draw(font2[c + Vars.FONT_OFFSET], HUDX + j * PERIODX + o, HUDY + y + i * PERIODY);
+					sb.draw(font2[c + Vars.FONT_OFFSET], HUDX + j * Vars.TEXT_PERIODX + o, HUDY + y + i * Vars.TEXT_PERIODY);
 			} 
 		}
 	}

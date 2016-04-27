@@ -443,13 +443,11 @@ public class Entity implements Serializable {
 	}
 	
 	public void respawn(){
-//		if(!(this instanceof SpeechBubble))
-//			System.out.println("respawning: "+this);
 		dead = died = false;
 		animation.reset();
-		main.removeBody(body);
+		if(main!=null) {main.removeBody(body);
 		body.setUserData(this.copy());
-		create();
+		create();}
 		modifyHealth(maxHealth);
 	}
 	
@@ -773,7 +771,6 @@ public class Entity implements Serializable {
 		float posX = val.getFloat("posX");
 		float posY = val.getFloat("posY");
 		Vector2 pos = new Vector2(posX, posY);
-		this.setPosition(pos);
 		this.health = val.getDouble("health");
 		this.burning = val.getBoolean("burning");
 		this.frozen = val.getBoolean("frozen");
@@ -806,6 +803,7 @@ public class Entity implements Serializable {
 		//other stuff from constructor
 		setDimensions();		
 		loadSprite();
+		this.setPosition(pos);
 	}
 
 	@Override
@@ -836,15 +834,9 @@ public class Entity implements Serializable {
 		json.writeValue("attackScript", this.attackScript);
 	}
 	
-//	public void finalize(){
-//		try {
-//			super.finalize();
-//			System.out.println("FINALIZING");
-//			if(texture!=null)
-//				texture.dispose();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public void dispose(){
+		if(texture!=null)
+			texture.dispose();
+	}
 	
 }

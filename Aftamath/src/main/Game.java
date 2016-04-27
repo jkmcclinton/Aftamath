@@ -34,23 +34,22 @@ public class Game implements ApplicationListener {
 	public static final String TITLE = "Aftamath";
 	public static final int width = 864;
 	public static final int height = 500;
-	public static final int scale = 1;
+	public static final int scale = 3;
 	public static final float STEP = 1 / 60f;
-	public static final float DEFAULT_ZOOM = 3f;
 	public static final int MAX_INPUT_LENGTH = 20;
 	
 
 	public static Assets res = new Assets();
 	public static boolean hasControllers, fullscreen;
-	public static float musicVolume = 1f;
-	public static float soundVolume = .75f;
+	public static final float maxVolume = 1;
+	public static float musicVolume = maxVolume;
+	public static float soundVolume = .7f;
 	public Stack<Song> song;
 
 	private FadingSpriteBatch sb;
 	private Camera cam;
 	private Camera b2dCam;
 	private OrthographicCamera hudCam;
-	private static float zoom = 3;
 	private static String input = "";
 	private GameStateManager gsm;
 
@@ -67,11 +66,11 @@ public class Game implements ApplicationListener {
 		res.loadLevelNames();
 
 		cam = new Camera();
-		cam.setToOrtho(false, width/zoom, height/zoom);
+		cam.setToOrtho(false, width/scale, height/scale);
 		hudCam = new OrthographicCamera();
 		hudCam.setToOrtho(false, width/2, height/2);
 		b2dCam = new Camera();
-		b2dCam.setToOrtho(false, width/3/PPM, height/3/PPM);
+		b2dCam.setToOrtho(false, width/scale/PPM, height/scale/PPM);
 		sb = new FadingSpriteBatch();
 		gsm = new GameStateManager(this);
 		
@@ -167,7 +166,7 @@ public class Game implements ApplicationListener {
 
 	public static class Assets {
 
-		private HashMap<String, Texture> textures;
+		private HashMap<String, String> textures;
 
 		public Assets() {
 			textures = new HashMap<>();
@@ -206,7 +205,6 @@ public class Game implements ApplicationListener {
 		public void loadTextures(){
 			FileHandle src = Gdx.files.internal("assets/images");
 			Array<FileHandle> handles =new Array<>();
-			Texture tex;
 			String key;
 
 			loadTextures(src, handles);
@@ -214,9 +212,7 @@ public class Game implements ApplicationListener {
 			for(FileHandle f:handles){
 				if(f.extension().equals("png")){
 					key = f.nameWithoutExtension();
-					tex =  new Texture(Gdx.files.internal(f.path()));
-//					System.out.println(key);
-					textures.put(key, tex);
+					textures.put(key, f.path());
 				}
 			}
 		}
@@ -233,16 +229,22 @@ public class Game implements ApplicationListener {
 		}
 
 		public Texture getTexture(String key){
-			return textures.get(key);
+			String path = textures.get(key);
+			if(path!=null)
+				return new Texture(Gdx.files.internal(path));
+			else {
+//				System.out.println("Key \""+key+"\" is not a valid texture key");
+				return null;
+			}
 		}
 		
 		public String getScript(String key){
 			return SCRIPT_LIST.get(key);
 		}
 
-		public void disposeTexture(String key){
-			Texture tex = textures.get(key);
-			if (tex!= null) tex.dispose();
-		}
+//		public void disposeTexture(String key){
+//			Texture tex = textures.get(key);
+//			if (tex!= null) tex.dispose();
+//		}
 	}
 }

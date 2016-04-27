@@ -24,7 +24,7 @@ public class Title extends GameState {
 	private boolean titleReached;
 	private float titleWait, titleTime;
 	private TextureRegion[] font;
-	private int titleYMax;
+	private int titleYMax, menuMaxX, menuMaxY;
 	
 	private boolean dbtrender = true;
 	
@@ -37,36 +37,40 @@ public class Title extends GameState {
 			dbtrender=!dbtrender;
 			
 		if(gsm.isFading()) return;
-		if(MyInput.isPressed(Input.JUMP)||
-				MyInput.isPressed(Input.ENTER) && !gsm.isFading()){
-			try {
-				Method m = Title.class.getMethod(
-						Vars.formatMethodName(menuOptions[menuIndex[0]][menuIndex[1]]));
-				m.invoke(this);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		if(buttonTime >= DELAY){
-			if(MyInput.isDown(Input.DOWN)){
-				if(menuIndex[1] < menuMaxY){
-					menuIndex[1]++;
-					//play menu sound
-				} else {
-					menuIndex[1] = 0;
+		if (!menus.isEmpty()){
+			traverseMenu();
+		} else {
+			if(MyInput.isPressed(Input.JUMP)||
+					MyInput.isPressed(Input.ENTER) && !gsm.isFading()){
+				try {
+					Method m = Title.class.getMethod(
+							Vars.formatMethodName(menuOptions[(int)cursor.x][(int)cursor.y]));
+					m.invoke(this);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				buttonTime = 0;
 			}
 
-			if(MyInput.isDown(Input.UP)){
-				if(menuIndex[1] > 0){
-					menuIndex[1]--;
-					//play menu sound
-				} else {
-					menuIndex[1] = menuMaxY;
+			if(buttonTime >= DELAY){
+				if(MyInput.isDown(Input.DOWN)){
+					if(cursor.y < menuMaxY){
+						cursor.y++;
+						//play menu sound
+					} else {
+						cursor.y = 0;
+					}
+					buttonTime = 0;
 				}
-				buttonTime = 0;
+
+				if(MyInput.isDown(Input.UP)){
+					if(cursor.y > 0){
+						cursor.y--;
+						//play menu sound
+					} else {
+						cursor.y = menuMaxY;
+					}
+					buttonTime = 0;
+				}
 			}
 		}
 	}
@@ -101,8 +105,12 @@ public class Title extends GameState {
 		sb.begin();
 			sb.draw(bgImage, (Game.width/2 - bgImage.getWidth())/2, (Game.height/2 - bgImage.getHeight())/2);
 			drawTitle(sb);
-			drawOptions(sb);
+			if(menus.isEmpty()) drawOptions(sb);
 		sb.end();
+		
+		//draw menu
+		if(!menus.isEmpty())
+			menus.peek().render(sb);
 
 		if(dbtrender) updateDebugText();
 	}
@@ -145,7 +153,7 @@ public class Title extends GameState {
 				x = (Game.width/2 - menuOptions[i][j].length() * px - px/2)/2 ;
 				y = (Game.height/4 - j * py - 28);
 				
-				if (i == menuIndex[0] && j == menuIndex[1]){
+				if (i == cursor.x && j == cursor.y){
 					sb.draw(btnHighlight.getFrame(), 0, y - 1); // draw menu button highlight
 					sb.draw(btnHighlight.getFrame(), (Game.width/4 - PERIODX + 1), y-1);
 				}
@@ -158,8 +166,9 @@ public class Title extends GameState {
 		if(this.music!=null)
 			music.dispose();
 		}
+	
+	public void loadGame(){ super.loadGame(); }
 
-	@Override
 	public void create() {
 		super.create();
 		Song song = new Song("Title");
@@ -167,11 +176,11 @@ public class Title extends GameState {
 		sb.setOverlay(Color.WHITE);
 		sb.setOverlayDraw(false);
 
-		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/text4.png")), 14, 20 )[0];
+		font = TextureRegion.split(Game.res.getTexture("text4"), 14, 20 )[0];
 		
-		bgImage = new Texture(Gdx.files.internal("assets/images/titleBG.png"));
+		bgImage = Game.res.getTexture("titleBG");
 		title = new Animation(null);
-		title.initFrames(TextureRegion.split(new Texture(Gdx.files.internal("assets/images/title.png")), 205, 89)[0]
+		title.initFrames(TextureRegion.split(Game.res.getTexture("title"), 205, 89)[0]
 				, Vars.ANIMATION_RATE, false);
 		titleYMax = Game.height/2 - title.getFrame().getRegionHeight() - 15;
 		titleY[1] = titleYMax;
@@ -187,8 +196,8 @@ public class Title extends GameState {
 		menuOptions = new String[][] {{"Play", "Load Game", "Options", "Quit"}};
 		menuMaxY = menuOptions[0].length - 1;
 		menuMaxX = 0;
-		menuIndex[0] = 0;
-		menuIndex[1] = 0;
+		cursor.x = 0;
+		cursor.y = 0;
 	}
 
 }
