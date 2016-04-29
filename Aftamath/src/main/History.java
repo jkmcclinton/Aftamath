@@ -1,12 +1,10 @@
 package main;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 //class that contains minor handling for all events and flags
 public class History implements Serializable {
@@ -14,9 +12,8 @@ public class History implements Serializable {
 	public HashMap<String, Boolean> flagList;
 	public float playTime;
 	
-	private Map<String, String> eventList;
+	private HashMap<String, String> eventList;
 	private HashMap<String, Object> variableList;
-	
 	
 	public History(){
 		eventList = new HashMap<>();
@@ -34,10 +31,6 @@ public class History implements Serializable {
 		variableList.put("night", 2);
 		variableList.put("trainLoc", "CommercialDistrictNW");
 		variableList.put("trainDest", "nowhere");
-	}
-	
-	public History(String loadedData){
-		// put shit into eventList, flagList, variableList
 	}
 	
 	public Boolean getFlag(String flag){ 
@@ -129,23 +122,8 @@ public class History implements Serializable {
 			}
 	}
 	
-	//for use in the history section in the stats window
-	//only includes major events
-	//TODO probably better to move this to a resource file
-	public Texture getEventIcon(String event/*, String descriptor*/){
-		switch(event){
-		case "BrokeAnOldLadyCurse": return Game.res.getTexture("girlfriend1face");
-		case "MetTheBadWitch": return Game.res.getTexture("witchface");
-		case "RobbedTwoGangsters": return Game.res.getTexture("gangster1face");
-		// TODO pass reference of Main to History if using Main's members
-		//case "FellFromNowhere": return Game.res.getTexture(character.ID+"base");
-		case "FoundTheNarrator": return Game.res.getTexture("narrator1face");
-		default:
-			return null;
-		}
-	}
-	
 	public HashMap<String, Object> getVarlist(){ return variableList; }
+	public HashMap<String, String> getEventList(){ return eventList; }
 
 	@Override
 	public void read(Json json, JsonValue val) {
@@ -172,4 +150,5 @@ public class History implements Serializable {
 		json.writeValue("variableList", this.variableList);
 		json.writeValue("playTime", this.playTime);
 	}
+	
 }

@@ -2,6 +2,8 @@ package main;
 
 import static handlers.Vars.PPM;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -13,6 +15,7 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import box2dLight.Light;
@@ -21,6 +24,7 @@ import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyInput;
 import handlers.MyInputProcessor;
+import handlers.Pair;
 import scenes.Song;
 
 /*
@@ -64,6 +68,7 @@ public class Game implements ApplicationListener {
 		res.loadMusic();
 		res.loadScriptList(Gdx.files.internal("assets/scripts"));
 		res.loadLevelNames();
+		res.loadEventToTexture();
 
 		cam = new Camera();
 		cam.setToOrtho(false, width/scale, height/scale);
@@ -163,6 +168,7 @@ public class Game implements ApplicationListener {
 	public static final Array<String> SONG_LIST = new Array<>();
 	public static final Array<String> LEVEL_NAMES = new Array<>();
 	public static final HashMap<String, String> SCRIPT_LIST = new HashMap<>();
+	public static HashMap<String, Pair<String, Vector2>> EVENT_TO_TEXTURE = new HashMap<>();
 
 	public static class Assets {
 
@@ -240,6 +246,33 @@ public class Game implements ApplicationListener {
 		
 		public String getScript(String key){
 			return SCRIPT_LIST.get(key);
+		}
+		
+		/**
+		 * for use in the history section in the journal window;
+		 * only includes major events;
+		 * format from file: "eventName/ltextureName/loffX/loffY"
+		 */
+		public void loadEventToTexture() {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader("assets/eventToTexture.txt"));
+				String line = br.readLine();
+				String[] dat;
+				
+				while (line != null ) {
+					dat = line.split("/l");
+					if(getTexture(dat[1])!=null) {
+						EVENT_TO_TEXTURE.put(dat[0], new Pair<>(dat[1], 
+								new Vector2(Float.parseFloat(dat[2]), Float.parseFloat(dat[3]))));
+//						System.out.println("entry: \t"+dat[0]+" :: "+EVENT_TO_TEXTURE.get(dat[0]));
+					}
+					line = br.readLine();
+				}
+				
+				br.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 //		public void disposeTexture(String key){

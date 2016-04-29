@@ -1,0 +1,11 @@
+EvilBar/lEvilBar/l0/l0
+FellFromNowhere/lFellFromNowhere/l0/l0
+GoodBar/lGoodBar/l0/l0
+HeroTut/lhero1face/l0/l0
+RobberIntro/lgangster1face/l0/l0
+VillainTut/lvillain1face/l0/l0
+brokeAnOldLadyCurse/lgirlfriend1/l0/l0
+brokeUpWithPartner/lbrokeUpWithPartner/l0/l0
+cursed/lunderdogface/l0/l0
+metTheWitch/lwitchface/l0/l0
+rodeTrainFirstTime/lrodeTrainFirstTime/l0/l0

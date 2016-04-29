@@ -64,7 +64,7 @@ public class Song {
 	}
 	
 	public void update(float dt){
-		if((volume > Game.musicVolume || volume < Game.musicVolume) && !fading) {
+		if((this.main.getVolume() > Game.musicVolume || this.main.getVolume() < Game.musicVolume) && !fading) {
 			volume = Game.musicVolume;
 			if(state==INTRO)intro.setVolume(volume);
 			else main.setVolume(volume);
@@ -86,10 +86,10 @@ public class Song {
 	
 	public void play(){
 		if (state==INTRO) {
-//			intro.setVolume(volume);
+			intro.setVolume(volume);
 			intro.play();
 		} else {
-//			main.setVolume(volume);
+			main.setVolume(volume);
 			main.play();
 		}
 		stopped = paused = false;

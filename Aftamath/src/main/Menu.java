@@ -1,5 +1,6 @@
 package main;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -67,6 +68,13 @@ public class Menu {
 	// eat a long one
 	public void update(float dt){
 		highlight.update(dt);
+		for(MenuObj[] l : objs){
+			if(l==null) continue;
+			for(MenuObj m : l){
+				if(m==null) continue;
+				m.update(dt);
+			}
+		}
 		
 	}
 	
@@ -77,21 +85,30 @@ public class Menu {
 		sb.draw(image, x0, y0-height, width, height);
 		if(tabs!=null) renderTabs(sb);
 		
+		JournalEntry j = null;
 		for(MenuObj[] l : objs){
 			if(l==null) continue;
 			for(MenuObj m : l){
 				if(m==null) continue; 
 				if (m.hidden) continue;
 				m.render(sb);
-				if(m==objs[(int) gs.cursor.x][(int) gs.cursor.y] && m.hiLite){
-					MenuObj b = objs[(int) gs.cursor.x][(int) gs.cursor.y];
-					if(b.getType()==SourceType.TEXT)
-						sb.draw(highlight.getFrame(), b.x-1, b.y-2 - b.height, b.width+2, b.height+2);
-					else
-						sb.draw(highlight.getFrame(), b.x-1, b.y-1, b.width+2, b.height+2);
+				if(m==objs[(int) gs.cursor.x][(int) gs.cursor.y]){
+					
+					if(m instanceof JournalEntry)
+						j = (JournalEntry) m;
+					else if(m.hiLite){
+						MenuObj b = objs[(int) gs.cursor.x][(int) gs.cursor.y];
+						if(b.getType()==SourceType.TEXT)
+							sb.draw(highlight.getFrame(), b.x-1, b.y-2 - b.height, b.width+2, b.height+2);
+						else
+							sb.draw(highlight.getFrame(), b.x-1, b.y-1, b.width+2, b.height+2);
+					}
 				}
 			}
 		}
+		
+		if(j!=null)
+			j.render(sb);
 		
 		sb.end();
 		sb.setColor(color);
@@ -455,12 +472,30 @@ public class Menu {
 				leftTab = Game.res.getTexture("map_tab");
 				centerTab = Game.res.getTexture("journal_tab");
 				rightTab = Game.res.getTexture("stats_tab");
+				int e = 0;
 				
 				// events
+				JournalEntry j; 
+				for(String s1 : ((Main)gs).history.getEventList().keySet())
+					if(Game.EVENT_TO_TEXTURE.get(s1)!=null){
+						System.out.println(e+": "+s1);
+						j = new JournalEntry(s1, e, this, gs);
+						mos.add(new Pair<MenuObj, Vector2>(j, new Vector2(e, 0)));
+						j.hiLite = false;
+						e++;
+					}
+				
+				// empty
+				if(e==0){
+					b = new MenuObj("NOTHING'S HAPPENED YET!", SourceType.TEXT, x0, y0, 100, 1, gs);
+					b.x += width/2 - b.width/2; b.y += -height/2 + b.height/2;
+					mos. add(new Pair<>(b, new Vector2(0, 0)));
+					b.clickable = false;
+				}	
 				
 				// scroll left
 				
-				//scroll right
+				// scroll right
 				
 				// back
 				h = 18;
@@ -647,16 +682,18 @@ public class Menu {
 
 				w = 40; h = 32;
 				b = new MenuObj("warehouse", SourceType.IMAGE, x1 + 201, y1 - 18 - h, w, h, gs); d = new Vector2(6, 1);
+//				b = new MenuObj("warehouse", SourceType.IMAGE, 0, 0, w, h, gs); d = new Vector2(6, 1);
 				if(b.getText().equals(curLoc)) {loc = new Vector2(b.x + b.width/2, b.y + b.height/2); startPoint = d;}
-				b.hidden = true; mos.add(new Pair<>(b, d));
+				b.hidden = true; b.hiLite = false; mos.add(new Pair<>(b, d));
 				
 				// player face
 				if(curLoc!=null){
 					if(t!=null){ w = t.getWidth(); h = t.getHeight(); }
-					b = new MenuObj(t, loc.x-w/2, loc.y, gs);
+					b = new MenuObj(t, loc.x-w/2, loc.y-h/2, gs);
 					b.setRotation(dirMapping.get(curLoc).getValue());
 					mos.add(new Pair<>(b, new Vector2(7, 5)));
 					b.clickable = false;
+					b.getImage().flip(((Main)gs).character.isFacingLeft(), false);
 				}
 				
 				// location Name
@@ -856,17 +893,28 @@ public class Menu {
 	
 	public void updateMap(Vector2 prev){
 		MenuObj m = getObj(prev);
-		if(m!=null)
+		if(m!=null) //hide previous
 			if(!m.hiLite)
 				m.hidden = true;
 		
 		m = getObj(gs.cursor);
 		if(!m.hiLite) {
-			m.hidden = false;
+			m.hidden = false; // show current
 			MenuObj t = getObj(new Vector2(6, 5));
-			if(t!=null)
+			if(t!=null) //update text
 				t.setText(dirMapping.get(m.getText()).getKey());
 		}
+	}
+	
+	public void updateEntry(Vector2 prev){
+		MenuObj m = getObj(prev);
+		if(m!= null)
+			if(m instanceof JournalEntry)
+				((JournalEntry) m).deacvtivate();
+		
+		m = getObj(gs.cursor);
+		if(m instanceof JournalEntry)
+			((JournalEntry) m).activate();
 	}
 	
 	public void printHorizontally(){
@@ -902,8 +950,11 @@ public class Menu {
 	 */
 	private String findSaveFile(int i){
 		FileHandle src = Gdx.files.internal("saves/savegame"+i+".txt");
-		if(src.exists())
+//		FileHandle src = Gdx.files.internal("saves/presave"+i+".txt");
+		if(src.exists()){
+//			BufferedReader reader = new BufferedReader();
 			return JsonSerializer.preLoadState(src);
+		}
 		return null;
 	}
 	
@@ -933,7 +984,7 @@ public class Menu {
 		dirMapping.put("tha_hood", new Pair<>("Tha Hood", PovDirection.south));
 		dirMapping.put("under_bridge", new Pair<>("Under Bridge", PovDirection.west));
 		dirMapping.put("villain_HQ", new Pair<>("Villain HQ", PovDirection.north));
-		dirMapping.put("warehouse", new Pair<>("Abandoned Warehouse", PovDirection.west));
+		dirMapping.put("warehouse", new Pair<>("Warehouse", PovDirection.west));
 		
 		// scene names (.tmx) to .png map files
 		locToIMG.put("Boardwalk", "boardwalk");

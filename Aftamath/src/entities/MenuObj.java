@@ -52,6 +52,7 @@ public class MenuObj {
 		
 		if(type==SourceType.IMAGE){
 			Texture texture = Game.res.getTexture(text);
+		
 			if(texture != null){
 //				if(x>texture.getWidth()) x = texture.getWidth()-1;
 //				if(y>texture.getHeight()) y = texture.getHeight()-1;
@@ -97,7 +98,6 @@ public class MenuObj {
 		if(texture!=null)
 			this.image = new TextureRegion(texture);
 		else {
-			System.out.println("DEFAULT BUTTON lOAD");
 			this.image = new TextureRegion(Game.res.getTexture("default_button"));
 		}
 		
@@ -148,6 +148,8 @@ public class MenuObj {
 	public void setMenuMapping(Vector2 mapping){ this.mapping = mapping; }
 	public Vector2 getMenuMapping() { return this.mapping; }
 
+	public void update(float dt){ }
+	
 	public void render(FadingSpriteBatch sb) {
 		if(type!=SourceType.TEXT) 
 			sb.draw(image, x, y, width/2, height/2, width, height, 1, 1, rot);
@@ -193,5 +195,5 @@ public class MenuObj {
 		}
 	}
 	
-	public String toString(){ return type+": "+text +"; "+new Vector2(x, y)+"\t"+mapping; }
+	public String toString(){ return type+": "+text +"; "+new Vector2(x, y)+new Vector2(width, height)+"\t"+mapping; }
 }

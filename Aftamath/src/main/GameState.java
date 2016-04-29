@@ -16,13 +16,14 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+import entities.CamBot;
 import handlers.Camera;
 import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.JsonSerializer;
 import handlers.MyInput;
-import handlers.MyInputProcessor;
 import handlers.MyInput.Input;
+import handlers.MyInputProcessor;
 import handlers.Vars;
 import main.Main.InputState;
 import main.Menu.MenuType;
@@ -56,7 +57,7 @@ public abstract class GameState {
 	protected OrthographicCamera hudCam;
 	protected float buttonTime, buttonDelay = .2f;
 	protected boolean quitting = false, changingSong;
-	protected MenuType journalTab = MenuType.MAP;
+	protected MenuType journalTab = MenuType.JOURNAL;
 	protected Array<Song> songsToKill;
 
 	protected static final float DELAY = .2f;
@@ -392,6 +393,7 @@ public abstract class GameState {
 				
 				if(prev.y!=cursor.y || prev.x!=cursor.x){
 					if(menus.peek().type==MenuType.MAP) menus.peek().updateMap(prev);
+					if(menus.peek().type==MenuType.JOURNAL) menus.peek().updateEntry(prev);
 					playSound("menu1");
 				}
 			}
@@ -468,7 +470,13 @@ public abstract class GameState {
 
 	// change menu to display the LAST TAB of the journal (stats/history/map)
 	public void journal(){
-		addMenu(new Menu(journalTab, this));
+		if(this instanceof Main){
+			if(((Main) this).character instanceof CamBot){
+				playSound("menu2");
+				return;
+			}
+			addMenu(new Menu(journalTab, this));
+		}
 	}
 
 	public void saveGame() {
@@ -494,6 +502,8 @@ public abstract class GameState {
 		cursor = w.getStartPoint();
 		if(w.type == MenuType.MAP) 
 			w.updateMap(new Vector2(0, 1));
+		if(w.type == MenuType.JOURNAL) 
+			w.updateEntry(new Vector2(0, 1));
 		MyInputProcessor.menu = true;
 	}
 	public void printMenus(){

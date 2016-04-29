@@ -96,6 +96,8 @@ public class JsonSerializer {
 	 * find savegame file; if file at index exists, preload data and store it into a parseable string
 	 * @param path loafus cramwell of slurmpville, how do I door?
 	 * @return string of format "playerType/lname/llocation/lplayTime"
+	 * @deprecated
+	 * @see Menu.findSave
 	 */
 	public static String preLoadState(FileHandle path){
 		try{

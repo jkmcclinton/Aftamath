@@ -146,7 +146,7 @@ public class Main extends GameState {
 						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "CommercialDistrictNW"; //where the player starts
+	public static String debugLoadLoc = "Warehouse"; //where the player starts
 	public static String debugPlayerType = "femaleplayer2"; //what the player looks like in debug mode
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 

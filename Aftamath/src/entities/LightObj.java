@@ -27,13 +27,11 @@ public class LightObj {
 	}
 	
 	public void turnOff(){
-//		light.setActive(false);
 		light.setColor(Color.BLACK);
 		on = false;
 	}
 	
 	public void turnOn(){
-//		light.setActive(true);
 		on = true;
 		switch(type){
 		case "street":

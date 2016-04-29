@@ -55,7 +55,7 @@ public class Title extends GameState {
 				if(MyInput.isDown(Input.DOWN)){
 					if(cursor.y < menuMaxY){
 						cursor.y++;
-						//play menu sound
+						playSound("menu1");
 					} else {
 						cursor.y = 0;
 					}
@@ -65,7 +65,7 @@ public class Title extends GameState {
 				if(MyInput.isDown(Input.UP)){
 					if(cursor.y > 0){
 						cursor.y--;
-						//play menu sound
+						playSound("menu1");
 					} else {
 						cursor.y = menuMaxY;
 					}

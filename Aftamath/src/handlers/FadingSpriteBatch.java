@@ -75,7 +75,8 @@ public class FadingSpriteBatch extends SpriteBatch {
 				if(gs instanceof Main){
 					Main m = (Main) gs;
 					for(LightObj l : m.getLights()){
-						l.fade(fadeTime, end, fadeType);
+						if(l.isOn())
+							l.fade(fadeTime, end, fadeType);
 					}
 				}
 			}
@@ -85,7 +86,7 @@ public class FadingSpriteBatch extends SpriteBatch {
 				faded = true;
 				if(fadeType == FADE_OUT)
 					fadeType = FADE_IN;
-				else  {
+				else {
 					fading = false;
 					if(overlayDraw) setColor(overlay);
 					else setColor(Vars.DAY_OVERLAY);
@@ -93,7 +94,7 @@ public class FadingSpriteBatch extends SpriteBatch {
 					if(gs instanceof Main){
 						Main m = (Main) gs;
 						for(LightObj l : m.getLights()){
-							l.resetColor();
+							if(l.isOn()) l.resetColor();
 						}
 					}
 				}

@@ -367,6 +367,19 @@ public class Vars {
 		return new Vector2((float) (magnitude*Math.cos(angle)), (float) (magnitude*Math.sin(angle)));
 	}
 	
+	/**
+	 * function that eases intorpolation between the initial and final values given a timeframe
+	 * @param t the current time in seconds
+	 * @param c the final time in seconds
+	 * @param d the initial value
+	 * @param b the final value
+	 * @return the eased interpolation
+	 */
+	public static float easingFunction(float t, float c, float d, float b){
+		float a = (float) (-(b-d)/(Math.pow(c,2)));
+		return a*(t-c)*(t-c) + b;
+	}
+	
 	public static float b2Cross(Vector2 a, Vector2 b){
 		return a.x * b.y - a.y * b.x;
 	}

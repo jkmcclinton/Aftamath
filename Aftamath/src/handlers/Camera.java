@@ -129,9 +129,7 @@ public class Camera extends OrthographicCamera{
 				zoom = goalZoom;
 				zooming = false;
 			} else {
-				float a = (float) (-(goalZoom-.95f*oldZoom)/(Math.pow(goalTime,2)));
-				float y = (a*(zoomTime-goalTime)*(zoomTime-goalTime) + goalZoom);
-				zoom=y;
+				zoom= Vars.easingFunction(zoomTime, goalTime, oldZoom, goalZoom);
 				fixOffset();
 			}
 		}
