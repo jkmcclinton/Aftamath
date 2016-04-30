@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="66">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="69">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -190,7 +190,7 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="17" name="5" x="1008" y="1552" width="16" height="16">
+  <object id="17" name="5" x="928" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="5"/>
     <property name="NPC" value="girlfriend2"/>
@@ -209,7 +209,7 @@
     <property name="layer" value="back"/>
     <property name="name" value="John"/>
     <property name="script" value="choice test"/>
-    <property name="state" value="STATIONARY"/>
+    <property name="state" value="IDLEWALK"/>
    </properties>
   </object>
   <object id="20" name="7" x="544" y="1552" width="16" height="16">
@@ -222,7 +222,7 @@
     <property name="state" value="STATIONARY"/>
    </properties>
   </object>
-  <object id="22" name="9" x="1040" y="1552" width="16" height="16">
+  <object id="22" name="9" x="960" y="1552" width="16" height="16">
    <properties>
     <property name="ID" value="9"/>
     <property name="NPC" value="oldlady1"/>
@@ -298,7 +298,7 @@
     <property name="ID" value="2"/>
     <property name="next" value="Central Park"/>
     <property name="nextWarp" value="0"/>
-    <property name="warp" value="!rodeTrainFirstTime"/>
+    <property name="warp" value="rodeTrainFirstTime"/>
    </properties>
   </object>
   <object id="57" x="48" y="52" width="16" height="1516">
@@ -328,6 +328,23 @@
    <properties>
     <property name="Ms Pancakes Mishap" value="!msPancakesMishap"/>
     <property name="event" value=""/>
+   </properties>
+  </object>
+  <object id="66" name="room1_1" x="1008" y="1495" width="37" height="73">
+   <properties>
+    <property name="ID" value="5"/>
+    <property name="next" value="resN_aptHall"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value="ownResidentalN"/>
+   </properties>
+  </object>
+  <object id="68" name="26" x="1053" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="-1"/>
+    <property name="entity" value="forSaleSign"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="For Sale Sign"/>
+    <property name="script" value="forSaleResN"/>
    </properties>
   </object>
  </objectgroup>

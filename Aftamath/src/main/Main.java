@@ -714,7 +714,7 @@ public class Main extends GameState {
 			}
 			if(MyInput.isPressed(Input.LIGHTS)) {rayHandle = !rayHandle ; sb.setOverlayDraw(rayHandle); }
 			if(MyInput.isPressed(Input.COLLISION)) dbRender = !dbRender ;
-			if(MyInput.isPressed(Input.RENDER)) render=!render;
+			if(MyInput.isPressed(Input.RENDER)) render =! render;
 			if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
 			if(MyInput.isPressed(Input.RESPAWN)) character.respawn();
 		}
@@ -1411,6 +1411,7 @@ public class Main extends GameState {
 			setSong(scene.DEFAULT_SONG[dayState]);
 			scene.setRayHandler(rayHandler);
 			scene.create();
+			dayTime = history.playTime % DAY_TIME;
 
 			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){

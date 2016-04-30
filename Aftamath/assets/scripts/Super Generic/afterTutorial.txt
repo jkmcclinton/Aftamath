@@ -117,11 +117,11 @@ if([player.niceness < 0])
 	checkpoint(choiceVillain)
 	setChoice(6:Villain, 6:Hero, 4:NEITHER!, 3:Do I have to?)
 		[choice Hero]
-			setEvent(VillainTutGood, {Went with hero after learning from villain})
+			setEvent(VillainTutGood, {Flying Chick taught you stuff. Decided to go with supahero})
 			setAttackScript(Hero, {onAttackedPleased})
-			setDialogueScript(Villain, {disappointedVillain})
+			setDialogue(Villain, {disappointedVillain})
 			setAttackScript(Villain, {onAttackedDisappointed})
-			setNickName(Villain, Evil Mastermind)
+			setNickName(Villain, The Flying Chick)
 			face(player, Hero)
 			value(add, player.niceness, 2)
 		
@@ -134,11 +134,11 @@ if([player.niceness < 0])
 		end
 	
 		[choice Villain]
-			setEvent(VillainTut, {Went with villain})
+			setEvent(VillainTut, {Flying Chick taught you stuff. Decided to be evil!})
 			setAttackScript(Villain, {onAttackedPleased})
 			setDialogueScript(Hero, {disappointedHero})
 			setAttackScript(Hero, {onAttackedDisappointed})
-			setNickName(Hero, Justice Guy)
+			setNickName(Hero, Mr. Justice)
 			value(add, player.niceness, -2)
 			face(player, Villain)
 		
@@ -159,8 +159,8 @@ if([player.niceness < 0])
 		end
 	
 		[choice NEITHER!]
-			setEvent(RogueTutorial, {Did something roguish})
-			setNickName(Hero, Spandex)
+			setEvent(RogueTutorial, {Decided to be neutral after Flying Chick taught you supapowers})
+			setNickName(Hero, Mr. Justice)
 			setSpeaker(player)
 			text(normal, {Screw both of you!/l/lWhatever's going on between you two, leave me out of it.})
 		
@@ -197,7 +197,7 @@ if([player.niceness < 0])
 else
 	text(normal, {Heh... Kid, you're a natural.})
 	text(normal, {Come with me, kid - I have great plans for you.})
-	setNickName(Hero, Spandex)
+	setNickName(Hero, Mr. Justice)
 	text(normal, {That's right! You earned yourself something positively GRAND!})
 
 	#enter Villain
@@ -247,11 +247,11 @@ else
 	checkpoint(choiceHero)
 	setChoice(6:Hero, 6:Villain, 4:NEITHER!, 3:Do I have to?)
 		[choice Hero]
-			setEvent(HeroTut, {Went with hero})
+			setEvent(HeroTut, {Mr. Justice taught you stuff. Decided to fight for JUSTICE!})
 			setAttackScript(Hero, {onAttackedPleased})
 			setDialogueScript(Villain, {disappointedVillain})
 			setAttackScript(Villain, {onAttackedDisappointed})
-			setNickName(Villain, Evil Mastermind)
+			setNickName(Villain, Flying Chick)
 			value(add, player.niceness, 2)
 			face(player, Hero)
 		
@@ -264,7 +264,7 @@ else
 		end
 	
 		[choice Villain]
-			setEvent(HeroTutEvil, {Went with villain after learning from hero})	
+			setEvent(HeroTutEvil, {Mr. Justice taught you stuff. Decided to be evil!})	
 			setAttackScript(Villain, {onAttackedPleased})
 			setDialogueScript(Hero, {disappointedHero})
 			setAttackScript(Hero, {onAttackedDisappointed})
@@ -288,8 +288,8 @@ else
 		end
 	
 		[choice NEITHER!]
-			setEvent(RogueTutorial, {Did something roguish})
-			setNickName(Villain, Evil Mastermind)	
+			setEvent(RogueTutorial, {Decided to be neutral after Mr. Justice taught you supapowers})
+			setNickName(Villain, The Flying Chick)	
 			setSpeaker(player)
 			text(normal, {Screw both of you! /l/lWhatever's going on between you two, leave me out of it.})
 		

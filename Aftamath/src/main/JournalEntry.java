@@ -11,6 +11,8 @@ import handlers.Vars;
 
 public class JournalEntry extends MenuObj{
 
+	public static final float PERIODX = 83;
+	
 	private float time;
 	private MenuObj entry;
 	private Menu parent;
@@ -18,7 +20,6 @@ public class JournalEntry extends MenuObj{
 	private Vector2 startDim, endDim;
 	
 	// visual constants
-	private static final float PERIODX = 83;
 	private static final float MARGINX_MENU = 6;
 	private static final float MARGINY_IMAGE = 5;
 	private static final float TIME = .24f;
@@ -50,7 +51,7 @@ public class JournalEntry extends MenuObj{
 		
 		image = new TextureRegion(src, offx, offy, 64, 64);
 		entry = new MenuObj(((Main)gs).history.getDescription(text),
-				SourceType.TEXT, x, y, 18, 8, gs);
+				SourceType.TEXT, x, y, 17, 8, gs);
 	}
 	
 	public void update(float dt){
@@ -87,15 +88,16 @@ public class JournalEntry extends MenuObj{
 	
 	public void render(FadingSpriteBatch sb){
 		// relocation of draw loc according to zoom
-		float x0 = x - width*(width/MIN_WIDTH)/2, y0 = y - height*(height/MIN_HEIGHT)/2;
+		float x0 = x - width*(width/MIN_WIDTH)/2 - parent.getScrollOff().x;
+		float y0 = y - height*(height/MIN_HEIGHT)/2 - parent.getScrollOff().y;
 		
 		// location bounds checking; only valid for highlighted objs
-		if(width!=MIN_WIDTH){
-			if(x0 < parent.x0 + MARGINX_MENU) 
-				x0 = parent.x0 + MARGINX_MENU;
-			if(x0 > parent.x0 + parent.width - MARGINX_MENU) 
-				x0 = parent.x0 + parent.width - MARGINX_MENU;
-		}
+//		if(width!=MIN_WIDTH){
+//			if(x0 < parent.x0 + MARGINX_MENU) 
+//				x0 = parent.x0 + MARGINX_MENU;
+//			if(x0 > parent.x0 + parent.width - MARGINX_MENU) 
+//				x0 = parent.x0 + parent.width - MARGINX_MENU;
+//		}
 		
 		sb.draw(backing, x0, y0, width, height);
 		sb.draw(image, x0 + width/2 - image.getRegionWidth()/2,
@@ -104,7 +106,7 @@ public class JournalEntry extends MenuObj{
 		// entry is highlighted and should be visible
 		if(entry!=null && width==MAX_WIDTH) {
 			entry.x = x0+(width - 2*MARGINY_IMAGE)/2 - entry.width/2;
-			entry.y = y0+height -2*MARGINY_IMAGE - 64 - entry.getImage().getRegionHeight();
+			entry.y = y0+height - 2*MARGINY_IMAGE - 64 - entry.getImage().getRegionHeight();
 			entry.render(sb);
 		}
 	}

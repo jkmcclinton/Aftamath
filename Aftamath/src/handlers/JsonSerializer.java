@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
@@ -15,6 +13,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import entities.Entity;
 import entities.Mob;
 import entities.MobAI;
+import main.GameState;
 import main.History;
 import main.Main;
 import main.Player;
@@ -49,7 +48,11 @@ public class JsonSerializer {
 			writer.writeValue("idToEntity", Entity.getIDToEntityMapping());
 			writer.writeValue("playerData", gMain.player);
 			writer.writeValue("history", gMain.history);
+			writer.writeValue("prevLoc", GameState.prevLoc);
+			writer.writeValue("summary", gMain.character.ID + "base/l"+ gMain.character.getName()
+			+"/l"+gMain.getScene()+"/l"+gMain.history.playTime);
 			writer.writeObjectEnd();
+			
 			fout.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -96,41 +99,16 @@ public class JsonSerializer {
 	 * find savegame file; if file at index exists, preload data and store it into a parseable string
 	 * @param path loafus cramwell of slurmpville, how do I door?
 	 * @return string of format "playerType/lname/llocation/lplayTime"
-	 * @deprecated
-	 * @see Menu.findSave
 	 */
-	public static String preLoadState(FileHandle path){
+	public static String getSummary(FileHandle path){
 		try{
-			JsonValue root = new JsonReader().parse(path);
-			Json reader = new Json();
-			String s = "";
-			
-			// Load player data
-			for (JsonValue child = root.get("idToEntity").child(); child != null; child = child.next()) {
-				Entity e = reader.fromJson(Entity.class, child.toString());
-//				System.out.println("preloaded: "+e);
-				if(e.getSceneID() != 0) continue;
-				if(!(e instanceof Mob)) continue;
-				s = e.ID + "base/l" + ((Mob)e).getName() + "/l";
-				break;
-			}
-			
-			// Load Scene data
-			String level = root.getString("levelID");
-			TiledMap tileMap = new TmxMapLoader().load("assets/maps/" + level + ".tmx");
-			s += tileMap.getProperties().get("name", String.class) + "/l";
-			
-			// Load Playtime
-			History h = reader.fromJson(History.class, root.get("history").toString());
-			s += h.playTime;
-			
-			return s;
+			return new JsonReader().parse(path).getString("summary");
 		} catch (Exception e){
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	private static void initReferences() {
 		for (MobRef ref : mobRefLst) {
 			if (ref.attackFocus > -1) {

@@ -1,0 +1,36 @@
+Script Main
+lockplayer
+setSpeaker(null)
+
+text({Got a villa for sale, vanilla mah villa for sale!})
+text({You too can own your very own Mozilla Barilla for a low, low price of $500! ~(monthly)})
+
+setFlag(readResNsign, true)
+setSpeaker(narrator)
+if(!readResNsign)
+	text(sad, {That's a terrible joke...})
+	text(sad, {Who the hell wrote that?})
+	text({Anyway, are you going to but it or what?})
+else 
+	text({What do you say?})
+end
+
+setChoice(6:Yes, 6:No, 3:What?)
+	[choice Yes]([player.money > 500])
+		text({Congradulations! ~You own a shity apartment!})
+		setEvent(boughtfirstHouse, {You bought your first house in on [street name]})
+		setFlag(ownResidentalN, true)
+	end
+	
+	[choice No]
+		text({Yeah... I'd save my money for something a little better than this dump if I were you.})
+	end
+	
+	[choice What?]
+		text({I know right?})
+		text(sad,{Someone tried horribly to reference Magilla Gorilla. No one even knows who that guy is anymore!})
+		text({...})
+		text({But yeah, if you have the money for it, you can buy your own pad.})
+	end
+end
+done

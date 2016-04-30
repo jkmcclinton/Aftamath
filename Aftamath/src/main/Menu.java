@@ -1,6 +1,5 @@
 package main;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,11 +30,15 @@ public class Menu {
 	public boolean overlay;
 	
 	private GameState gs;
+	private boolean scrolling;
+	private float scrollTime;
 	private Texture image, leftTab, centerTab, rightTab;
 	private Animation highlight;
-	private Vector2 startPoint;
-	private Array<MenuObj> vertical, horizontal; //projections of traversable objs
+	private Vector2 startPoint, scrollOff, goalScroll, prevScroll;
+	private Array<MenuObj> vertical, horizontal, scrollObjs; //projections of traversable objs
 	private HashMap<MenuObj, Vector2> projections; // mapping of traversable objects to projections
+	
+	private static final float SCROLL_TIME = .25f;
 	
 	// sliding variables
 	//private boolean sliding;
@@ -51,6 +54,7 @@ public class Menu {
 		this.gs = gs;
 		overlay = false;
 		startPoint = new Vector2(0, 0);
+		scrollOff = new Vector2(0, 0);
 		
 		//load background image for window
 		image = Game.res.getTexture(type.toString().toLowerCase()+"_menu");
@@ -68,6 +72,16 @@ public class Menu {
 	// eat a long one
 	public void update(float dt){
 		highlight.update(dt);
+		
+		if(scrolling){
+			scrollTime+=dt;
+			scrollOff.x = Vars.easingFunction(scrollTime, .2f, prevScroll.x, goalScroll.x);
+			scrollOff.y = Vars.easingFunction(scrollTime, .2f, prevScroll.y, goalScroll.y);
+			
+			if(scrollTime>=SCROLL_TIME)
+				scrolling = false;
+		}
+		
 		for(MenuObj[] l : objs){
 			if(l==null) continue;
 			for(MenuObj m : l){
@@ -75,7 +89,7 @@ public class Menu {
 				m.update(dt);
 			}
 		}
-		
+//		System.out.println(scrollMenuCam.position+"\tmov: "+scrollMenuCam.moving);
 	}
 	
 	public void render(FadingSpriteBatch sb){
@@ -91,9 +105,14 @@ public class Menu {
 			for(MenuObj m : l){
 				if(m==null) continue; 
 				if (m.hidden) continue;
+				sb.setProjectionMatrix(gs.hudCam.combined);
 				m.render(sb);
+				
+//				if(scrollObjs.contains(m, true))
+//					sb.setProjectionMatrix(this.scrollMenuCam.combined);
+				
+				// highlight current object
 				if(m==objs[(int) gs.cursor.x][(int) gs.cursor.y]){
-					
 					if(m instanceof JournalEntry)
 						j = (JournalEntry) m;
 					else if(m.hiLite){
@@ -151,8 +170,8 @@ public class Menu {
 	private void addObjects() {
 		ArrayList<Pair<MenuObj, Vector2>> mos = new ArrayList<>();
 		projections = new HashMap<>();
-		MenuObj b;
-		String s;
+		scrollObjs = new Array<>();
+		MenuObj b; String s;
 		int w, h;
 		
 		//top right corner of menu
@@ -478,10 +497,9 @@ public class Menu {
 				JournalEntry j; 
 				for(String s1 : ((Main)gs).history.getEventList().keySet())
 					if(Game.EVENT_TO_TEXTURE.get(s1)!=null){
-						System.out.println(e+": "+s1);
-						j = new JournalEntry(s1, e, this, gs);
+						j = new JournalEntry(s1, e, this, gs); j.hiLite = false;
 						mos.add(new Pair<MenuObj, Vector2>(j, new Vector2(e, 0)));
-						j.hiLite = false;
+						scrollObjs.add(j);
 						e++;
 					}
 				
@@ -567,10 +585,10 @@ public class Menu {
 				// player Face init
 				s = ((Main)gs).character.ID;
 				Texture t = Game.res.getTexture(s + "badge");
-				String curLoc = gs.prevLoc;
+				String curLoc = GameState.prevLoc;
 				if(locToIMG.containsKey(((Main)gs).getScene().ID))
 					curLoc = locToIMG.get(((Main)gs).getScene().ID);
-				gs.prevLoc = curLoc;
+				GameState.prevLoc = curLoc;
 				Vector2 loc = null, d;
 				
 				// map
@@ -687,14 +705,15 @@ public class Menu {
 				b.hidden = true; b.hiLite = false; mos.add(new Pair<>(b, d));
 				
 				// player face
-				if(curLoc!=null){
-					if(t!=null){ w = t.getWidth(); h = t.getHeight(); }
-					b = new MenuObj(t, loc.x-w/2, loc.y-h/2, gs);
-					b.setRotation(dirMapping.get(curLoc).getValue());
-					mos.add(new Pair<>(b, new Vector2(7, 5)));
-					b.clickable = false;
-					b.getImage().flip(((Main)gs).character.isFacingLeft(), false);
-				}
+				if(curLoc!=null)
+					if(!curLoc.isEmpty()){
+						if(t!=null){ w = t.getWidth(); h = t.getHeight(); }
+						b = new MenuObj(t, loc.x-w/2, loc.y-h/2, gs);
+						b.setRotation(dirMapping.get(curLoc).getValue());
+						mos.add(new Pair<>(b, new Vector2(7, 5)));
+						b.clickable = false;
+						b.getImage().flip(((Main)gs).character.isFacingLeft(), false);
+					}
 				
 				// location Name
 				b = new MenuObj("", SourceType.TEXT, x0 + 166, y0 - 206 , 40, 1, gs);
@@ -931,6 +950,23 @@ public class Menu {
 		else return null;
 	}
 	
+	public void increaseScrollOffX(){
+		prevScroll = scrollOff.cpy();
+		goalScroll = new Vector2(prevScroll.x + JournalEntry.PERIODX*4, prevScroll.y);
+		scrolling = true;
+		scrollTime = 0;
+	}
+	
+	public void decreaseScrollOffX(){
+		prevScroll = scrollOff.cpy();
+		goalScroll = new Vector2(prevScroll.x - JournalEntry.PERIODX*4, prevScroll.y);
+		scrolling = true;
+		scrollTime = 0;
+	}
+	
+	public Vector2 getScrollOff(){ return scrollOff; }
+	public Array<MenuObj> getScrollObjs(){ return scrollObjs; }
+	
 	public void reload(){
 		for(MenuObj[] l : objs)
 			for(MenuObj m : l){
@@ -950,11 +986,8 @@ public class Menu {
 	 */
 	private String findSaveFile(int i){
 		FileHandle src = Gdx.files.internal("saves/savegame"+i+".txt");
-//		FileHandle src = Gdx.files.internal("saves/presave"+i+".txt");
-		if(src.exists()){
-//			BufferedReader reader = new BufferedReader();
-			return JsonSerializer.preLoadState(src);
-		}
+		if(src.exists())
+			return JsonSerializer.getSummary(src);
 		return null;
 	}
 	

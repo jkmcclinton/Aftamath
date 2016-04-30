@@ -41,7 +41,7 @@ public abstract class GameState {
 	public Vector2 cursor = new Vector2(0, 0);
 	public boolean tempSong;
 	public String[][] menuOptions;
-	public String prevLoc;
+	public static String prevLoc = "";
 
 	protected GameStateManager gsm;
 	protected Game game;
@@ -383,12 +383,19 @@ public abstract class GameState {
 					cursor = menus.peek().getNextObj(cursor, 2);
 //					System.out.println(menus.peek().getObj(cursor));
 					buttonTime = 0;
+					
+					if(menus.peek().type==MenuType.JOURNAL && cursor.x%4==0 && cursor.x!=0)
+						menus.peek().increaseScrollOffX();
 				}
 
 				if(MyInput.isDown(Input.LEFT)){
 					cursor = menus.peek().getNextObj(cursor, 4);
 //					System.out.println(menus.peek().getObj(cursor));
 					buttonTime = 0;
+					
+					if(menus.peek().type==MenuType.JOURNAL && (cursor.x+1)%4==0 && 
+							cursor.x!=0 && menus.peek().getScrollObjs().size>4)
+						menus.peek().decreaseScrollOffX();
 				}
 				
 				if(prev.y!=cursor.y || prev.x!=cursor.x){

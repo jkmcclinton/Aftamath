@@ -492,6 +492,7 @@ public class Evaluator {
 			object = main.character;
 			break;
 		case "partner":
+			if(main.player.getPartner()!=null)
 			if(main.player.getPartner().getName() != null)
 				object = main.player.getPartner();
 			break;
