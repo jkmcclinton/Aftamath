@@ -1,0 +1,19 @@
+Script Main
+lockplayer
+setSpeaker(this)
+
+declare(txt, local, integer, 0)
+random(txt, 0, 3)
+
+if([txt = 0])
+	text({God, I've been an old lady for so long I forget what it feels like to be young!})
+	text({Thanks again, /player!})
+else
+	if([txt = 1])
+		text({Who couldn't go for some good old Big City bread?})
+	else
+		text({I wish this guy would actually serve his customers...})
+	end
+end
+
+done

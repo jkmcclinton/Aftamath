@@ -288,10 +288,13 @@ unfocus/unfocusCamera/removeFocus:
 	playSound(soundName, [location])
 random:
 	produces a random value and writes the result to the given variable;
-	default range is from 0 to 1. a maximum value can be included to change the range from
-	0 to max. Also can specify 
+	default range is from 0 to 1. a maximum value can be included to change the range
+	from 0 to max. Also can specify the minimum value
+	random(variableName)
+	random(variableName, max)
+	random(variableName, min, max)
 releasePlayer:
-	allow play to be able to move
+	allow player to be able to move
 	releasePlayer()
 remove/removeObject:
 	remove the given object from the world

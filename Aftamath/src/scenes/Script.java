@@ -1168,7 +1168,11 @@ public class Script implements Serializable {
 				break;
 			case "spawn":
 				//spawn(NPC, image, name, x, y, layer)
-				if(args[0].equals("NPC") && args.length>=5){
+				//spawn(ENTITY, image, name, x, y, layer)
+				
+				if(args[0].toUpperCase().equals("NPC") && args.length>=5){
+					spawn(line);
+				} else if(args[0].toLowerCase().equals("entity") && args.length>=5){
 					spawn(line);
 				} else
 					System.out.println("Error spawning \""+args[2]+"\" into level; Line: "+(index+1)+"\tScript: "+ID);

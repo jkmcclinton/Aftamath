@@ -91,8 +91,9 @@ public class Mob extends Entity{
 	protected static final float DEFAULT_AIM_THRESHOLD = .8f;
 	protected static final float DEFAULT_COOLDOWN = 3f;
 	protected static final float DEFAULT_KNOCKOUT_TIME = 3f;
-	protected static final double DEFAULT_STRENGTH = 1;
-	protected static final double DAMAGE_THRESHOLD = 4;
+	protected static final float DEFAULT_STRENGTH = 1;
+	protected static final float DAMAGE_THRESHOLD = 4;
+	protected static final float FALL_DISTANCE = 12.5f; // amount of tiles mob can fall before being knocked out
 	protected static final int INTERACTION_SPACE = 17;
 
 	//determines when the NPC fights back
@@ -323,8 +324,13 @@ public class Mob extends Entity{
 			//do stuff for if the mob is knocked out
 			if(knockedOut){
 				knockOutTime-=dt;
-				if(knockOutTime<=0)
-					recover();
+				if(knockOutTime<=0){
+					if(controlled){
+						if(currentState.resetType==ResetType.ON_AI_COMPLETE
+							||currentState.resetType==ResetType.ON_ANIM_END)
+						recover();
+					} else recover();
+				}
 			} 
 
 			//fall distance shit
@@ -342,9 +348,8 @@ public class Mob extends Entity{
 					float dy = fallLoc.y - getPixelPosition().y;
 					if(dy>0){
 						if(this.equals(main.character))
-								main.getCam().shake(dy / (Vars.TILE_SIZE*8));
-//						System.out.println("fallD: "+(dy / (Vars.TILE_SIZE*8)) + "\t"+this);
-						if(dy>=Vars.TILE_SIZE*8)
+								main.getCam().shake(dy / (Vars.TILE_SIZE*FALL_DISTANCE));
+						if(dy>=Vars.TILE_SIZE*FALL_DISTANCE)
 							knockOut();
 					}
 				}

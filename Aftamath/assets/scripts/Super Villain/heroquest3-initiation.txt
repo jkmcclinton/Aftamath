@@ -21,6 +21,7 @@ setChoice(1:Yes, 2:No)
    Text({Now, here's where you come in. A certain lawyer travels every evening via the "subway."})
    Text({I have to put that in quotation marks because the script will get confused if I say the name of a place.})
    Text({Go with justice, meet the lawyer, and convince him to help the woman in court!})
+   setDialogue(MrJustice, MrJusticeAfterQ3I)
    end
 
     [Choice No]
