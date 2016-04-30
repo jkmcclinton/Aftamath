@@ -445,9 +445,11 @@ public class Entity implements Serializable {
 	public void respawn(){
 		dead = died = false;
 		animation.reset();
-		if(main!=null) {main.removeBody(body);
-		body.setUserData(this.copy());
-		create();}
+		if(main!=null) {
+			main.removeBody(body);
+			body.setUserData(this.copy());
+			create();
+		}
 		modifyHealth(maxHealth);
 	}
 	
@@ -772,7 +774,6 @@ public class Entity implements Serializable {
 		float posY = val.getFloat("posY");
 		Vector2 pos = new Vector2(posX, posY);
 		this.setPosition(pos);
-		//System.out.println(this.ID + ": " + pos.x + " " + pos.y + " " + this.x + " " + this.y);
 		this.health = val.getDouble("health");
 		this.burning = val.getBoolean("burning");
 		this.frozen = val.getBoolean("frozen");
@@ -814,7 +815,6 @@ public class Entity implements Serializable {
 		Vector2 pos = this.getPixelPosition();
 		json.writeValue("posX", pos.x);
 		json.writeValue("posY", pos.y);	
-		//System.out.println(this.ID + ": " + pos.x + " " + pos.y + " " + this.x + " " + this.y);
 		json.writeValue("health", this.getHealth());
 		json.writeValue("burning", this.burning);
 		json.writeValue("frozen", this.frozen);

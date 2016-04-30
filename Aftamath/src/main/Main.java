@@ -1635,10 +1635,12 @@ public class Main extends GameState {
 		world.getBodies(tmp);
 		for(Body b : tmp) {
 			world.destroyBody(b);
-			//invalidate references to the destroyed bodies
-			if(b!=null)
-				if(b.getUserData() instanceof Entity)
-					((Entity) b.getUserData()).setBody(null);
+		}
+		//invalidate references to the destroyed bodies
+		for (Entity e : objects) {
+			if (e == null) continue;
+			if (e.getBody() == null) continue;
+			e.setBody(null);
 		}
 	}
 	
