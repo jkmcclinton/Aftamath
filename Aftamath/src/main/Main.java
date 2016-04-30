@@ -7,12 +7,12 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeSet;
 
 import com.badlogic.gdx.Gdx;
@@ -106,8 +106,8 @@ public class Main extends GameState {
 	private ArrayList<Particle> particles, ptclsToAdd, ptclsToRemove;
 	private ArrayList<LightObj> lights;
 	private ArrayList<PositionalAudio> sounds;
-	private Hashtable<String, Warp> warps;
-	private HashMap<Entity, Float> healthBars;
+	private Map<String, Warp> warps;
+	private Map<Entity, Float> healthBars;
 	private Box2DDebugRenderer b2dr;
 	private InputState beforePause;
 	private RayHandler rayHandler;
@@ -174,7 +174,7 @@ public class Main extends GameState {
 		lights = new ArrayList<>();
 		sounds = new ArrayList<>();
 		paths = new ArrayList<>();
-		warps = new Hashtable<>();
+		warps = new HashMap<>();
 		history = new History();
 		evaluator = new Evaluator(this);
 		world = new World(new Vector2 (0, Vars.GRAVITY), true);
@@ -212,12 +212,17 @@ public class Main extends GameState {
 		world.setContactListener(cl);
 		b2dr.setDrawVelocities(true);
 
-		if(cwarps)
+		boolean loadwarps = cwarps && this.gameFile.equals("newgame");
+		if(loadwarps)
 			System.out.println("Don't Panic! The game is just linking levels together!");
 		//drawString(sb, "Loading...", Game.width/4, Game.height/4);
 
-		if(document) documentVariables();
-		if(cwarps) catalogueWarps();
+		if(document){
+			documentVariables();
+		}
+		if(loadwarps) {
+			catalogueWarps();
+		}
 		load();
 		hud = new HUD(this, hudCam);
 		handleDayCycle(Vars.DT);
@@ -1454,13 +1459,23 @@ public class Main extends GameState {
 		}
 
 		//link all warps together
-		Enumeration<Warp> e = warps.elements();
-		while(e.hasMoreElements()){
-			Warp i = e.nextElement();
+		for(Warp i : warps.values()){
 			i.setLink(warps.get(i.next + i.getLinkID()));
 		}
 	}
-
+	
+	//called from serializer to save warp entities
+	public Collection<Warp> getWarps() {
+		return warps.values();
+	}
+	
+	//called from serializer when loading the list of warps from file
+	public void setWarps(Collection<Warp> mwarps) {
+		for (Warp mwarp : mwarps) {
+			warps.put(mwarp.locID + mwarp.warpID, mwarp);
+		}
+	}
+	
 	public void createPlayer(Vector2 location){
 //		cam.setLock(false);
 //		b2dCam.setLock(false);

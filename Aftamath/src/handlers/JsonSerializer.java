@@ -1,8 +1,10 @@
 package handlers;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -15,6 +17,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import entities.Entity;
 import entities.Mob;
 import entities.MobAI;
+import entities.Warp;
 import main.History;
 import main.Main;
 import main.Player;
@@ -45,6 +48,7 @@ public class JsonSerializer {
 			writer.setWriter(fout);
 			writer.writeObjectStart();
 			writer.writeValue("levelID", gMain.getScene().ID);
+			writer.writeValue("warpData", gMain.getWarps());
 			writer.writeValue("sceneToEntityIds", Scene.getSceneToEntityMapping());
 			writer.writeValue("idToEntity", Entity.getIDToEntityMapping());
 			writer.writeValue("playerData", gMain.player);
@@ -73,6 +77,17 @@ public class JsonSerializer {
 				Entity e = reader.fromJson(Entity.class, child.toString());
 				Entity.addMapping(Integer.parseInt(child.name()), e);
 			}
+			
+			Map<String, Warp> tmpWarps = new HashMap<String, Warp>();
+			for (JsonValue child = root.get("warpData").child(); child != null; child = child.next()) {
+				Warp w = reader.fromJson(Warp.class, child.toString());
+				tmpWarps.put(w.locID + w.warpID, w);
+			}
+			//initialize each warp's link
+			for (Warp w : tmpWarps.values()) {
+				w.setLink(tmpWarps.get(w.next + w.getLinkID()));
+			}
+			gMain.setWarps(tmpWarps.values());
 			
 			if (gMain != null) {
 				gMain.player = reader.fromJson(Player.class, root.get("playerData").toString());
