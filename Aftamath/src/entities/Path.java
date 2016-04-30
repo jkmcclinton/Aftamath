@@ -2,6 +2,8 @@ package entities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 
 public class Path extends Entity {
 
@@ -117,5 +119,40 @@ public class Path extends Entity {
 		if(o instanceof Path)
 			return ID.equals(((Path) o).ID);
 		return false;
+	}
+
+	@Override
+	public void read(Json json, JsonValue val) {
+		this.current = val.getInt("current");
+		this.maxRun = val.getInt("maxRun");
+		this.totCompleted = val.getFloat("totCompleted");
+		this.forward = val.getBoolean("forward");
+		this.reached = val.getBoolean("reached");
+		this.speed = val.getFloat("speed");
+		this.behavior = Behavior.valueOf(val.getString("behavior"));
+		float[] px = val.get("px").asFloatArray();
+		float[] py = val.get("py").asFloatArray();
+		for (int i = 0; i < px.length; i++) {
+			points.add(new Vector2(px[i], py[i]));
+		}
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("current", this.current);
+		json.writeValue("maxRun", this.maxRun);
+		json.writeValue("totCompleted", this.totCompleted);
+		json.writeValue("forward", this.forward);
+		json.writeValue("reached", this.reached);
+		json.writeValue("speed", this.speed);
+		json.writeValue("behavior", this.behavior);
+		float[] px = new float[points.size];
+		float[] py = new float[points.size];
+		for (int i = 0; i < points.size; i++) {
+			px[i] = points.get(i).x;
+			py[i] = points.get(i).y;
+		}
+		json.writeValue("px", px);
+		json.writeValue("py", py);
 	}
 }

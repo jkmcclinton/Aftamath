@@ -773,7 +773,8 @@ public class Entity implements Serializable {
 		float posX = val.getFloat("posX");
 		float posY = val.getFloat("posY");
 		Vector2 pos = new Vector2(posX, posY);
-		this.setPosition(pos);
+		this.setPosition(pos);	//rh is 0 at this point
+		//System.out.println(this.ID + ": " + pos.x + " " + pos.y + " " + this.x + " " + this.y);
 		this.health = val.getDouble("health");
 		this.burning = val.getBoolean("burning");
 		this.frozen = val.getBoolean("frozen");
@@ -804,7 +805,7 @@ public class Entity implements Serializable {
 		}
 		
 		//other stuff from constructor
-		setDimensions();		
+		setDimensions();	
 		loadSprite();
 	}
 
@@ -814,7 +815,8 @@ public class Entity implements Serializable {
 		json.writeValue("sceneID", this.sceneID);
 		Vector2 pos = this.getPixelPosition();
 		json.writeValue("posX", pos.x);
-		json.writeValue("posY", pos.y);			
+		json.writeValue("posY", pos.y);	
+		//System.out.println(this.ID + ": " + pos.x + " " + pos.y + " " + this.x + " " + this.y);
 		json.writeValue("health", this.getHealth());
 		json.writeValue("burning", this.burning);
 		json.writeValue("frozen", this.frozen);

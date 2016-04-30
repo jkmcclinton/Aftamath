@@ -1039,6 +1039,14 @@ public class MobAI implements Serializable {
 		this.type = AIType.valueOf(val.getString("aiType"));
 		int focusID = val.getInt("focusID");
 		JsonSerializer.pushMobAiRef(this, focusID);
+		try {
+			float gx = val.getInt("goalX");
+			float gy = val.getInt("goalY");
+			this.goalPosition = new Vector2(gx, gy);
+		} catch (IllegalArgumentException | NullPointerException e) {}
+		try {
+			this.path = json.fromJson(Path.class, val.get("path").toString());
+		} catch (IllegalArgumentException | NullPointerException e) {}
 	}
 
 	@Override
@@ -1048,6 +1056,13 @@ public class MobAI implements Serializable {
 		json.writeValue("aiType", this.type);
 		json.writeValue("focusID", (this.focus != null) ? this.focus.getSceneID() : -1);
 		//
-		// TODO write data as array of strings if type == MOVE
+		if (goalPosition != null) {
+			json.writeValue("goalX", this.goalPosition.x);
+			json.writeValue("goalY", this.goalPosition.y);
+		}
+		if (path != null) {
+			json.writeValue("path", this.path);
+		}
+		// TODO write data as array of strings if type == MOVE (?)
 	}
 }

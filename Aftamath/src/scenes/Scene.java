@@ -516,9 +516,13 @@ public class Scene {
 		
 		//add in entities loaded from save file
 		for (int sid : Scene.getEntityMapping(this.ID)) {
-			Entity e = Entity.getMapping(sid);
-			this.entities.add(e);
-			//System.out.println("Pulling: "+e);
+			if (Entity.hasMapping(sid)) {
+				Entity e = Entity.getMapping(sid);
+				e.setGameState(main);
+				this.entities.add(e);
+			} else {
+				System.out.println("Scene to entity IDs mapping has stale data, entity ID "+sid+" does not exist");
+			}
 		}
 		
 		//initialize ground tiles

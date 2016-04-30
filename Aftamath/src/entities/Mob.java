@@ -458,7 +458,7 @@ public class Mob extends Entity{
 		int priority = actionPriorities[type];
 		int length = actionLengths[type];
 		
-		if(this.equals(main.character) && getAction()==Anim.LOOKING_UP)
+		if(main != null && this.equals(main.character) && getAction()==Anim.LOOKING_UP)
 			main.getCam().removeFocus();
 		try{
 			animation.setFrames(Vars.removeEmptyFrames(TextureRegion.split(texture, width, height)[type], length),
@@ -1694,8 +1694,6 @@ public class Mob extends Entity{
 		json.writeValue("interactable", (this.interactable != null) ? this.getInteractable().sceneID : -1);
 		
 		//other fields probably necessary
-		
-		//TODO: path loading
 	}
 	
 	public String toString(){ return ID +": " + name; }
