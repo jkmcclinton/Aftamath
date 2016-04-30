@@ -1,0 +1,52 @@
+Script heroquest3-2
+lockplayer
+face(Lawyer, player)
+
+if([talksuccess >= 1])
+setSpeaker(Lawyer)
+Text(happy, {Don't worry, I'm a man of my word.})
+else 
+    setSpeaker(Lawyer)
+    Text(mad, {You again?})
+    Text({Have something new to tell me?})
+    setSpeaker(player)
+    setChoice(1:Because it's right, 2:Framed, 3:I'll pay, 4:Show off)
+        [Choice Because it's right]
+	    setSpeaker(Lawyer)
+	    text({Listen, I'm not some supahero. I need money to eat.})
+	    text({I've got a family to take care of. If you can't pay, I can't help.})
+	    end
+	
+	    [Choice Framed]
+	    setSpeaker(Lawyer)
+	    text({How can you be so sure? Do you have proof? No?})
+	    text({That's a shame. I'm not going to represent someone for free on a whim.})
+	    end
+	
+	    [Choice I'll pay]
+	    setSpeaker(Lawyer)
+	    text({Really? Well in that case, it'll be $200.})
+	        If(player.money >= 200)
+		    text(happy, {Thank you kindly! I'll do my best!})
+		    #doAction(player, reach out)
+            value(add, player.money, -200)
+		    Else
+		    text({You seem to be a bit short of cash.})
+		    text({I'm not a charity organization.})
+		    text({Go bother someone else.})
+		    value(add, talksuccess, 1)
+		    end
+	    end
+	
+	    [Choice Show off]
+	    setSpeaker(Lawyer)
+	    Text({Hmm...You have a point. If I can get your client to safety...})
+	    Text({It might show those supaheroes that real lawyers are the best.})
+	    Text({Oh, alright! I'll represent your client. Just give me the contact info.})
+	    Text({Thanks. Let's hope my plan works.})
+	    value(add, talksuccess, 1)
+	    end
+    end
+end
+
+done

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="31">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="33">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm day" value="Hawthorne"/>
@@ -8,7 +8,7 @@
   <property name="next" value="Sewers"/>
   <property name="previous" value="Central Station"/>
  </properties>
- <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
   <image source="tilesets/indoors.png" width="960" height="771"/>
   <tile id="1320">
    <properties>
@@ -566,6 +566,22 @@
     <property name="layer" value="front"/>
     <property name="loadCondition" value="[trainLoc = {BusinessDistrict}]"/>
     <property name="name" value="Sewers"/>
+   </properties>
+  </object>
+  <object id="31" name="25" x="700" y="161" width="16" height="16">
+   <properties>
+    <property name="ID" value="80"/>
+    <property name="NPC" value="boss2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Lawyer"/>
+    <property name="script" value="heroquest3"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="32" x="431.5" y="44.5835" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="heroquest3" value=""/>
    </properties>
   </object>
  </objectgroup>

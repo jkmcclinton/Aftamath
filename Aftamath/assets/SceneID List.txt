@@ -16,8 +16,8 @@ Scene ID                                Spawned by                         Scrip
  014 - Sarge; burly2                    : CommercialDistrictNW.tmx         : sarge
  015 - Villain; villain1                : ResidentialDistrictN.tmx         : superGlare
  016 - 
- 017 - 
- 018 - 
+ 017 - Lawyer; boss2			: Subway.tmx
+ 018 - Tiny; villain4			: Subway.tmx
  019 - 
  020 - Jessica; girlfriend3             : Lobby1.tmx                       : secretary
  021 - Cashier; cashier                 : EZMart.tmx                       : cashierBuy

@@ -1,0 +1,29 @@
+Script MrJusticeAfterQ3I
+lockplayer
+face(player, this)
+face(this, player)
+
+
+if([talksuccess > 1])
+    setSpeaker(MrJustice)
+    Text(happy, {Excellent work, friend!})
+    Text(happy, {For acting so justly, I have a reward for you!})
+    value(add, player.money, 75)
+    Text({Keep up the good work!})
+    setDialogue(MrJusticeIntroduction)
+    Else
+        declare(Q3talk, global, integer, 0)
+
+        setSpeaker(this)
+        Text({You're back. Uhh...})
+        Wait(.50)
+        Text({Can I help you?})
+        Text({You remember the job, right?})
+        Text({Go see the lawyer in the "subway."})
+        value(add, Q3talk, 1)
+
+        setDialogue(MrJustice, MrJusticeAfterQ3I-2)
+end
+
+ 
+done
