@@ -108,5 +108,8 @@ end
 
 focus(player)
 
+setDialogue(MrJustice, heroquest3-initiation)
+
+
 
 done 
