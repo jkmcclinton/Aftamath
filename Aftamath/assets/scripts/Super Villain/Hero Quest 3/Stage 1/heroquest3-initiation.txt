@@ -1,0 +1,35 @@
+Script HeroQuest3-Initiation
+
+#this dialogue to be given to MrJustice
+
+lockplayer
+face(this, player)
+setSpeaker(this)
+Text(happy, {Hello, friend! Justice calls!})
+Text({Do you think you're ready for your first quest?})
+
+setSpeaker(player)
+setChoice(1:Yes, 2:No)
+   
+   [Choice Yes]
+   setSpeaker(this)
+   Text(happy, {I knew I could count on you!})
+   Text(sad, {There's a poor young lady who claims she has been framed for murder.})
+   Text({She has no money for a lawyer, and she'll lose her kids if she doesn't get help!})
+   Text({We've done some research, and we think she really has been framed.})
+   Text({We believe this is the work of the notorious League of Villainy.})
+   Text({Now, here's where you come in. A certain lawyer travels every evening via the "subway."})
+   Text({I have to put that in quotation marks because the script will get confused if I say the name of a place.})
+   Text({Go with justice, meet the lawyer, and convince him to help the woman in court!})
+   setDialogue(MrJustice, MrJusticeAfterQ3I)
+   end
+
+    [Choice No]
+	setSpeaker(this)
+	Text(mad, {I had high hopes for you, kid. I guess maybe you're just busy.})
+	Text({Come back if you change your mind.})
+	end
+end
+
+done
+

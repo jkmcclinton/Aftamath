@@ -1,0 +1,25 @@
+Script MrJusticeAfterQ3I-3
+lockplayer
+face(player, MrJustice)
+face(MrJustice, player)
+
+if([Q3talk = 2])
+    setSpeaker(this)
+	text(mad, {You're messing with me, aren't you?})
+	text({The lawyer...in the "subway."})
+	wait(.50)
+	text({What do you want?})
+    value(add, Q3talk, 1)
+else 
+    Text({You're back. Uhh...})
+    Wait(.50)
+    Text({Can I help you?})
+    Text({You remember the job, right?})
+    Text({Go see the lawyer in the "subway."})
+    value(add, Q3talk, 1)
+end
+
+setDialogue(MrJustice, MrJusticeAfterQ3I-4)
+
+done
+

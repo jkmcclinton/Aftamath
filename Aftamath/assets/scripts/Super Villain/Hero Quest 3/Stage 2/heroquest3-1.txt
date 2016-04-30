@@ -1,0 +1,71 @@
+Script heroquest3-1
+lockplayer 
+face(player, Lawyer)
+face(Lawyer, player)
+
+declare(talksuccess, global, integer, 0)
+declare(talkbefore, global, integer, 0)
+
+setSpeaker(lawyer)
+text({How can I help you?})
+
+setSpeaker(player)
+text({You're a lawyer?})
+
+setSpeaker(Lawyer)
+text({Yes, I am. The best lawyer in this damn city.})
+text(mad, {The crime here is out of control.})
+text(mad, {A group of wild vigilantes who call themselves Just Us have taken law enforcement into their own hands.})
+text(mad, {They've paid bails, testified for people in court, it's preposterous!})
+text(mad, {They put lawyers like me out of business!})
+
+setSpeaker(player)
+text({I have a client for you, but they can't pay.})
+
+setSpeaker(Lawyer)
+text({Oh? And why should I help your client then?})
+
+setSpeaker(player)
+setChoice(1:Because it's right, 2:Framed, 3:I'll pay, 4:Show off)
+    [Choice Because it's right]
+	setSpeaker(Lawyer)
+	text({Listen, I'm not some supahero. I need money to eat.})
+	text({I've got a family to take care of. If you can't pay, I can't help.})
+	value(add, talkbefore, 1)
+	end
+	
+	[Choice Framed]
+	setSpeaker(Lawyer)
+	text({How can you be so sure? Do you have proof? No?})
+	text({That's a shame. I'm not going to represent someone for free on a whim.})
+	value(add, talkbefore, 1)
+	end
+	
+	[Choice I'll pay]
+	setSpeaker(Lawyer)
+	text({Really? Well in that case, it'll be $200.})
+	    If(player.money >= 200)
+		text(happy, {Thank you kindly! I'll do my best!})
+		#doAction(player, reach out)
+        value(add, player.money, -200)
+		Else
+		text({You seem to be a bit short of cash.})
+		text({I'm not a charity organization.})
+		text({Go bother someone else.})
+		value(add, talksuccess, 1)
+		end
+	end
+	
+	[Choice Show off]
+	setSpeaker(Lawyer)
+	Text({Hmm...You have a point. If I can get your client to safety...})
+	Text({It might show those supaheroes that real lawyers are the best.})
+	Text({Oh, alright! I'll represent your client. Just give me the contact info.})
+	Text({Thanks. Let's hope my plan works.})
+	value(add, talksuccess, 1)
+	end
+end
+
+setDialogue(Lawyer, heroquest3-2)
+
+done

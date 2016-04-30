@@ -18,7 +18,7 @@ setChoice(1:Totally!, 2:Not at all)
 	end
 end
 	
-setSpeaker(Narrator)
+setSpeaker(narrator)
 Text({You certainly picked an interesting friend.})
 
 focus(Manly Man)
@@ -81,7 +81,7 @@ face(player, Star)
 Text(happy, {Oh my gosh, oh my gosh, OH MY GOSH!})
 Text(happy, {Welcome to the best place on...uh...what planet are we on?})
 
-setSpeaker(Narrator)
+setSpeaker(narrator)
 Text({This is a game, Aftamath. We're on whatever planet the player is on.})
 
 setSpeaker(Star)

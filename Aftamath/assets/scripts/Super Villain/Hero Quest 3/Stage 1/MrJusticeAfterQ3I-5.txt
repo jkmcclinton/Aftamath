@@ -1,0 +1,23 @@
+Script MrJusticeAfterQ3I-5
+lockplayer
+face(MrJustice, player)
+face(player, MrJustice)
+
+
+if([Q3talk >= 4])
+   setSpeaker(this)
+   text(mad, {Okay, that's it.})
+   text({You're going, whether you like it or not.})
+   doAction(this, aim, player)
+   teleport(player, HeroHQ, 21, 15)
+else 
+    Text({You're back. Uhh...})
+    Wait(.50)
+    Text({Can I help you?})
+    Text({You remember the job, right?})
+    Text({Go see the lawyer in the "subway."})
+    value(add, Q3talk, 1)
+end
+
+done
+ 

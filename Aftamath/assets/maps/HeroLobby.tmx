@@ -590,9 +590,9 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="40" x="366.667" y="47.3333" width="16" height="176">
+  <object id="40" x="366.667" y="44.5" width="16" height="178.833">
    <properties>
-    <property name="HeroHQ1stEntry" value="!HeroHQEntry"/>
+    <property name="HeroHQEntry" value="!HeroHQ1stEntry"/>
     <property name="event" value=""/>
    </properties>
   </object>

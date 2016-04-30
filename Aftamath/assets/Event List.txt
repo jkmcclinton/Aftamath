@@ -20,4 +20,3 @@ metTheWitch              : Ms Pancakes Mishap
 msPancakesMishap         : Ms Pancakes Mishap
 rodeTrainFirstTime       : trainSelection
 supTutIntro              : superTutIntro
-HeroHQ1stEntry		 : HeroHQEntry

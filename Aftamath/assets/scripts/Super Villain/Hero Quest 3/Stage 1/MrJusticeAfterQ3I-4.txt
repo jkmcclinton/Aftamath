@@ -1,0 +1,24 @@
+Script MrJusticeAfterQ3I-4
+lockplayer
+face(player, MrJustice)
+face(MrJustice, player)
+
+if([Q3talk = 3])
+    setSpeaker(this)
+	text({Listen kid, I've got important things to do.})
+	text({Justice, and...um...})
+	text({Justice!})
+	text({I can't spend all day talking to you.})
+	text({Go on...shoo.})
+	value(add, Q3talk, 1)
+else 
+    Text({You're back. Uhh...})
+    Wait(.50)
+    Text({Can I help you?})
+    Text({You remember the job, right?})
+    Text({Go see the lawyer in the "subway."})
+    value(add, Q3talk, 1)
+end
+
+setDialogue(MrJustice, MrJusticeAfterQ3I-5)
+done
