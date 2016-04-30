@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="17" tilewidth="16" tileheight="16" nextobjectid="35">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="17" tilewidth="16" tileheight="16" nextobjectid="41">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Justice Lobby"/>
   <property name="name" value="Lobby of Justice"/>
  </properties>
- <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
   <image source="tilesets/indoors.png" width="960" height="771"/>
   <tile id="900">
    <animation>
@@ -200,7 +200,7 @@
    </animation>
   </tile>
  </tileset>
- <tileset firstgid="2881" name="tileset" tilewidth="16" tileheight="16" tilecount="10000">
+ <tileset firstgid="2881" name="tileset" tilewidth="16" tileheight="16" tilecount="10000" columns="100">
   <image source="tilesets/HeroHQ.png" width="1600" height="1600"/>
   <tile id="3702">
    <properties>
@@ -538,6 +538,62 @@
     <property name="next" value="HeroUpperHall"/>
     <property name="nextWarp" value="2"/>
     <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="35" name="29" x="406" y="203.333" width="16" height="16">
+   <properties>
+    <property name="ID" value="98"/>
+    <property name="NPC" value="hero1"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="MrJustice"/>
+    <property name="script" value="HeroHQEntry"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="36" name="31" x="514" y="201.333" width="16" height="16">
+   <properties>
+    <property name="ID" value="112"/>
+    <property name="NPC" value="hero2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Star"/>
+    <property name="script" value="HeroHQEntry"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="37" name="31" x="534.667" y="201.333" width="16" height="16">
+   <properties>
+    <property name="ID" value="113"/>
+    <property name="NPC" value="hero3"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Elder Man"/>
+    <property name="script" value="HeroHQEntry"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="38" name="31" x="584.667" y="202" width="16" height="16">
+   <properties>
+    <property name="ID" value="114"/>
+    <property name="NPC" value="hero4"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Manly Man"/>
+    <property name="script" value="HeroHQEntry"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="39" name="31" x="606.667" y="202.667" width="16" height="16">
+   <properties>
+    <property name="ID" value="115"/>
+    <property name="NPC" value="hero5"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Kris Devil"/>
+    <property name="script" value="HeroHQEntry"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="40" x="366.667" y="47.3333" width="16" height="176">
+   <properties>
+    <property name="HeroHQ1stEntry" value="!HeroHQEntry"/>
+    <property name="event" value=""/>
    </properties>
   </object>
  </objectgroup>

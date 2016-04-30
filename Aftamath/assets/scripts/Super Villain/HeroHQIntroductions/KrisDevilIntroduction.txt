@@ -1,15 +1,15 @@
-Script GothicManIntroduction
+Script KrisDevilIntroduction
 lockplayer
-Face(this, Player)
+Face(Kris Devil, player)
 
-setSpeaker(this)
+setSpeaker(Kris Devil)
 Text({Hey, it's you...Whatever.})
 
-setSpeaker(Player)
+setSpeaker(player)
 setChoice(1:About you, 2:Nevermind)
 
 [Choice About you]
-setSpeaker(this)
+setSpeaker(Kris Devil)
 Text({You'll never understand me.})
 Text({You could never imagine the pain of my black soul that led me here.})
 Text({The bleeding inside me as I walk the path of righteousness.})
@@ -19,8 +19,8 @@ Text({Or, um, whatever...})
 end
 
 [Choice Nevermind]
-setSpeaker(this)
-Text(mad, {Leave off, sir!})
+setSpeaker(Kris Devil)
+Text(mad, {Not like that's rude. Whatever...})
 end
 end
 

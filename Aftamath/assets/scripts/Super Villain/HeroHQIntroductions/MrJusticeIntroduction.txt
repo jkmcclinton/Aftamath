@@ -1,14 +1,14 @@
 Script Mr.JusticeIntroduction
 lockplayer
 
-setSpeaker(This)
-face(Player,This)
+setSpeaker(MrJustice)
+face(player,MrJustice)
 Text(happy, {Here's my favorite pal!})
 
-setSpeaker(Player)
+setSpeaker(player)
 setChoice(1:About you, 2:About the headquarters, 3:What do I do now?)
 	[Choice About you]
-	    setSpeaker(This)
+	    setSpeaker(MrJustice)
 		Text({Oh, where to start? It all began when I was born.})
 		Text ({The doctors claimed they had never seen anything like me before.})
 		Text({I was the epitome of health, strong, and extraordinarily handsome!})
@@ -18,34 +18,34 @@ setChoice(1:About you, 2:About the headquarters, 3:What do I do now?)
 	end
 	
 	[Choice About the headquarters]
-	    setSpeaker(This)
+	    setSpeaker(MrJustice)
 		Text(happy, {This is your new home! You'll find everything you want around here.})
 		Text({Friends, no, family! Jobs on the bulletin board!})
 		Text(normal, {In fact, you can have everything except those donuts over there.})
 	    
-		setSpeaker(Player)
+		setSpeaker(player)
 		setChoice(1:Thank you, 2:Donuts?)
 		   
 	    [Choice Thank you]
-		   setSpeaker(This)
+		   setSpeaker(MrJustice)
 		   Text({Of course!})
 	    end
 		   
 	    [Choice Donuts?]
-		    setSpeaker(This)
+		    setSpeaker(MrJustice)
 		    Text({Those donuts belong to the big muscular guy.})
 			Text({Trust me, you don't want to make him angry.})
 		end
 
 	[Choice What do I do now?]
-	    setSpeaker(This)
+	    setSpeaker(MrJustice)
 		Text({I have the feeling that you're new to the city.})
 		Text({Uh, lady, is that right?})
 		
 		setSpeaker(Narrator)
 		Text(mad, {You mean me? Yes, this one is new to the city.})
 		
-		setSpeaker(This)
+		setSpeaker(MrJustice)
 		Text({Okay, thanks. You know...})
 		Text(sad, {Don't tell anyone but... Sometimes I hear a voice in my head.})
 		Text({A woman's voice.})
@@ -56,6 +56,7 @@ setChoice(1:About you, 2:About the headquarters, 3:What do I do now?)
 	end
 end
 
+setDialogue(MrJustice, heroquest3-initiation)
 
 	
 done				

@@ -45,11 +45,11 @@ Scene ID                                Spawned by                         Scrip
  043 - Jose; gangster2                  : Bar.tmx                          : generic_1
  044 - 
  045 - 
- 046 - 
- 047 - 
- 048 - 
- 049 - 
- 050 - 
+ 046 - MrJustice, hero1			: HeroLobby
+ 047 - Star, hero2			: HeroLobby
+ 048 - Elder Man, hero3			: HeroLobby
+ 049 - Manly Man, hero4			: HeroLobby
+ 050 - Kris Devil,hero5			: HeroLobby
  051 - 
  052 - 
  053 - 

@@ -8,30 +8,39 @@ face(this, player)
 
 setSpeaker(this)
 Text({You're back. Uhh...})
-Wait(.25)
+Wait(.50)
 Text({Can I help you?})
 Text({You remember the job, right?})
 Text({Go see the lawyer in the "subway."})
 value(add, Q3talk, 1)
-end
 
 if([Q3talk = 1])
-    Text({You forgot again?})
+    setSpeaker(this)
+	Text({You forgot again?})
 	Text({You might want to get that checked out, buddy.})
 	Text({Go to the lawyer in the "subway."})
 	value(add, Q3talk, 1)
+else 
+    Text({You're back. Uhh...})
+    Wait(.50)
+    Text({Can I help you?})
+    Text({You remember the job, right?})
+    Text({Go see the lawyer in the "subway."})
+    value(add, Q3talk, 1)
 end
 
 if([Q3talk = 2])
-    text(mad, {You're messing with me, aren't you?})
+    setSpeaker(this)
+	text(mad, {You're messing with me, aren't you?})
 	text({The lawyer...in the "subway."})
-	wait(.25)
+	wait(.50)
 	text({What do you want?})
     value(add, Q3talk, 1)
 end
 
 if([Q3talk = 3])
-    text({Listen kid, I've got important things to do.})
+    setSpeaker(this)
+	text({Listen kid, I've got important things to do.})
 	text({Justice, and...um...})
 	text({Justice!})
 	text({I can't spend all day talking to you.})
@@ -40,14 +49,11 @@ if([Q3talk = 3])
 end
 
 if([Q3talk >= 4])
+   setSpeaker(this)
    text(mad, {Okay, that's it.})
    text({You're going, whether you like it or not.})
    doAction(this, aim, player)
    teleport(player, HeroHQ, warp)
- end
+end
  
- done
- 
-   
-   
-   
+done

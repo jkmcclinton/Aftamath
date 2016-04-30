@@ -1,24 +1,24 @@
 Script ManlyManIntroduction
 lockplayer
-face(This, player)
+face(Manly Man, player)
 
-setSpeaker(This)
-Text({Hola, niño.})
+setSpeaker(Manly Man)
+Text({Hola, child.})
 Text({How are you doing?})
 
-setSpeaker(Player)
+setSpeaker(player)
 setChoice(1:About you, 2:Nevermind)
 
 [Choice About you]
-    setSpeaker(This)
+    setSpeaker(Manly Man)
 	Text({I spent my days like a real hombre, a real man, should.})
 	Text({I fished, I hunted with my bare hands, I fought in every war there ever was.})
 	Text({I defeated six bulls.})
-	Text({Those without supapowers are débil, weak, pathetic. That's why I'm here.})
+	Text({Those without supapowers are debil, weak, pathetic. That's why I'm here.})
 end
 
 [Choice Nevermind]
-    setSpeaker(This)
+    setSpeaker(Manly Man)
 	Text(mad, {Hmph.})
 end
 end
