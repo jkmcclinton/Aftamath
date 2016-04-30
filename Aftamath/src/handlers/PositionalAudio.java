@@ -25,4 +25,8 @@ public class PositionalAudio {
 	public void stop(){
 		sound.stop();
 	}
+
+	public void dispose() {
+		sound.dispose();
+	}
 }

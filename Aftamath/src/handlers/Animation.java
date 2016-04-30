@@ -255,4 +255,13 @@ public class Animation {
 		else
 			return primaryFrames.length - currentIndex - 1;
 	}
+
+	public void dispose() {
+		if(primaryFrames!=null)
+			primaryFrames[0].getTexture().dispose();
+		if(transFrames!=null)
+			transFrames[0].getTexture().dispose();
+		if(baseFrames!=null)
+			baseFrames[0].getTexture().dispose();
+	}
 }

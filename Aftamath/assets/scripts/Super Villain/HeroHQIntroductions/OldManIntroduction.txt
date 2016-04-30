@@ -6,9 +6,9 @@ setSpeaker(This)
 Text(happy, {Hiya, deary!})
 
 setSpeaker(Player)
-setChoice(1:Tell me about yourself, 2:Nevermind)
+setChoice(1:About you, 2:Nevermind)
 
-[Choice Tell me about yourself]
+[Choice About you]
 setSpeaker(This)
 Text({Ah! How golden it is to see a young whippersnapper like you interested in an old man!})
 Text({I was brought up in the hard days. You young kids don't know about that.})
@@ -26,4 +26,3 @@ end
 
 
 done
-

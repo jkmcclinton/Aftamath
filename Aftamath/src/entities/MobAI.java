@@ -569,6 +569,18 @@ public class MobAI implements Serializable {
 			}
 			finish();
 			break;
+		case SEARCH:
+			inactiveTime+=dt;
+			if(inactiveTime >= inactiveWait){
+				inactiveTime = 0;
+				inactiveWait = (int)(Math.random()*3 + 1) * 2;
+				repeat--;
+				if(repeat==0)
+					finish();
+				else if(!Mob.getAnimName(owner.animation.getCurrentType()).equals(Anim.IDLE))
+					owner.changeDirection();
+			}
+			break;
 		case SHOOT:
 			if(!resetType.equals(ResetType.ON_AI_COMPLETE) && 
 					!resetType.equals(ResetType.ON_ANIM_END))
@@ -669,8 +681,6 @@ public class MobAI implements Serializable {
 			break;
 		case STOP:
 			finish();
-			break;
-		case SEARCH:
 			break;
 		}
 		
@@ -897,6 +907,7 @@ public class MobAI implements Serializable {
 			break;
 		case PATH:
 			canPosition = false;
+			if(path==null) {finish();break;} // TODO JSON Path referenc
 			goalPosition = path.getCurrent();
 			retLoc = goalPosition;
 			break;
@@ -905,6 +916,13 @@ public class MobAI implements Serializable {
 			break;
 		case RECOVER:
 			if(!owner.knockedOut) finish();
+			break;
+		case SEARCH:
+			owner.canIdle = false;
+			inactiveWait = ((int)(Math.random()*3 + 1)) * 2;
+			if(resetType == ResetType.ON_AI_COMPLETE || resetType == ResetType.ON_ANIM_END)
+				repeat = 4;
+			else repeat = -1;
 			break;
 		case SHOOT:
 			canPosition = false;
@@ -994,6 +1012,7 @@ public class MobAI implements Serializable {
 		finished = true;
 		owner.controlled = false;
 //		System.out.println("AI finished: "+owner+";\t"+this.type);
+		if(main!=null)
 		if(main.currentScript!=null)
 			if(owner.equals(main.currentScript.getActiveObject()))
 				main.currentScript.removeActiveObj();

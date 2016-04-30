@@ -16,4 +16,3 @@ setChoice(1: Tell me about yourself, 2: Nevermind)
 	end
 
 done
-

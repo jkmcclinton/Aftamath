@@ -5,7 +5,6 @@ import static handlers.Vars.PPM;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +62,7 @@ import handlers.JsonSerializer;
 import handlers.MyContactListener;
 import handlers.MyInput;
 import handlers.MyInput.Input;
+import main.Menu.MenuType;
 import handlers.MyInputProcessor;
 import handlers.Pair;
 import handlers.PositionalAudio;
@@ -87,7 +87,7 @@ public class Main extends GameState {
 	public boolean paused, analyzing, loading, choosing, waiting;
 	public boolean warping, warped; //for changing between scenes
 	public boolean speaking; //are letters currently being drawn individually
-	public float dayTime, weatherTime, waitTime, totalWait, clockTime, playTime, keyIndexTime;
+	public float dayTime, weatherTime, waitTime, totalWait, clockTime, keyIndexTime;
 
 	private int sx, sy;
 	private float speakTime, speakDelay = .025f;
@@ -101,7 +101,7 @@ public class Main extends GameState {
 	private Texture pixel;
 	private Page currentPage;
 	private Array<Body> bodiesToRemove;
-	private ArrayList<Entity> objects, objsToAdd/*, UIobjects, UItoRemove*/;
+	private ArrayList<Entity> objects, objsToAdd;
 	private ArrayList<Path> paths;
 	private ArrayList<Particle> particles, ptclsToAdd, ptclsToRemove;
 	private ArrayList<LightObj> lights;
@@ -137,16 +137,16 @@ public class Main extends GameState {
 	public static final float NOON_TIME = DAY_TIME/3f;
 	public static final float NIGHT_TIME = 1.75f*DAY_TIME/3f;
 	
-	public static float debugY = 1, debugX=1;
+	public static float debugY = 234, debugX=114;
 	public static boolean dbRender 	= false, //render physics camera?
 						rayHandle   = true, //include lighting?
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
-						debugging   = true,	 //in debug mode?
+						debugging   = false,	 //in debug mode?
 						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "Church"; //where the player starts
+	public static String debugLoadLoc = "Warehouse"; //where the player starts
 	public static String debugPlayerType = "femaleplayer2"; //what the player looks like in debug mode
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 
@@ -243,7 +243,7 @@ public class Main extends GameState {
 		if (!paused){
 			speakTime += dt;
 			clockTime = (dayTime+DAY_TIME/6f)%DAY_TIME;
-			playTime+=dt;
+			history.playTime+=dt;
 			debugText = "";
 			player.updateMoney();
 
@@ -319,34 +319,15 @@ public class Main extends GameState {
 			objects.addAll(objsToAdd);
 			objsToAdd.clear();
 			sortObjects();
-
-			//apply removal of deleted bodies
-			for (Body b : bodiesToRemove){
-				if (b != null) {
-					if (b.getUserData() != null){
-						Entity e = (Entity) b.getUserData();
-						if(cam.getFocus().equals(e))
-							cam.removeFocus();
-						objects.remove(e);
-						//ensures player still has access to the character
-						//after hitting "repsawn"
-						if(e.equals(character)) 
-							addObject((Entity) e);
-						world.destroyBody(b);
-					}
-				}
-			}
-
-			bodiesToRemove.clear();
 			
 			//particle stuff
 			particles.addAll(ptclsToAdd);
 			ptclsToAdd.clear();
 			for(Particle p : particles)
 				p.update(dt);
-			
-			particles.removeAll(ptclsToRemove);
-			ptclsToRemove.clear();
+
+			//apply removal of deleted bodies and particles
+			applyRemovals();
 
 			//apply steps to transport to next level
 			if(warping){
@@ -388,7 +369,7 @@ public class Main extends GameState {
 
 	// TODO for handling random rain
 	public void handleWeather(){
-		if(((int)(playTime%DAY_TIME))%2!=0) return;
+		if(((int)(history.playTime%DAY_TIME))%2!=0) return;
 
 	}
 
@@ -576,6 +557,10 @@ public class Main extends GameState {
 		b2dCam.update();
 		if (dbRender) b2dr.render(world, b2dCam.combined);
 		hud.render(sb, currentEmotion);
+		
+		//draw menu
+		if(!menus.isEmpty())
+			menus.peek().render(sb);
 
 		//draw text input string
 		if(stateType == InputState.KEYBOARD){
@@ -648,12 +633,13 @@ public class Main extends GameState {
 	//everything that needs to be displayed constantly for debug tracking is
 	//right here
 	public void updateDebugText() {
-		Color ambC = Vars.NIGHT_LIGHT;
-		debugText="ambient color: ("+ambC.r+", "+ambC.g+", "+ambC.b+" :: "+ambC.a+")";
-		debugText+= "/l"+Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(playTime);
+//		Color ambC = Vars.NIGHT_LIGHT;
+		debugText=Texture.getNumManagedTextures()+"";
+		debugText+= "/l"+Vars.formatDayTime(clockTime, false)+"    Play Time: "+Vars.formatTime(history.playTime);
 		debugText += "/lLevel: " + scene.title;
 		debugText += "/lSong: " + music;
 		debugText += "/lcontacts: " + character.contacts;
+		debugText += "/lmouse: ("+Gdx.input.getX()+", "+Gdx.input.getY()+")";
 
 		debugText +="/l/l"+ character.getName() + " x: " + (int) (character.getPosition().x*PPM  /*/Vars.TILE_SIZE*/) + 
 				"    y: " + ((int) (character.getPosition().y*PPM) - character.height);
@@ -666,10 +652,13 @@ public class Main extends GameState {
 			debugText+= "/lPaused: "+(currentScript.paused)+"  ForcedP: "+(currentScript.forcedPause);
 		}
 		
-		float t = ((int)(character.aimTime*100))/100f;
-		debugText+="/l/la: "+character.aiming()+"    s: "+character.aimSounded()+"    t: "+t;
-		t = ((int)(character.powerCoolDown*100))/100f;
-		debugText+="/lC: "+t;
+		//aiming stuff
+//		float t = ((int)(character.aimTime*100))/100f;
+//		debugText+="/l/la: "+character.aiming()+"    s: "+character.aimSounded()+"    t: "+t;
+//		t = ((int)(character.powerCoolDown*100))/100f;
+//		debugText+="/lC: "+t;
+		
+//		debugText+="\lMenu: "
 		
 		sb.begin();
 		drawString(sb, debugText, 2, Game.height/2 - font[0].getRegionHeight() - 2);
@@ -680,106 +669,58 @@ public class Main extends GameState {
 	public void handleInput() {
 		DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
 		float r = .005f;
-		if(MyInput.isDown(Input.DEBUG_UP)) {
+		
+		if(debugging){
+			if(MyInput.isDown(Input.DEBUG_UP)) {
 //			player.addFunds(100d);
 //			Vars.NIGHT_LIGHT.r+=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-			character.damage(-1);
-		} if(MyInput.isDown(Input.DEBUG_DOWN)){
+				character.damage(-1);
+				debugY-=2;System.out.println(debugY);
+			} if(MyInput.isDown(Input.DEBUG_DOWN)){
 //			player.addFunds(-100d);
 //			Vars.NIGHT_LIGHT.r-=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-			character.damage(1);
-		} if(MyInput.isDown(Input.DEBUG_LEFT)) {
-			Vars.NIGHT_LIGHT.b-=r;
-			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-		} if(MyInput.isDown(Input.DEBUG_RIGHT)) {
-			Vars.NIGHT_LIGHT.b+=r;
-			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-		} if (MyInput.isPressed(Input.DEBUG_LEFT2)) {
-			debugX = debugX>0 ? debugX - 1 : dm.length-1;
-			character.setPowerType(dm[(int) debugX]);
-			System.out.println(debugX+"\t"+dm[(int) debugX]);
+				character.damage(1);
+				debugY+=2;System.out.println(debugY);
+			} if(MyInput.isDown(Input.DEBUG_LEFT)) {
+				Vars.NIGHT_LIGHT.b-=r;
+				rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
+			} if(MyInput.isDown(Input.DEBUG_RIGHT)) {
+				Vars.NIGHT_LIGHT.b+=r;
+				rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
+			} if (MyInput.isPressed(Input.DEBUG_LEFT2)) {
+				debugX = debugX>0 ? debugX - 1 : dm.length-1;
+				character.setPowerType(dm[(int) debugX]);
+				System.out.println(debugX+"\t"+dm[(int) debugX]);
 //			Vars.NIGHT_LIGHT.g-=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);;
-		} if (MyInput.isPressed(Input.DEBUG_RIGHT2)) {
-			debugX = debugX<dm.length-1 ? debugX + 1 : 0;
-			character.setPowerType(dm[(int) debugX]);
-			System.out.println(debugX+"\t"+dm[(int) debugX]);
+			} if (MyInput.isPressed(Input.DEBUG_RIGHT2)) {
+				debugX = debugX<dm.length-1 ? debugX + 1 : 0;
+				character.setPowerType(dm[(int) debugX]);
+				System.out.println(debugX+"\t"+dm[(int) debugX]);
 //			Vars.NIGHT_LIGHT.g+=r;
 //			rayHandler.setAmbientLight(Vars.NIGHT_LIGHT);
-		} if(MyInput.isPressed(Input.DEBUG_CENTER)) {
-			random=true;
-			int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
-			changeSong(new Song(Game.SONG_LIST.get(current)));
-		} if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
-			cam.zoom+=.01;
-			b2dCam.zoom+=.01;
-		} if(MyInput.isDown(Input.ZOOM_IN /*|| Gdx.input.getInputProcessor().scrolled(1)*/)) {
-			cam.zoom-=.01;
-			b2dCam.zoom-=.01;
-		}
-		if(MyInput.isPressed(Input.LIGHTS)) {rayHandle = !rayHandle ; sb.setOverlayDraw(rayHandle); }
-		if(MyInput.isPressed(Input.COLLISION)) dbRender = !dbRender ;
-		if(MyInput.isPressed(Input.RENDER)) render=!render;
-		if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
-		if(MyInput.isPressed(Input.RESPAWN)) character.respawn();
-
-		if (paused){
-			if (stateType == InputState.PAUSED) {
-				if(MyInput.isPressed(Input.PAUSE)) unpause();
-				if(MyInput.isPressed(Input.JUMP)|| MyInput.isPressed(Input.ENTER) && !gsm.isFading()){
-					try {
-						Method m = Main.class.getMethod(Vars.formatMethodName(menuOptions[menuIndex[0]][menuIndex[1]]));
-						m.invoke(this);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-
-				//following four functions navigate through the pause menu
-				if(buttonTime >= DELAY){
-					if(MyInput.isDown(Input.DOWN)){
-						if(menuIndex[1] < menuMaxY){
-							menuIndex[1]++;
-							//play menu sound
-						} else {
-							menuIndex[1] = 0;
-						}
-						buttonTime = 0;
-					}
-
-					if(MyInput.isDown(Input.UP)){
-						if(menuIndex[1] > 0){
-							menuIndex[1]--;
-							//play menu sound
-						} else {
-							menuIndex[1] = menuMaxY;
-						}
-						buttonTime = 0;
-					}
-
-					if(MyInput.isDown(Input.RIGHT)){
-						if(menuIndex[0] < menuMaxX){
-							menuIndex[0]++;
-							//play menu sound
-						} else {
-							//play menu invalid sound
-						}
-						buttonTime = 0;
-					}
-
-					if(MyInput.isDown(Input.LEFT)){
-						if(menuIndex[0] > 0){
-							menuIndex[0]--;
-							//play menu sound
-						} else {
-							//play menu invalid sound
-						}
-						buttonTime = 0;
-					}
-				}
+			} if(MyInput.isPressed(Input.DEBUG_CENTER)) {
+				random=true;
+				int current = (Game.SONG_LIST.indexOf(music.title, false) +1)%Game.SONG_LIST.size;
+				changeSong(new Song(Game.SONG_LIST.get(current)));
+			} if(MyInput.isDown(Input.ZOOM_OUT /*|| Gdx.input.getInputProcessor().scrolled(-1)*/)) {
+				cam.zoom+=.01;
+				b2dCam.zoom+=.01;
+			} if(MyInput.isDown(Input.ZOOM_IN /*|| Gdx.input.getInputProcessor().scrolled(1)*/)) {
+				cam.zoom-=.01;
+				b2dCam.zoom-=.01;
 			}
+			if(MyInput.isPressed(Input.LIGHTS)) {rayHandle = !rayHandle ; sb.setOverlayDraw(rayHandle); }
+			if(MyInput.isPressed(Input.COLLISION)) dbRender = !dbRender ;
+			if(MyInput.isPressed(Input.RENDER)) render=!render;
+			if(MyInput.isPressed(Input.DEBUG_TEXT)) dbtrender=!dbtrender;
+			if(MyInput.isPressed(Input.RESPAWN)) character.respawn();
+		}
+
+		if (!menus.isEmpty()){
+				traverseMenu();
 		} else{ 
 			boolean canWarp = false;
 			if(character.getWarp()!=null)
@@ -1245,38 +1186,35 @@ public class Main extends GameState {
 		beforePause = stateType;
 		setStateType(InputState.PAUSED);
 
-		menuOptions = new String[][] {{"Resume", "Journal","Save Game", "Load Game", 
-			"Options", "Quit to Menu", "Quit"}}; 
+//		menuOptions = new String[][] {{"Resume", "Journal","Save Game", "Load Game", 
+//			"Options", "Quit to Menu", "Quit"}}; 
 
-			paused = true;
-			menuMaxY = menuOptions[0].length - 1;
-			menuMaxX = 0;
-			menuIndex[0] = 0;
-			menuIndex[1] = 0;
+		paused = true;
+		menus.add(new Menu(MenuType.PAUSE, this));
 	}
-
-	public void journal(){
-		//TODO change menu to display stats
-	}
-
-	public void saveGame() {
-		//TODO save game menu
-		gameFile = "savegame";
+	
+	public void saveGame(int i){
+		gameFile = "savegame"+i;
 		
 		//select save file, create new one, or overwrite current save
 		System.out.println("saving game to " + gameFile + ".txt");
 		JsonSerializer.saveGameState(gameFile);
+		
+		// not good programming, but hey
+		menus.peek().reload();
 	}
-
-	public void loadGame() {
-		//load a saved game menu
-		//display option to save before loading, with options: "save; don't save; cancel"
-		super.loadGame();
-	}
-
-	public void quitToMenu(){
-		//display option to save before exit, with options: "save and exit; exit; cancel"
-		gsm.setState(GameStateManager.TITLE, true);
+	
+	public void loadGame(int i){
+		//temporary conditioning
+		if(Gdx.files.internal("saves/savegame"+i+".txt").exists()){
+			gameFile = "savegame"+i;
+			gsm.setState(GameStateManager.MAIN, true, "savegame"+i);
+		} else 
+			System.out.println("No save file to load");
+//		JsonSerializer.loadGameState("savegame.txt");
+		
+		while(!menus.isEmpty()) back();
+		
 	}
 
 	public void quit() {
@@ -1378,7 +1316,10 @@ public class Main extends GameState {
 	public SpeechBubble[] getChoices(){ return choices; }
 
 	public void addSound(PositionalAudio s){ sounds.add(s); }
-	public void removeSound(PositionalAudio s){ sounds.remove(s); }
+	public void removeSound(PositionalAudio s){ 		
+		sounds.remove(s); 
+		s.dispose();
+	}
 	
 	public void setCharacter(Mob e){
 		character = e;
@@ -1474,7 +1415,7 @@ public class Main extends GameState {
 			narrator = new Mob("Narrator", "narrator1", Vars.NARRATOR_SCENE_ID, 0, 0, Vars.BIT_LAYER1);
 			if(debugging){
 //				character = new Mob("'Normal' person with a name (YOU)", "maleplayer2", Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
-				character = new Mob("You", debugPlayerType, Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
+				character = new Mob("My Name is 6teen", debugPlayerType, Vars.PLAYER_SCENE_ID, scene.getSpawnPoint() , Vars.BIT_PLAYER_LAYER);
 				createPlayer(scene.getSpawnPoint());
 //				createEmptyPlayer(scene.getSpawnPoint());
 				DamageType[] dm = {DamageType.ELECTRO, DamageType.FIRE, DamageType.DARKMAGIC, DamageType.ICE, DamageType.ROCK};
@@ -1491,6 +1432,8 @@ public class Main extends GameState {
 			}
 		}
 
+		
+		prevLoc = Menu.locToIMG.get(scene.ID);
 		initEntities();
 		cam.bind(scene, false);
 		b2dCam.bind(scene, true);
@@ -1697,6 +1640,34 @@ public class Main extends GameState {
 				if(b.getUserData() instanceof Entity)
 					((Entity) b.getUserData()).setBody(null);
 		}
+	}
+	
+	public void applyRemovals(){
+		for (Body b : bodiesToRemove){
+			if (b != null) {
+				if (b.getUserData() != null){
+					Entity e = (Entity) b.getUserData();
+					if(cam.getFocus().equals(e))
+						cam.removeFocus();
+					objects.remove(e);
+					
+					//ensures player still has access to the character
+					//after hitting "repsawn"
+					if(e.equals(character)) 
+						addObject((Entity) e);
+					else
+						e.dispose();
+					world.destroyBody(b);
+				}
+			}
+		}
+
+		bodiesToRemove.clear();
+		
+		for(Particle p : ptclsToRemove)
+			p.dispose();
+		particles.removeAll(ptclsToRemove);
+		ptclsToRemove.clear();
 	}
 
 	public void removeAllObjects(){

@@ -1,28 +1,28 @@
 Script GothicManIntroduction
 lockplayer
-Face(This, Player)
+Face(this, Player)
 
-setSpeaker(This)
-Text({Greetings, good sir.})
+setSpeaker(this)
+Text({Hey, it's you...Whatever.})
 
 setSpeaker(Player)
-setChoice(1:Tell me about yourself, 2:Nevermind)
+setChoice(1:About you, 2:Nevermind)
 
-[Choice Tell me about yourself]
-setSpeaker(This)
-Text({I am merely a weary soul in the midst of chaos.})
-Text({All around me I see the abandonment of class and dignity.})
-Text({It pains me to imagine the circumstances that led to this new culture.})
-Text({Swag, vibes, yolos, all pathetic.})
-Text({The new culture is especially prominent in the criminals.})
-Text({I instill proper etiquette among these vagabonds.})
+[Choice About you]
+setSpeaker(this)
+Text({You'll never understand me.})
+Text({You could never imagine the pain of my black soul that led me here.})
+Text({The bleeding inside me as I walk the path of righteousness.})
+Text({Um...Now I fight for justice. A shadow. A warrior.})
+Text({I walk alone surrounded by evil and chaos.})
+Text({Or, um, whatever...})
 end
 
 [Choice Nevermind]
-setSpeaker(This)
+setSpeaker(this)
 Text(mad, {Leave off, sir!})
 end
 end
 
 
-done
+done 

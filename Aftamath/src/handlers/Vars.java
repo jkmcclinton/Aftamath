@@ -32,6 +32,8 @@ public class Vars {
 	public static final int OBJ_SCALE = 2;
 	public static final int LIGHT_RAYS = 150;
 	public static final int TILE_SIZE = 16;
+	public static final int TEXT_PERIODX = 6;
+	public static final int TEXT_PERIODY = -12;
 	
 	//light colors
 	public static final Color DAY_LIGHT = new Color(0, 0, 0, ALPHA);
@@ -51,12 +53,17 @@ public class Vars {
 	public static final Color FROZEN_OVERLAY = new Color(139/255f, 195/255f, 217/255f, ALPHA/2f);
 	public static final Color BURN_OVERLAY = new Color(Color.RED);
 	
+	// sensitivity of the controller thumbstick and triggers
+	// value during gameplay can range from 0 to ~1, where 0 is more sensitive
+	public static final float SENSITIVITY = 0.2f;
+	public static float THUMBSTICK_SENSITIVITY = SENSITIVITY; 
+	
 	public static final int PLAYER_SCENE_ID = 0;
 	public static final int NARRATOR_SCENE_ID = 1000;
 	public static final Array<Color> DEFAULT_COLOR_LIST = new Array<Color>();
 	public static final Array<String> MALES = new Array<String>(new String[] {"doctordisco","narrator2","gangster1","gangster2","boyfriend1","boyfriend2","boyfriend3","boyfriend4",
 					"kid1","kid2","richguy","burly1","burly2","reaper","magician","oldman1","oldman2","maleplayer1","maleplayer2","maleplayer3","maleplayer4",
-					"bballer","boss1","boss2","cashier","hero1","hero2", "hobo","villain3", "villain4","biker1","robot1","policeman1",
+					"bballer","boss1","boss2","cashier","hero1","hero3","hero4","hero5", "hobo","villain3", "villain4","biker1","robot1","policeman1",
 					"policeman2","civilian1","civilian2","civilian3","civilian4"});
 	public static final HashMap<String, Float> VOICES = new HashMap<>();
 
@@ -90,6 +97,13 @@ public class Vars {
 	}
 	
 	/**
+	 * count the occurrence of the substring in the given string
+	 */
+	public static int countReg(String s, String regex){
+		return s.split(regex).length-1;
+	}
+	
+	/**
 	 * shortens the array of frames to the length of the animation;
 	 * used to ensure no empty frames get displayed in animations
 	 * @param orig the base array of frames
@@ -111,6 +125,7 @@ public class Vars {
 	 * @return closest power of two
 	 */
 	public static int PowerOf2(double num){
+		//TODO
 		return (int) num;
 	}
 	
@@ -121,11 +136,13 @@ public class Vars {
 	 * @return the original text with '/l' values inserted at the proper locations
 	 */
 	public static String formatDialog(String dialog, boolean hud){
-		Array<String> text = new Array<>(dialog.split("/l"));
-		
-		int max;
+		int max = 20;
 		if(hud) max = 50;
-		else max = 20;
+		return formatDialog(dialog, max, 4);
+	}
+	
+	public static String formatDialog(String dialog, int w, int h){
+		Array<String> text = new Array<>(dialog.split("/l"));
 		
 		String s;
 		int lastSpace = 0;
@@ -135,14 +152,14 @@ public class Vars {
 			for(int x = 0; x< s.length(); x++){
 				if (s.substring(x, x + 1).equals(" "))
 					lastSpace = x;
-				if(x > max){
+				if(x > w){
 					String extra = "";
 					if(lastSpace!=0){
 						extra = text.get(y).substring(lastSpace+1);
 						text.set(y,  text.get(y).substring(0, lastSpace));
 					} else {
-						extra = text.get(y).substring(max+1);
-						text.set(y, text.get(y).substring(0, max) + "-");
+						extra = text.get(y).substring(w+1);
+						text.set(y, text.get(y).substring(0, w) + "-");
 					}
 					
 					if(y <= text.size - 2)
@@ -350,6 +367,19 @@ public class Vars {
 		return new Vector2((float) (magnitude*Math.cos(angle)), (float) (magnitude*Math.sin(angle)));
 	}
 	
+	/**
+	 * function that eases intorpolation between the initial and final values given a timeframe
+	 * @param t the current time in seconds
+	 * @param c the final time in seconds
+	 * @param d the initial value
+	 * @param b the final value
+	 * @return the eased interpolation
+	 */
+	public static float easingFunction(float t, float c, float d, float b){
+		float a = (float) (-(b-d)/(Math.pow(c,2)));
+		return a*(t-c)*(t-c) + b;
+	}
+	
 	public static float b2Cross(Vector2 a, Vector2 b){
 		return a.x * b.y - a.y * b.x;
 	}
@@ -424,9 +454,10 @@ public class Vars {
 		VOICES.put("robot1", .05f);
 		VOICES.put("robot2", -.01f);
 		VOICES.put("hero1", -.18f);
-		VOICES.put("hero2", -.1f);
-		VOICES.put("hero3", .1f);
-		VOICES.put("hero4", .1f);
+		VOICES.put("hero2", .32f);
+		VOICES.put("hero3", -.22f);
+		VOICES.put("hero4", -.38f);
+		VOICES.put("hero5", -.1f);
 		VOICES.put("villain1", .01f);
 		VOICES.put("villain2", .1f);
 		VOICES.put("villain3", -.145f);

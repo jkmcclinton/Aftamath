@@ -111,14 +111,14 @@ Scene ID                                Spawned by                         Scrip
  109 - Attack Dummy; dummy1             : Church.tmx                       : actionTest
  110 - HLRMS-110; robot1                : BusinessDistrict.tmx             : getMail
  111 - Attack Dummy; dummy2             : Church.tmx                       : actionTest
- 112 - TEST; hero2                      : Church.tmx                       : actionTest
- 113 - TEST; hero3                      : Church.tmx                       : actionTest
- 114 - TEST; hero4                      : Church.tmx                       : actionTest
- 115 - TEST; hero5                      : Church.tmx                       : actionTest
- 116 - Attack Dummy; villain2           : Church.tmx                       : actionTest
- 117 - Attack Dummy; villain4           : Church.tmx                       : actionTest
- 118 - Attack Dummy; villain3           : Church.tmx                       : actionTest
- 119 - Attack Dummy; villain5           : Church.tmx                       : actionTest
+ 112 - Star; hero2                      : Church.tmx                       : actionTest
+ 113 - Elder Man; hero3                 : Church.tmx                       : actionTest
+ 114 - Manly Man; hero4                 : Church.tmx                       : actionTest
+ 115 - Kris Devil; hero5                : Church.tmx                       : actionTest
+ 116 - Killr; villain2                  : Church.tmx                       : actionTest
+ 117 - Tiny; villain4                   : Church.tmx                       : actionTest
+ 118 - DoctorDisco; villain3            : Church.tmx                       : actionTest
+ 119 - Wannabe Villain; villain5        : Church.tmx                       : actionTest
  120 - Argus; burly2                    : Factory.tmx                      : factoryWorkerEntrance
  121 - 
  122 - 

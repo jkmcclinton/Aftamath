@@ -2,15 +2,20 @@ package main;
 
 import static handlers.Vars.PPM;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Stack;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import box2dLight.Light;
@@ -19,9 +24,8 @@ import handlers.FadingSpriteBatch;
 import handlers.GameStateManager;
 import handlers.MyInput;
 import handlers.MyInputProcessor;
-import scenes.Scene;
+import handlers.Pair;
 import scenes.Song;
-
 
 /*
  * Name: Game.java
@@ -34,42 +38,50 @@ public class Game implements ApplicationListener {
 	public static final String TITLE = "Aftamath";
 	public static final int width = 864;
 	public static final int height = 500;
-	public static final int scale = 1;
+	public static final int scale = 3;
 	public static final float STEP = 1 / 60f;
-	public static final float DEFAULT_ZOOM = 3f;
 	public static final int MAX_INPUT_LENGTH = 20;
+	
 
 	public static Assets res = new Assets();
-	public static float musicVolume = 1f;
-	public static float soundVolume = .75f;
+	public static boolean hasControllers, fullscreen;
+	public static final float maxVolume = 1;
+	public static float musicVolume = maxVolume;
+	public static float soundVolume = .7f;
 	public Stack<Song> song;
 
 	private FadingSpriteBatch sb;
 	private Camera cam;
 	private Camera b2dCam;
 	private OrthographicCamera hudCam;
-	private static float zoom = 3;
 	private static String input = "";
 	private GameStateManager gsm;
 
 
 	public void create() {
 //		Texture.setEnforcePotImages(false);
-		Gdx.input.setInputProcessor(new MyInputProcessor());
+		MyInputProcessor iP = new MyInputProcessor();
+		Gdx.input.setInputProcessor(iP);
+		Controllers.addListener(iP);
 
 		res.loadTextures();
 		res.loadMusic();
 		res.loadScriptList(Gdx.files.internal("assets/scripts"));
 		res.loadLevelNames();
+		res.loadEventToTexture();
 
 		cam = new Camera();
-		cam.setToOrtho(false, width/zoom, height/zoom);
+		cam.setToOrtho(false, width/scale, height/scale);
 		hudCam = new OrthographicCamera();
 		hudCam.setToOrtho(false, width/2, height/2);
 		b2dCam = new Camera();
-		b2dCam.setToOrtho(false, width/3/PPM, height/3/PPM);
+		b2dCam.setToOrtho(false, width/scale/PPM, height/scale/PPM);
 		sb = new FadingSpriteBatch();
 		gsm = new GameStateManager(this);
+		
+        if(Controllers.getControllers().size == 0)
+            hasControllers = false;
+        else hasControllers = true;
 	}
 
 	public void render() {
@@ -77,6 +89,15 @@ public class Game implements ApplicationListener {
 		gsm.render();
 		MyInput.update();
 //		System.out.println("managed textures: "+Texture.getNumManagedTextures());
+		
+		 if (Gdx.input.isKeyPressed(Input.Keys.F5)) {
+	            fullscreen = !fullscreen;
+	            DisplayMode currentMode = Gdx.graphics.getDesktopDisplayMode();
+	            if(fullscreen)
+	            	Gdx.graphics.setDisplayMode(currentMode.width, currentMode.height, fullscreen);
+	            else
+	            	Gdx.graphics.setDisplayMode(width, height, fullscreen);
+		 }
 	}
 
 	public void update() {}
@@ -147,10 +168,11 @@ public class Game implements ApplicationListener {
 	public static final Array<String> SONG_LIST = new Array<>();
 	public static final Array<String> LEVEL_NAMES = new Array<>();
 	public static final HashMap<String, String> SCRIPT_LIST = new HashMap<>();
+	public static HashMap<String, Pair<String, Vector2>> EVENT_TO_TEXTURE = new HashMap<>();
 
 	public static class Assets {
 
-		private HashMap<String, Texture> textures;
+		private HashMap<String, String> textures;
 
 		public Assets() {
 			textures = new HashMap<>();
@@ -189,7 +211,6 @@ public class Game implements ApplicationListener {
 		public void loadTextures(){
 			FileHandle src = Gdx.files.internal("assets/images");
 			Array<FileHandle> handles =new Array<>();
-			Texture tex;
 			String key;
 
 			loadTextures(src, handles);
@@ -197,9 +218,7 @@ public class Game implements ApplicationListener {
 			for(FileHandle f:handles){
 				if(f.extension().equals("png")){
 					key = f.nameWithoutExtension();
-					tex =  new Texture(Gdx.files.internal(f.path()));
-//System.out.println(key);
-					textures.put(key, tex);
+					textures.put(key, f.path());
 				}
 			}
 		}
@@ -216,16 +235,49 @@ public class Game implements ApplicationListener {
 		}
 
 		public Texture getTexture(String key){
-			return textures.get(key);
+			String path = textures.get(key);
+			if(path!=null)
+				return new Texture(Gdx.files.internal(path));
+			else {
+//				System.out.println("Key \""+key+"\" is not a valid texture key");
+				return null;
+			}
 		}
 		
 		public String getScript(String key){
 			return SCRIPT_LIST.get(key);
 		}
-
-		public void disposeTexture(String key){
-			Texture tex = textures.get(key);
-			if (tex!= null) tex.dispose();
+		
+		/**
+		 * for use in the history section in the journal window;
+		 * only includes major events;
+		 * format from file: "eventName/ltextureName/loffX/loffY"
+		 */
+		public void loadEventToTexture() {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader("assets/eventToTexture.txt"));
+				String line = br.readLine();
+				String[] dat;
+				
+				while (line != null ) {
+					dat = line.split("/l");
+					if(getTexture(dat[1])!=null) {
+						EVENT_TO_TEXTURE.put(dat[0], new Pair<>(dat[1], 
+								new Vector2(Float.parseFloat(dat[2]), Float.parseFloat(dat[3]))));
+//						System.out.println("entry: \t"+dat[0]+" :: "+EVENT_TO_TEXTURE.get(dat[0]));
+					}
+					line = br.readLine();
+				}
+				
+				br.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+
+//		public void disposeTexture(String key){
+//			Texture tex = textures.get(key);
+//			if (tex!= null) tex.dispose();
+//		}
 	}
 }

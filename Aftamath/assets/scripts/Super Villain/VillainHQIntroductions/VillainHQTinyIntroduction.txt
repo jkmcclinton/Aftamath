@@ -18,4 +18,3 @@ setChoice(1: Tell me about yourself, 2: Are you flirting with me?)
 	end
 	
 done
-

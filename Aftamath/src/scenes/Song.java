@@ -14,7 +14,7 @@ public class Song {
 	public boolean fading, looping;
 	public float prevVolume;
 	
-	private boolean stopped, paused, toStop;
+	private boolean stopped, paused, toStop, forcedFade;
 	private int state, fadeType;
 	private float volume, goalVolume, speed;
 	
@@ -64,6 +64,12 @@ public class Song {
 	}
 	
 	public void update(float dt){
+		if((this.main.getVolume() > Game.musicVolume || this.main.getVolume() < Game.musicVolume) && !fading) {
+			volume = Game.musicVolume;
+			if(state==INTRO)intro.setVolume(volume);
+			else main.setVolume(volume);
+		}
+		
 		if(!paused&&!stopped)
 			if(state==INTRO){
 				if(!intro.isPlaying()&&!main.isPlaying()){
@@ -80,10 +86,10 @@ public class Song {
 	
 	public void play(){
 		if (state==INTRO) {
-//			intro.setVolume(volume);
+			intro.setVolume(volume);
 			intro.play();
 		} else {
-//			main.setVolume(volume);
+			main.setVolume(volume);
 			main.play();
 		}
 		stopped = paused = false;
@@ -131,6 +137,11 @@ public class Song {
 		setVolume(volume);
 	}
 	
+	public void forcedFadeOut(){
+		fadeOut(true);
+		forcedFade = true;
+	}
+	
 	public void fadeOut(){
 		fadeOut(true, NORMAL);
 	}
@@ -167,6 +178,7 @@ public class Song {
 	
 	public void fadeIn(float goal){
 		if(fading && fadeType==FADE_IN) return;
+		if(forcedFade) return;
 		fadeType = FADE_IN;
 		goalVolume = goal;
 		toStop = false;

@@ -14,13 +14,11 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.SerializationException;
 
 import entities.MobAI.AIType;
 import entities.MobAI.ResetType;
 import entities.Projectile.ProjectileType;
 import handlers.Animation.LoopBehavior;
-import handlers.FadingSpriteBatch;
 import handlers.JsonSerializer;
 import handlers.Vars;
 import main.Game;
@@ -34,8 +32,7 @@ public class Mob extends Entity{
 	public double strength = DEFAULT_STRENGTH;
 	public float attackRange = DEFAULT_ATTACK_RANGE, attackTime, attackDelay=DEFAULT_ATTACK_DELAY, aimMax = DEFAULT_AIM_THRESHOLD;;
 	public float voice;
-	public boolean ducking;
-	public boolean canClimb, wasOnGround, running;
+	public boolean canClimb, wasOnGround, running,ducking, canIdle;
 	public boolean climbing, falling, snoozing, knockedOut;
 	public float experience, aimTime, powerCoolDown;
 	public Vector2 respawnPoint;
@@ -92,7 +89,7 @@ public class Mob extends Entity{
 	protected static final float DEFAULT_ATTACK_RANGE = 20;
 	protected static final float DEFAULT_VISION_RANGE = 10*Vars.TILE_SIZE;
 	protected static final float DEFAULT_AIM_THRESHOLD = .8f;
-	protected static final float DEFAULT_COOLDOWN = 3f*0;
+	protected static final float DEFAULT_COOLDOWN = 3f;
 	protected static final float DEFAULT_KNOCKOUT_TIME = 3f;
 	protected static final double DEFAULT_STRENGTH = 1;
 	protected static final double DAMAGE_THRESHOLD = 4;
@@ -208,6 +205,7 @@ public class Mob extends Entity{
 		flamable = true;
 		isAttackable = true;
 		destructable = true;
+		canIdle = true;
 		attackTime = attackDelay;
 		iFF=IFFTag.FRIENDLY;
 		health = maxHealth = DEFAULT_MAX_HEALTH;
@@ -302,7 +300,7 @@ public class Mob extends Entity{
 				currentState.update(dt);
 
 			// idle animations
-			if (getAction() == Anim.STANDING && main.currentScript==null) {
+			if (getAction() == Anim.STANDING && main.currentScript==null && canIdle) {
 				idleTime+=dt;
 				if(idleTime>=idleDelay){
 					timesIdled +=1;
@@ -424,10 +422,6 @@ public class Mob extends Entity{
 ////			interactPair = null;
 //			}
 	}
-	
-	public void render(FadingSpriteBatch sb){
-		super.render(sb);
-	}
 
 	/**units in pixels*/
 	public void setPosition(Vector2 location){
@@ -458,9 +452,9 @@ public class Mob extends Entity{
 		int priority = actionPriorities[type];
 		int length = actionLengths[type];
 		
-		if(main != null && this.equals(main.character) && getAction()==Anim.LOOKING_UP)
-			main.getCam().removeFocus();
 		try{
+			if(main != null && this.equals(main.character) && getAction()==Anim.LOOKING_UP)
+				main.getCam().removeFocus();
 			animation.setFrames(Vars.removeEmptyFrames(TextureRegion.split(texture, width, height)[type], length),
 					delay, priority, type, loop, time, backwards);
 		} catch(Exception e){
@@ -711,15 +705,10 @@ public class Mob extends Entity{
 					if(health<0)health = 0;
 					die();
 				}
-				else if(val<=DAMAGE_THRESHOLD)
-					setAnimation(Anim.FLINCHING, LoopBehavior.ONCE);
-				else {
-					setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
-				}
 			}
 			
 			if(val<=DAMAGE_THRESHOLD){
-				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE);
+				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE*2);
 			} else {
 				setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
 			}
@@ -758,7 +747,7 @@ public class Mob extends Entity{
 			}
 			
 			if(val<=DAMAGE_THRESHOLD){
-				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE);
+				setAnimation(Anim.FLINCHING, LoopBehavior.ONCE, Vars.ACTION_ANIMATION_RATE*2);
 			} else {
 				setTransAnimation(Anim.STUMBLE, Anim.KNOCKED_OUT);
 			}
@@ -1166,6 +1155,7 @@ public class Mob extends Entity{
 		maxSpeed = RUN_SPEED;
 	}
 
+	private static final float s = Vars.ACTION_ANIMATION_RATE*.80f;
 	public void left(){
 		if(this.equals(main.character))
 			main.getCam().removeFocus();
@@ -1182,8 +1172,8 @@ public class Mob extends Entity{
 		if(running) x = 2;
 		if (body.getLinearVelocity().x > -maxSpeed) body.applyForceToCenter(-5f*x, 0, true);
 		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f)
-			setAnimation(Anim.RUNNING, LoopBehavior.ONCE);
-		else setAnimation(Anim.WALKING, LoopBehavior.ONCE);
+			setAnimation(Anim.RUNNING, LoopBehavior.ONCE, s);
+		else setAnimation(Anim.WALKING, LoopBehavior.ONCE, s);
 
 		if (!(this.equals(main.character)) && mustJump()){
 			jump();
@@ -1206,8 +1196,8 @@ public class Mob extends Entity{
 		if(running) x = 2;
 		if (body.getLinearVelocity().x < maxSpeed) body.applyForceToCenter(5f*x, 0, true);
 		if (Math.abs(body.getLinearVelocity().x)> WALK_SPEED+.15f) 
-			setAnimation(Anim.RUNNING, LoopBehavior.ONCE);
-		else setAnimation(Anim.WALKING, LoopBehavior.ONCE);
+			setAnimation(Anim.RUNNING, LoopBehavior.ONCE, s);
+		else setAnimation(Anim.WALKING, LoopBehavior.ONCE, s);
 
 		if (!(this.equals(main.character)) && mustJump()){
 			jump();
@@ -1223,8 +1213,8 @@ public class Mob extends Entity{
 		killVelocity();
 		
 		Entity interactable = getInteractable();
-		interactable.killVelocity();
-		if(getInteractable() instanceof Mob)
+		if(interactable!=null) interactable.killVelocity();
+		if(interactable instanceof Mob)
 			((Mob)interactable).watchPlayer();
 		return interactable.getScript();
 	}
@@ -1749,12 +1739,12 @@ public class Mob extends Entity{
 	// determines what animation gets played first 
 	protected static final int[] actionPriorities = {0,
 			1, /*WALKING*/
-			1, /*RUNNING*/
+			3, /*RUNNING*/
 			5, /*JUMPING*/
 			3, /*FALL_TRANS*/
 			3, /*FALLING*/
 			4, /*LANDING*/
-			3, /*DUCK*/
+			2, /*DUCK*/
 			1, /*DUCKING*/
 			0, /*LOOK_UP*/
 			0, /*LOOKING_UP*/
@@ -1777,7 +1767,7 @@ public class Mob extends Entity{
 			3, /*AIM_TRANS*/
 			3, /*AIMING*/
 			4, /*ATTACKING*/
-			4, /*PUNCHING*/
+			2, /*PUNCHING*/
 			6, /*DIE_TRANS*/
 			6, /*DEAD*/
 			3, /*EMBRACE*/

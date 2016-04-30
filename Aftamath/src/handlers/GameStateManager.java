@@ -89,7 +89,7 @@ public class GameStateManager {
 			g.getSpriteBatch().fade();
 			Song s = g.getSong();
 			if(s!=null)
-				s.fadeOut();
+				s.forcedFadeOut();
 		} else {
 			popState();
 			pushState(state, args);

@@ -84,6 +84,7 @@ pC                       : integer  : local    : onAttackedDisappointed
 pC                       : integer  : local    : supAttackedPartner
 part                     : integer  : local    : actionTest
 planet                   : flag     : global   : HeroHQEntry
+planet                   : flag     : global   : HeroHQEntryTEST
 playergender             : string   : local    : intro
 playertype               : integer  : local    : intro
 punchC                   : integer  : local    : attackedPartner

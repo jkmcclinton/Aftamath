@@ -1,17 +1,12 @@
 package handlers;
 
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
-import main.Main;
-import main.Player;
-import main.History;
-import scenes.Scene;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
@@ -20,6 +15,10 @@ import com.badlogic.gdx.utils.JsonValue;
 import entities.Entity;
 import entities.Mob;
 import entities.MobAI;
+import main.History;
+import main.Main;
+import main.Player;
+import scenes.Scene;
 
 public class JsonSerializer {
 
@@ -89,6 +88,46 @@ public class JsonSerializer {
 			gMain.setScene(scene);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	// return save state of format
+	/**
+	 * find savegame file; if file at index exists, preload data and store it into a parseable string
+	 * @param path loafus cramwell of slurmpville, how do I door?
+	 * @return string of format "playerType/lname/llocation/lplayTime"
+	 * @deprecated
+	 * @see Menu.findSave
+	 */
+	public static String preLoadState(FileHandle path){
+		try{
+			JsonValue root = new JsonReader().parse(path);
+			Json reader = new Json();
+			String s = "";
+			
+			// Load player data
+			for (JsonValue child = root.get("idToEntity").child(); child != null; child = child.next()) {
+				Entity e = reader.fromJson(Entity.class, child.toString());
+//				System.out.println("preloaded: "+e);
+				if(e.getSceneID() != 0) continue;
+				if(!(e instanceof Mob)) continue;
+				s = e.ID + "base/l" + ((Mob)e).getName() + "/l";
+				break;
+			}
+			
+			// Load Scene data
+			String level = root.getString("levelID");
+			TiledMap tileMap = new TmxMapLoader().load("assets/maps/" + level + ".tmx");
+			s += tileMap.getProperties().get("name", String.class) + "/l";
+			
+			// Load Playtime
+			History h = reader.fromJson(History.class, root.get("history").toString());
+			s += h.playTime;
+			
+			return s;
+		} catch (Exception e){
+			e.printStackTrace();
+			return null;
 		}
 	}
 	

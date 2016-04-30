@@ -123,4 +123,8 @@ public class Particle  {
 	
 	public PointLight getLight(){ return light; }
 
+	public void dispose() {
+		anim.dispose();
+	}
+
 }

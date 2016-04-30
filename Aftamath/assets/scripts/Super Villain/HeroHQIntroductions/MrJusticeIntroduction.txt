@@ -6,8 +6,8 @@ face(Player,This)
 Text(happy, {Here's my favorite pal!})
 
 setSpeaker(Player)
-setChoice(1:Tell me about yourself, 2:About the headquarters, 3:What do I do now?)
-	[Choice Tell me about yourself]
+setChoice(1:About you, 2:About the headquarters, 3:What do I do now?)
+	[Choice About you]
 	    setSpeaker(This)
 		Text({Oh, where to start? It all began when I was born.})
 		Text ({The doctors claimed they had never seen anything like me before.})
@@ -58,6 +58,4 @@ end
 
 
 	
-done
-				
-				
+done				
