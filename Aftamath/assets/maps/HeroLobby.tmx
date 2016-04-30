@@ -592,7 +592,7 @@
   </object>
   <object id="40" x="366.667" y="44.5" width="16" height="178.833">
    <properties>
-    <property name="HeroHQEntry" value="!HeroHQ1stEntry"/>
+    <property name="HeroHQEntry" value="!heroEntry"/>
     <property name="event" value=""/>
    </properties>
   </object>

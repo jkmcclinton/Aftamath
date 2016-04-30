@@ -116,6 +116,6 @@ setDialogue(Manly Man, ManlyManIntroduction)
 setDialogue(Elder Man, ElderManIntroduction)
 setDialogue(Star, StarIntroduction)
 
-
+SetFlag(heroEntry, true)
 
 done 
