@@ -1,6 +1,7 @@
 package main;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -12,11 +13,11 @@ public class History implements Serializable {
 	public HashMap<String, Boolean> flagList;
 	public float playTime;
 	
-	private HashMap<String, String> eventList;
+	private TreeMap<String, Event> eventList;
 	private HashMap<String, Object> variableList;
 	
 	public History(){
-		eventList = new HashMap<>();
+		eventList = new TreeMap<>();
 		flagList = new HashMap<>();
 		variableList = new HashMap<>();
 		
@@ -61,7 +62,7 @@ public class History implements Serializable {
 		if (findEvent(event)) {
 			return false;
 		}
-		eventList.put(event, description);
+		eventList.put(event, new Event(description, eventList.size() + 1));
 		return true;
 	}
 	
@@ -71,7 +72,7 @@ public class History implements Serializable {
 	
 	public String getDescription(String event){
 		if (findEvent(event)) {
-			return eventList.get(event);
+			return eventList.get(event).description;
 		}
 		return null;
 	}
@@ -123,12 +124,12 @@ public class History implements Serializable {
 	}
 	
 	public HashMap<String, Object> getVarlist(){ return variableList; }
-	public HashMap<String, String> getEventList(){ return eventList; }
+	public TreeMap<String, Event> getEventList(){ return eventList; }
 
 	@Override
 	public void read(Json json, JsonValue val) {
 		for (JsonValue child = val.getChild("eventList"); child != null; child = child.next()) {
-			this.eventList.put(child.name(), child.getString("value"));
+			this.eventList.put(child.name(), json.fromJson(Event.class, child.toString()));
 		}
 		
 		for (JsonValue child = val.getChild("flagList"); child != null; child = child.next()) {
@@ -150,5 +151,4 @@ public class History implements Serializable {
 		json.writeValue("variableList", this.variableList);
 		json.writeValue("playTime", this.playTime);
 	}
-	
 }

@@ -51,7 +51,7 @@ public class JournalEntry extends MenuObj{
 		
 		image = new TextureRegion(src, offx, offy, 64, 64);
 		entry = new MenuObj(((Main)gs).history.getDescription(text),
-				SourceType.TEXT, x, y, 17, 8, gs);
+				SourceType.TEXT, x, y, 15, 8, gs);
 	}
 	
 	public void update(float dt){

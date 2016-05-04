@@ -120,6 +120,8 @@ public class MenuObj {
 		this.gs = gs;
 		this.args = null;
 		
+		if(tex==null)
+			tex = Game.res.getTexture("empty");
 		this.image = new TextureRegion(tex);
 		this.width = tex.getWidth();
 		this.height = tex.getHeight();

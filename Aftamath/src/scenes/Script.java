@@ -1154,6 +1154,7 @@ public class Script implements Serializable {
 					}
 					w1.setLink(w2);
 					w1.next = s2;
+					w1.setLinkID(w2.warpID);
 					
 					TextTrigger tt = w1.getTextTrigger();
 					if(tt!=null)

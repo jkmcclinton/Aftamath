@@ -142,12 +142,12 @@ public class Main extends GameState {
 						rayHandle   = true, //include lighting?
 						render 		= true,  //render world?
 						dbtrender 	= false, //render debug text?
-						debugging   = false,	 //in debug mode?
+						debugging   = true,	 //in debug mode?
 						cwarps      = true,	 //create warps?
 						document    = false, //document variables?
 						random;
-	public static String debugLoadLoc = "Warehouse"; //where the player starts
-	public static String debugPlayerType = "femaleplayer2"; //what the player looks like in debug mode
+	public static String debugLoadLoc = "CommercialDistrictNW"; //where the player starts
+	public static String debugPlayerType = "oldlady1"; //what the player looks like in debug mode
 //	public static Color ambC = new Color(Vars.NIGHT_LIGHT);
 
 	public Main(GameStateManager gsm) {
@@ -1462,6 +1462,7 @@ public class Main extends GameState {
 		//link all warps together
 		for(Warp i : warps.values()){
 			i.setLink(warps.get(i.next + i.getLinkID()));
+//			System.out.println(i);
 		}
 	}
 	

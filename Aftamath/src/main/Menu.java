@@ -952,14 +952,16 @@ public class Menu {
 	
 	public void increaseScrollOffX(){
 		prevScroll = scrollOff.cpy();
-		goalScroll = new Vector2(prevScroll.x + JournalEntry.PERIODX*4, prevScroll.y);
+		MenuObj m = getObj(gs.cursor);
+		goalScroll = new Vector2(m.x + JournalEntry.PERIODX*4, prevScroll.y);
 		scrolling = true;
 		scrollTime = 0;
 	}
 	
 	public void decreaseScrollOffX(){
 		prevScroll = scrollOff.cpy();
-		goalScroll = new Vector2(prevScroll.x - JournalEntry.PERIODX*4, prevScroll.y);
+		MenuObj m = getObj(gs.cursor);
+		goalScroll = new Vector2(m.x - JournalEntry.PERIODX*4, prevScroll.y);
 		scrolling = true;
 		scrollTime = 0;
 	}

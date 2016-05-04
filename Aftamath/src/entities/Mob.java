@@ -1632,7 +1632,6 @@ public class Mob extends Entity{
 		return n;
 	}
 	
-	@Override
 	public void read(Json json, JsonValue val) {
 		super.read(json, val);
 		float rx = val.getFloat("respawnPointX");

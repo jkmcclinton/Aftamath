@@ -86,6 +86,7 @@ public class JsonSerializer {
 				Warp w = reader.fromJson(Warp.class, child.toString());
 				tmpWarps.put(w.locID + w.warpID, w);
 			}
+			
 			//initialize each warp's link
 			for (Warp w : tmpWarps.values()) {
 				w.setLink(tmpWarps.get(w.next + w.getLinkID()));

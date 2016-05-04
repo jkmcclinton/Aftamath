@@ -85,6 +85,7 @@ public class Entity implements Serializable {
 	}
 	
 	public static void addMapping(int id, Entity entity) {
+		if(id!=-1)
 		idToEntity.put(id, entity);
 	}
 	
@@ -444,6 +445,10 @@ public class Entity implements Serializable {
 	
 	public void respawn(){
 		dead = died = false;
+		if(animation==null){
+			System.out.println("firin mah laser: "+this);
+//			loadSprite();
+		}else
 		animation.reset();
 		if(main!=null) {
 			main.removeBody(body);

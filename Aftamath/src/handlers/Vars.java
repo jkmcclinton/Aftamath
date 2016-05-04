@@ -150,13 +150,17 @@ public class Vars {
 			s = text.get(y);
 			lastSpace=0;
 			for(int x = 0; x< s.length(); x++){
-				if (s.substring(x, x + 1).equals(" "))
+				if (s.substring(x, x + 1).equals(" ")||
+						s.substring(x, x + 1).equals("-"))
 					lastSpace = x;
 				if(x > w){
 					String extra = "";
 					if(lastSpace!=0){
+						String hyphen = "";
+						if(text.get(y).substring(lastSpace, lastSpace+1).equals("-"))
+							hyphen = "-";
 						extra = text.get(y).substring(lastSpace+1);
-						text.set(y,  text.get(y).substring(0, lastSpace));
+						text.set(y,  text.get(y).substring(0, lastSpace) + hyphen);
 					} else {
 						extra = text.get(y).substring(w+1);
 						text.set(y, text.get(y).substring(0, w) + "-");

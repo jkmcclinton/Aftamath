@@ -85,8 +85,9 @@ public class Warp extends Entity {
 	
 //	public void setOwner(Scene owner){ this.owner =owner; }
 	public int getLinkID(){ return nextWarp; }
+	public void setLinkID(int id){ this.nextWarp = id; }
 	public Warp getLink() { return link; }
-	public void setLink(Warp link){this.link = link; }
+	public void setLink(Warp link){this.link = link;}
 	public Vector2 getWarpLoc(){ return warpLoc.cpy(); }
 	public void setOffset(float x, float y){ 
 		offset = new Vector2(x, y); 
@@ -171,6 +172,8 @@ public class Warp extends Entity {
 	}
 	
 	public String toString(){
-		return "Warp: "+locTitle+warpID;
+		if(link==null)
+		return "Warp: "+locTitle+warpID+"\tlink: "+link+"\tnext: "+next;
+		return "Warp: "+locTitle+warpID+"\tlink: "+link.locTitle+link.warpID+"\tnext: "+next;
 	}
 }
