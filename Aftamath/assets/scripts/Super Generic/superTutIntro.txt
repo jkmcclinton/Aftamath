@@ -1,14 +1,14 @@
 Script Main
 
 lockplayer
-declare(fill, local, String, {hero})
+declare(fill, local, String, {MrJustice})
 
 if([player.niceness >= 0])
-	setSpeaker(Hero, true)
-	face(Hero, player)
+	setSpeaker(MrJustice, true)
+	face(MrJustice, player)
 	text(normal, {Hey kid, over here.})
 	removeFocus
-	move(player, Hero)
+	move(player, MrJustice)
 	#text(flirty, {I saw what you did in that bar.})
 	#text(flirty, {Not to shabby for a n00b, if I do say so myself.})
 	
@@ -24,7 +24,7 @@ if([player.niceness >= 0])
 			setSpeaker(narrator)
 			text(normal, {For your information, it means-})
 			
-			setSpeaker(Hero)
+			setSpeaker(MrJustice)
 			text(happy, {Nope! Not important! What IS important though is that supapowers lie at the heart of JUSTICE!})
 			text(mad, {Why else would I be wearing these vibrantly colored tights, if not to quell the foul scum that is evil? ~I'm no glutton for punishent!})
 			text(happy, {SO! You, my friend, are going to prove to me that you indeed have supapowers on this fine, sunny day!})
@@ -40,9 +40,9 @@ if([player.niceness >= 0])
 		end
 	end
 	
-	setDialogueScript(Hero, {tutDescribe})
-	setAttackScript(Hero, {tutOnAttacked})
-	setSuperAttackScript(Hero, {tutOnSupAttacked})
+	setDialogueScript(MrJustice, {tutDescribe})
+	setAttackScript(MrJustice, {tutOnAttacked})
+	setSuperAttackScript(MrJustice, {tutOnSupAttacked})
 else
 	setSpeaker(Villain, true)
 	face(Villain, player)

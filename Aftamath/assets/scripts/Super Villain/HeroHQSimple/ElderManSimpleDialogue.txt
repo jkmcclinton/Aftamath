@@ -1,0 +1,20 @@
+Script ElderManSimpleDialogue
+lockplayer
+face(player, Elder Man)
+face(Elder Man, player)
+
+setSpeaker(Elder Man)
+text({By my stars, what are you doing in here?})
+text(mad, {You young people have such a sense of entitlement!})
+text(mad, {Walking in here like you own the place, pah!})
+text(mad, {You better check yourself before you wreck yourself, son!})
+text(mad, {I got a whole lot of punch coming for your ass!})
+
+doAction(Elder Man, aim, player)
+doAction(Elder Man, loseaim, player)
+
+text(sad, {Ah, my back!})
+text(mad, {Don't think this is the end! I'll get you...!})
+text(sad, {Damn, I guess you get off this time.})
+
+done

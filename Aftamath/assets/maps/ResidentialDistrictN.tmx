@@ -10,7 +10,7 @@
   <property name="previous" value="Tha Hood"/>
   <property name="spawners" value="false"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200" columns="72">
   <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -286,7 +286,7 @@
     <property name="NPC" value="hero1"/>
     <property name="attckScript" value="onAttacked2"/>
     <property name="layer" value="front"/>
-    <property name="name" value="Hero"/>
+    <property name="name" value="MrJustice"/>
     <property name="nickName" value="Some guy in tights"/>
     <property name="powerType" value="FIRE"/>
     <property name="script" value="superGlare"/>

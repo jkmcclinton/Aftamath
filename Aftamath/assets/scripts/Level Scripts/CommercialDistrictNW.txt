@@ -14,10 +14,10 @@ if(goneInBar)
 	if((GoodBar or [player.niceness >= 0]) and !supTutIntro)
 		declare(found, local, Flag, false)
 		wait(.01)
-		findObject(Hero, found)
+		findObject(MrJustice, found)
 		if(!found)
-			spawn(NPC, hero1, Hero, 54, 78, 12)
-			setDialogue(Hero, {tutDescribe})
+			spawn(NPC, hero1, MrJustice, 54, 78, 12)
+			setDialogue(MrJustice, {tutDescribe})
 		end
 	else
 		if((EvilBar or [player.niceness < 0]) and !supTutIntro)

@@ -11,13 +11,13 @@ Scene ID                                Spawned by                         Scrip
  009 - Ms. Pancakes; oldlady1           : ResidentialDistrictN.tmx         : generic_1
  010 - Narrator; narrator1              : ResidentialDistrictN.tmx         : intro
  011 - 
- 012 - Hero; hero1                      : ResidentialDistrictN.tmx         : superGlare
+ 012 - MrJustice; hero1                 : ResidentialDistrictN.tmx         : superGlare
  013 - Disco; villain3                  : ThaHood.tmx                      : disco
  014 - Sarge; burly2                    : CommercialDistrictNW.tmx         : sarge
  015 - Villain; villain1                : ResidentialDistrictN.tmx         : superGlare
  016 - 
- 017 - Lawyer; boss2			: Subway.tmx
- 018 - Tiny; villain4			: Subway.tmx
+ 017 - 
+ 018 - 
  019 - 
  020 - Jessica; girlfriend3             : Lobby1.tmx                       : secretary
  021 - Cashier; cashier                 : EZMart.tmx                       : cashierBuy
@@ -45,11 +45,11 @@ Scene ID                                Spawned by                         Scrip
  043 - Jose; gangster2                  : Bar.tmx                          : generic_1
  044 - 
  045 - 
- 046 - MrJustice, hero1			: HeroLobby
- 047 - Star, hero2			: HeroLobby
- 048 - Elder Man, hero3			: HeroLobby
- 049 - Manly Man, hero4			: HeroLobby
- 050 - Kris Devil,hero5			: HeroLobby
+ 046 - 
+ 047 - 
+ 048 - 
+ 049 - 
+ 050 - 
  051 - 
  052 - 
  053 - 
@@ -79,6 +79,7 @@ Scene ID                                Spawned by                         Scrip
  077 - 
  078 - 
  079 - 
+ 080 - Lawyer; boss2                    : Subway.tmx                       : heroquest3
  080 - TEST; boss2                      : Church.tmx                       : actionTest
  081 - TEST; cashier                    : Church.tmx                       : actionTest
  082 - TEST; hippie                     : Church.tmx                       : actionTest
@@ -103,7 +104,7 @@ Scene ID                                Spawned by                         Scrip
  101 - HAHAHAHAHA; witch                : Church.tmx                       : actionTest
  102 - Darth Droid; robot1              : Church.tmx                       : actionTest
  103 - Your Maker; reaper               : Church.tmx                       : actionTest
- 104 - TEST; maleplayer1                : Church.tmx                       : actionTest
+ 104 - TEST; maleplayer1                : Church.tmx                       : MrJusticeAfterQ3I
  105 - TEST; maleplayer2                : Church.tmx                       : actionTest
  106 - TEST; maleplayer3                : Church.tmx                       : actionTest
  107 - TEST; maleplayer4                : Church.tmx                       : actionTest
@@ -112,9 +113,13 @@ Scene ID                                Spawned by                         Scrip
  110 - HLRMS-110; robot1                : BusinessDistrict.tmx             : getMail
  111 - Attack Dummy; dummy2             : Church.tmx                       : actionTest
  112 - Star; hero2                      : Church.tmx                       : actionTest
+ 112 - Star; hero2                      : HeroLobby.tmx                    : HeroHQEntry
  113 - Elder Man; hero3                 : Church.tmx                       : actionTest
+ 113 - Elder Man; hero3                 : HeroLobby.tmx                    : HeroHQEntry
  114 - Manly Man; hero4                 : Church.tmx                       : actionTest
+ 114 - Manly Man; hero4                 : HeroLobby.tmx                    : HeroHQEntry
  115 - Kris Devil; hero5                : Church.tmx                       : actionTest
+ 115 - Kris Devil; hero5                : HeroLobby.tmx                    : HeroHQEntry
  116 - Killr; villain2                  : Church.tmx                       : actionTest
  117 - Tiny; villain4                   : Church.tmx                       : actionTest
  118 - DoctorDisco; villain3            : Church.tmx                       : actionTest

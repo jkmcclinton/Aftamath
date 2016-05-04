@@ -581,7 +581,7 @@
   <object id="32" x="431.5" y="44.5835" width="16" height="178.833">
    <properties>
     <property name="event" value=""/>
-    <property name="heroquest3" value=""/>
+    <property name="heroquest3" value="!heroquestlawyer"/>
    </properties>
   </object>
  </objectgroup>

@@ -1,0 +1,15 @@
+Script ManlyManSimpleDialogue
+lockplayer
+face(player, Manly Man)
+face(Manly Man, player)
+
+setSpeaker(Manly Man)
+text(mad, {Who the hell are you?})
+text(flirty, {Bold move, coming right into the supahero headquarters.})
+text(flirty, {I can appreciate that, hombre. Or...mujer. I can't really tell.})
+text({My eyes are kind of poor. My cheek muscles are so defined that sometimes they block my vision.})
+text({If you're looking for a fight, you've come to the right place.})
+text(happy, {Pero, I might let you live.})
+text({We'll see.})
+
+done

@@ -10,7 +10,7 @@ if(found)
 	value(add, num, 1)
 end
 
-findObject(Hero, found)
+findObject(MrJustice, found)
 if(found)
 	value(add, num, 2)
 end
@@ -26,7 +26,7 @@ end
 
 #Player did evil and Villain is not present
 if([num = 2])
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	face(Hero, player)
 	text(flirty, {Hey kid, you seem kind of... evil....})
 	text(mad, {If I catch you doing any sort of injustice to the world I won't hesitate to put you behind bars.})
@@ -35,10 +35,10 @@ end
 
 #Player has not done the bar event yet
 if([num = 3])
-	face(Villain, Hero)
-	face(Hero, Villain)
+	face(Villain, MrJustice)
+	face(MrJustice, Villain)
 
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	text(mad, {(glare)...})
 
 	setSpeaker(Villain)

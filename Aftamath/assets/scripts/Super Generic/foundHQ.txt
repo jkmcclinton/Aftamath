@@ -20,10 +20,17 @@ if(HeroTut or VillainTutGood)
 		text(flirty, {I didn't expect you to walk all the way over here so fast! I assumed you would just get lost somewhere and quit.})
 		text(happy, {Well that just tells me I should trust my new sidekick some more!})
 	else
-		text({I would love to go do some Justice with you /player, but right now's not the time.})
-		text({We don't have an HQ, a team, or a team of villains and bandits with whom to fight!})
-		text(mad, {Oh, the injustice!})
-		text(flirty, {You know, there still is that socialist freak down in the Subway we can still fight with...})
+		text({Are you ready for justice, /player?})
+		text({Look at the magnificence of the HQ! You know, the artist put in a lot of work here.})
+		text(flirty, {Come in, come in! Let's meet the gang!})
+		move(MrJustice, 29, 28)
+		teleport(MrJustice, HeroLobby, 25, 13)
+		setDialogue(MrJustice, HeroHQEntry)
+		setDialogue(Star, HeroHQEntry)
+		setDialogue(Elder Man, HeroHQEntry)
+		setDialogue(Manly Man, HeroHQEntry)
+		setDialogue(Kris Devil, HeroHQEntry)
+		SetFlag(HeroIntroEvent, true)
 	end
 end
 done

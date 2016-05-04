@@ -1,0 +1,13 @@
+Script StarSimpleDialogue
+lockplayer
+face(Star, player)
+face(player, Star)
+
+setSpeaker(Star)
+Text(flirty, {Oh my gosh! Who are you?})
+Text({Um, you won't cause trouble or anything, right?})
+Text({Should I be attacking you right now?})
+Text({Because I mean technically you're not supposed to be in here...})
+Text(happy, {Um, I'll just leave you alone. Don't break anything!})
+
+done

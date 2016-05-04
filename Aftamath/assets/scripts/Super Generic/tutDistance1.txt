@@ -4,7 +4,7 @@ face(this, player)
 face(player, this)
 	
 if([player.niceness >= 0])
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	text(mad, {Where are you going? I'm trying to teach you somehing!})
 else
 	setSpeaker(Villain)

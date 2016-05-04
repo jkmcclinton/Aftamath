@@ -540,16 +540,6 @@
     <property name="warp" value=""/>
    </properties>
   </object>
-  <object id="35" name="29" x="406" y="203.333" width="16" height="16">
-   <properties>
-    <property name="ID" value="98"/>
-    <property name="NPC" value="hero1"/>
-    <property name="layer" value="front"/>
-    <property name="name" value="MrJustice"/>
-    <property name="script" value="HeroHQEntry"/>
-    <property name="state" value="FACEPLAYER"/>
-   </properties>
-  </object>
   <object id="36" name="31" x="514" y="201.333" width="16" height="16">
    <properties>
     <property name="ID" value="112"/>
@@ -592,7 +582,7 @@
   </object>
   <object id="40" x="366.667" y="44.5" width="16" height="178.833">
    <properties>
-    <property name="HeroHQEntry" value="!heroEntry"/>
+    <property name="HeroHQEntry" value="HeroIntroEvent"/>
     <property name="event" value=""/>
    </properties>
   </object>

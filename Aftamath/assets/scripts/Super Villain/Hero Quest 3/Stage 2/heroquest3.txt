@@ -13,6 +13,6 @@ focus(player)
 
 setDialogue(Lawyer, heroquest3-1)
 
-setFlag(heroquest3, true)
+setFlag(heroquestlawyer, true)
 
 done

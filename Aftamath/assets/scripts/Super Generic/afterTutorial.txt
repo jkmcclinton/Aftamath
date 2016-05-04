@@ -66,14 +66,14 @@ if([player.niceness < 0])
 	text(flirty, {Hmm... I just got an idea...})
 
 	#enter Hero
-	spawn(NPC, hero1, Hero, 40, 78, 12)
-	face(Villain, Hero)
-	face(player, Hero)
-	face(Hero, Villain)
-	focus(Hero)
-	move(Hero, 48, 28)
+	spawn(NPC, hero1, MrJustice, 40, 78, 12)
+	face(Villain, MrJustice)
+	face(player, MrJustice)
+	face(MrJustice, Villain)
+	focus(MrJustice)
+	move(MrJustice, 48, 28)
 	
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	eventMusic(Tension and Excitement)
 	text(mad, {What? What are you doing?})
 
@@ -81,7 +81,7 @@ if([player.niceness < 0])
 	setSpeaker(Villain)
 	text(sad, {What it looks like. Training a new recruit.})
 
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	if([player.gender = male])
 		text(mad, {Training? I know what this really is! ~A hostage!/lHold on, I'll save you!})
 	else
@@ -90,17 +90,17 @@ if([player.niceness < 0])
 	end
 	
 	#hero runs to player
-	move(Hero, 52, 78)
+	move(MrJustice, 52, 78)
 	move(player, 50, 78, false)
 	#doAction(Villain, shoot, Hero)
-	attack(Villain, Hero)
+	attack(Villain, MrJustice)
 	
 	setSpeaker(Villain)
 	text(mad, {Hands off. ~This rookie's mine.})
 
 	face(player, Villain)
-	setSpeaker(Hero)
-	face(Hero)
+	setSpeaker(MrJustice)
+	face(MrJustice)
 	text(sad, {You're not serious about joining her, are you? })
 	text(sad, {Listen, I know I'm not the smartest or the coolest guy around, but at least I have a heart.})
 	text(normal, {A life full of wrongdoings is not a life worth living. What good are powers if they're used for evil?})
@@ -110,7 +110,7 @@ if([player.niceness < 0])
 	text(normal, {Don't you understand that you'll only ever reach your full power by not caring about those around you?})
 	text(normal, {If you constantly let others limit you with things like "morals" or "duty," you'll always be pathetic.})
 
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	text(sad, {...sigh... let /player choose for /playergppself.})
 
 	declare(ask, local, integer, 0)
@@ -118,34 +118,34 @@ if([player.niceness < 0])
 	setChoice(6:Villain, 6:Hero, 4:NEITHER!, 3:Do I have to?)
 		[choice Hero]
 			setEvent(VillainTutGood, {Flying Chick taught you stuff. Decided to go with supahero})
-			setAttackScript(Hero, {onAttackedPleased})
+			setAttackScript(MrJustice, {onAttackedPleased})
 			setDialogue(Villain, {disappointedVillain})
 			setAttackScript(Villain, {onAttackedDisappointed})
 			setNickName(Villain, The Flying Chick)
-			face(player, Hero)
+			face(player, MrJustice)
 			value(add, player.niceness, 2)
 		
-			setSpeaker(Hero)
+			setSpeaker(MrJustice)
 			text(happy, {I knew you were a good person from the moment I saw you.})
 		
 			# move player and hero stage left
-			setDialogueScript(Hero, visitHeroHQ)
+			setDialogueScript(MrJustice, visitHeroHQ)
 			stop
 		end
 	
 		[choice Villain]
 			setEvent(VillainTut, {Flying Chick taught you stuff. Decided to be evil!})
 			setAttackScript(Villain, {onAttackedPleased})
-			setDialogueScript(Hero, {disappointedHero})
-			setAttackScript(Hero, {onAttackedDisappointed})
-			setNickName(Hero, Mr. Justice)
+			setDialogueScript(MrJustice, {disappointedHero})
+			setAttackScript(MrJustice, {onAttackedDisappointed})
+			setNickName(MrJustice, Mr. Justice)
 			value(add, player.niceness, -2)
 			face(player, Villain)
 		
 			setSpeaker(Villain)
 			text(happy, {I knew I made the right choice in trusting you.})
 		
-			setSpeaker(Hero, true)
+			setSpeaker(MrJustice, true)
 			text(mad, {Today, /player, you have made an enemy!})
 			text(mad, {You and I will fight to the death one day, and it will be glorious!})
 			text(mad, {This I swear!})
@@ -160,19 +160,19 @@ if([player.niceness < 0])
 	
 		[choice NEITHER!]
 			setEvent(RogueTutorial, {Decided to be neutral after Flying Chick taught you supapowers})
-			setNickName(Hero, Mr. Justice)
+			setNickName(MrJustice, Mr. Justice)
 			setSpeaker(player)
 			text(normal, {Screw both of you!/l/lWhatever's going on between you two, leave me out of it.})
 		
 			setDialogueScript(Villain, {disappointedVillain})
-			setDialogueScript(Hero, {disappointedHero})
+			setDialogueScript(MrJustice, {disappointedHero})
 			setAttackScript(Villain, {onAttackedDisappointed})
-			setAttackScript(Hero, {onAttackedDisappointed})
+			setAttackScript(MrJustice, {onAttackedDisappointed})
 		end
 	
 		[choice Do I have to?]
 			if([ask = 0])
-				setSpeaker(Hero)	
+				setSpeaker(MrJustice)	
 				face(player, Villain)
 				value(add, ask, 1)
 				text(mad, {What do you mean, do you have to?})
@@ -197,12 +197,12 @@ if([player.niceness < 0])
 else
 	text(normal, {Heh... Kid, you're a natural.})
 	text(normal, {Come with me, kid - I have great plans for you.})
-	setNickName(Hero, Mr. Justice)
+	setNickName(MrJustice, Mr. Justice)
 	text(normal, {That's right! You earned yourself something positively GRAND!})
 
 	#enter Villain
 	spawn(NPC, villain1, Villain, 40, 78)
-	face(Hero, Villain)
+	face(MrJustice, Villain)
 	face(player, Villain)
 	focus(Villain)
 	move(Villain, 48, 28)
@@ -212,7 +212,7 @@ else
 	text(sad, {Oh, you're here too...})
 
 	removeFocus
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	text(happy, {I'm here! ~Yes, I'm always here to save the day! That's why they call me a here-o.})
 	text(happy, {Get it? ~Hahahahaha!})
 
@@ -223,7 +223,7 @@ else
 	setSpeaker(player)
 	text(normal, {...})
 
-	setSpeaker(Hero)
+	setSpeaker(MrJustice)
 	text(normal, {Of course /playergo is. We'll be living the life. })
 	text(normal, {Saving beautiful damsels in distress, making the world a better place, dancing in the rain, drinking from the same cup with two straws-})
 
@@ -233,9 +233,9 @@ else
 	text(normal, {Have you ever thirsted for a life full of excitement, chaos, and limitless power?})
 	text(normal, {Come with me, and I can show you things you never even thought possible.})
 
-	setSpeaker(Hero)
-	face(Hero, player)
-	face(player, Hero)
+	setSpeaker(MrJustice)
+	face(MrJustice, player)
+	face(player, MrJustice)
 	text(sad, {Surely you're not considering it, right?/lWhat good are powers if they're used for evil?})
 	text(normal, {L-Look, I know I'm not the smartest or the coolest guy around, but at least I have a heart.})
 	text(normal, {A life full of wrongdoings is not a life worth living.})
@@ -248,26 +248,26 @@ else
 	setChoice(6:Hero, 6:Villain, 4:NEITHER!, 3:Do I have to?)
 		[choice Hero]
 			setEvent(HeroTut, {Mr. Justice taught you stuff. Decided to fight for JUSTICE!})
-			setAttackScript(Hero, {onAttackedPleased})
+			setAttackScript(MrJustice, {onAttackedPleased})
 			setDialogueScript(Villain, {disappointedVillain})
 			setAttackScript(Villain, {onAttackedDisappointed})
 			setNickName(Villain, Flying Chick)
 			value(add, player.niceness, 2)
-			face(player, Hero)
+			face(player, MrJustice)
 		
-			setSpeaker(Hero)
+			setSpeaker(MrJustice)
 			text(happy, {I knew you were a good person from the moment I saw you.})
 		
 			# move player and hero stage left
-			setDialogueScript(Hero, visitHeroHQ)
+			setDialogueScript(MrJustice, visitHeroHQ)
 			stop
 		end
 	
 		[choice Villain]
 			setEvent(HeroTutEvil, {Mr. Justice taught you stuff. Decided to be evil!})	
 			setAttackScript(Villain, {onAttackedPleased})
-			setDialogueScript(Hero, {disappointedHero})
-			setAttackScript(Hero, {onAttackedDisappointed})
+			setDialogueScript(MrJustice, {disappointedHero})
+			setAttackScript(MrJustice, {onAttackedDisappointed})
 			setNickName(Villain, The Flying Chick)
 			value(add, player.niceness, -2)
 			face(player, Villain)
@@ -275,7 +275,7 @@ else
 			setSpeaker(Villain)
 			text(happy, {Excellent...})
 		
-			setSpeaker(Hero, true)
+			setSpeaker(MrJustice, true)
 			text(sad, {/player/c! ~WHY?!})
 			text(sad, {I had so much hope for you!})
 		
@@ -294,15 +294,15 @@ else
 			text(normal, {Screw both of you! /l/lWhatever's going on between you two, leave me out of it.})
 		
 			setDialogueScript(Villain, {disappointedVillain})
-			setDialogueScript(Hero, {disappointedHero})
+			setDialogueScript(MrJustice, {disappointedHero})
 			setAttackScript(Villain, {onAttackedDisappointed})
-			setAttackScript(Hero, {onAttackedDisappointed})
+			setAttackScript(MrJustice, {onAttackedDisappointed})
 		end
 	
 		[choice Do I have to?]
 			if([ask = 0])
-				setSpeaker(Hero)
-				face(player, Hero)
+				setSpeaker(MrJustice)
+				face(player, MrJustice)
 				value(add, ask, 1)
 				text(mad, {What do you mean, do you have to?})
 				text(mad, {This is the choice of a lifetime! A superperson's defining moment!})
