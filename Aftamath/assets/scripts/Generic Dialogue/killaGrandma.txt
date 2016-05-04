@@ -1,0 +1,14 @@
+Script Main
+
+lockplayer
+setSpeaker(this)
+text({I is a old lady.})
+text({I gots a cain and...})
+doAction(this, aim, player, 10, false)
+text({A shotgun....})
+
+if(laughedAtOldLady)
+	text({You ain't gon laugh at this old lady...})
+end
+
+done

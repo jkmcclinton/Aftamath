@@ -133,6 +133,7 @@ public class MyContactListener implements ContactListener {
 			SpeechBubble cb = null;
 			
 			//determine indicator
+			if(w.conditionsMet()){
 			if(m.equals(main.character))
 				if(w.getLink()!=null){
 					if(w.getLink().outside && w.outside){
@@ -150,12 +151,14 @@ public class MyContactListener implements ContactListener {
 				if (m.equals(main.character))
 					main.initWarp(w);
 				else; //move the Mob to that Level
+			}
 		} if(typeB.equals("warp") && typeA.equals("foot")){
 			Mob m = (Mob) entA;
 			Warp w = (Warp) entB;
 			SpeechBubble cb = null;
 			
 			//determine indicator
+			if(w.conditionsMet()){
 			if(m.equals(main.character))
 				if(w.getLink()!=null){
 					if(w.getLink().outside && w.outside){
@@ -173,6 +176,7 @@ public class MyContactListener implements ContactListener {
 				if (m.equals(main.character))
 					main.initWarp(w);
 				else; //move the Mob to that Level
+			}
 		} if(typeA.equals("texttrigger") && typeB.equals("foot")){
 			if (entB.equals(main.character))
 				(new SpeechBubble(entA, entA.getPixelPosition().x, entA.getPixelPosition().y

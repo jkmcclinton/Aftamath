@@ -1,0 +1,15 @@
+Script Main
+
+lockplayer
+setSpeaker(this)
+text({AGAGAHAHAHGGASHASGHWGDYGEHDUJUHIEKLKFFFDSFSEGEFRK!!!!!!!!!!!!!!})
+
+doAction(this, aim, player, 10, false)
+text({SUCK MY FAT CUCKADOO YOU BOOZER!!!!!!})
+attack(this, player)
+wait(1)
+attack(this, player)
+wait(1)
+attack(this, player)
+
+done

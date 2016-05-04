@@ -4,7 +4,7 @@
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Yesterday's Encounter"/>
  </properties>
- <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
   <image source="tilesets/indoors.png" width="960" height="771"/>
   <tile id="304">
    <properties>
@@ -140,6 +140,7 @@
    <properties>
     <property name="ID" value="43"/>
     <property name="NPC" value="gangster2"/>
+    <property name="attackScript" value="onAttackedThug1"/>
     <property name="layer" value="back"/>
     <property name="name" value="Jose"/>
     <property name="script" value="generic_1"/>
@@ -150,6 +151,7 @@
    <properties>
     <property name="ID" value="199"/>
     <property name="NPC" value="burly1"/>
+    <property name="attackScript" value="onAttackedThug1"/>
     <property name="layer" value="back"/>
     <property name="name" value="Tough Guy"/>
     <property name="script" value="generic_1"/>

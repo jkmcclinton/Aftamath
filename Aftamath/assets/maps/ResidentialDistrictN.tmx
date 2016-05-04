@@ -351,7 +351,7 @@
    <properties>
     <property name="ID" value="5"/>
     <property name="next" value="room1_2"/>
-    <property name="nextWarp" value="1"/>
+    <property name="nextWarp" value="0"/>
     <property name="warp" value=""/>
    </properties>
   </object>

@@ -161,6 +161,7 @@ setChoice(1:Help her up, 4:Ask someone else, 2:ROFL!)
 	
 	[Choice ROFL!]
 		setSpeaker(player)
+		setFlag(laughedAtOldLady)
 		value(add, player.niceness, -2)
 		value(set, desc, {Old lady falling on a banana? Hilarious!})
 		text({Hahaha! ~That just made my day!})

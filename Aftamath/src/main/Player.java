@@ -162,6 +162,7 @@ public class Player implements Serializable {
 	@Override
 	public void read(Json json, JsonValue val) {
 		this.money = val.getDouble("money");
+		goalMoney = money;
 		this.info = val.getString("info");
 		this.relationship = val.getDouble("relationship");
 		this.bravery = val.getDouble("bravery");
