@@ -13,8 +13,8 @@ public class Event implements Comparable<Event>, Serializable{
 		this.occurrence = occ;
 	}
 	public int compareTo(Event e) {
-		if(e.occurrence>occurrence) return -1;
-		if(e.occurrence<occurrence) return 1;
+		if(e.occurrence<occurrence) return -1;
+		if(e.occurrence>occurrence) return 1;
 		return 0;
 	}
 	public void read(Json json, JsonValue val) {

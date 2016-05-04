@@ -494,7 +494,7 @@ public class Menu {
 				int e = 0;
 				
 				// events
-				JournalEntry j; 
+				JournalEntry j;
 				for(String s1 : ((Main)gs).history.getEventList().keySet())
 					if(Game.EVENT_TO_TEXTURE.get(s1)!=null){
 						j = new JournalEntry(s1, e, this, gs); j.hiLite = false;
@@ -952,16 +952,18 @@ public class Menu {
 	
 	public void increaseScrollOffX(){
 		prevScroll = scrollOff.cpy();
-		MenuObj m = getObj(gs.cursor);
-		goalScroll = new Vector2(m.x + JournalEntry.PERIODX*4, prevScroll.y);
+		int i = (int) (Math.floor(gs.cursor.x/4f)*4);
+		goalScroll = new Vector2(i*JournalEntry.PERIODX, prevScroll.y);
 		scrolling = true;
+		System.out.println(prevScroll+":"+goalScroll);
 		scrollTime = 0;
 	}
 	
 	public void decreaseScrollOffX(){
 		prevScroll = scrollOff.cpy();
-		MenuObj m = getObj(gs.cursor);
-		goalScroll = new Vector2(m.x - JournalEntry.PERIODX*4, prevScroll.y);
+		int i = (int) (Math.floor(gs.cursor.x/4f)*4);
+		goalScroll = new Vector2(i*JournalEntry.PERIODX*4, prevScroll.y);
+		System.out.println(prevScroll+":"+goalScroll);
 		scrolling = true;
 		scrollTime = 0;
 	}
@@ -1001,7 +1003,7 @@ public class Menu {
 	static{
 		dirMapping.put("boardwalk", new Pair<>("Boardwalk", PovDirection.west));
 		dirMapping.put("bridge", new Pair<>("Bridge", PovDirection.north));
-		dirMapping.put("business", new Pair<>("Business District", PovDirection.north));
+		dirMapping.put("business", new Pair<>("Business District", PovDirection.west));
 		dirMapping.put("central_park", new Pair<>("Central Park", PovDirection.east));
 		dirMapping.put("church", new Pair<>("Church", PovDirection.west));
 		dirMapping.put("commercial_NW", new Pair<>("Commercial District NW", PovDirection.south));

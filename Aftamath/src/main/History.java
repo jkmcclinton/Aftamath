@@ -1,7 +1,7 @@
 package main;
 
 import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -13,11 +13,11 @@ public class History implements Serializable {
 	public HashMap<String, Boolean> flagList;
 	public float playTime;
 	
-	private TreeMap<String, Event> eventList;
+	private LinkedHashMap<String, Event> eventList;
 	private HashMap<String, Object> variableList;
 	
 	public History(){
-		eventList = new TreeMap<>();
+		eventList = new LinkedHashMap<>();
 		flagList = new HashMap<>();
 		variableList = new HashMap<>();
 		
@@ -124,7 +124,7 @@ public class History implements Serializable {
 	}
 	
 	public HashMap<String, Object> getVarlist(){ return variableList; }
-	public TreeMap<String, Event> getEventList(){ return eventList; }
+	public LinkedHashMap<String, Event> getEventList(){ return eventList; }
 
 	@Override
 	public void read(Json json, JsonValue val) {

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="16" tileheight="16" nextobjectid="31">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="Misdirection"/>
+ </properties>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
+ </tileset>
+ <tileset firstgid="2881" name="tileset" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
+  <image source="tilesets/housing.png" width="960" height="771"/>
+ </tileset>
+ <layer name="bg1" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztzTkOwUEYhvGvn2kR+0kcArG39v8JHAKxV4j9BA6D2C/iSaadQkYiCk/y6753RuS3KiuRCqqooY4GmvDe4FICO7YLLLHCGhtsMcUMc2XubFz/fbI944IrbrjjgQOOOClzZ+NSC3EtEkQIYUQQRQw++BHQ5s7GpT1KbDPIIoc8CigiiRTS2tzZuDZh20MfAwwxwhhtdND94P1/3+kF3uExew==
+  </data>
+ </layer>
+ <layer name="bg2" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIKhAQAEsAAB
+  </data>
+ </layer>
+ <layer name="ground" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYMAEuozE41we3JhUEMVNuh50kE+GGdOoYO9qMsy4RAV7n5NhBh8ZcYMOlMkww4sK9sYTMANbGm0D6mkH4g4g7gTiLjL4s5HSNDqNC4DkByIfDZS99AAAQz8iUw==
+  </data>
+ </layer>
+ <layer name="fg" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2DggAozhF7DRF97E6D2vqCzvaOAMgAABmoCIw==
+  </data>
+ </layer>
+ <layer name="objects" width="30" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztzckJgDAABdEPiXtSlLsHG3e3JMcKPBkQHHjnkb7bZKQZC1YT7htZKUaC1Ib7lrwq1GgCflcnbdhx4HTvP0ceqZcy5Cjg/Pvfu4ZPiw49hkDfv+cuaMsLJw==
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="26" name="outside" x="87" y="38" width="7" height="58">
+   <properties>
+    <property name="ID" value="0"/>
+    <property name="next" value="Residential District N"/>
+    <property name="nextWarp" value="5"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="27" name="Spawn" x="102" y="80" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="29" name="upstairs" x="128" y="32" width="30" height="64">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="resN_stairwell"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="30" name="upstairs" x="220" y="35" width="30" height="61">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="room1_3"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
