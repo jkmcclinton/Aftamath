@@ -546,7 +546,7 @@
     <property name="NPC" value="hero2"/>
     <property name="layer" value="front"/>
     <property name="name" value="Star"/>
-    <property name="script" value="HeroHQEntry"/>
+    <property name="script" value="StarSimpleDialogue"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
@@ -556,7 +556,7 @@
     <property name="NPC" value="hero3"/>
     <property name="layer" value="front"/>
     <property name="name" value="Elder Man"/>
-    <property name="script" value="HeroHQEntry"/>
+    <property name="script" value="ElderManSimpleDialogue"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
@@ -566,7 +566,7 @@
     <property name="NPC" value="hero4"/>
     <property name="layer" value="front"/>
     <property name="name" value="Manly Man"/>
-    <property name="script" value="HeroHQEntry"/>
+    <property name="script" value="ManlyManSimpleDialogue"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
@@ -576,7 +576,7 @@
     <property name="NPC" value="hero5"/>
     <property name="layer" value="front"/>
     <property name="name" value="Kris Devil"/>
-    <property name="script" value="HeroHQEntry"/>
+    <property name="script" value="KrisDevilSimpleDialogue"/>
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>

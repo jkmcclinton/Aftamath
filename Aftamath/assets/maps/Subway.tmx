@@ -568,20 +568,10 @@
     <property name="name" value="Sewers"/>
    </properties>
   </object>
-  <object id="31" name="25" x="700" y="161" width="16" height="16">
-   <properties>
-    <property name="ID" value="80"/>
-    <property name="NPC" value="boss2"/>
-    <property name="layer" value="front"/>
-    <property name="name" value="Lawyer"/>
-    <property name="script" value="heroquest3"/>
-    <property name="state" value="FACEPLAYER"/>
-   </properties>
-  </object>
   <object id="32" x="431.5" y="44.5835" width="16" height="178.833">
    <properties>
     <property name="event" value=""/>
-    <property name="heroquest3" value="!heroquestlawyer"/>
+    <property name="heroquest3" value="heroquestlawyer"/>
    </properties>
   </object>
  </objectgroup>

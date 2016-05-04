@@ -11,8 +11,6 @@ text({Okay, thanks.})
 
 focus(player)
 
-setDialogue(Lawyer, heroquest3-1)
-
-setFlag(heroquestlawyer, true)
+setDialogue(lawyer, heroquest3-1)
 
 done

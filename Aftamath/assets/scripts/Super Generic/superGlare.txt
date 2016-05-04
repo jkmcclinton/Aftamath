@@ -27,7 +27,7 @@ end
 #Player did evil and Villain is not present
 if([num = 2])
 	setSpeaker(MrJustice)
-	face(Hero, player)
+	face(MrJustice, player)
 	text(flirty, {Hey kid, you seem kind of... evil....})
 	text(mad, {If I catch you doing any sort of injustice to the world I won't hesitate to put you behind bars.})
 	text(mad, {It's all in the name of JUSTICE!!! Remember that, kid.})

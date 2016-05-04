@@ -22,6 +22,11 @@ setChoice(1:Yes, 2:No)
    Text({I have to put that in quotation marks because the script will get confused if I say the name of a place.})
    Text({Go with justice, meet the lawyer, and convince him to help the woman in court!})
    setDialogue(MrJustice, MrJusticeAfterQ3I)
+   setFlag(heroquestlawyer, true)
+   if([heroquestlawyer == true])
+       spawn(lawyer, NPC, Subway, 44, 6)
+	   setDialogue(lawyer, heroquest3)
+       end
    end
 
     [Choice No]

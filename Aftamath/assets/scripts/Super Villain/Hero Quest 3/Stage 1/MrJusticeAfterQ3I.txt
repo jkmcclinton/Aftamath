@@ -3,14 +3,14 @@ lockplayer
 face(player, this)
 face(this, player)
 
-
-if([talksuccess > 1])
+if([talksuccess >= 1])
     setSpeaker(MrJustice)
     Text(happy, {Excellent work, friend!})
     Text(happy, {For acting so justly, I have a reward for you!})
     value(add, player.money, 75)
     Text({Keep up the good work!})
     setDialogue(MrJusticeIntroduction)
+	setflag(heroquestlawyer, false)
     Else
         declare(Q3talk, global, integer, 0)
 
