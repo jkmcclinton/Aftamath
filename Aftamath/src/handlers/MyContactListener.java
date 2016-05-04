@@ -251,9 +251,9 @@ public class MyContactListener implements ContactListener {
 		} if(typeB.equalsIgnoreCase("vision")){ 
 			((Mob) entB).loseSightOf(entA);
 		} if(typeB.equals("damageField") && !unHittable.contains(typeA, false)) {
-			((DamageField) entB).removeVictim(entA);
+			try{((DamageField) entB).removeVictim(entA);} catch(Exception e){}
 		} if(typeA.equals("damageField") && !unHittable.contains(typeB, false)) {
-			((DamageField) entA).removeVictim(entB);
+			try{((DamageField) entA).removeVictim(entB);} catch(Exception e){}
 		} if(typeA.equals("warp") && typeB.equals("foot")){
 			Mob m = (Mob) entB;
 			if(m.getWarp()!=null)

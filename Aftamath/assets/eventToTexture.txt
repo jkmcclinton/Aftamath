@@ -13,3 +13,4 @@ cursed/lunderdogface/l0/l0
 metTheWitch/lwitchface/l0/l0
 RogueTutorial/lrogue/l0/l0
 rodeTrainFirstTime/lrodeTrainFirstTime/l0/l0
+MetDrumpf/lrichguyface/l0/l0

@@ -7,7 +7,7 @@ if(!MetDrumpf and !spawnedDrumpf)
 	findObject(Drumpf)
 	if(!found)
 		setFlag(spawnedDrumpf)
-		spawn(NPC, richguy, Drumpf, 58, 78, 4)
+		spawn(NPC, richguy, Drumpf, 49, 78, 4)
 		setDialog(Drumpf, txtDrumpf)
 	end
 end

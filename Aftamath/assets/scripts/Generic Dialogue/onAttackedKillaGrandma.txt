@@ -7,9 +7,12 @@ text({AGAGAHAHAHGGASHASGHWGDYGEHDUJUHIEKLKFFFDSFSEGEFRK!!!!!!!!!!!!!!})
 doAction(this, aim, player, 10, false)
 text({SUCK MY FAT CUCKADOO YOU BOOZER!!!!!!})
 attack(this, player)
+playsound(pistol, this)
 wait(1)
 attack(this, player)
+playsound(pistol, this)
 wait(1)
 attack(this, player)
+playsound(pistol, this)
 
 done

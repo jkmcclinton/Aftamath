@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="5">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="8">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -10,7 +10,7 @@
   <property name="prevWarp" value="2"/>
   <property name="previous" value="Residential District SW"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
   <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -190,6 +190,24 @@
     <property name="next" value="Subway"/>
     <property name="nextWarp" value="0"/>
     <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="5" x="752" y="368" width="80" height="80">
+   <properties>
+    <property name="event" value=""/>
+    <property name="makeItGreat" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="6" x="912" y="288" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="7" x="116" y="280" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
    </properties>
   </object>
  </objectgroup>

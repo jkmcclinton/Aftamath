@@ -1,0 +1,29 @@
+Script Main
+lockplayer
+
+setSpeaker(Drumpf)
+text({So whaddya say?})
+text({Will you sign the petition to make Big City great again?})
+
+setChoice(YesNo)
+	[choice Yes]
+		setEvent(MetDrumpf, {Signed a petition to make Big City great again})
+		text({Excellent! You won't regret this, /player!})
+		
+		SetSpeaker(narrator)
+		text({Um, yes you will.})
+		value(add, player.money, -1000)
+		text({I'll just take a security deposit from you to help pay for that damn wall.})
+		text({And...})
+		wait(1)
+		remove(Drumpf)
+		text({We don't need to hear his stupid mouth spewing garbage everywhere.})
+	end
+	
+	[choice No]
+		setEvent(MetDrumpf, {Refused to elect Drumpf as Mayor})
+		text({I'm sorry? How dare you refuse to help this city!})
+	end
+end
+
+done

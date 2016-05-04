@@ -17,4 +17,16 @@ if(SBDidMenialLabor and !SBReceivedPromotion1)
 	end
 end
 
+#Dolan Drumpf event
+if(!MetDrumpf and !spawnedDrumpf)
+	declare(found, local, Flag, false)
+	wait(.1)
+	findObject(Drumpf)
+	if(!found)
+		setFlag(spawnedDrumpf)
+		spawn(NPC, richguy, Drumpf, 75, 78, 4)
+		setDialog(Drumpf, txtDrumpf)
+	end
+end
+
 done

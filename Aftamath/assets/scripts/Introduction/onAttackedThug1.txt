@@ -3,19 +3,19 @@ lockplayer
 setSpeaker(this)
 
 declare(txt, local, integer, 0)
-random(txt, 1, 3)
+random(txt, 1, 4)
 if([txt = 1])
-text({Dude man, I'ma cut you!})
-splash(fight)
-end
-if([txt = 2])
-text(mad, {Who the hell you think you is?})
-splash(kill_it)
-end
-if([txt = 3])
-text(mad, {Damnit!})
-text(mad, {Yo ass is mine, bitch!})
-splash(kick_ass)
+	text({Dude man, I'ma cut you!})
+	splash(fight)
+else
+	if([txt = 2])
+		text(mad, {Who the hell you think you is?})
+		splash(kill_it)
+	else
+		text(mad, {Damnit!})
+		text(mad, {Yo ass is mine, bitch!})
+		splash(kick_ass)
+	end
 end
 
 done
