@@ -588,6 +588,7 @@
   </object>
   <object id="41" x="336.667" y="37.3333" width="16" height="185.333">
    <properties>
+    <property name="HeroHQEntry2" value="HeroHQentry2done"/>
     <property name="event" value=""/>
    </properties>
   </object>
