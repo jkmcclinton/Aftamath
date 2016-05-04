@@ -6,7 +6,7 @@ if([talksuccess >= 1])
 setSpeaker(Lawyer)
 Text(happy, {Don't worry, I'm a man of my word.})
 move(Lawyer, 25, 10)
-teleport(Lawyer, Pier)
+teleport(Lawyer, Pier, 35, 22)
 else 
     setSpeaker(Lawyer)
     Text(mad, {You again?})

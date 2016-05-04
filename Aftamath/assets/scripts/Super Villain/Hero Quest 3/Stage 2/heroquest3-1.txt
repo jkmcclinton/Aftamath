@@ -67,10 +67,10 @@ setChoice(1:Because it's right, 2:Framed, 3:I'll pay, 4:Show off)
 end
 
 if([talksuccess >= 1])
-move(Lawyer, 25, 10)
-teleport(Lawyer, Pier, 35, 22)
+move(lawyer, 25, 10)
+teleport(lawyer, Pier, 35, 22)
 end
 
-setDialogue(Lawyer, heroquest3-2)
+setDialogue(lawyer, heroquest3-2)
 
 done
