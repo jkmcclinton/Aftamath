@@ -18,6 +18,7 @@ if([trainDest = {CommercialDistrictNW}])
 end
 
 wait(10)
+print({I am a banana, yo ho ho})
 setFlag(notMoving, true)
 setFlag(trainArrived, true)
 value(set, trainDest, {nowhere})

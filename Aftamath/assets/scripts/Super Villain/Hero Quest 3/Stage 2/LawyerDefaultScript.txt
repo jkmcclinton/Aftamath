@@ -1,0 +1,8 @@
+Script LawyerDefaultScript
+lockplayer
+face(lawyer, player)
+
+setspeaker(lawyer)
+text(mad, {Get outta here, I'm busy.})
+
+done

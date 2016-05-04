@@ -1,12 +1,15 @@
 Script Main
 lockplayer
-face(this, player)
-setSpeaker(this)
+face(MrJustice, player)
+setSpeaker(MrJustice)
 
-text(normal, {Sorry kid, but I can't take you to HQ yet.})
-text(flirty, {You'll have to wait until the Mighty Creator does the art for it.})
+text({Meet me in the Hero HQ.})
+text({It's just off of the boardwalk.})
+text({The easiest way to get there is to take the subway.})
+text({Go with justice!})
+teleport(MrJustice, HeroHQ, 23, 19)
+teleport(player, HeroHQ, 22, 19)
 
-setSpeaker(Julian, true)
-text(normal, {True true. ~It's in the game, you just can't see it.})
-text(normal, {See if you can find how out how to get there! ~/l(HINT: it's far)})
+setDialogue(MrJustice, foundHQ)
+
 done

@@ -42,7 +42,7 @@ setChoice(1:About you, 2:About the headquarters, 3:What do I do now?)
 		Text({I have the feeling that you're new to the city.})
 		Text({Uh, lady, is that right?})
 		
-		setSpeaker(Narrator)
+		setSpeaker(narrator)
 		Text(mad, {You mean me? Yes, this one is new to the city.})
 		
 		setSpeaker(MrJustice)

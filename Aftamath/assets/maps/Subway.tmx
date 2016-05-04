@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="33">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="34">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm day" value="Hawthorne"/>
@@ -568,10 +568,20 @@
     <property name="name" value="Sewers"/>
    </properties>
   </object>
-  <object id="32" x="431.5" y="44.5835" width="16" height="178.833">
+  <object id="32" x="447.5" y="43.0835" width="16" height="178.833">
    <properties>
     <property name="event" value=""/>
     <property name="heroquest3" value="heroquestlawyer"/>
+   </properties>
+  </object>
+  <object id="33" name="25" x="783" y="162" width="16" height="16">
+   <properties>
+    <property name="ID" value="80"/>
+    <property name="NPC" value="boss2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="lawyer"/>
+    <property name="script" value="LawyerDefaultScript"/>
+    <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
  </objectgroup>
