@@ -1,0 +1,65 @@
+Script StarBedroom
+lockplayer
+face(player, Star)
+face(Star, player)
+
+setSpeaker(Star)
+text(happy, {Hi, /player!})
+text(sad, {How embarrassing to be caught in my bedroom!})
+text({Excuse the mess, mmkay?})
+
+setSpeaker(player)
+text({There's no mess.})
+
+setSpeaker(Star)
+text(flirty, {Haha, oh, right!})
+text({I guess it is hard to mess up pixels.})
+text({So, like, um...})
+wait(1)
+text(mad, {What's your favorite color?!})
+
+setSpeaker(player)
+setChoice(1:Plum Purple, 2:Blueberry Blue, 3:Garden Green, 4:Pinky Pink, 5:Idk, 6:Blood)
+    [Choice Plum Purple]
+	setSpeaker(Star)
+	text(happy, {Wow! I love purple!})
+	text({Well, not as much as pink, but...})
+	end
+	
+	[Choice Blueberry Blue]
+	setSpeaker(Star)
+	text(happy, {Mm, blueberries...})
+	text({Oh! The color is okay too!})
+	text(sad, {Now I'm hungry.})
+	end
+	
+	[Choice Garden Green]
+	setSpeaker(Star)
+	text(happy, {How fresh and interesting!})
+	text({You know what goes with green?})
+	text(flirty, {Pink!})
+	end
+	
+	[Choice Pinky Pink]
+	setSpeaker(Star)
+	text(happy, {Oh my gosh, really?})
+	text(happy, {What a coinkydink, because, like, that's *my* favorite color too!})
+	text(flirty, {Hehe, we have so much in common!})
+	end
+	
+	[Choice Idk]
+	setSpeaker(Star)
+	text(happy, {That's okay, I'll pick one for you!})
+	text({Hmm, what color is best for you?})
+	text(happy, {I know!})
+	text(flirty, {Pink!})
+	end
+	
+	[Choice Blood]
+	setSpeaker(Star)
+	text(sad, {Oh...um...})
+	text(sad, {I-I think I'm going to go now...})
+	text(sad, {I have to, uh, do a thing.})
+	end
+	
+done

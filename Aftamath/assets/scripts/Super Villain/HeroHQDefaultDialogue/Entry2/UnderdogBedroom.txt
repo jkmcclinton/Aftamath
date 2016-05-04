@@ -1,0 +1,51 @@
+Script UnderdogBedroom
+lockplayer
+
+doAction(Dog, faceplayer)
+setSpeaker(Dog)
+text({The dog stares at you intently.})
+
+focus(Elder Man)
+setSpeaker(Elder Man)
+text({Oh, that's my dog.})
+text({He's not the friendliest...})
+text(mad, {I'm warning you, sonny!})
+text(mad, {That dog is not to be trusted!})
+
+focus(player)
+face(player, Dog)
+face(Dog, player)
+setSpeaker(player)
+setChoice(1:Pet, 2:Give treat, 3:Punch, 6:Leave)
+    [Choice Pet]
+	doAction(player, duck)
+	setSpeaker(Dog)
+	text({The dog wags its tail happily.})
+	end
+	
+	[Choice Give treat]
+	doAction(player, duck)
+	setSpeaker(Dog)
+	text({The dog eats the treat.})
+	text({He eyes you suspiciously.})
+	end
+	
+	[Choice Punch]
+	doAction(player, punch)
+	setSpeaker(Dog)
+	text({The dog growls at you and steals your money.})
+	value(add, player.money, -300)
+	setSpeaker(narrator)
+	text({Welp...Can't say that you didn't deserve that.})
+	setSpeaker(player)
+	text({Oh come on, it was funny!})
+	setSpeaker(narrator)
+	text({I'm beginning to think you need some help.})
+	end
+	
+	[Choice Leave]
+	setSpeaker(Dog)
+	text({The dog eyes you suspiciously.})
+	end
+	
+done

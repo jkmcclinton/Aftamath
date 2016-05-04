@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="16" tileheight="16" nextobjectid="2">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="16" tileheight="16" nextobjectid="3">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Justice Lobby"/>
   <property name="name" value="Hero Quarters"/>
  </properties>
- <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="10000">
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="10000" columns="100">
   <image source="tilesets/HeroHQ.png" width="1600" height="1600"/>
   <tile id="3860">
    <properties>
@@ -190,6 +190,16 @@
     <property name="next" value="HeroUpperHall"/>
     <property name="nextWarp" value="4"/>
     <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="2" name="31" x="307.333" y="92.6667" width="16" height="16">
+   <properties>
+    <property name="ID" value="69"/>
+    <property name="NPC" value="underdog"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Dog"/>
+    <property name="script" value="UnderdogBedroom"/>
+    <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
  </objectgroup>

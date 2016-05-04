@@ -117,6 +117,7 @@ setDialogue(Elder Man, ElderManIntroduction)
 setDialogue(Star, StarIntroduction)
 
 SetFlag(HeroIntroEvent, false)
+SetFlag(HeroHQentry2done, true)
 
 setevent(JoinedHeroes, {You officially joined Just Us!})
 

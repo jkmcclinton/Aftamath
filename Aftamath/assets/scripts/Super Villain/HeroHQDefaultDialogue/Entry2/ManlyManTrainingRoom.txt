@@ -1,0 +1,51 @@
+Script ManlyManTrainingRoom
+lockplayer
+face(player, Manly Man)
+face(Manly Man, player)
+
+setSpeaker(Manly Man)
+text(happy, {Mira, it is /player!})
+text({You have found the best room - the training room.})
+text({Allow me to demonstrate.})
+focus(Manly Man)
+move(Manly Man, 30, 12)
+doAction(Manly Man, punch)
+face(Manly Man, player)
+focus(player)
+text(flirty, {Genial, no? Was not I cool?})
+
+setSpeaker(player)
+setChoice(1:Yes, 2:No!, 3:LOL)
+    [Choice Yes]
+	setSpeaker(Manly Man)
+	text(happy, {Haha! I know! When it comes to fighting, you can always count on me.})
+	text(flirty, {If you are ever in any trouble, friend, you come to me.})
+	Move(Manly Man, 38, 12)
+	end
+	
+	[Choice No!]
+	setSpeaker(Manly Man)
+	text(mad, {Jealous, are you?})
+	text(mad, {Ay, if the fighting mechanic were in place...})
+	
+	setSpeaker(narrator)
+	text(mad, {How many times is this going to be brought up?!})
+	text(sad, {It's not my fault, okay? Geez.})
+	
+	setSpeaker(Manly Man)
+	text(flirty, {Sure, chiquita.})
+	text(mad, {You better be careful next time, /player!})
+	text({You may be a supahero, but you are not my friend.})
+	Move(Manly Man, 38, 12)
+	end
+	
+	[Choice LOL]
+	setSpeaker(Manly Man)
+	text(mad, {Do not laugh of me!})
+	text({I'd like to see you do better.})
+	text(sad, {Go ahead, I will watch you.})
+	text(mad, {Veeeeery closely.})
+	Move(Manly Man, 38, 12)
+	end
+	
+done

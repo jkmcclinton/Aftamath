@@ -32,6 +32,7 @@ setChoice(1:Because it's right, 2:Framed, 3:I'll pay, 4:Show off)
 	text({Listen, I'm not some supahero. I need money to eat.})
 	text({I've got a family to take care of. If you can't pay, I can't help.})
 	value(add, talkbefore, 1)
+	setDialogue(MrJustice, MrJusticeQ3End)
 	end
 	
 	[Choice Framed]
@@ -39,6 +40,7 @@ setChoice(1:Because it's right, 2:Framed, 3:I'll pay, 4:Show off)
 	text({How can you be so sure? Do you have proof? No?})
 	text({That's a shame. I'm not going to represent someone for free on a whim.})
 	value(add, talkbefore, 1)
+	setDialogue(MrJustice, MrJusticeQ3End)
 	end
 	
 	[Choice I'll pay]
@@ -48,11 +50,13 @@ setChoice(1:Because it's right, 2:Framed, 3:I'll pay, 4:Show off)
 		text(happy, {Thank you kindly! I'll do my best!})
 		#doAction(player, reach out)
         value(add, player.money, -200)
+		setFlag(heroquestlawyer, false)
 		Else
 		text({You seem to be a bit short of cash.})
 		text({I'm not a charity organization.})
 		text({Go bother someone else.})
 		value(add, talksuccess, 1)
+		setDialogue(MrJustice, MrJusticeQ3End)
 		end
 	end
 	
@@ -63,12 +67,17 @@ setChoice(1:Because it's right, 2:Framed, 3:I'll pay, 4:Show off)
 	Text({Oh, alright! I'll represent your client. Just give me the contact info.})
 	Text({Thanks. Let's hope my plan works.})
 	value(add, talksuccess, 1)
+	setFlag(heroquestlawyer, false)
+	setDialogue(MrJustice, MrJusticeQ3End)
 	end
 end
 
 if([talksuccess >= 1])
 move(lawyer, 25, 10)
 teleport(lawyer, Pier, 35, 22)
+teleport(player, HeroHQ, 22, 22)
+findObject(MrJustice, found)
+setDialogue(MrJustice, MrJusticeQ3End)
 end
 
 setDialogue(lawyer, heroquest3-2)

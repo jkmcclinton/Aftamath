@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="17" tilewidth="16" tileheight="16" nextobjectid="41">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="17" tilewidth="16" tileheight="16" nextobjectid="42">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Justice Lobby"/>
@@ -583,6 +583,11 @@
   <object id="40" x="366.667" y="44.5" width="16" height="178.833">
    <properties>
     <property name="HeroHQEntry" value="HeroIntroEvent"/>
+    <property name="event" value=""/>
+   </properties>
+  </object>
+  <object id="41" x="336.667" y="37.3333" width="16" height="185.333">
+   <properties>
     <property name="event" value=""/>
    </properties>
   </object>

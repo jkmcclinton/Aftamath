@@ -1,0 +1,25 @@
+Script KrisDevilHallway
+lockplayer
+face(Kris Devil, player)
+face(player, Kris Devil)
+
+setSpeaker(Kris Devil)
+text({Oh, hi...})
+
+setSpeaker(player)
+text({Why are you just standing in the hallway?})
+
+setSpeaker(Kris Devil)
+text(mad, {Shut up!})
+text(sad, {It's just that I don't have a bedroom...yet!})
+text({They're building me one, of course...})
+text(sad, {Ugh, why did you have to bring it up...})
+
+wait(1.0)
+
+text({Listen, I'm sorry for always being so...you know...})
+text(sad, {It has nothing to do with you.})
+text({I'm just complicated.})
+text(happy, {I actually kind of think you're okay, you know...but whatever.})
+
+done

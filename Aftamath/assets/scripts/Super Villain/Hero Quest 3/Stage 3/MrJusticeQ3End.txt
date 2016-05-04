@@ -1,0 +1,48 @@
+Script MrJusticeQ3End
+lockplayer
+face(MrJustice, player)
+face(player, MrJustice)
+
+setSpeaker(MrJustice)
+text({So, buddy...I was wondering...})
+text({How do you like it here so far?})
+
+setSpeaker(player)
+setChoice(1:Great, 2:Meh, 3:Idk)
+    [Choice Great]
+	setSpeaker(MrJustice)
+	text(happy, {Really?})
+	text({That's great! Because, you know...})
+	text(flirty, {We all really like you here.})
+	text({If you haven't gotten to know everybody yet, I think you should.})
+	text({...Hug?})
+	
+	setSpeaker(player)
+	text({I don't think so.})
+	
+	setSpeaker(MrJustice)
+	text(sad, {Okay...})
+	end
+	
+	[Choice Meh]
+	setSpeaker(MrJustice)
+	text(sad, {Oh, well, that wasn't really what I was expecting...})
+	text(sad, {You know, I thought for sure you'd like it.})
+	text({I even set up the fans in the building so my cape would constantly blow...})
+	text(mad, {Shoot, why did I say that!?})
+	text(sad, {Oh, I'm just making this worse...})
+	text(happy, {Maybe if you get to know everyone else! Yeah! That's it!})
+	text(flirty, {Go have some fun!})
+	end
+	
+	[Choice Idk]
+	setSpeaker(MrJustice)
+	text(sad, {You are new here, so I guess that makes sense...})
+	text({Have you gotten to know everyone yet? If you haven't, you should.})
+	text({Maybe that will make your time better.})
+	text(sad, {Or is it that you don't like me?})
+	text(happy, {What am I saying? That's impossible!})
+	text(flirty, {Why don't you go have some fun? You deserve it!})
+	end
+	
+done

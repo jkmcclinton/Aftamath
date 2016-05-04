@@ -9,19 +9,18 @@ if([talksuccess >= 1])
     Text(happy, {For acting so justly, I have a reward for you!})
     value(add, player.money, 75)
     Text({Keep up the good work!})
-    setDialogue(MrJusticeIntroduction)
+    setDialogue(MrJustice, MrJusticeQ3End)
+	setEvent(finishedfirstquest, {You finished your first quest!})
 	setflag(heroquestlawyer, false)
     Else
         declare(Q3talk, global, integer, 0)
-
         setSpeaker(this)
         Text({You're back. Uhh...})
         Wait(.50)
         Text({Can I help you?})
         Text({You remember the job, right?})
-        Text({Go see the lawyer in the "subway."})
+        Text({Go see the lawyer in the "business district."})
         value(add, Q3talk, 1)
-
         setDialogue(MrJustice, MrJusticeAfterQ3I-2)
 end
 

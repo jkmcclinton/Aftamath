@@ -3,7 +3,16 @@ lockplayer
 face(player, MrJustice)
 face(MrJustice, player)
 
-if([Q3talk = 3])
+if([talksuccess >= 1])
+    setSpeaker(MrJustice)
+    Text(happy, {Excellent work, friend!})
+    Text(happy, {For acting so justly, I have a reward for you! $75!})
+    value(add, player.money, 75)
+    Text({Keep up the good work!})
+    setDialogue(MrJustice, MrJusticeQ3End)
+	setEvent(finishedfirstquest, {You finished your first quest!})
+	setflag(heroquestlawyer, false)
+	else
     setSpeaker(this)
 	text({Listen kid, I've got important things to do.})
 	text({Justice, and...um...})
@@ -11,14 +20,9 @@ if([Q3talk = 3])
 	text({I can't spend all day talking to you.})
 	text({Go on...shoo.})
 	value(add, Q3talk, 1)
-else 
-    Text({You're back. Uhh...})
-    Wait(.50)
-    Text({Can I help you?})
-    Text({You remember the job, right?})
-    Text({Go see the lawyer in the "subway."})
-    value(add, Q3talk, 1)
+	setDialogue(MrJustice, MrJusticeAfterQ3I-5)
 end
 
-setDialogue(MrJustice, MrJusticeAfterQ3I-5)
+
+
 done

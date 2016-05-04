@@ -1,0 +1,14 @@
+Script HeroHQEntry2
+
+setDialogue(Manly Man, ManlyManTrainingRoom)
+teleport(Manly Man, HeroTrainingRoom, 21, 8)
+setDialogue(Star, StarBedroom)
+teleport(Star, HeroRoom_6, 19, 3)
+setDialogue(Elder Man, ElderManBedroom)
+teleport(Elder Man, HeroRoom_5, 12, 3)
+setDialogue(Kris Devil, KrisDevilHallway)
+teleport(Kris Devil, HeroLowerHall, 42, 2)
+
+setflag(HeroHQentry2done, true)
+
+done

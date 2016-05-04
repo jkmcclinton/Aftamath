@@ -7,6 +7,10 @@ setSpeaker(Lawyer)
 Text(happy, {Don't worry, I'm a man of my word.})
 move(Lawyer, 25, 10)
 teleport(Lawyer, Pier, 35, 22)
+teleport(player, HeroHQ, 22, 22)
+findObject(MrJustice, found)
+setDialogue(MrJustice, MrJusticeQ3End) 
+setFlag(heroquestlawyer, false)
 else 
     setSpeaker(Lawyer)
     Text(mad, {You again?})
@@ -17,12 +21,14 @@ else
 	    setSpeaker(Lawyer)
 	    text({Listen, I'm not some supahero. I need money to eat.})
 	    text({I've got a family to take care of. If you can't pay, I can't help.})
+		setDialogue(MrJustice, MrJusticeQ3End)
 	    end
 	
 	    [Choice Framed]
 	    setSpeaker(Lawyer)
 	    text({How can you be so sure? Do you have proof? No?})
 	    text({That's a shame. I'm not going to represent someone for free on a whim.})
+		setDialogue(MrJustice, MrJusticeQ3End)
 	    end
 	
 	    [Choice I'll pay]
@@ -37,6 +43,8 @@ else
 		    text({I'm not a charity organization.})
 		    text({Go bother someone else.})
 		    value(add, talksuccess, 1)
+			setFlag(heroquestlawyer, false)
+			setDialogue(MrJustice, MrJusticeQ3End)
 		    end
 	    end
 	
@@ -47,6 +55,8 @@ else
 	    Text({Oh, alright! I'll represent your client. Just give me the contact info.})
 	    Text({Thanks. Let's hope my plan works.})
 	    value(add, talksuccess, 1)
+		setFlag(heroquestlawyer, false)
+		setDialogue(MrJustice, MrJusticeQ3End)
 	    end
     end
 end
