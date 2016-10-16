@@ -202,7 +202,7 @@ public class Game implements ApplicationListener {
 				if (f.isDirectory())
 					loadScriptList(f);
 				else {
-					if(f.extension().equals("txt"))
+					if(f.extension().equals("amsc"))
 						SCRIPT_LIST.put(f.nameWithoutExtension(), f.path());
 				}
 			}

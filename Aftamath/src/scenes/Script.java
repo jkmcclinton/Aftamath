@@ -145,7 +145,7 @@ public class Script implements Serializable {
 			finish();
 			return;
 		}
-		System.out.println("---"+(index+1)+"---- "+source.get(index).trim());
+//		System.out.println("---"+(index+1)+"---- "+source.get(index).trim());
 
 		Operation o;
 		dialog = false;
