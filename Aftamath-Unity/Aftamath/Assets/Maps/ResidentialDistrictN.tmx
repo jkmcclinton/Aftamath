@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="120" tilewidth="16" tileheight="16" nextobjectid="70">
+ <properties>
+  <property name="ambient" value="DAYNIGHT"/>
+  <property name="bg" value="main"/>
+  <property name="bgm day" value="Bright Days"/>
+  <property name="bgm night" value="Midnight Waves"/>
+  <property name="name" value="Residential District N"/>
+  <property name="next" value="Commercial District NW"/>
+  <property name="previous" value="Tha Hood"/>
+  <property name="spawners" value="false"/>
+ </properties>
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200" columns="72">
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
+  <tile id="0">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="light" value="street"/>
+   </properties>
+  </tile>
+  <tile id="72">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="73">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="74">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="75">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="76">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="77">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="144">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="145">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="146">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="147">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="148">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="149">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="150">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="151">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="152">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   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
+  </data>
+ </layer>
+ <layer name="bg2" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJzt0TdoV1EUx/EXNWp6YkFsg0MGBxELSCxIBgeHILEgsSCxDA4ZHESigsSCZHBwCBILEgsSy+CQwUEkFiQWJIODQxAbEgsSy5Ah4FkuXsLF3+N/3wMl3w+c5f54h8f5JQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAfqyf+PV8k8gaRq/1j2cnAbUJvvlaRd4hc7R/LXgRuE3rz9Yp8QORq/1g2Y1K6N1+JyGtFrvY7M8uTZJbNbJs55em++d/tCNwm9OZrFHmLyNV+p9k62Gmzy2b3P9zHo6Lsdl0L3Cb05usUeY/I1X6n2zq4bnPD5mbOfQxH3LRiXHb/8S1wm9Cb743IR0Su9jtD1sF3mx82P3Puoz7ippsy7GPZ5HRvvvkiXyNytd+pq0iS5TYrbFZWpPumUO0RN72QYR9HArcJvfn2ifyUyNV+p806OGpzzOZ4zn30R9z0Q4Z9PA7cJvTmuyPylyJX+50+6+CJzVObZzn3MXN84d8uiPh2tKqSdG++IpHPFbna79RUJskUm6k20yrTfVOo5oib7s+wj82B24TefGtFvkfkar/TZB1ssdlqsy3nProjbno3wz4uBm4TevOdFvktkav9Tpd1cMnmss2VnPsYirhp8YTs/uNj4DahN98rkf8SudrvDFoHn2w+23zJuY+6iJs2ZNjHwtJ0b755Il8lcrXfWVSVJIttltgsrUr3TaHaIm7akWEfBwK3Cb359or8hMjVfqfVOjhoc8jmcM599EXcdCDDPu4FbhN6890W+XORq/1Or3Vw3+aBzcOc+6gpLvzb2ohvR5tUlu7NNyzuOV18r/Y7JdVJUmpTZlNene6bQjVF3LQlwz7WBW4TevPVi3y7yNV+p9E6WG+zwWZjzn10Rdy0J8M+Qs6Ie7WL/KrI1X6n0zo4a3PO5nzOfQxG3HQk5z5ei3v1i/yryNV+54118Nbmnc37nPsAAAAAAAAAAAAAAAAAfL8BQ3Jt9g==
+  </data>
+ </layer>
+ <layer name="ground" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJzt1NlJQ1EYhVHjFC3DWUtx1jKctRRnLcNZS3HWTtwPEXzKg4HLgbMWfHDRzSWEX/v6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIDatFJ/GkiDaSgN/3ke6bJpd34+2uN7fp97fU+78/tu72ly85/vcD4tpMW0lJbTSlpNa2ndptHNYTpKx+kknaazdJ4u0qVNo5vn9JJe01t6Tx/pM32lb5tGN2P5pzWeJtJkmkrTaSbNprmWTZObjbSZttJ22km7aS/tpwObRjdX6TrdpNt0l+7TQ3pMTzaNbkq8kZo3Jd5IzZsSP1PNmxL/ZmvelHgjNW9KvJGaNyXeSM2bEm+k5k2JN1LzpsQbqXlT4o3UvCnxRmrelHgjNW9KvJGaNyXeSM2bH8Ywlrc=
+  </data>
+ </layer>
+ <layer name="objects" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJzt0LENgDAMBEDYB7aD7WAb2ANZSpXCimmguJO+8n/jaQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC+dL3oZJu43S3ULXO9k23itrZQtw38re9km7jtLdQdA3/rO9kmbmcLAAAAAAAAAAD/8gBTGw2b
+  </data>
+ </layer>
+ <layer name="fg" width="100" height="120">
+  <data encoding="base64" compression="zlib">
+   eJzt08ENwjAQBMDwhU6gG+iEdAOdQDk0QgOWz9IpF7BmXpZ2rfXHywIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/JrTxnnFxkz5Lehm84qNmfJn0M3mFRsz5Z+gm80rNmbKL4d+N5tXbMyUR13/43/+x3HgfnajOj83zpX7a9Dt5deB+9mN6vzeOFfuv4NuL38M3M9uVOevxnnv9wEAAAAAAAAA7OELSY46jQ==
+  </data>
+ </layer>
+ <objectgroup name="entities" opacity="0.96">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="1" name="room1_1" x="460" y="1496" width="37" height="73">
+   <properties>
+    <property name="ID" value="3"/>
+    <property name="next" value="room1_1"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="17" name="5" x="928" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="5"/>
+    <property name="NPC" value="girlfriend2"/>
+    <property name="attckScript" value="onAttacked2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Sam"/>
+    <property name="script" value="ask out"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="18" name="6" x="1168" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="6"/>
+    <property name="NPC" value="logger"/>
+    <property name="attackScript" value="onAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="John"/>
+    <property name="script" value="choice test"/>
+    <property name="state" value="IDLEWALK"/>
+   </properties>
+  </object>
+  <object id="20" name="7" x="544" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="7"/>
+    <property name="NPC" value="richGuy"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Olivierre"/>
+    <property name="script" value="richComplaint"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="22" name="9" x="960" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="9"/>
+    <property name="NPC" value="oldlady1"/>
+    <property name="attackScript" value="onAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Ms. Pancakes"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="24" name="spawn" x="208" y="256" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="26" name="10" x="256" y="256" width="16" height="16">
+   <properties>
+    <property name="ID" value="10"/>
+    <property name="NPC" value="narrator1"/>
+    <property name="cambot spawn" value=""/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Narrator"/>
+    <property name="script" value="intro"/>
+    <property name="state" value="FACELEFT"/>
+   </properties>
+  </object>
+  <object id="27" x="192" y="272" width="48" height="16">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="barrier" value="   "/>
+   </properties>
+  </object>
+  <object id="28" x="257" y="272" width="32" height="16">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="barrier" value="   "/>
+   </properties>
+  </object>
+  <object id="29" x="240" y="1392" width="16" height="176">
+   <properties>
+    <property name="event" value=""/>
+    <property name="robbers1" value="!RobberIntro"/>
+   </properties>
+  </object>
+  <object id="44" name="5" x="1418" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="15"/>
+    <property name="NPC" value="villain1"/>
+    <property name="attckScript" value="onAttacked2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Villain"/>
+    <property name="nickName" value="Some chick in tights"/>
+    <property name="powerType" value="ELECTRO"/>
+    <property name="script" value="superGlare"/>
+    <property name="state" value="FACELEFT"/>
+   </properties>
+  </object>
+  <object id="54" name="5" x="1347" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="12"/>
+    <property name="NPC" value="hero1"/>
+    <property name="attckScript" value="onAttacked2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="MrJustice"/>
+    <property name="nickName" value="Some guy in tights"/>
+    <property name="powerType" value="FIRE"/>
+    <property name="script" value="superGlare"/>
+    <property name="state" value="FACERIGHT"/>
+   </properties>
+  </object>
+  <object id="56" name="central park" x="640" y="1496" width="37" height="73">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="Central Park"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value="rodeTrainFirstTime"/>
+   </properties>
+  </object>
+  <object id="57" x="48" y="52" width="16" height="1516">
+   <properties>
+    <property name="ID" value="3"/>
+    <property name="barrier" value=""/>
+    <property name="loadCondition" value="!rodeTrainFirstTime"/>
+   </properties>
+  </object>
+  <object id="61" name="2" x="576" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="-1"/>
+    <property name="attackScript" value="attackCart"/>
+    <property name="entity" value="breadstand"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="AbandonedCart"/>
+    <property name="script" value="cart"/>
+   </properties>
+  </object>
+  <object id="64" x="63" y="1392" width="16" height="176">
+   <properties>
+    <property name="cantGoToThaHood" value="!rodeTrainFirstTime"/>
+    <property name="event" value=""/>
+   </properties>
+  </object>
+  <object id="65" x="784" y="1392" width="16" height="176">
+   <properties>
+    <property name="Ms Pancakes Mishap" value="!msPancakesMishap"/>
+    <property name="event" value=""/>
+   </properties>
+  </object>
+  <object id="66" name="resN_aptHall" x="1008" y="1495" width="37" height="73">
+   <properties>
+    <property name="ID" value="6"/>
+    <property name="next" value="resN_aptHall"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value="ownResidentalN"/>
+   </properties>
+  </object>
+  <object id="68" name="26" x="1053" y="1552" width="16" height="16">
+   <properties>
+    <property name="ID" value="-1"/>
+    <property name="entity" value="forSaleSign"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="For Sale Sign"/>
+    <property name="script" value="forSaleResN"/>
+   </properties>
+  </object>
+  <object id="69" name="room1_2" x="881" y="1494" width="37" height="73">
+   <properties>
+    <property name="ID" value="5"/>
+    <property name="next" value="room1_2"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

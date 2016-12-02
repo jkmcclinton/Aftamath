@@ -1,0 +1,87 @@
+Script StarIntroduction
+lockplayer
+face(Star, player)
+
+setSpeaker(Star)
+Text(happy, {Oh my gosh! You came to talk to me!})
+
+setSpeaker(player)
+If(flag planet)
+    setChoice(1:About you, 2:About my planet, 3:Nevermind)
+	
+	[Choice About you]
+	    setSpeaker(Star)
+	    Text({Let's see. I joined the supaheroes because I lost the love of my life.})
+	    Text(sad, {He was so handsome, his eyes, especially...})
+	    Text({They sparkled whenever I looked at him.})
+	    Text({He was amazing.})
+	    Text({But, one day, he never came home.})
+	    Text({I decided to devote my life to fighting crime, so no one else would have to lose the ones they love!})
+	end
+	
+	[Choice About my planet]
+	    setSpeaker(Star)
+		Text(happy, {Oh yeah! Tell me! Tell me!})
+		Text({Tell me what it's like!})
+		
+		setSpeaker(player)
+		setChoice(1:Cold and icy, 2:Hot and arid, 3:Jungle, 4:Urban, 5:Indescribable)
+		
+		[Choice Cold and icy]
+		    setSpeaker(Star)
+			Text({Brr! I don't know if I would like that!})
+			Text({You must be like an abominable snowman then!})
+		end
+		
+		[Choice Hot and arid]
+		    setSpeaker(Star)
+			Text({Ouch! I hate the heat!})
+			Text({I prefer the game. Although, I don't think I can feel temperature...})
+		end
+		
+		[Choice Jungle]
+		    setSpeaker(Star)
+			Text({Wow! I bet there were all kinds of amazing animals in there!})
+			Text({Are there giant beetles? And flying cats?})
+		end
+	
+		[Choice Urban]
+		    setSpeaker(Star)
+			Text({That's so cool! You must have advanced technology!})
+			Text({Can you build me a flying car? Pretty please?})
+		end
+	
+		[Choice Indescribable]
+		    setSpeaker(Star)
+			Text({It must be nothing like the game.})
+			Text({The mystery makes it even cooler!})
+		end
+
+	[Choice Nevermind]
+	    setSpeaker(Star)
+		Text({Oh, okay. See you later, then.})
+	end
+end
+end
+
+Else(setChoice(1:About you, 2:Nevermind))
+	
+	[Choice About you]
+	    setSpeaker(Star)
+	    Text({Let's see. I joined the supaheroes because I lost the love of my life.})
+	    Text(sad, {He was so beautiful, his eyes, especially...})
+	    Text({They sparkled whenever I looked at him.})
+	    Text({He was amazing.})
+	    Text({But, one day, he never came home.})
+	    Text({I decided to devote my life to fighting crime, so no one else would have to lose the ones they love!})
+	end
+	
+	[Choice Nevermind]
+	    setSpeaker(Star)
+		Text({Oh, okay. See you later, then.})
+	end
+end
+
+
+
+done 

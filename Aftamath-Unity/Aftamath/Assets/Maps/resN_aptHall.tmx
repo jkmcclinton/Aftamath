@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="23" height="10" tilewidth="16" tileheight="16" nextobjectid="30">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="Misdirection"/>
+ </properties>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
+ </tileset>
+ <tileset firstgid="2881" name="tileset" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
+  <image source="tilesets/housing.png" width="960" height="771"/>
+ </tileset>
+ <layer name="bg1" width="23" height="10">
+  <data encoding="base64" compression="zlib">
+   eJzlzMkRgkAUhOF3n0nABY3EMECEqytGQBgKytmVCAzHlUT8qWcEQxUXu+o7dXWLtJ+pEZlhjgWWWCHB+sclI5RsDzjihDMuuBrtygbfFds7HnjihTc+RrvK8TvF0Ip00EUPfXgYWO1qLrkhZusjwBghJoisdrHjd52C7QZbZMixw95qVzT4/ud8ASBjHsc=
+  </data>
+ </layer>
+ <layer name="bg2" width="23" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDDYAAAOYAAE=
+  </data>
+ </layer>
+ <layer name="ground" width="23" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYMAEuozEY1JBFDdx6vKJVIcMphGpZzUZZl8iUs9zMszm4yFOnTKR6pCBF5F64gmowxb3bUA97UDcAcSdQNwFxN1A3APEvUDcB8T9QDwbiHOh5uOi0QFInFZpkJZmUwsAAF6sFOY=
+  </data>
+ </layer>
+ <layer name="fg" width="23" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFIwWoMNPO7AQamj0SAQDGtgCL
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="26" name="outside" x="87" y="38" width="7" height="58">
+   <properties>
+    <property name="ID" value="0"/>
+    <property name="next" value="Residential District N"/>
+    <property name="nextWarp" value="6"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="27" name="Spawn" x="102" y="80" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="29" name="upstairs" x="128" y="32" width="30" height="64">
+   <properties>
+    <property name="ID" value="1"/>
+    <property name="next" value="resN_stairwell"/>
+    <property name="nextWarp" value="3"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="8">
+ <properties>
+  <property name="ambient" value="DAYNIGHT"/>
+  <property name="bg" value="main"/>
+  <property name="bgm day" value="Bright Days"/>
+  <property name="bgm night" value="Midnight Waves"/>
+  <property name="name" value="Municipal District"/>
+  <property name="next" value="Downtown"/>
+  <property name="prevWarp" value="2"/>
+  <property name="previous" value="Residential District SW"/>
+ </properties>
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
+  <tile id="0">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="light" value="street"/>
+   </properties>
+  </tile>
+  <tile id="72">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="73">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="74">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="75">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="76">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="77">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="144">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="145">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="146">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="147">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="148">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="149">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="150">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="151">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="152">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt0UdMFGEchvFZ7Ma2MwPYTex6sWFviV3sRqUtYDex68WGnaKgotiNSlvAbmIXu7FLsdzserFhb4n94WBk5zCH3SzD4f8kv+T7kiV550NRJEmSJEmSJEmSJEmSJEn6V7RdUWIQiziswErEI8Fu9bqSVQ7vkYs85OMWbuMO7rr5Vtn83SmcxhmcxTmcxwVcLCH/Ax9VUUqhNMqgLMqhPCqgour6e527L/zgj+qogZqoZXKujTqoi3qqZxusKpAdAzAQgzAYQzAUwzDcsNPBPRwRiMRojMFYjDM5j8cETMQk1bMNVpXEjvXYgI3YhM3Ygq3YZtjp5J6BTGRhF3ZjD/aanPdhPw7goOrZBqu6x477eICHeITHeIKneGbYWcD9Dd7iHd7jAz7ik8n5M77gK76pnm2wqvqaojRAQzRCYzRBUzRDc8319wHc26Id2qMDOqITOpucu6AruqG75tkGq5rMjimYimmYjhmYiVmYbdgZxX0hFmExlmAplmG5yTkaMYhFnObehiAEIwShCIPD6y/0v0PsOIwjOIpjOI4TOIlsw3dd4n4ZV3AV13AdN3DT5JyDXOQhX3NvQzJSkIo0pMPp7Qcq0nd2/MBP/MJv/CncpiuKDT666+8rca+MKqiKarBDhWZy1uELP/jr7m14jhd4iVd4jQIvv0/RerCjJ3qhN/qgL/qhPwIN3zWC+0iMQhCCEYJQhJmcHQhHBCJ19za0sClKS7RCa7RBgK143qmweHYkYBVWYw0SsRbrkGT4ru3cd2AnkpGCVKQh3eTsRAYykaW7t2EO7zIX8zAfCxBVjG8lSZIkSZIkSZIkSZIkSZIkSZIkeae/dYri5Q==
+  </data>
+ </layer>
+ <layer name="bg2" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
+  </data>
+ </layer>
+ <layer name="ground" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt00lOAmEQQGEQFDyGioJHURzwGOCAHgVHOAYIKkdRUOQmvI0JGxKSXvxl8l7ybTqVToUucjkzMzMzMzMzMzMzMzMzMzOzWOWxgQKK2MQWyiue/81vr3i+PF/K8P5135Pl/aU13rP8/AjHqOMEpzjDORq4SDQTca8O7vGARzzhGS/oopdoJuJen/jCBFN84wcz/GKeaCbiXjv8IXexhwr2cYAqajjMp5mJuFcTLVziCte4QRu3uEs0E3GvPgZ4xRAjvOEdHxgnmom4V8Tv5139/7uKuFPU3yrirfsf9K68K+/Ku/KuvKt4e0X8ft6Vd+VdeVfeVbaZBaVqcDI=
+  </data>
+ </layer>
+ <layer name="objects" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztzeEJAjEMBtDLPud253beNjeIP2qxhEqRQgV5Dz6SlNBsGwAAAAAAAAC/dL2S3779o1dnXR/6lW7x7vcoaeV5pO7nOmuPfr/Svbl7REkrzyN1P9dZR/T7lc7m7iNKWnkeqfu5AgAAAAAA/JsnTz0SAQ==
+  </data>
+ </layer>
+ <layer name="fg" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt0bENgEAMBMEnphTKoRTKoRTKoRFCZ38EIDmYiSztZR4DAAAAAAD4wqq/7nvY6uUMW73cYauXbZlv9bo7/a177/S37v0IW73uK2z1eQcAAAAAAPjDA0KsKsc=
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <object id="3" x="704" y="432" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="4" name="room1_1" x="944" y="400" width="32" height="48">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="Subway"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="5" x="752" y="368" width="80" height="80">
+   <properties>
+    <property name="event" value=""/>
+    <property name="makeItGreat" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="6" x="912" y="288" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="7" x="116" y="280" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

@@ -1,0 +1,8 @@
+Script Main
+lockplayer
+setSpeaker(null)
+
+text({It's a poster of a ball-based physics game and a snail racing game called Es Car Go.})
+text({Looks like grandma is a fan of indie games...})
+
+done

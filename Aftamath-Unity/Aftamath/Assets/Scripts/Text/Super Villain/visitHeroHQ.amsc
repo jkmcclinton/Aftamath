@@ -1,0 +1,15 @@
+Script Main
+lockplayer
+face(MrJustice, player)
+setSpeaker(MrJustice)
+
+text({Meet me in the Hero HQ.})
+text({It's just off of the boardwalk.})
+text({The easiest way to get there is to take the subway.})
+text({Go with justice!})
+teleport(MrJustice, HeroHQ, 23, 19)
+teleport(player, HeroHQ, 22, 19)
+
+setDialogue(MrJustice, foundHQ)
+
+done

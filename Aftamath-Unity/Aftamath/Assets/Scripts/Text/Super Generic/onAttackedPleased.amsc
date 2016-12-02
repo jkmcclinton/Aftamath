@@ -1,0 +1,23 @@
+Script Main
+lockplayer
+setSpeaker(this)
+face(this, player)
+
+if(VillainTut)
+	text({Watch it, squirt.})
+	text(flirty, {Save that for the justice dweebs.})
+end
+if(HeroTutEvil)
+	text(sad, {You little punk...})
+	text(sad, {You tryin' to get on my bad side?})
+end
+if(HeroTut)
+	text({Hey now, /player. I know you're excited to see Justice HQ and everything, but save that energy for when we fight evil.})
+	text(mad, {Evil doers like her over there...})
+end
+if(VillainTutGood)
+	text(mad, {You're not pulling my leg, are you?})
+	text(mad, {Pretending to be on the side of Justice, only to tear it down from the inside?})
+	text(mad, {I'll have you know that's the last thing I'll tolerate.})
+end
+done

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="10" tilewidth="16" tileheight="16" nextobjectid="31">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="Yesterday's Encounter"/>
+ </properties>
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
+  <image source="tilesets/indoors.png" width="960" height="771"/>
+  <tile id="304">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="305">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="306">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="307">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="308">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="309">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="310">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="311">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="312">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="313">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="314">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="315">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="316">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="317">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="318">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="319">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="320">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="321">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="322">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="323">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJztzlVWglEYhlEQazq2YFJigQpOx+5AmY6BYud07NzO4f8vdPmus+++ddYTifydTQcs6CVJkSZDliFyDDPCKGOMk6fABJNMUaQUUt8Ms8wxzwKLLLHMCqussc4Gm2yxTZkddqmE0LfHPgccUuWIY2qccMoZ51xwyRXX3HDLHfch9D3wyBPPvPDKG+988MnXz3HUo44Y9TTQSBPN0eD7WvzZShvtdNBJF93ESdBDL330M8AgSVKkyYTQ97/ft28pJTWo
+  </data>
+ </layer>
+ <layer name="bg2" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMApIBwAGQAAB
+  </data>
+ </layer>
+ <layer name="ground" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJzt1DsOgCAQhGE4kIWIbxB83P9M/o09BRu2cJKvIplMsxhTls7KqJWaXRKd/z49XRKdrfaV3NP31sNhgMeICTMWrNiwIyDiQELGiQs3HoH71f6/aN7XKi+pVBOR
+  </data>
+ </layer>
+ <layer name="fg" width="40" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2BogrNoNLo4PjX0AJyMqDS6OD41o2AUDAUAAE0JBDQ=
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="27" name="Spawn" x="192" y="80" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="28" x="320" y="80" width="16" height="16">
+   <properties>
+    <property name="ID" value="43"/>
+    <property name="NPC" value="gangster2"/>
+    <property name="attackScript" value="onAttackedThug1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Jose"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="29" x="352" y="80" width="16" height="16">
+   <properties>
+    <property name="ID" value="199"/>
+    <property name="NPC" value="burly1"/>
+    <property name="attackScript" value="onAttackedThug1"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Tough Guy"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+  <object id="30" name="outside" x="176" y="42" width="17.2878" height="53.9394">
+   <properties>
+    <property name="ID" value="0"/>
+    <property name="next" value="Commercial District NW"/>
+    <property name="nextWarp" value="3"/>
+    <property name="warp" value="!barLocked"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

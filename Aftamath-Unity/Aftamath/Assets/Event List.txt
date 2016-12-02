@@ -1,0 +1,25 @@
+Event Name               Script
+EvilBar                  : There's A Bar
+FellFromNowhere          : intro
+GoodBar                  : There's A Bar
+HeroTut                  : afterTutorial
+HeroTutEvil              : afterTutorial
+JoinedHeroes             : HeroHQEntry
+RobberIntro              : robbers1
+RogueTutorial            : afterTutorial
+VillainTut               : afterTutorial
+VillainTutGood           : afterTutorial
+apprehendedGangsta       : foundGangsta
+boughtfirstHouse         : forSaleResN
+brokeAnOldLadyCurse      : Ms Pancakes Mishap
+brokeUpWithPartner       : attackedPartner
+brokeUpWithPartner       : supAttackedPartner
+cowardBar                : There's A Bar
+credits                  : credits
+cursed                   : onAttackedWitch1
+gaveSoul                 : grimResponse
+goneInBar                : There's A Bar
+metTheWitch              : Ms Pancakes Mishap
+msPancakesMishap         : Ms Pancakes Mishap
+rodeTrainFirstTime       : trainSelection
+supTutIntro              : superTutIntro

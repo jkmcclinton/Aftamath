@@ -1,0 +1,16 @@
+Script heroquest3
+
+lockplayer
+focus(lawyer)
+setSpeaker(lawyer)
+text({Hey, listen up everybody!})
+text({I'm a lawyer!})
+text({I'm just conveniently saying I'm a lawyer just in case someone needs me!})
+text({Me...the LAWYER.})
+text({Okay, thanks.})
+
+focus(player)
+
+setDialogue(lawyer, heroquest3-1)
+
+done

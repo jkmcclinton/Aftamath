@@ -1,0 +1,5272 @@
+fileFormatVersion: 2
+guid: 4ff97c7fd98dc2d4ab6f1b7fef0a36ee
+timeCreated: 1480704052
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: maleplayer2_0
+    21300002: maleplayer2_1
+    21300004: maleplayer2_2
+    21300006: maleplayer2_3
+    21300008: maleplayer2_4
+    21300010: maleplayer2_5
+    21300012: maleplayer2_6
+    21300014: maleplayer2_7
+    21300016: maleplayer2_8
+    21300018: maleplayer2_9
+    21300020: maleplayer2_10
+    21300022: maleplayer2_11
+    21300024: maleplayer2_12
+    21300026: maleplayer2_13
+    21300028: maleplayer2_14
+    21300030: maleplayer2_15
+    21300032: maleplayer2_16
+    21300034: maleplayer2_17
+    21300036: maleplayer2_18
+    21300038: maleplayer2_19
+    21300040: maleplayer2_20
+    21300042: maleplayer2_21
+    21300044: maleplayer2_22
+    21300046: maleplayer2_23
+    21300048: maleplayer2_24
+    21300050: maleplayer2_25
+    21300052: maleplayer2_26
+    21300054: maleplayer2_27
+    21300056: maleplayer2_28
+    21300058: maleplayer2_29
+    21300060: maleplayer2_30
+    21300062: maleplayer2_31
+    21300064: maleplayer2_32
+    21300066: maleplayer2_33
+    21300068: maleplayer2_34
+    21300070: maleplayer2_35
+    21300072: maleplayer2_36
+    21300074: maleplayer2_37
+    21300076: maleplayer2_38
+    21300078: maleplayer2_39
+    21300080: maleplayer2_40
+    21300082: maleplayer2_41
+    21300084: maleplayer2_42
+    21300086: maleplayer2_43
+    21300088: maleplayer2_44
+    21300090: maleplayer2_45
+    21300092: maleplayer2_46
+    21300094: maleplayer2_47
+    21300096: maleplayer2_48
+    21300098: maleplayer2_49
+    21300100: maleplayer2_50
+    21300102: maleplayer2_51
+    21300104: maleplayer2_52
+    21300106: maleplayer2_53
+    21300108: maleplayer2_54
+    21300110: maleplayer2_55
+    21300112: maleplayer2_56
+    21300114: maleplayer2_57
+    21300116: maleplayer2_58
+    21300118: maleplayer2_59
+    21300120: maleplayer2_60
+    21300122: maleplayer2_61
+    21300124: maleplayer2_62
+    21300126: maleplayer2_63
+    21300128: maleplayer2_64
+    21300130: maleplayer2_65
+    21300132: maleplayer2_66
+    21300134: maleplayer2_67
+    21300136: maleplayer2_68
+    21300138: maleplayer2_69
+    21300140: maleplayer2_70
+    21300142: maleplayer2_71
+    21300144: maleplayer2_72
+    21300146: maleplayer2_73
+    21300148: maleplayer2_74
+    21300150: maleplayer2_75
+    21300152: maleplayer2_76
+    21300154: maleplayer2_77
+    21300156: maleplayer2_78
+    21300158: maleplayer2_79
+    21300160: maleplayer2_80
+    21300162: maleplayer2_81
+    21300164: maleplayer2_82
+    21300166: maleplayer2_83
+    21300168: maleplayer2_84
+    21300170: maleplayer2_85
+    21300172: maleplayer2_86
+    21300174: maleplayer2_87
+    21300176: maleplayer2_88
+    21300178: maleplayer2_89
+    21300180: maleplayer2_90
+    21300182: maleplayer2_91
+    21300184: maleplayer2_92
+    21300186: maleplayer2_93
+    21300188: maleplayer2_94
+    21300190: maleplayer2_95
+    21300192: maleplayer2_96
+    21300194: maleplayer2_97
+    21300196: maleplayer2_98
+    21300198: maleplayer2_99
+    21300200: maleplayer2_100
+    21300202: maleplayer2_101
+    21300204: maleplayer2_102
+    21300206: maleplayer2_103
+    21300208: maleplayer2_104
+    21300210: maleplayer2_105
+    21300212: maleplayer2_106
+    21300214: maleplayer2_107
+    21300216: maleplayer2_108
+    21300218: maleplayer2_109
+    21300220: maleplayer2_110
+    21300222: maleplayer2_111
+    21300224: maleplayer2_112
+    21300226: maleplayer2_113
+    21300228: maleplayer2_114
+    21300230: maleplayer2_115
+    21300232: maleplayer2_116
+    21300234: maleplayer2_117
+    21300236: maleplayer2_118
+    21300238: maleplayer2_119
+    21300240: maleplayer2_120
+    21300242: maleplayer2_121
+    21300244: maleplayer2_122
+    21300246: maleplayer2_123
+    21300248: maleplayer2_124
+    21300250: maleplayer2_125
+    21300252: maleplayer2_126
+    21300254: maleplayer2_127
+    21300256: maleplayer2_128
+    21300258: maleplayer2_129
+    21300260: maleplayer2_130
+    21300262: maleplayer2_131
+    21300264: maleplayer2_132
+    21300266: maleplayer2_133
+    21300268: maleplayer2_134
+    21300270: maleplayer2_135
+    21300272: maleplayer2_136
+    21300274: maleplayer2_137
+    21300276: maleplayer2_138
+    21300278: maleplayer2_139
+    21300280: maleplayer2_140
+    21300282: maleplayer2_141
+    21300284: maleplayer2_142
+    21300286: maleplayer2_143
+    21300288: maleplayer2_144
+    21300290: maleplayer2_145
+    21300292: maleplayer2_146
+    21300294: maleplayer2_147
+    21300296: maleplayer2_148
+    21300298: maleplayer2_149
+    21300300: maleplayer2_150
+    21300302: maleplayer2_151
+    21300304: maleplayer2_152
+    21300306: maleplayer2_153
+    21300308: maleplayer2_154
+    21300310: maleplayer2_155
+    21300312: maleplayer2_156
+    21300314: maleplayer2_157
+    21300316: maleplayer2_158
+    21300318: maleplayer2_159
+    21300320: maleplayer2_160
+    21300322: maleplayer2_161
+    21300324: maleplayer2_162
+    21300326: maleplayer2_163
+    21300328: maleplayer2_164
+    21300330: maleplayer2_165
+    21300332: maleplayer2_166
+    21300334: maleplayer2_167
+    21300336: maleplayer2_168
+    21300338: maleplayer2_169
+    21300340: maleplayer2_170
+    21300342: maleplayer2_171
+    21300344: maleplayer2_172
+    21300346: maleplayer2_173
+    21300348: maleplayer2_174
+    21300350: maleplayer2_175
+    21300352: maleplayer2_176
+    21300354: maleplayer2_177
+    21300356: maleplayer2_178
+    21300358: maleplayer2_179
+    21300360: maleplayer2_180
+    21300362: maleplayer2_181
+    21300364: maleplayer2_182
+    21300366: maleplayer2_183
+    21300368: maleplayer2_184
+    21300370: maleplayer2_185
+    21300372: maleplayer2_186
+    21300374: maleplayer2_187
+    21300376: maleplayer2_188
+    21300378: maleplayer2_189
+    21300380: maleplayer2_190
+    21300382: maleplayer2_191
+    21300384: maleplayer2_192
+    21300386: maleplayer2_193
+    21300388: maleplayer2_194
+    21300390: maleplayer2_195
+    21300392: maleplayer2_196
+    21300394: maleplayer2_197
+    21300396: maleplayer2_198
+    21300398: maleplayer2_199
+    21300400: maleplayer2_200
+    21300402: maleplayer2_201
+    21300404: maleplayer2_202
+    21300406: maleplayer2_203
+    21300408: maleplayer2_204
+    21300410: maleplayer2_205
+    21300412: maleplayer2_206
+    21300414: maleplayer2_207
+    21300416: maleplayer2_208
+    21300418: maleplayer2_209
+    21300420: maleplayer2_210
+    21300422: maleplayer2_211
+    21300424: maleplayer2_212
+    21300426: maleplayer2_213
+    21300428: maleplayer2_214
+    21300430: maleplayer2_215
+    21300432: maleplayer2_216
+    21300434: maleplayer2_217
+    21300436: maleplayer2_218
+    21300438: maleplayer2_219
+    21300440: maleplayer2_220
+    21300442: maleplayer2_221
+    21300444: maleplayer2_222
+    21300446: maleplayer2_223
+    21300448: maleplayer2_224
+    21300450: maleplayer2_225
+    21300452: maleplayer2_226
+    21300454: maleplayer2_227
+    21300456: maleplayer2_228
+    21300458: maleplayer2_229
+    21300460: maleplayer2_230
+    21300462: maleplayer2_231
+    21300464: maleplayer2_232
+    21300466: maleplayer2_233
+    21300468: maleplayer2_234
+    21300470: maleplayer2_235
+    21300472: maleplayer2_236
+    21300474: maleplayer2_237
+    21300476: maleplayer2_238
+    21300478: maleplayer2_239
+    21300480: maleplayer2_240
+    21300482: maleplayer2_241
+    21300484: maleplayer2_242
+    21300486: maleplayer2_243
+    21300488: maleplayer2_244
+    21300490: maleplayer2_245
+    21300492: maleplayer2_246
+    21300494: maleplayer2_247
+    21300496: maleplayer2_248
+    21300498: maleplayer2_249
+    21300500: maleplayer2_250
+    21300502: maleplayer2_251
+    21300504: maleplayer2_252
+    21300506: maleplayer2_253
+    21300508: maleplayer2_254
+    21300510: maleplayer2_255
+    21300512: maleplayer2_256
+    21300514: maleplayer2_257
+    21300516: maleplayer2_258
+    21300518: maleplayer2_259
+    21300520: maleplayer2_260
+    21300522: maleplayer2_261
+    21300524: maleplayer2_262
+    21300526: maleplayer2_263
+    21300528: maleplayer2_264
+    21300530: maleplayer2_265
+    21300532: maleplayer2_266
+    21300534: maleplayer2_267
+    21300536: maleplayer2_268
+    21300538: maleplayer2_269
+    21300540: maleplayer2_270
+    21300542: maleplayer2_271
+    21300544: maleplayer2_272
+    21300546: maleplayer2_273
+    21300548: maleplayer2_274
+    21300550: maleplayer2_275
+    21300552: maleplayer2_276
+    21300554: maleplayer2_277
+    21300556: maleplayer2_278
+    21300558: maleplayer2_279
+    21300560: maleplayer2_280
+    21300562: maleplayer2_281
+    21300564: maleplayer2_282
+    21300566: maleplayer2_283
+    21300568: maleplayer2_284
+    21300570: maleplayer2_285
+    21300572: maleplayer2_286
+    21300574: maleplayer2_287
+    21300576: maleplayer2_288
+    21300578: maleplayer2_289
+    21300580: maleplayer2_290
+    21300582: maleplayer2_291
+    21300584: maleplayer2_292
+    21300586: maleplayer2_293
+    21300588: maleplayer2_294
+    21300590: maleplayer2_295
+    21300592: maleplayer2_296
+    21300594: maleplayer2_297
+    21300596: maleplayer2_298
+    21300598: maleplayer2_299
+    21300600: maleplayer2_300
+    21300602: maleplayer2_301
+    21300604: maleplayer2_302
+    21300606: maleplayer2_303
+    21300608: maleplayer2_304
+    21300610: maleplayer2_305
+    21300612: maleplayer2_306
+    21300614: maleplayer2_307
+    21300616: maleplayer2_308
+    21300618: maleplayer2_309
+    21300620: maleplayer2_310
+    21300622: maleplayer2_311
+    21300624: maleplayer2_312
+    21300626: maleplayer2_313
+    21300628: maleplayer2_314
+    21300630: maleplayer2_315
+    21300632: maleplayer2_316
+    21300634: maleplayer2_317
+    21300636: maleplayer2_318
+    21300638: maleplayer2_319
+    21300640: maleplayer2_320
+    21300642: maleplayer2_321
+    21300644: maleplayer2_322
+    21300646: maleplayer2_323
+    21300648: maleplayer2_324
+    21300650: maleplayer2_325
+    21300652: maleplayer2_326
+    21300654: maleplayer2_327
+    21300656: maleplayer2_328
+    21300658: maleplayer2_329
+    21300660: maleplayer2_330
+    21300662: maleplayer2_331
+    21300664: maleplayer2_332
+    21300666: maleplayer2_333
+    21300668: maleplayer2_334
+    21300670: maleplayer2_335
+    21300672: maleplayer2_336
+    21300674: maleplayer2_337
+    21300676: maleplayer2_338
+    21300678: maleplayer2_339
+    21300680: maleplayer2_340
+    21300682: maleplayer2_341
+    21300684: maleplayer2_342
+    21300686: maleplayer2_343
+    21300688: maleplayer2_344
+    21300690: maleplayer2_345
+    21300692: maleplayer2_346
+    21300694: maleplayer2_347
+    21300696: maleplayer2_348
+    21300698: maleplayer2_349
+    21300700: maleplayer2_350
+    21300702: maleplayer2_351
+    21300704: maleplayer2_352
+    21300706: maleplayer2_353
+    21300708: maleplayer2_354
+    21300710: maleplayer2_355
+    21300712: maleplayer2_356
+    21300714: maleplayer2_357
+    21300716: maleplayer2_358
+    21300718: maleplayer2_359
+    21300720: maleplayer2_360
+    21300722: maleplayer2_361
+    21300724: maleplayer2_362
+    21300726: maleplayer2_363
+    21300728: maleplayer2_364
+    21300730: maleplayer2_365
+    21300732: maleplayer2_366
+    21300734: maleplayer2_367
+    21300736: maleplayer2_368
+    21300738: maleplayer2_369
+    21300740: maleplayer2_370
+    21300742: maleplayer2_371
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  buildTargetSettings:
+  - buildTarget: Standalone
+    maxTextureSize: 2048
+    textureFormat: -3
+    compressionQuality: 50
+    allowsAlphaSplitting: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: maleplayer2_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_4
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_5
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_6
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_7
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_8
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_9
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_10
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_11
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_12
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_13
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_14
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_15
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_16
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_17
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_18
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_19
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_20
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_21
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_22
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_23
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_24
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 974
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_25
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_26
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_27
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_28
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_29
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_30
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_31
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_32
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_33
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_34
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_35
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_36
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_37
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_38
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_39
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_40
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_41
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_42
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_43
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_44
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_45
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_46
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_47
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_48
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_49
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 924
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_51
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_52
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_53
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_54
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_55
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_56
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_57
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_58
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_59
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_60
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_61
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_62
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_63
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_64
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_65
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_66
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_67
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_68
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_69
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_70
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_71
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_72
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_73
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_74
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 874
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_75
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_76
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_77
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_78
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_79
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_80
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_81
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_82
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_83
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_84
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_85
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_86
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_87
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_88
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_89
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_90
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_91
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_92
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_93
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_94
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_95
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_96
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_97
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_98
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_99
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 824
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_100
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_101
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_102
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_103
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_104
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_105
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_106
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_107
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_108
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_109
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_110
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_111
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_112
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_113
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_114
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_115
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_116
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_117
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_118
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_119
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_120
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_121
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_122
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_123
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_124
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 774
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_125
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_126
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_127
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_128
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_129
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_130
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_131
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_132
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_133
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_134
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_135
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_136
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_137
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_138
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_139
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_140
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_141
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_142
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_143
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_144
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_145
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_146
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_147
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_148
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_149
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 724
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_150
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_151
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_152
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_153
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_154
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_155
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_156
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_157
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_158
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_159
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_160
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_161
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_162
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_163
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_164
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_165
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_166
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_167
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_168
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_169
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_170
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_171
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_172
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_173
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_174
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 674
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_175
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_176
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_177
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_178
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_179
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_180
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_181
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_182
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_183
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_184
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_185
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_186
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_187
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_188
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_189
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_190
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_191
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_192
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_193
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_194
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_195
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_196
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_197
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_198
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_199
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 624
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_200
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_201
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_202
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_203
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_204
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_205
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_206
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_207
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_208
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_209
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_210
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_211
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_212
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_213
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_214
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_215
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_216
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_217
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_218
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_219
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_220
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_221
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_222
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_223
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_224
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 574
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_225
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_226
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_227
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_228
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_229
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_230
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_231
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_232
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_233
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_234
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_235
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_236
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_237
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_238
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_239
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_240
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_241
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_242
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_243
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_244
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_245
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_246
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_247
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_248
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_249
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 524
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_250
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_251
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_252
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_253
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_254
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_255
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_256
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_257
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_258
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_259
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_260
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_261
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_262
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_263
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_264
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_265
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_266
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_267
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_268
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_269
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_270
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_271
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_272
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_273
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_274
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 474
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_275
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_276
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_277
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_278
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_279
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_280
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_281
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_282
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_283
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_284
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_285
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_286
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_287
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_288
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_289
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_290
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_291
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_292
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_293
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_294
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_295
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_296
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_297
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_298
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_299
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 424
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_300
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_301
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_302
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_303
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_304
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_305
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_306
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_307
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_308
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_309
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_310
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_311
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_312
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_313
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_314
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_315
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_316
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_317
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_318
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_319
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_320
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_321
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_322
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_323
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_324
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 374
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_325
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_326
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_327
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_328
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_329
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_330
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_331
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_332
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_333
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_334
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_335
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_336
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_337
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_338
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_339
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_340
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_341
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_342
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_343
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_344
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_345
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_346
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_347
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_348
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_349
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 324
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_350
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_351
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_352
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_353
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_354
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_355
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_356
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_357
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_358
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_359
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_360
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_361
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_362
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_363
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_364
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_365
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_366
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_367
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_368
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_369
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_370
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: maleplayer2_371
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 274
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

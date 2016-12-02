@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="50" tilewidth="16" tileheight="16" nextobjectid="57">
+ <properties>
+  <property name="ambient" value="DAYNIGHT"/>
+  <property name="bg" value="main"/>
+  <property name="bgm day" value="Bright Days"/>
+  <property name="bgm night" value="Midnight Waves"/>
+  <property name="name" value="Residential District N"/>
+  <property name="next" value="Crosswalk"/>
+  <property name="previous" value="Commercial District S"/>
+  <property name="spawners" value="false"/>
+ </properties>
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
+  <tile id="0">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="light" value="street"/>
+   </properties>
+  </tile>
+  <tile id="72">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="73">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="74">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="75">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="76">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="77">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="144">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="145">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="146">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="147">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="148">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="149">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="150">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="151">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="152">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt1ue713MYB/Bfnc7qnBZCiFIhaaGFkLQHaaOFkPYubUqDkErSRgsh7V3aCCGkQtraCGl5+Q++j87h+n3e1/V6dn+v+7rv+8HnG4uFhISEhISEhISExGceSorFHqYZzWlBS1rxCI/yGK15nN6+eZo+9KUf/RnAQAbRXl0HOtKJznShK93oHrHXEzxJm6TM2k7G502zvsV0ZjCTWczmbd7hXebwHmt88xFrWcd6NrCRTWxmgbqFLGIxS1jKMpazImKv9/mAuXF0j8NmPcJRjnGcE5zkV37jd07xB6lZYrHspJFODnKSi9zk4Zy681z4d4/JsVgWspJANhKTo/X6k784HUf3uMVubqUMZSlHeSpwG7dzBxW5k3r2/QD1aUBDGtGYJjSlirqqVKM6NahJLWpTJ2Kvu7ibSsmZvaWMSx+z9qUf/RnAQAbxDM8ymCE8x3j7fp0JTGQSk5nCVKYxUt2LvMTLjOIVRjOGsRF7DWUYw+PoHmvNuo71bGAjm9jMx3zCp2zhM3bb98/sYS/72M8BDnKIbeq+4Vu+Yzvfs4Od7IrY63O+YGsc3SMtxTtADnKSi9zk4SIu5hLycilFs8ZiN1KMmyhOCUpSitLkV3c111CAglxLIQpTJGKvy7icfCmZvaWMS32zNqAhjWhME5ryIA/xMM1oTmf77kJXutGdHvSkF71pre5xnuBJ2vAUbWlH+4i9WtCSVnF0jwlmncgkJjOFqUzjDd7kLaYzgyX2vZRlLGcFK1nFatYwR917vM8HzOVD5jGfBRF7zWQWs+PoHnvMupd97OcABznELxzmCEc5RpYE/64kkI1EkkgmhVROqfuDP/mL0/zNGc5yLmKv45zgZBzdo1iqd4DilKAkpSjNzdzCrZShLDXsuya1qE0d6nIf91OPiuru5C7uphL3UJl7qRKxVznKUyE1s7eUcelq1m50pwc96UVvnqYPfelHf0bZ9yuMZgxjeZVxvMZ4hqh7jqEMYzgjeJ4XGBmx1wAGMiiO7rHMrMtZwUpWsZo1fMRa1rGeDWy37+/ZwU528QM/8hO72aLuMz7nC7byJV/xNdsi9trIJjbH0T0SsnsHSCSJZFJIJTtppJODnBTM5t+VQhSmCNdxPTdQlLzqLuUyLicfV3AlV5E/Yq9c5CZP9szeUsallllrU4e63Mf91OMB6tOAhjSijX0/RVva0Z4OdKQTnWmmrjktaEkrHuFRHqN1xF6NaULTOLrHaLOOYSyvMo7XGM/rTGAik5jMXPv+kHnMZwELWcRiljBd3QxmMovZvM07vMuciL2mMJVpcXSPHWbdyS5+4Ed+Yjc/s4e97GM/p+37b85wlnOc5wKxRP/DHFV3jOOc4CS/8hu/cypirwMc5FAc3aNQmneAIlzH9dxAUW6kGDdRnBJUsu97qMy9VKEq1ahODcqoK0s5ylOB27idO6gYsVdJSlE6LbO3lHFpa9Z2tKcDHelEZ7rQlW50pwfD7XsEz/MCI3mRl3iZUfRT158BDGQQz/AsgxkSsVdPetE7ju4xz6zzWcBCFrGYJSxlGctZwUq22veXfMXXbOMbvuU7trNe3QY2sonNfMwnfMqWiL1WsZo1cXSPM2Y9yznOc+Hf2dO9A2QlgWwkkkS+JP+uXMlV5OdqrqEABcmhLie5yE0eLuJiLiFverReyaSQmp7ZW/rvpordVKUa1alBTWpRmzrUDfsLCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCflf5R9WbNFY
+  </data>
+ </layer>
+ <layer name="bg2" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztmUlsjWEYhd9Ot8O9NghSgsSYYNPWpgRBkBgTbLTdlCBtDYkxbW1KEASJMcFGa1OCtDUkxrS1KUFKkBgTbLQ2JYjW8MjNXX7vv7A9T/Ks3pNvcc7yMxNCCCGEEEKE2IrbcLuTqYiZVWJVLJwp4VaKZU6mwrmJJLfxDt51Mk302IwtTp/13BrwnJNp0h6RxNLMsjEnLZz5SY+92Of02cWtGz87mdQ7IswidliMS5w9ZmabzcLZ2eFMIbcinOxkUu+IMMfZ4QSedPbYR4f78YDTZQ23Wtyhvv+LN+zwFt85e3TS8RN86nTdxq0d7zmZTm0Vydh0s3E4Pj2cyc8xG4rDcsKZOLcE9nMy+c5NJFnPDhtwo7NHOT2uxFVOn0u5LcPlTqZce0RylR2u4XVnj0Z6PI8XnD5PcTuNZ5xMo/aI5Dc7/Pm3RUY400OPX/Cr0+d7bh/wo5Pp0R6RzGGHuTjP2aM412wKTs0NZyZwm4iTnEyxcxNJDrLDITzs7FFHjztxl9PnJm6bcYuTqdMekTxjh+f4wtmjgx7v4wOnzxvcbuItJ9OhPSIZnmk2AkdmhjP988wG4MC8cCaDWyZmOZnUOyLManZYg2udPVbQYQmWOl3O57YAFzqZ1DsizEV2uISXnT3O0mE9NjhdHuF2FI85mdQ7Isw3dviOP5w9PtFhF3Y7Xb7k9gpfO5nUOyLMtCyz6TgjK5wpiJsVYlE8nBnFbTSOcTIFzk0k2c0Oe3Cvs0c1PdZgrdNnJbcqXOdkqrVHJA/Z4RE+dvZopcc2bHf6bObWglecTKv2iGRQzGwwDnH+7fISZnFMJMKZXrruw1/qXAghhBBCCCGEEEIIIYQQQgghhBBCiCB/AS1fcwo=
+  </data>
+ </layer>
+ <layer name="ground" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztlFdOglEUBkFRdBkWLEtBxbIMBdtSLKgsA7Auxa47cR4w8YkHSW5OcmaSSW5gcvPnzweVioiIiIiIiIiIiIiIiIiIiIiIiIiIiJSiilM4jTWcwdk/57kxTX30+fyE9/yeJ72nPvp+3D0lm/+8wyZu4CZuYQu3cQd3cc+maHOG53iBl9jFK7zGG+zZFG2e8QVf8Q3f8QM/8Qu/bYo2C/xpLeISLmMDV3AV13C9alOy2ccDbGMHD/EIj/EET22KNn0c4BBv8Q7v8QEf8cmmaBNxI5mbiBvJ3ER8psxNxN9s5ibiRjI3ETeSuYm4kcxNxI1kbiJuJHMTcSOZm4gbydxE3EjmJuJGMjcRN5K5ibiRzM0PWNCWtw==
+  </data>
+ </layer>
+ <layer name="objects" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt0LENgDAMBEDYB7aD7WAb2ANZSpXCiqmQuJO+8n/jaQIAAAAAAAAAAIB/ul50sk3c7hbqlrneyTZxW1uo2wb+1neyTdz2FuqOgb/1nWwTt7MFAAAAAAAAAIBveQDlrA2b
+  </data>
+ </layer>
+ <layer name="fg" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt07ENAjEQBMAn5TuBbqATvhvoBMqhESIyy2fpxL2wZiJLu9Y68bIAAAAAAAAAAF/rj/OKjZnya9DN5hUbM+WPoJvNKzZmyt9BN5tXbMyUnw/9bjav2Jgpj7r+x//8j+PA/exGdX5qnCv3t6Dbyy8D97Mb1fmtca7cfwXdXn4fuJ/dqM6fjfPe7wMAAAAAAAAA2MMH3B86jQ==
+  </data>
+ </layer>
+ <objectgroup name="entities" opacity="0.96">
+  <properties>
+   <property name="spawn" value=""/>
+  </properties>
+  <object id="24" x="144" y="432" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

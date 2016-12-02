@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="6">
+ <properties>
+  <property name="ambient" value="DAYNIGHT"/>
+  <property name="bg" value="main"/>
+  <property name="bgm day" value="Misdirection"/>
+  <property name="bgm night" value="Second Day"/>
+  <property name="name" value="Boardwalk"/>
+  <property name="next" value="Warehouse"/>
+  <property name="previous" value="Hero HQ"/>
+ </properties>
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="3096">
+  <image source="tilesets/beach.png" width="1152" height="691"/>
+  <tile id="10">
+   <properties>
+    <property name="light" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="23">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="24">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="25">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="26">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="27">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="28">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="35">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="36">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="37">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="38">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="39">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="40">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="41">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="42">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="43">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="44">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="86">
+   <properties>
+    <property name="bench" value=""/>
+   </properties>
+  </tile>
+  <tile id="87">
+   <properties>
+    <property name="bench" value=""/>
+   </properties>
+  </tile>
+  <tile id="107">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="108">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="109">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="110">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="111">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="112">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="113">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="114">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="115">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="116">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="179">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="180">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="181">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="182">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="183">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="184">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="185">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="186">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="187">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="188">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="251">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="252">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="253">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="254">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="255">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="256">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="257">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="258">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="259">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="260">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztyLkNhEAABMENgwMuN97c7oEcmQCwEFhbJbXTpQAAAAAAAAAAwD2a9Ept6lKf3hd+DYY0pinNaUnrhf+ET/qmX/qnLe3+6QcAAAAAqM0Bg686ug==
+  </data>
+ </layer>
+ <layer name="bg2" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztjrkNAlEQxf42wtkHZy8sR2+cvbELJLwMCX1yI9mSA48meKWIiIiIiIiIiIiIiIiIiIiIiIh8GMRhHMVxnMSp9+p9E9u4jbu4jwfv1fsxnuI5XuI13rxX7/fYxT4+4jO+vFfvs6aUeVzEZVzFdeO9dids+Jf794/9u0lb6E3aQm/SFnqTttCbtIXepC30Jm2hN2kLvUlb6E3aQm/SFnqTttD7DcNIwJA=
+  </data>
+ </layer>
+ <layer name="ground" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztzrcRwlAUBVEJ0wM2w1eFzbACOsObznBLEaCvmT3zNnnRjSJJkiRJkiRJkiRJkiRlVYnKVKEq1age8L9BTWpRmzrUpd4f9vRpQEMa0ZgmAf+nNKM5LWhJK0poTRva/mhP1uxoTwc60onOdKEr3eie2rqwPOhJL3p/HzFHOcpTgYpxqhMlSZIkSZIkBe4DiPcwtw==
+  </data>
+ </layer>
+ <layer name="objects" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt0UkKwkAUhOFkLTicQzyN4HAOyWkEh3OIp/EiVi8C8fma17QLe/F/UKtUVzqk6wAAAAAAAAAAAP5nRqfYlk6xM51irf3H1jpTrf3H1jpTLzpZc2WhLJWVsu4/n2/67zOpY895nZxx09uJ7uOp3bHfFu3slL1yUI7KyZwfnHekjj3ndXLGTW8nuo+ndsd+W7RzUa7KTbkrD3P+6bwjdew5r5Mzbno70X08tTv226IdAAAAAAAAAADwuzfRU0Uc
+  </data>
+ </layer>
+ <layer name="fg" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt0DkOwkAQRNGZU4FZzobNcl42O3flOEMaTfCe9JOOSl0KAAAAAAAAANDCK73TJ33T3PFt2dj/bLhlX0sZ0iEd06n2ezvX31/tGm4Z05Su6ZbuHd8eG7+6NNwCAAAAAAD8bwU6zXfO
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <object id="1" name="room1_1" x="312" y="392" width="37" height="73">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="Business District"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="2" x="604" y="448" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="3" name="room1_1" x="716" y="392" width="37" height="73">
+   <properties>
+    <property name="ID" value="3"/>
+    <property name="next" value="Pier"/>
+    <property name="nextWarp" value="0"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="5" x="448" y="448" width="16" height="16">
+   <properties>
+    <property name="ID" value="140"/>
+    <property name="NPC" value="bballer"/>
+    <property name="attackScript" value="onAttacked"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Prince of Nigeria"/>
+    <property name="script" value="princeRandom"/>
+    <property name="state" value="STATIONARY"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

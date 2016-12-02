@@ -1,0 +1,109 @@
+Script HeroHQEntryTEST
+lockplayer
+
+setSpeaker(OldMan)
+Face(Player, OldMan)
+Text(happy, {Home sweet home! Can't you smell the justice in the air?})
+
+setSpeaker(Player)
+setChoice(1:Totally!, 2:Not at all)
+    [Choice Totally!]
+	    setSpeaker(OldMan)
+		Text({We're going to get along righteously!})
+	end
+	
+	[Choice Not at all]
+	    setSpeaker(OldMan)
+		Text({Worry not!})
+		Text({You'll soon learn to detect the aura of justice!})
+	end
+end 
+
+setSpeaker(Narrator)
+Text({You certainly picked an interesting friend.})
+
+focus(ManlyMan)
+setSpeaker(ManlyMan)
+Face(Player, ManlyMan)
+Text({A newbie. You look soft.})
+Text({Fijate, you have to build up those muscles if you want to get ahead.})
+
+focus(OldMan)
+setSpeaker(OldMan)
+face(OldMan, ManlyMan)
+Text(mad, {Pah, sonny!})
+face(Oldman, Player)
+face(Player, Oldman)
+Text(happy, {Now, you just ignore him.})
+Text(happy, {He's all brawn and no brain.})
+Text(happy, {People like you and me, we know how to use our ol' noggins!})
+
+setSpeaker(Player)
+setChoice(6:You're right, 2:I'm not like you)
+    [Choice You're right]
+	    setSpeaker(OldMan)
+		Text(happy, {Har! I like you, kid!})
+	end
+	
+	[Choice I'm not like you]
+	    setSpeaker(OldMan)
+		Text(sad, {No? Well, we all must choose our own paths.})
+	end
+end
+
+focus(Gothicman)	
+setSpeaker(Gothicman)
+face(Player, Gothicman)
+Text({It is a pleasure to make your acquaintance.})
+
+setSpeaker(Player)
+face(Player, Gothicman)
+setChoice(1:The pleasure is mine, 6:Out of place?)
+    [Choice The pleasure is mine]
+	    setSpeaker(Gothicman)
+		Text({I hope you find your time here suitable.})
+	end
+	
+	[Choice Out of place?]
+	    setSpeaker(Gothicman)
+		Text(mad, {Unlike for brutes like you, class and dignity are never out of place.})
+	end
+end 
+
+focus(Lovergirl)
+setSpeaker(Lovergirl)
+face(Player, Lovergirl)
+Text(happy, {Oh my gosh, oh my gosh, OH MY GOSH!})
+Text(happy, {Welcome to the best place on...uh...what planet are we on?})
+
+setSpeaker(Narrator)
+Text({This is a game, Aftamath. We're on whatever planet the player is on.})
+
+setSpeaker(Lovergirl)
+Text({Whoa...so like, you could be an alien?})
+Text({That's crazy! Are you an alien?})
+
+focus(player)
+setSpeaker(Player)
+face(Player, Lovergirl)
+setChoice(1:No, 2:Yes)
+    [Choice No]
+		focus(Lovergirl)
+	    setSpeaker(Lovergirl)
+		Text(normal, {Well, even if you're not an alien...})
+		Text(flirty, {Your looks are out of this world!})
+	end
+	
+	[Choice Yes]
+		focus(Lovergirl)
+	    setSpeaker(Lovergirl)
+		Text(happy, {That's so cool! Promise me you'll tell me about your planet later!})
+		setflag(planet, true)
+		#when the player talks to her later, she will ask about the planet if this value = 1
+	end 
+end
+
+focus(player)
+
+
+done 

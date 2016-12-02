@@ -1,0 +1,48 @@
+Script Main
+lockplayer
+facePlayer
+setSpeaker(this)
+declare(rnd, local, integer, 0)
+random(rnd, 0, 12)
+if([rnd = 0])
+	text(mad, {Hey, watch it!})
+end
+if([rnd = 1])
+	text(mad, {Hehehe... that tickles!})
+end
+if([rnd = 2])
+	text(mad, {That's it! I'm telling!})
+end
+if([rnd = 3])
+	text(mad, {ACK! It's a trap!})
+end
+if([rnd = 4])
+	text(mad, {Whoa. Easy there, cowboy.})
+end
+if([rnd = 5])
+	text(mad, {You think you can just mob random people on the street without any consequences?})
+	text(normal, {Well, you would be correct. I'm not a significant enough character for anyone to care.})
+end
+if([rnd = 6])
+	text(mad, {... *sigh* ...I remember a time when I too could attack random people with impunity...})
+end
+if([rnd = 7])
+	text(mad, {Ugh. Every day I go out and behave like a good citizen, and this is the **** I have to put up with? I give up.})
+end
+if([rnd = 8])
+	text(mad, {~~I'm staying aliiiiiiive!!~~})
+end
+if([rnd = 9])
+	text(mad, {Ouch. And I just wanted to be your friend..})
+end
+if([rnd=10])
+	text(mad, {This is an "on attacked" script. It is triggered when you hit me.})
+	text(mad, {...is what I would say if no assets are loaded. Tricked ya!})
+end
+if([rnd=11])
+	text(mad, {...why don't you stop by my School of Anger Management? Here's my card.})
+end
+if([rnd=12])
+	text(mad, {Error: Aftamath runtime failure (errcode: 0xdeaddead) -- Cannot load response to attack.})
+end
+done

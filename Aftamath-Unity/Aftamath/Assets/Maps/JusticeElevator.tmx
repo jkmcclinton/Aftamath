@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="27" height="9" tilewidth="16" tileheight="16" nextobjectid="4">
+ <properties>
+  <property name="ambient" value="INDOOR"/>
+  <property name="bgm" value="elevator"/>
+  <property name="name" value="Justice Elevator"/>
+ </properties>
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="10000">
+  <image source="tilesets/HeroHQ.png" width="1600" height="1600"/>
+  <tile id="3860">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3861">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3862">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3863">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3864">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3865">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3866">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3867">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3868">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3869">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3870">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3871">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3872">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3873">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3874">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3875">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3876">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3877">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3878">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3879">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3880">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3881">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3882">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3883">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3884">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3885">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3886">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="3887">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="4560">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="4561">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="4562">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+  <tile id="4563">
+   <properties>
+    <property name="type" value="tile"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="27" height="9">
+  <data encoding="base64" compression="zlib">
+   eJxjYBi8wFGAgcEJiJ2B2EWAtnYtBZq/DIiXA/EKGtvFKcjAwAXE3EDMI0hbu3KB5ucBcT4QF9DYrotA8y8B8WUgvkJju0YBJgAA8GMKHw==
+  </data>
+ </layer>
+ <layer name="bg2" width="27" height="9">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDAcAAAPMAAE=
+  </data>
+ </layer>
+ <layer name="ground" width="27" height="9">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo4A64KIgA8MlIL4MxFcEaWtXJg8mHukAAKe5Bdg=
+  </data>
+ </layer>
+ <layer name="ledge" width="27" height="9">
+  <data encoding="base64" compression="zlib">
+   eJxjYCAeZPJgx7QA2MwdtWvULlqaO9QBAPQ8B8Y=
+  </data>
+ </layer>
+ <layer name="objects" width="27" height="9">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDAcAAAPMAAE=
+  </data>
+ </layer>
+ <layer name="fg" width="27" height="9">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDAcAAAPMAAE=
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <object id="1" name="hallway" x="199" y="16" width="38" height="63.9394">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="HeroLowerHall"/>
+    <property name="nextWarp" value="7"/>
+    <property name="warp" value="!jElevatorMoving"/>
+   </properties>
+  </object>
+  <object id="2" name="26" x="237" y="48" width="16" height="16">
+   <properties>
+    <property name="ID" value="-1"/>
+    <property name="entity" value="justiceElevator"/>
+    <property name="layer" value="back"/>
+    <property name="name" value="Justice Selection"/>
+    <property name="script" value="justiceElevatorSelection"/>
+   </properties>
+  </object>
+  <object id="3" name="Spawn" x="208" y="64" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

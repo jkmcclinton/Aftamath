@@ -1,0 +1,40 @@
+Script Main
+
+if(!talkedToHobo)
+	setSpeaker(player)
+	text({It's one of those famous  Big City bread stands.})
+	text({Looks like the owner had to take a bathroom break or something...})
+	setFlag(sawBread)
+else
+	if(!tookBread)
+		setSpeaker(player)
+		text({Looks like the owner had to take a bathroom break or something, so I can just snatch this bread real quick.})
+		setFlag(sawBread)
+		setChoice(2:Take bread, 1:Don't take bread)
+			[choice Take bread]
+				text(normal, {I don't even care anymmore. Take that, capitalism!})
+				setFlag(tookBread)
+			end
+			[choice Don't take bread]
+				text(normal, {I don't want to steal. Maybe this is a test. Or I could wait.})
+			end
+		end
+	else
+		setSpeaker(narrator)
+		text(normal, {You already stole the bread. Do you really want to take more?})
+		setSpeaker(player)
+		setChoice(2:Take more bread, 1:Don't take bread)
+			[choice Take more bread]
+				text(normal, {Yes, down with capitalism!})
+				if(!stealer)
+					setFlag(stealer)
+					value(add, player.niceness, -0.1)
+				end
+			end
+			[choice Don't take bread]
+				text(normal, {I've already stolen enough.})
+			end
+		end
+	end
+end
+done

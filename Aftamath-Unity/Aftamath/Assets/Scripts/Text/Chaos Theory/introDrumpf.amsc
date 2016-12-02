@@ -1,0 +1,8 @@
+Script Main
+lockplayer
+setSpeaker(Drumpf, true)
+
+text({Extra Extra!})
+text({Read all about it!})
+
+done

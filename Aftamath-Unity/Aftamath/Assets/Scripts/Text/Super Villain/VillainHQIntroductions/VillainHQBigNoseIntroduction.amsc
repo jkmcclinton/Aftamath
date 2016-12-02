@@ -1,0 +1,18 @@
+Script
+lockplayer
+
+setSpeaker(This)
+face(This, Player)
+text({If it isn't the great /player.})
+
+setSpeaker(player)
+setChoice({1: Tell me about yourself, 2: Nevermind})
+    [Choice Tell me about yourself]
+	    setSpeaker(This)
+		Text({Not much to tell.})
+    end
+	
+	[Choice Nevermind]
+	end
+
+done

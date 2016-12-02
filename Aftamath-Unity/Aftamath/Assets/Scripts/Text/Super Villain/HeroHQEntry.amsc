@@ -1,0 +1,124 @@
+Script HeroHQEntry
+lockplayer
+
+setSpeaker(MrJustice)
+Text(happy, {Home sweet home! Can't you smell the justice in the air?})
+
+setSpeaker(player)
+setChoice(1:Totally!, 2:Not at all)
+    [Choice Totally!]
+	    setSpeaker(MrJustice)
+		Text({We're going to get along righteously!})
+	end
+	
+	[Choice Not at all]
+	    setSpeaker(MrJustice)
+		Text({Worry not!})
+		Text({You'll soon learn to detect the aura of justice!})
+	end
+end
+	
+setSpeaker(narrator)
+Text({You certainly picked an interesting friend.})
+
+focus(Manly Man)
+setSpeaker(Manly Man)
+Face(player, Manly Man)
+Text({A newbie. You look soft.})
+Text({Fijate, you have to build up those muscles if you want to get ahead.})
+
+focus(Elder Man)
+setSpeaker(Elder Man)
+face(Elder Man, Manly Man)
+Text(mad, {Pah, sonny!})
+face(Elder Man, player)
+face(player, Elder Man)
+Text(happy, {Now, you just ignore him.})
+Text(happy, {He's all brawn and no brain.})
+Text(happy, {People like you and me, we know how to use our ol' noggins!})
+
+setSpeaker(player)
+focus(player)
+setChoice(6:You're right, 2:I'm not like you)
+    [Choice You're right]
+	    setSpeaker(Elder Man)
+		Text(happy, {Har! I like you, kid!})
+	end
+	
+	[Choice I'm not like you]
+	    setSpeaker(Elder Man)
+		Text(sad, {No? Well, we all must choose our own paths.})
+	end
+end
+
+focus(Kris Devil)	
+setSpeaker(Kris Devil)
+face(player, Kris Devil)
+Text({Another member. That's cool, I guess...})
+
+setSpeaker(player)
+focus(player)
+face(player, Kris Devil)
+setChoice(1:Nice to meet you, 6:Out of place?)
+    [Choice Nice to meet you]
+	    setSpeaker(Kris Devil)
+		Text({I hope you have a good time...})
+		Text(sad, {Unlike me...})
+	end
+	
+	[Choice Out of place?]
+	    setSpeaker(Kris Devil)
+		Text(mad, {I'm not out of place. I love justice, or whatever. Um...})
+		Text({Listen, it's just that I'm a complicated soul.})
+		Text({A dark growing ember inside me ignites for goodness and truth!})
+		Text({Or something like that...})
+	end
+end 
+
+focus(Star)
+setSpeaker(Star)
+face(player, Star)
+Text(happy, {Oh my gosh, oh my gosh, OH MY GOSH!})
+Text(happy, {Welcome to the best place on...uh...what planet are we on?})
+
+setSpeaker(narrator)
+Text({This is a game, Aftamath. We're on whatever planet the player is on.})
+
+setSpeaker(Star)
+Text({Whoa...so like, you could be an alien?})
+Text({That's crazy! Are you an alien?})
+
+focus(player)
+setSpeaker(player)
+face(player, Star)
+setChoice(1:No, 2:Yes)
+    [Choice No]
+		focus(Star)
+	    setSpeaker(Star)
+		Text(normal, {Well, even if you're not an alien...})
+		Text(flirty, {Your looks are out of this world!})
+	end
+	
+	[Choice Yes]
+		focus(Star)
+	    setSpeaker(Star)
+		Text(happy, {That's so cool! Promise me you'll tell me about your planet later!})
+		setflag(planet, true)
+		#when the player talks to her later, she will ask about the planet if this value = 1
+	end 
+end
+
+focus(player)
+
+setDialogue(MrJustice, MrJusticeIntroduction)
+setDialogue(Kris Devil, KrisDevilIntroduction)
+setDialogue(Manly Man, ManlyManIntroduction)
+setDialogue(Elder Man, ElderManIntroduction)
+setDialogue(Star, StarIntroduction)
+
+SetFlag(HeroIntroEvent, false)
+SetFlag(HeroHQentry2done, true)
+
+setevent(JoinedHeroes, {You officially joined Just Us!})
+
+done 

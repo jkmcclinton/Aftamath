@@ -1,0 +1,49 @@
+Script ElderManBedroom
+lockplayer
+face(player, Elder Man)
+face(Elder Man, player)
+
+setSpeaker(Elder Man)
+text(happy, {Hey, kid!})
+text({I hope you'll forgive me for being in my bedroom.})
+text({Old men like me need lots of rest.})
+text({Tell me, sonny. What you reading these days?})
+
+setSpeaker(player)
+setChoice(1:Hemingway, 2:Patterson, 3:Picture Books, 4:50 Shades of Grey)
+    [Choice Hemingway]
+	setSpeaker(Elder Man)
+	text(happy, {Har, now there's a good author!})
+	text(flirty, {I'm impressed, child.})
+	text(happy, {Here, a little somethin' on me. $10!})
+	value(add, player.money, 10)
+	wait(1.0)
+	text({Wait...actually, I need that for my lunch today.})
+	value(add, player.money, 10)
+	end
+	
+	[Choice Patterson]
+	setSpeaker(Elder Man)
+	text({Not bad, but not a classic!})
+	text({Treat yourself to some Oscar Wilde or Goethe!})
+	text(flirty, {Har har, you'll thank me later!})
+	end
+	
+	[Choice Picture Books]
+	setSpeaker(Elder Man)
+	text({Boy, you're younger than I thought.})
+	text({Or are you just stupid?})
+	text(sad, {Ah, what's the difference?})
+	end
+	
+	[Choice 50 Shades of Grey]
+	setSpeaker(Elder Man)
+	text(mad, {Are you old enough to be reading that, child?})
+	text({As a responsible adult, I'll have to confiscate that from you...})
+	text({Now, uh, if you'd like to leave, I *ahem* have some business.})
+	wait(.50)
+	text(mad, {Why are you looking at me like that?})
+	text({Young people, they always have their minds in the gutter.})
+	end
+	
+done

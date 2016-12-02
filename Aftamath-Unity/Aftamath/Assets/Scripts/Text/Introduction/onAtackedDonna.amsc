@@ -1,0 +1,19 @@
+Script Main
+lockplayer
+setSpeaker(this)
+
+declare(donnaHit, gloabal, integer, 0)
+value(add, donnaHit, 1)
+
+if([donnaHit = 1])
+	text(sad, {You saved my life! Why are you hitting me?})
+end
+if([donnaHit = 2])
+	text(sad, {Please stop!})
+end
+if([donnaHit = 3])
+	text(mad, {I'll call the police on you!})
+	value(set, donnaHit, 0)
+end
+
+done

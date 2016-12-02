@@ -1,0 +1,139 @@
+Script Meet
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+eventMusic(Explosive)
+declare(not, local, integer, 0)
+
+if(!talkedToDarrius)
+	text(mad, {Who the f&@# are you?! ~/lHow tha HELL d'you git in heer?!})
+
+	setSpeaker(player)
+	text(normal, {Um, your door was unlocked.})
+
+	hideDialog
+	wait(1.5)
+
+	setSpeaker(this)
+	text(normal, {Oh... dat right?})
+	text(normal, {Well, then...})
+	text(normal, {...})
+end
+
+if(helpingMarquis)
+	setSpeaker(player)
+	text({Are you Darrius?})
+	setSpeaker(this)
+	text({Dat's me, in the flesh.})
+	setSpeaker(player)
+	text({Listen Darrius, your boy Marquis has it out for you.})
+	setSpeaker(this)
+	text({Marquis? Dat lil' bitch niggah?})
+	text({Man, I puts all his g's in jail cause they wouldn' stop messin' wit mah gurl.})
+	setSpeaker(player)
+	text({Oh, is that right?})
+	setSpeaker(this)
+	text({Dat's right.})
+	setSpeaker(player)
+	text({...So, you don't live in Tha Hood?})
+	setSpeaker(this)
+	text({Yeeeuh, I do, I do.})
+	text({Dis ain't my house dawg, I'm jus squatin' heer fo mah-}, false)
+	text(sad, {Well, you don' needs to kno dat.})
+else
+	if(talkedToGangsta and !talkedToDarrius)
+			setFlag(talkedToDarrius)
+			value(set, not, 4)
+			
+	else
+		text(flirty, {...since you heer, wunt sum crack? ~/l/lI gots loads.})
+		setChoice(6:Sure, 6:Maybe, 3:For real?)
+			[Choice Sure]
+				text(happy, {Great! ~100k. ~Cough it up.})
+				
+				hidedialog
+				wait(1.5)
+				
+				if([player.money >= 100000])
+					text(normal, {DAMN!~ You actually gots all dat cash on you!?})
+					text(normal, {I don't even wunna know.})
+					text(normal, {Cash first.})
+					
+					hideDialog
+					value(add, player.money, -100000)
+					wait(1)
+					text(happy, {HAH!~ You wuz played, bruh! I ain't got shit!})
+					
+					setSpeaker(player)
+					text(mad, {Man that's some bull.})
+					value(set, not, 2)
+				else
+					text(normal, {Ain't got it? Too bad.})
+					value(set, not, 1)
+				end
+			end
+			
+			[Choice Maybe]
+				text(sad, {Tch, I'm just messn' witchyu. I ain't got shit.})
+			end
+			
+			[Choice For real?]
+				text(mad, {Shit, is you a cop?})
+			end
+		end
+
+		if([not = 0])
+			setScript(Crack)
+		else
+			if([not = 1])
+				setScript(Money)
+			else
+				setScript(Cheated)
+			end
+		end
+	end
+end
+done
+
+		
+#-------------------------------------
+Script Crack
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+text(normal, {I ain't givin' no punk ass like you nothin'.})
+doAction(this, aim, player, on_script_end, false)
+text(mad, {Now git the f&!#@ out my crib befo I bust a cap on yo ass.})
+done
+
+Script Money
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+if([player.money >= 100000])
+	text(normal, {DAMN!~ You actually gots all dat cash on you!?})
+	text(normal, {I don't even wunna know.})
+	text(normal, {Cash first.})
+		
+	hideDialog
+	value(add, player.money, -100000])
+	wait(1)
+	text(happy, {HAH!~ You wuz played, bruh! I ain't got shit!})
+			
+	setSpeaker(player)
+	text(mad, {Man that's some bull.})
+	setScript(Cheated)
+else
+	text(mad, {You ain't gittin' shit if you don't cough up sum cash...})
+end
+done
+
+Script Cheated
+lockplayer
+setSpeaker(this)
+facePlayer(this)
+
+text(mad, {You best think again if you think you gon' getchyo money back.})
+done

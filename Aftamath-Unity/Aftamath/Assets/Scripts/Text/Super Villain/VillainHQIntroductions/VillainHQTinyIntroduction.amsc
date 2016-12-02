@@ -1,0 +1,20 @@
+Script
+lockplayer
+
+setSpeaker(This)
+face(This, Player)
+Text(flirty, {Hey, hot stuff.})
+
+setSpeaker(Player)
+setChoice(1: Tell me about yourself, 2: Are you flirting with me?)
+    [Choice Tell me about yourself]
+	    setSpeaker(This)
+		Text(flirty, {You wanna know about me? I'm 5'0, single, and very lonely... If you're not well, I can make you feel good.})
+	end
+	
+	[Choice Are you flirting with me?]
+	    setSpeaker(This)
+		Text(flirty, {Hehehe! I'll let you figure that out.})
+	end
+	
+done

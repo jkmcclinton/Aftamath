@@ -1,0 +1,51 @@
+Script Main
+lockplayer
+setSpeaker(this)
+
+declare(i, local, integer, 0)
+random(i, 0, 12)
+
+if([i = 0])
+	text({I love living in Big City. There's always something to do!})
+end
+if([i = 1])
+	text({How's it going, stranger?})
+end
+if([i = 2])
+	text({Hello.})
+end
+if([i = 3])
+	text({Hi, how are you?})
+end
+if([i = 4])
+	text({Is this the real life? Or is this just fantasy?})
+end
+if([i = 5])
+	text({Hello.})
+	text({...yup, this is what I say to people who approach me unsolicited. Very realistic, right?})
+end
+if([i = 6])
+	text({I'm a tourist! I'm so excited to be here!})
+end
+if([i = 7])
+	text({Sorry, I'm in a rush. Talk to you later.})
+end
+if([i = 8])
+	text({HEY! LISTEN! Did you know I auditioned for the role of main character in this game?})
+	text({I ended up on the short end of that one...})
+end
+if([i = 9])
+	text({Yo, 'sup playa?})
+end
+if([i = 10])
+	text({I have no desire in hearing what you have to say.})
+end
+if([i = 11])
+	text({Life is good.})
+end
+if([i = 12]))
+	text({Have you ever stopped to think about the degrees of separation that exist between you and anyone else in the world?})
+	text({By talking to me, you've reduced that amount of separation by a teeny bit. In other words, you're closer to everyone else.})
+	text({Mind boggling stuff, right?})
+end
+done

@@ -1,0 +1,48 @@
+Script Main
+lockplayer
+
+declare(found, local, Flag, false)
+declare(num, local, Integer, 0)
+value(set, num, 0)
+
+findObject(Villain, found)
+if(found)
+	value(add, num, 1)
+end
+
+findObject(MrJustice, found)
+if(found)
+	value(add, num, 2)
+end
+
+#Player did a good deed and Hero is not present
+if([num = 1])
+	setSpeaker(Villain)
+	face(Villain, player)
+	text({I don't like people like you. You and that dweeb with a cape.})
+	text({If you get on my bad side, your ass is grass. You can count on that.})
+	text({So go away.})
+end
+
+#Player did evil and Villain is not present
+if([num = 2])
+	setSpeaker(MrJustice)
+	face(MrJustice, player)
+	text(flirty, {Hey kid, you seem kind of... evil....})
+	text(mad, {If I catch you doing any sort of injustice to the world I won't hesitate to put you behind bars.})
+	text(mad, {It's all in the name of JUSTICE!!! Remember that, kid.})
+end
+
+#Player has not done the bar event yet
+if([num = 3])
+	face(Villain, MrJustice)
+	face(MrJustice, Villain)
+
+	setSpeaker(MrJustice)
+	text(mad, {(glare)...})
+
+	setSpeaker(Villain)
+	text(mad, {(glare)...})
+end
+
+done

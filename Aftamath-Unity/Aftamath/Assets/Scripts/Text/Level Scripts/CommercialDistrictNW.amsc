@@ -1,0 +1,47 @@
+Script Main
+
+#train related stuff
+value(set, trainLoc, {CommercialDistrictNW})
+setWarp(Subway, 0, CommercialDistrictNW, 2)
+
+#Bar event
+#if(!goneInBar)
+#	triggerScript({There's A Bar})
+#end
+
+#create the super tutorial event
+if(goneInBar)
+	if((GoodBar or [player.niceness >= 0]) and !supTutIntro)
+		declare(found, local, Flag, false)
+		wait(.01)
+		findObject(MrJustice, found)
+		if(!found)
+			spawn(NPC, hero1, MrJustice, 54, 78, 12)
+			setDialogue(MrJustice, {tutDescribe})
+		end
+	else
+		if((EvilBar or [player.niceness < 0]) and !supTutIntro)
+			declare(found, local, Flag, false)
+			wait(.01)
+			findObject(Villain, found)
+			if(!found)
+				spawn(NPC, villain1, Villain, 54, 78, 15)
+				setDialogue(Villain, {tutDescribe})
+			end
+		end
+	end
+end
+
+#Dolan Drumpf event
+if(!MetDrumpf and !spawnedDrumpf)
+	declare(found, local, Flag, false)
+	wait(.1)
+	findObject(Drumpf)
+	if(!found)
+		setFlag(spawnedDrumpf)
+		spawn(NPC, richguy, Drumpf, 32, 78, 4)
+		setDialog(Drumpf, txtDrumpf)
+	end
+end
+
+done

@@ -1,0 +1,27 @@
+Script MrJusticeAfterQ3I-3
+lockplayer
+face(player, MrJustice)
+face(MrJustice, player)
+
+if([talksuccess >= 1])
+    setSpeaker(MrJustice)
+    Text(happy, {Excellent work, friend!})
+    Text(happy, {For acting so justly, I have a reward for you! $75!})
+    value(add, player.money, 75)
+    Text({Keep up the good work!})
+    setDialogue(MrJustice, MrJusticeQ3End)
+	setEvent(finishedfirstquest, {You finished your first quest!})
+	setflag(heroquestlawyer, false)
+	else
+    setSpeaker(this)
+	text(mad, {You're messing with me, aren't you?})
+	text({The lawyer...in the "business district."})
+	wait(.50)
+	text({What do you want?})
+    value(add, Q3talk, 1)
+	setDialogue(MrJustice, MrJusticeAfterQ3I-4)
+end
+
+
+done
+

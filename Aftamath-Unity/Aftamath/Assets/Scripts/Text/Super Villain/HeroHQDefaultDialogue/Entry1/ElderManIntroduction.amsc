@@ -1,0 +1,28 @@
+Script ElderManIntroduction
+lockplayer
+Face(Elder Man, player)
+
+setSpeaker(Elder Man)
+Text(happy, {Hiya, deary!})
+
+setSpeaker(player)
+setChoice(1:About you, 2:Nevermind)
+
+[Choice About you]
+setSpeaker(Elder Man)
+Text({Ah! How golden it is to see a young whippersnapper like you interested in an old man!})
+Text({I was brought up in the hard days. You young kids don't know about that.})
+Text({We had to eat dust sandwiches every day for lunch!})
+Text(mad, {You ever have a dust sandwich? I didn't think so!})
+Text(mad, {Young kids and their entitled attitudes! Aheh, aheh!})
+end
+
+[Choice Nevermind]
+setSpeaker(Elder Man)
+Text({Sure, kiddo.})
+end
+end
+
+
+
+done

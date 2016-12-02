@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="6">
+ <properties>
+  <property name="ambient" value="DAYNIGHT"/>
+  <property name="bg" value="main"/>
+  <property name="bgm day" value="Misdirection"/>
+  <property name="bgm night" value="Midnight Waves"/>
+  <property name="name" value="Tha Hood"/>
+  <property name="next" value="Residential District N"/>
+  <property name="prevWarp" value="2"/>
+  <property name="previous" value="Under a Bridge"/>
+  <property name="spawners" value="false"/>
+ </properties>
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+  <image source="tilesets/residential.png" width="1152" height="1608"/>
+  <tile id="0">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="72">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="73">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="74">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="75">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="76">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="77">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="144">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="145">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="146">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="147">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="148">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="149">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="150">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="151">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+  <tile id="152">
+   <properties>
+    <property name="type" value="concrete"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="bg1" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt1VWzlXUYh+FFuAPWLkTEGBGDECQECzgWFCSUVBRQx5ZmB2xKPFZBpSQV27ElFHbAphQVlLEllFRsR8EALz7EmjXz8twz18w6eA/W7zn5p1JRFEVRFEVRFEVRdGpVmk6lyiingslMoZKpTGM6M5iZzva/zVzbbPuAD/mI7ezgYz5hJ1VUU0Mt69lAHRvZxGa2sDXBt2pakEqdQTPOpDlncTbncC455JJHPo1oTJoCCimimJKCbC/KXMNtu4VbGcFIRnEbt3MHfelHfwZwAzcykEEMZghDGZbgW62w7Rme5Tme5wVe5CVeZi7zmM8CFvIki1jMEpayjOUJvtUR237kJ37mF37lN37nD3axmz3s5Vu+Yx/7OcBBDnE4wbfqWphKXc4VXMlVXE03utODVrSmDW25hHa051I60JFOdC7M9qLMVWnbVKYxnRnM5EFm8RCjGcNYxjGeCUxkEqWUUU5Fgm9VZ9tGNrGZLWzlPd5nGytZxWrW8A7vspZ1VFFNDbUJvlW6yLtPIUUUU0ITTqcpx+0/cfIGftejPg1oyGnkkEse+UXZXpS5Bto2iMEMYSjDuImbGc419KQX13IdvenD9fSlH/0ZkOBbLbJtMUtYyjKW8xRPs4KHeYRHmc0cHuNxnmAu85jPggTfap9t+znAQQ5xmO/5gSN8ymd8zhd8yVd8zTfsYjd72JvgW7Uv9u7TgY50ojOX0YWunEcLzqclF3AhF3ExrWhNG9oWZ3tR5ppo2yRKKaOcCiYzhUru5C7u5h7u5T7u5wFGM4axjEvwrdbato4qqqmhlvVsoI5XeJXXeJ03eJO3eJuVrGI1axJ8q4Yl3n1yyCWPfBrRmDR/2v8XRznG3/zDv/zHcU6cvJFv65Vke1EURVEURVEURVEURVEURVEURada/wNpDb6i
+  </data>
+ </layer>
+ <layer name="bg2" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt0C83A2AcxfF7mDL7S6VZofEWaBQadWtWaLwFGoVGpVHYyjSrNCvWpm7Nztl9Bc+v7pzn+6n3pq8EAAAAAABy8lmS+qX0p+O9G3xysFKWVsvpT8H7UvDJwbEbnAQd9r0f0EoPbvAYdLjxfksrjdzgL+jw431AK21XpJ1K+rPhvRF8cnDhBpdBh1PvbVqp5wYfQYcX76+0UrEqLVfTn393mtJKh+50FLTa9b4XfHJw5wb3QYcr79e00q8bDIMOX96/aaXNmrRVS3/WvK8HnxycucF50KHpvUUrvbnBe9DhyfszrbRQlxbr6c/YnSa0AgAAAAAAAAAAc24G5q0jeQ==
+  </data>
+ </layer>
+ <layer name="ground" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt08lRQlEUBuFHKIAghIIKaBggIISizGGATIaijGZC58DiHqq6q77dXZzi/WSZmZmZmZmZmZmZmZmZmZmZmd1rNTzhGS+oo4EmXvGW6E3Euz7xhSFGGGOCKWaYJ3oT8a5f/GGPA4444YwL/hO9iXhXPpdlBRTxgBLKeEQF1VyaNxHvaqGNd3TQRQ8f6GOQ6E3EuxZY4hsrrLHBFjv8JHoT8a6I389d3f+uIt4U9beKuHX/g+7KXbkrd+Wu3FW8uyJ+P3flrtyVu3JXt725AhRCbxA=
+  </data>
+ </layer>
+ <layer name="objects" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
+  </data>
+ </layer>
+ <layer name="fg" width="75" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <object id="1" name="room1_1" x="804" y="392" width="37" height="73">
+   <properties>
+    <property name="ID" value="2"/>
+    <property name="next" value="Church"/>
+    <property name="nextWarp" value="1"/>
+    <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="2" x="604" y="448" width="16" height="16">
+   <properties>
+    <property name="spawn" value=""/>
+   </properties>
+  </object>
+  <object id="3" name="1" x="672" y="448" width="16" height="16">
+   <properties>
+    <property name="ID" value="28"/>
+    <property name="NPC" value="hippie"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Sasha"/>
+    <property name="script" value="generic_1"/>
+    <property name="state" value="faceplayer"/>
+   </properties>
+  </object>
+  <object id="4" name="1" x="720" y="448" width="16" height="16">
+   <properties>
+    <property name="ID" value="13"/>
+    <property name="NPC" value="villain3"/>
+    <property name="attackScript" value="discoResponse"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Disco"/>
+    <property name="nickname" value="Doctor Disco"/>
+    <property name="script" value="disco"/>
+    <property name="state" value="faceplayer"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

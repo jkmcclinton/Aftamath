@@ -1,0 +1,37 @@
+Script KrisDevilSimpleDialogue
+lockplayer
+face(player, Kris Devil)
+face(Kris Devil, player)
+
+setSpeaker(Kris Devil)
+text(sad, {Ugh, you just had to break in and make my day even worse.})
+text(sad, {Just when I thought my life couldn't get any worse.})
+text({The boss isn't even here to deal with you...})
+text(mad, {He just *had* to go to the residential district today...})
+
+face(Manly Man, Kris Devil)
+face(Kris Devil, Manly Man)
+setSpeaker(Manly Man)
+text({This person bothering you, hombre?})
+
+setSpeaker(Kris Devil)
+text(sad, {Ugh, no, it's fine...})
+text(mad, {You don't have to take care of me, I'm not a baby.})
+text(sad, {God, why can't you just leave me alone...})
+
+face(Manly Man, player)
+face(player, Manly Man)
+setSpeaker(Manly Man)
+text(sad, {You've made mi amigo angry.})
+text(mad, {That's not okay.})
+
+doAction(Manly Man, aim, player)
+doAction(Manly Man, attack, player)
+
+setSpeaker(narrator)
+text({Looks like you messed up.})
+text(flirty {While I'd love to watch you get beaten up, I guess I should save you.})
+text(happy, {No, no, you can thank me later.})
+teleport(player, HeroHQ, 36, 22)
+
+done

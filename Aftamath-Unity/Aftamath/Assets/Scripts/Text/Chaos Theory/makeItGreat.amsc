@@ -1,0 +1,47 @@
+Script Main
+lockplayer
+
+declare(t, local, string, {sir})
+if([player.gender = female])
+	value(set, t, {ma'am})
+end
+
+move(Drumpf, player)
+
+setSpeaker(Drumpf)
+text({Hi /var[t], could I have a moment of your time? This won't take long.})
+text({I'm sure you're aware, but Big City is suffering from an epidimic of bugs.})
+text({It's crazy! I can't even get to my own mansion without running into one!})
+text({So I would like you to sign a petition to make Big City great again! Get rid of all these damn bugs!})
+text({If you elect me as mayor this city will turn on its head in no time, believe me!})
+text({I tell you, I'll build a giant wall around the island to keep the bugs out and make that shitty narrator pay for it.})
+text({Have you seen her? She's great and all but don't get me wrong, she does nothin' but sit on her ass.})
+
+setSpeaker(narrator)
+text(mad, {Excuse me!?})
+text(mad {Who put this moron in the game? I'll have you know that I can remove you with a swipe of my finger, you twat!})
+
+setSpeaker(Drumpf)
+text({So whaddya say?})
+
+setChoice(YesNo)
+	[choice Yes]
+		setEvent(MetDrumpf, {Signed a petition to make Big City great again})
+		text({Excellent! You won't regret this, /player!})
+		
+		SetSpeaker(narrator)
+		text({Um, yes you will.})
+		value(add, player.money, -1000)
+		text({I'll just take a security deposit from you to help pay for that damn wall.})
+		text({And...})
+		wait(1)
+		remove(Drumpf)
+		text({We don't need to hear his stupid mouth spewing garbage everywhere.})
+	end
+	
+	[choice No]
+		setEvent(MetDrumpf, {Refused to elect Drumpf as Mayor})
+		text({I'm sorry? How dare you refuse to help this city!})
+	end
+end
+done

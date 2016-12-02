@@ -1,0 +1,237 @@
+Script Main
+lockplayer
+
+wait(.2)
+setspeaker(narrator)
+setEvent(goneInBar, {Narrator forced you into a bar})
+#focus(22, 76)
+setFlag(barLocked, true)
+
+text({Ah, the Fat Cocktail. Home to cockiest, most vicious, most notorious convicts in all of Big City.})
+text(normal, {That place has been an eyesore on the street for years.})
+text(flirty, {Suddenly....})
+text(flirty, {Suddenly you find yourself feeling a little bit thirsty....})
+
+if([player.gender = female])
+	text(flirty, {I'm sure there's plenty of things you can drink up in there...})
+	text(flirty, {Cough cough...})
+end
+
+text(flirty, {Why don't you head inside for a bit?})
+text(normal, {~Might be a good idea. ~I dunno.})
+
+setSpeaker(player)
+text(normal, {I think I'll pass on that one.})
+
+setSpeaker(narrator)
+text(normal, {But you're thirsty.})
+
+setSpeaker(player)
+text(normal, {Not in the slightest.})
+
+setSpeaker(narrator)
+text(normal, {You're going in that bar.})
+
+setSpeaker(player)
+text(normal, {You can't make me.})
+
+setSpeaker(narrator)
+text(normal, {On the contrary.})
+text(normal, {See, as the narrator, I can do whatever the hell I feel like doing.})
+text(normal, {Which means you're going in that bar, whether you want to or not.})
+
+setSpeaker(narrator)
+
+move(player, 22.5, 78, false)
+text(normal, {Don't look so run down. ~It's not like it's the end of the world.})
+
+wait(.3)
+hidedialog
+teleport(player, Bar, 0)
+face(player, Jose)
+
+text(normal, {Jesus, it sure is red in here....})
+text(normal, {Anyway, go grab yourself a drink--}, false)
+text(normal, {Wait a second... Where is the bartender?})
+
+hidedialog
+wait(.5)
+
+text(normal, {Oh my God! ~They killed the bartender!})
+face(player, Jose)
+face(player, Tough Guy)
+text(mad, {Those monsters!})
+face(player)
+
+text(normal, {Le Gasp! And the door just locked itself by accident! ~Oh no!})
+
+face(player, Jose)
+setspeaker(player)
+text(normal, {What the hell? ~That was totally you!}, false)
+
+setSpeaker(narrator)
+text(normal, {Yeah whatever, that's beside the point.})
+
+setSpeaker(Jose)
+face(Jose, player)
+face(Tough Guy, player)
+text(happy, {Hey man, you came just in time!})
+text(normal, {We need someone else to play poker with. You're it.})
+
+setSpeaker(narrator)
+text(normal, {What are you going to do now that you're cornered?})
+setChoice(1:Find the bartender, 2:Arrest Them, 5:Play Poker, 4:Leave)
+	[choice Find the bartender]
+		value(add, player.niceness, p)
+		text(normal, {Hah.})
+		text(normal, {I'll be brief.})
+		text(normal, {There never was a bartender.})
+		text(normal, {Yeah, there isn't even art for him.})
+		text(normal, {....it really sucks, knowing you don't exist.})
+	end
+	
+	[choice Arrest Them]
+		setEvent(GoodBar, {You used your powers for good in the Fat Cocktail})
+		setFlag(PowerBar, true)
+		setspeaker(player)
+		text(normal, {You fiends are under arrest for killing an innocent civilian!})
+		
+		setSpeaker(Tough Guy)
+		text(mad, {That dipshit cheated. ~He was far from innocent.})
+		
+		setSpeaker(player)
+		text(normal, {Doesn't make it right!})
+		hidedialog
+		
+		attack(player, Jose)
+		wait(.5)
+		doAction(Jose, duck, null, on_script_end, false)
+		
+		attack(player, Tough Guy)
+		wait(.5)
+		doAction(Jose, duck, null, on_script_end, false)
+		
+		move(player, 24, 5)
+		face(player, Jose)
+		text({Now get your sorry asses in a jail cell!})
+		
+		doAction(Jose, stop, false)
+		doAction(Tough Guy, stop, false)
+		move(Jose, 11, 5, false)
+		move(Tough Guy, 11, 5, false)
+		setSpeaker(Tough Guy)
+		text(sad, {mumble mumble... THIS guy...}, false)
+		wait(2)
+		
+		teleport(Jose, Bridge, 0, 20)
+		teleport(Tough Guy, Bridge, 0, 20)
+		
+		setSpeaker(narrator)
+		text(normal, {Damn /player, didn't think you had it in you.})
+	end
+	
+	[choice Play Poker]
+		setEvent(EvilBar, {You used your powers for evil in the Fat Cocktail})
+		setFlag(PowerBar, true)
+		value(set, player.niceness, -1)
+		
+		setSpeaker(player)
+		text(normal, {Sure I'll play a round!})
+		
+		setSpeaker(Tough Guy)
+		text(happy, {Awesome.})
+		hidedialog
+		
+		move(partner, 15, 5, false)
+		move(player, 18, 5)
+		
+		wait(3)
+		setSpeaker(narrator)
+		text(normal, {...})
+		text(normal, {You lost. ~Horribly.})
+		
+		setspeaker(player)
+		text(normal, {DIE, DIE, DIE!!!})
+		hidedialog
+		
+		attack(player, Jose)
+		wait(.5)
+		attack(player, Jose)
+		wait(.5)
+		attack(player, Jose)
+		wait(.5)
+		attack(player, Jose)
+		remove(Jose)
+		
+		attack(player, Tough Guy)
+		wait(.5)
+		attack(player, Tough Guy)
+		wait(.5)
+		attack(player, Tough Guy)
+		wait(.5)
+		attack(player, Tough Guy)
+		wait(.5)
+		remove(Tough Guy)
+		
+		wait(3)
+		setSpeaker(narrator)
+		text(normal, {So...})
+		text(normal, {That happened.})
+	end
+	
+	[choice Leave]
+	setEvent(cowardBar, {Chickened out and tried	to flee, ended up winning poker})
+		value(add, player.bravery, -1)
+		text(normal, {HAH! ~You thought!})
+		text(normal, {I locked the door, remember? ~Or are you seriously that dimwitted you can't remember passed the last second?})
+		text(normal, {Hah... ~I'm going to love this game...})
+		
+		setSpeaker(Tough Guy)
+		text({Hey man, you going to play with or not?})
+		
+		setSpeaker(player)
+		text({...I guess I have no choice, do I?})
+		
+		declare(m, local, String, {hombre})
+		if([player.gender = female])
+			value(set, m, {chica})
+		end
+		setSpeaker(Jose)
+		text({That's right /var[m], you don't.})
+		hidedialog
+		
+		move(partner, 15, 5, false)
+		move(player, 18, 5)
+		
+		wait(3)
+		setSpeaker(narrator)
+		text(normal, {...})
+		text({Wow, you actually won that! I'm impressed!})
+		
+		setSpeaker(Tough Guy)
+		text(mad, {Did you cheat man?!})
+		text(mad, {I don't like cheaters.})
+		
+		setSpeaker(player)
+		text({I swear I didn't!})
+		
+		face(Jose, Tough Guy)
+		setSpeaker(Jose)
+		text({No, I don't think /playergo did.})
+		text(sad, {I should know since I was watching /playergpp like a hawk.})
+		
+		setSpeaker(Tough Guy)
+		text({So I guess we have to cough up all this cash, huh?})
+		
+		setSpeaker(Jose)
+		text({It's only fair.})
+		face(Jose, player)
+		text({Here man, take it. You've earned it.})
+		
+		value(add, player.money, 250)
+		wait(.5)
+	end
+end
+
+setFlag(barLocked, false)
+done

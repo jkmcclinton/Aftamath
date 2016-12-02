@@ -1,0 +1,22 @@
+Script Main
+lockplayer
+face(player, this)
+face(this, player)
+setSpeaker(this)
+
+if([player.niceness >=0])
+	text(happy, {I knew you could do it!})
+	text(normal, {Now, the second type of supapower is an aura.})
+	text(normal, {In order to use it you must do the same thing you did before.})
+	text(normal, {Only this time you have to hold 'shift' until you hear a chime before hitting 'E'.})
+	text(normal, {Think you can handle that?})
+else
+	text(sad, {That was okay I guess. You could have made it more... painful.})
+	text(normal, {You want to be cool like me? Hold the 'shift' button a little longer.})
+	text(normal, {If you're smart enough you'll use your secondary, more powerful attack.})
+	text(normal, {Think you can handle that?})
+end
+
+setSuperAttackScript(this, afterTutorial)
+
+done

@@ -1,0 +1,25 @@
+Script Main
+lockplayer
+setSpeaker(Cashier, true)
+face(Cashier, player)
+face(player, Cashier)
+playsound(dontTouch)
+declare(touchedC, global, integer, 0)
+value(add, touchedC, 1)
+
+if([touchedC = 1])
+	text({Don' toush.})
+	text({I here for reason.})
+end
+if([touchedC = 2])
+	text({No!})
+	text(mad, {Don' toush! Talk to me.})
+	setFlag(toucher, true)
+end
+if([touchedC = 3])
+	text({You stupid?})
+	text({I here for reason. Don' toush!})
+	value(set, touchedC, 1)
+end
+
+done

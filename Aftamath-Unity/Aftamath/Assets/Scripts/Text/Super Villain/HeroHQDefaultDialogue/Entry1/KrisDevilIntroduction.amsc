@@ -1,0 +1,28 @@
+Script KrisDevilIntroduction
+lockplayer
+Face(Kris Devil, player)
+
+setSpeaker(Kris Devil)
+Text({Hey, it's you...Whatever.})
+
+setSpeaker(player)
+setChoice(1:About you, 2:Nevermind)
+
+[Choice About you]
+setSpeaker(Kris Devil)
+Text({You'll never understand me.})
+Text({You could never imagine the pain of my black soul that led me here.})
+Text({The bleeding inside me as I walk the path of righteousness.})
+Text({Um...Now I fight for justice. A shadow. A warrior.})
+Text({I walk alone surrounded by evil and chaos.})
+Text({Or, um, whatever...})
+end
+
+[Choice Nevermind]
+setSpeaker(Kris Devil)
+Text(mad, {Not like that's rude. Whatever...})
+end
+end
+
+
+done 

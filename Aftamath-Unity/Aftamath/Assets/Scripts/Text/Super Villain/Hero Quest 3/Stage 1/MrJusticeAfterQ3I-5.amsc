@@ -1,0 +1,33 @@
+Script MrJusticeAfterQ3I-5
+lockplayer
+face(MrJustice, player)
+face(player, MrJustice)
+
+if([talksuccess >= 1])
+    setSpeaker(MrJustice)
+    Text(happy, {Excellent work, friend!})
+    Text(happy, {For acting so justly, I have a reward for you! $75!})
+    value(add, player.money, 75)
+    Text({Keep up the good work!})
+    setDialogue(MrJustice, MrJusticeQ3End)
+	setEvent(finishedfirstquest, {You finished your first quest!})
+	setflag(heroquestlawyer, false)
+    Else
+        setSpeaker(this)
+        text(mad, {Okay, that's it.})
+        text({You're going, whether you like it or not.})
+        text({Narrator, do you think you could handle this?})
+        setSpeaker(narrator)
+        text({Are you kidding me?})
+        text(flirty, {With pleasure.})
+        teleport(player, BusinessDistrict, 17, 70)
+        setSpeaker(player)
+        text({What the hell? Isn't this game about choice?})
+        setSpeaker(narrator)
+        text(happy, {Haha! It is. Your choices are important.})
+        text(flirty, {But not as important as what I want.})
+        setDialogue(MrJustice, heroquest3-2)
+end
+
+done
+ 

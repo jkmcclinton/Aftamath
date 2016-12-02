@@ -1,0 +1,39 @@
+Script Main
+lockplayer
+
+setSpeaker(null)
+#declare(limitCounter, local, integer, 0)
+
+text({Please select a destination.})
+setChoice(6:Basement, 6:Lower Hall, 6:Justice Room, 4:Nevermind)
+	[Choice Basement]([jElevatorLoc != {HeroBasement}] and jExploring)
+		setWarp(JusticeElevator, 2, HeroBasement, 2)
+		value(set, jElevatorLoc, {HeroBasement})
+	end
+	
+	[Choice Lower Hall]([jElevatorLoc != {HeroLowerHall}])
+		setWarp(JusticeElevator, 2, HeroLowerHall, 7)
+		value(set, jElevatorLoc, {HeroLowerHall})
+	end
+	
+	[Choice Justice Room]([jElevatorLoc != {JusticeRoom}])
+		setWarp(JusticeElevator, 2, JusticeRoom, 2)
+		value(set, jElevatorLoc, {JusticeRoom})
+	end
+	
+	[Choice Nevermind]
+		stop
+	end
+end
+
+setFlag(jElevatorMoving, true)
+cameraShake(calm)
+releasePlayer
+hideDialog
+wait(5)
+
+cameraShake(calm)
+playSound(elevator)
+setFlag(jElevatorMoving, false)
+
+done

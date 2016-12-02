@@ -1,0 +1,43 @@
+Script Main
+	lockplayer
+	setSpeaker(this)
+	
+	declare(greeting, local, String, {Look who's here!})
+	if(credits)
+		value(set, greeting, {Hello again.})
+	end
+	
+	text(normal, {/variable[greeting]})
+	text(normal, {Want to hear the credits?})
+	setChoice(YesNo)
+		[choice Yes]
+			setNickName(this, Director)
+			text(normal, {Who else?})
+			setNickName(this, Story & Design)
+			text(normal, {Maria Winchell /lTyler Robinson /lYehyun Kim /lElly Ha })
+			text(normal, {Rachael Perkins /lBeau Sahaj /lMe again...})
+			
+			setNickName(this, Art)
+			text({Zane Laughlin /lMe.})
+			
+			setNickName(this, Music)
+			text(normal, {Raymond Zhao /lAnd Me})
+			
+			setNickName(this, Programming)
+			text(normal, {Jay Sebastian /lRyan McCampbell /lNathan Chatham /lRachael Hazlett})
+			text(normal, {Reid Bixler /lJiten Bhatt /lTony Nghieu /l...And me})
+			
+			setNickName(this, ...)
+			text(normal, {....})
+			
+			setNickName(this, Testing)
+			text(normal, {You!})
+			setEvent(credits, {Listened to the credits})
+			hideDialog
+			setNickName(this, Julian McClinton)
+		end
+		
+		[choice No]
+			text(normal, {Oh, well that's too bad.})
+		end
+done
