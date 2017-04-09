@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="14">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="17">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -8,7 +8,7 @@
   <property name="name" value="Commercial District NW"/>
   <property name="previous" value="Residential District N"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
   <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -267,6 +267,24 @@
     <property name="name" value="Marquis"/>
     <property name="script" value="GangstaWar"/>
     <property name="state" value="IDLEWALK"/>
+   </properties>
+  </object>
+  <object id="14" x="480" y="1183" width="80" height="80">
+   <properties>
+    <property name="event" value=""/>
+    <property name="makeItGreat" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="15" x="148" y="1095" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="16" x="1156" y="1092" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
    </properties>
   </object>
  </objectgroup>

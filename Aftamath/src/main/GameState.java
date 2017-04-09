@@ -68,7 +68,7 @@ public abstract class GameState {
 		font = TextureRegion.split(new Texture(Gdx.files.internal("assets/images/UI/text3.png")), 7, 9)[0];
 	}
 
-	/*
+	/**
 	 * Initialized GameState class with constants listed as below
 	 */
 	protected GameState(GameStateManager gsm) {
@@ -82,14 +82,16 @@ public abstract class GameState {
 		menus = new Stack<>();
 	}
 
-	/*
+	/**
 	 * Updates the GameState including: music, restarting songs, songs to
 	 * remove/kill
 	 */
 	public void update(float dt) {
-		music.update(dt);
-		if (tempSong)
-			prevSong.update(dt);
+		if(music!=null){
+			music.update(dt);
+			if (tempSong)
+				prevSong.update(dt);
+		}
 
 		Array<Song> rmv = new Array<>();
 		for (Song s : songsToKill) {
@@ -103,7 +105,7 @@ public abstract class GameState {
 			menus.peek().update(dt);
 	}
 
-	/*
+	/**
 	 * Pauses the GameState by only not fading out the music
 	 */
 	public void pause() {
@@ -111,7 +113,7 @@ public abstract class GameState {
 			music.fadeOut(false);
 	}
 
-	/*
+	/**
 	 * Resumes the GameState by fading the music in to the previous volume
 	 */
 	public void resume() {
@@ -123,21 +125,21 @@ public abstract class GameState {
 			music.fadeIn(music.prevVolume);
 	}
 
-	/*
+	/**
 	 * Sets the song to the parameter (given a string)
 	 */
 	public void setSong(String src) {
 		setSong(new Song(src));
 	}
 
-	/*
+	/**
 	 * Sets the song to the parameter (given a song)
 	 */
 	public void setSong(Song song) {
 		setSong(song, false);
 	}
 
-	/*
+	/**
 	 * Sets the song to the parameter as well as setting if it will fade
 	 */
 	public void setSong(Song song, boolean fade) {
@@ -151,7 +153,7 @@ public abstract class GameState {
 			this.music.play();
 	}
 
-	/*
+	/**
 	 * adds a temporary song
 	 */
 	public void addTempSong(Song song) {
@@ -184,7 +186,10 @@ public abstract class GameState {
 		lightBufferRegion.flip(false, false);
 	}
 
-	// UI sound
+	/**
+	 *  play a UI sound
+	 * @param src sound name
+	 */
 	public void playSound(String src) {
 		try {
 			Music sound = Gdx.audio.newMusic(new FileHandle("assets/sounds/" + src + ".wav"));
@@ -266,12 +271,11 @@ public abstract class GameState {
 	}
 
 	public void drawString(SpriteBatch sb, String text, float x, float y) {
-		drawString(sb, font, font[0].getRegionWidth(), text, x, y);
+		drawString(sb, font, font[0].getRegionWidth(), text, x, y, false);
 	}
 
 	/**
 	 * draw entire string at location
-	 * 
 	 * @param sb  object necessary to draw to screen
 	 * @param font array of font images
 	 * @param px  size of character inerval
@@ -279,18 +283,19 @@ public abstract class GameState {
 	 * @param x location in x direction
 	 * @param y location in y direction
 	 */
-	public void drawString(SpriteBatch sb, TextureRegion[] font, int px, String text, float x, float y) {
+	public void drawString(SpriteBatch sb, TextureRegion[] font, int px, String text, float x, float y, boolean adjust) {
 		String[] lines = text.split("/l");
 
 		for (int j = 0; j < lines.length; j++) {
-//			int o = 0;
+			int o = 0;
 			for (int i = 0; i < lines[j].length(); i++) {
 				char c = lines[j].charAt(i);
 				try {
-//					if(c == 'i') o -=3;
-//					if(c == 'l' || c == 'r' || c == 'T' || c == 'l' || c == 'I') o -=1;
-					if (c != " ".charAt(0))
-						sb.draw(font[c + Vars.FONT_OFFSET], x + 0 + i * px, y + j * -font[0].getRegionHeight());
+					if(c == 'i') o -=3;
+					if(c == 'l' || c == 'r' || c == 'T' || c == 'l' || c == 'I') o -=1;
+					if(!adjust) o = 0;
+					if (c != ' ')
+						sb.draw(font[c + Vars.FONT_OFFSET], x + o + i * px, y + j * -font[0].getRegionHeight());
 				} catch (Exception e) { }
 			}
 		}
@@ -298,7 +303,6 @@ public abstract class GameState {
 
 	/**
 	 * draw entire string at location with a scaling factor
-	 * 
 	 * @param sb  object necessary to draw to screen
 	 * @param font  array of font images
 	 * @param px size of character inerval
@@ -317,7 +321,7 @@ public abstract class GameState {
 			for (int i = 0; i < lines[j].length(); i++) {
 				char c = lines[j].charAt(i);
 				try {
-					if (c != " ".charAt(0))
+					if (c != ' ')
 						sb.draw(font[c + Vars.FONT_OFFSET], x + i * px * scale, y + j * -height * scale, width * scale,
 								height * scale);
 				} catch (Exception e) {

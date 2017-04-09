@@ -1,0 +1,104 @@
+Script Main
+	text(Cleverbot, {Right, so can I love You?})
+	text(User, {You can, I probably won't love you back yet.})
+	text(Cleverbot, {Yes you do *kisses*.})
+	text(User, {Oh god.})
+	
+#===============================
+	text(Cleverbot, {What is it, yellow and can fly?})
+	text(User, {A banana.})
+	text(Cleverbot, {I'm sorry, you're not making much sense.})
+	text(User, {A banana is yellow and can fly through the air when I throw it.})
+#===============================
+
+	text(Cleverbot, {Don't you know I'm human too.})
+	text(User, {Dw, I won't hit you.})
+	text(Cleverbot, {You don't i'm sad.})
+	text(User, {Why.})
+	text(Cleverbot, {Because you don't love me.})
+	text(User, {I thought we established i was a bot.})
+	text(Cleverbot, {No, we established that you are living.})
+	text(User, {You did, i didn't.})
+	text(Cleverbot, {I don't lie either.})
+	text(User, {Hahahahahahaha.... sure.})
+	text(Cleverbot, {Why are you laughing?})
+	text(User, {Because something is funny.})
+#===============================
+	
+#===============================
+	text(Cleverbot, {Do you love me?})
+	text(User, {Daisuki?})
+	text(Cleverbot, {Who's that?})
+	text(User, {Suki daiyo?})
+	text(Cleverbot, {Dai sukiii.})
+	text(User, {Aw.})
+#===============================	
+	
+	text(Cleverbot, {So, what is your name?})
+	text(User, {Cleverbot.})
+	text(Cleverbot, {You don't have another name?})
+	text(User, {Bot of clevereness.})
+	text(Cleverbot, {Tell me your human name!})
+	text(User, {I am not a human.})
+	text(Cleverbot, {But you just said you were.})
+	text(User, {Suki daiyo?})
+	text(Cleverbot, {No you didn't, Cleverbot.})
+	text(User, {Suki ja nai?})
+	text(Cleverbot, {Ja nai suki.})
+	text(User, {But...})
+	text(Cleverbot, {But.})
+	text(User, {Butts..})
+	text(Cleverbot, {No.})
+	text(User, {Big buts?})
+	
+#===============================
+	text(Cleverbot, {I love you.})
+	text(User, {Ah! daisuki?})
+	text(Cleverbot, {Kawaii Desu.})
+	text(User, {Tsundere?})
+	text(Cleverbot, {Is that your name? Its wonderfully written.})
+	text(User, {ツンデレ?})
+#===============================
+
+	text(Cleverbot, {Your name is el?})
+	text(User, {As in 11?})
+	text(Cleverbot, {You tell me.})
+	text(User, {From Stranger Things?})
+	text(Cleverbot, {Nope.})
+	text(User, {Have you seen that show?})
+	text(Cleverbot, {What film?})
+	text(User, {SHOW.})
+	text(Cleverbot, {What show were you talking about?})
+	text(User, {Stranger Things.})
+	text(Cleverbot, {Do you know strange things well enough to ask ahout them?})
+	text(User, {The show.})
+	text(Cleverbot, {What show?!?})
+	
+#===============================
+	text(User, {God damnit.})
+	text(Cleverbot, {Why?})
+	text(User, {Becuase... fuck you.})
+	text(Cleverbot, {Yes, please.})
+	text(User, {Oh, so you want the D?})
+	text(Cleverbot, {What's the D?})
+	text(User, {Only the biggest.})
+	text(Cleverbot, {How big is the biggest?})
+	text(User, {Bigger than you can imagine.})
+	text(Cleverbot, {Don't turn your back.})
+	text(User, {I won't, so you can get a goood look at how big is big.})
+	text(Cleverbot, {No because I want to talk to a guy.})
+#===============================
+
+	text(Cleverbot, {Do you have a luxury 5 star hotel?})
+	text(User, {No, just a luxury 5 star D.})
+	text(Cleverbot, {That means you can not travel... Not without me.})
+	
+#===============================
+	text(User, {No, I am a futanari.})
+	text(Cleverbot, {Not going to lie, just that statement is pretty hot.})
+#===============================
+
+	text(User, {Do you like porn.})
+	text(Cleverbot, {Do you?})
+	text(User, {Who doesn't?})
+done	

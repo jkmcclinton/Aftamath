@@ -40,7 +40,7 @@ public class Animation {
 		if (frames == null) {
 			frames = baseFrames;
 			delay = baseDelay;
-		}
+		} if(frames == null) return;
 
 		//		if(owner.toString().contains("Trevon"))
 		//			printDebug(frames, delay);
@@ -96,6 +96,7 @@ public class Animation {
 			frames = primaryFrames;
 		if (frames == null)
 			frames = baseFrames;
+		if(frames == null) return null;
 		if(currentIndex>=frames.length)
 			currentIndex = frames.length-1;
 		return frames[currentIndex]; 

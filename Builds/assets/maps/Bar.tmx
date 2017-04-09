@@ -4,8 +4,108 @@
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Yesterday's Encounter"/>
  </properties>
- <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
   <image source="tilesets/indoors.png" width="960" height="771"/>
+  <tile id="304">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="305">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="306">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="307">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="308">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="309">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="310">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="311">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="312">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="313">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="314">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="315">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="316">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="317">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="318">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="319">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="320">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="321">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="322">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
+  <tile id="323">
+   <properties>
+    <property name="type" value="wood"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="bg1" width="40" height="10">
   <data encoding="base64" compression="zlib">
@@ -40,6 +140,7 @@
    <properties>
     <property name="ID" value="43"/>
     <property name="NPC" value="gangster2"/>
+    <property name="attackScript" value="onAttackedThug1"/>
     <property name="layer" value="back"/>
     <property name="name" value="Jose"/>
     <property name="script" value="generic_1"/>
@@ -50,6 +151,7 @@
    <properties>
     <property name="ID" value="199"/>
     <property name="NPC" value="burly1"/>
+    <property name="attackScript" value="onAttackedThug1"/>
     <property name="layer" value="back"/>
     <property name="name" value="Tough Guy"/>
     <property name="script" value="generic_1"/>

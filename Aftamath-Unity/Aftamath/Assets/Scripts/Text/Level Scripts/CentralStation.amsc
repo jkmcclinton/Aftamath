@@ -1,7 +1,0 @@
-Script Main
-
-#train related stuff
-value(set, trainLoc, {CentralStation})
-setWarp(Subway, 0, CentralStation, 1)
-
-done

@@ -3,7 +3,7 @@ Scene ID                                Spawned by                         Scrip
  001 - Darrius; gangster1               : room1_1.tmx                      : realGangsta
  002 - Marquis; gangster3               : CommercialDistrictNW.tmx         : GangstaWar
  003 - Witch; witch                     : Subway.tmx                       : genericWitch
- 004 - 
+ 004 - Drumpf; richguy                  : CommercialDistrictNW.txt         : ???
  005 - Sam; girlfriend2                 : ResidentialDistrictN.tmx         : ask out
  006 - John; logger                     : ResidentialDistrictN.tmx         : choice test
  007 - Olivierre; richGuy               : ResidentialDistrictN.tmx         : richComplaint
@@ -68,7 +68,7 @@ Scene ID                                Spawned by                         Scrip
  066 - 
  067 - 
  068 - 
- 069 - 
+ 069 - Dog; underdog                    : HeroRoom_5.tmx                   : UnderdogBedroom
  070 - 
  071 - 
  072 - 
@@ -79,8 +79,8 @@ Scene ID                                Spawned by                         Scrip
  077 - 
  078 - 
  079 - 
- 080 - Lawyer; boss2                    : Subway.tmx                       : heroquest3
  080 - TEST; boss2                      : Church.tmx                       : actionTest
+ 080 - lawyer; boss2                    : BusinessDistrict.tmx             : LawyerDefaultScript
  081 - TEST; cashier                    : Church.tmx                       : actionTest
  082 - TEST; hippie                     : Church.tmx                       : actionTest
  083 - TEST; burly2                     : Church.tmx                       : actionTest
@@ -104,7 +104,7 @@ Scene ID                                Spawned by                         Scrip
  101 - HAHAHAHAHA; witch                : Church.tmx                       : actionTest
  102 - Darth Droid; robot1              : Church.tmx                       : actionTest
  103 - Your Maker; reaper               : Church.tmx                       : actionTest
- 104 - TEST; maleplayer1                : Church.tmx                       : MrJusticeAfterQ3I
+ 104 - TEST; maleplayer1                : Church.tmx                       : actionTest
  105 - TEST; maleplayer2                : Church.tmx                       : actionTest
  106 - TEST; maleplayer3                : Church.tmx                       : actionTest
  107 - TEST; maleplayer4                : Church.tmx                       : actionTest
@@ -113,13 +113,13 @@ Scene ID                                Spawned by                         Scrip
  110 - HLRMS-110; robot1                : BusinessDistrict.tmx             : getMail
  111 - Attack Dummy; dummy2             : Church.tmx                       : actionTest
  112 - Star; hero2                      : Church.tmx                       : actionTest
- 112 - Star; hero2                      : HeroLobby.tmx                    : HeroHQEntry
+ 112 - Star; hero2                      : HeroLobby.tmx                    : StarSimpleDialogue
  113 - Elder Man; hero3                 : Church.tmx                       : actionTest
- 113 - Elder Man; hero3                 : HeroLobby.tmx                    : HeroHQEntry
+ 113 - Elder Man; hero3                 : HeroLobby.tmx                    : ElderManSimpleDialogue
  114 - Manly Man; hero4                 : Church.tmx                       : actionTest
- 114 - Manly Man; hero4                 : HeroLobby.tmx                    : HeroHQEntry
+ 114 - Manly Man; hero4                 : HeroLobby.tmx                    : ManlyManSimpleDialogue
  115 - Kris Devil; hero5                : Church.tmx                       : actionTest
- 115 - Kris Devil; hero5                : HeroLobby.tmx                    : HeroHQEntry
+ 115 - Kris Devil; hero5                : HeroLobby.tmx                    : KrisDevilSimpleDialogue
  116 - Killr; villain2                  : Church.tmx                       : actionTest
  117 - Tiny; villain4                   : Church.tmx                       : actionTest
  118 - DoctorDisco; villain3            : Church.tmx                       : actionTest
@@ -225,7 +225,7 @@ Scene ID                                Spawned by                         Scrip
  218 - 
  219 - 
  220 - 
- 221 - 
+ 221 - Killa Grandma; oldlady2          : room1_2.tmx                      : killaGrandma
  222 - 
  223 - 
  224 - 

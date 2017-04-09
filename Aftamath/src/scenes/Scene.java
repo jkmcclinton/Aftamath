@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -151,7 +152,15 @@ public class Scene {
 	public Scene(String ID){
 		ID = ID.replaceAll(" ", "");
 		this.ID=ID;
-		tileMap = new TmxMapLoader().load("assets/maps/" + ID + ".tmx");
+		
+		Gdx.app.postRunnable(new Runnable() {
+			public void run(){
+				Scene.this.tileMap = new TmxMapLoader().load("assets/maps/" + Scene.this.ID + ".tmx");
+			}
+		});		
+		long n= System.nanoTime();
+		while(Scene.this.tileMap==null) {};
+		System.out.println("["+ID+"]: "+Vars.formatNanoTime(System.nanoTime()-n));
 		MapProperties prop = tileMap.getProperties();
 		width = prop.get("width", Integer.class)*Vars.TILE_SIZE;
 		height = prop.get("height", Integer.class)*Vars.TILE_SIZE;

@@ -1,7 +1,0 @@
-Script Main
-lockplayer
-face(this, player)
-setSpeaker(this)
-text(sad, {Hey man, that was uncool.})
-
-done

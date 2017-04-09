@@ -10,155 +10,77 @@
   <property name="previous" value="Boardwalk"/>
   <property name="spawners" value="false"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
-  <image source="tilesets/residential.png" width="1152" height="1608"/>
-  <tile id="0">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="1">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="2">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="3">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="4">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="5">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="6">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="7">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="8">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="72">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="73">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="74">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="75">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="76">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="77">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="78">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="79">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="80">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="144">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="145">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="146">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="147">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="148">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="149">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="150">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="151">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
-  <tile id="152">
-   <properties>
-    <property name="type" value="concrete"/>
-   </properties>
-  </tile>
- </tileset>
- <tileset firstgid="7201" name="tileset" tilewidth="16" tileheight="16" tilecount="3096">
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="3096">
   <image source="tilesets/beach.png" width="1152" height="691"/>
   <tile id="10">
    <properties>
     <property name="light" value="boardwalk"/>
    </properties>
   </tile>
+  <tile id="383">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="384">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="385">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="386">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="387">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="388">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="455">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="456">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="457">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="458">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="459">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
+  <tile id="460">
+   <properties>
+    <property name="type" value="boardwalk"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="bg1" width="60" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt0tlNAlEcRvFbhQrMonQh7haiAipqF24IWIn7Uoi49KEC7k+eIkgmuTkn+b18T/efmRDMzMzMzMzMzMzMrKhKWQhlVJAgRYYc05hBNSv6leOrzi0NNLGJLWyjhR3sYi+ie8+45RwXuMQVrnGDW9zhPqJ7B9wyxAgf+MQXvvGDX/xFdO9sHkINc5jHAhaxhGWsYDUv+pXja59bDnCIIxyjjRN00EUvontj7jUN4Q3vGGCIURrv3k74T9FBFz2cJvHuD+jjEU94xkvE+wTfeBJTKKGMShrvvoZ1bKCOBpru7u7u7u7u7u7u7u7u7pHt/w1cpKU=
+   eJzt1ddNA1EUBuG76yrIoRDANrkLkhOVkEMhxD4A2+RCANukKcLSSkcz0vfyP90jrbQpmZmZmZmZmZmZmVlR9bKU+hjgGz/4xR9SnlKGPC/6lcOrzC0VVLGIJSxjBatYw3qge/e4ZR8HOMQRjnGCU5zhPNC9bW7poItHPOEZL3jFG94D3TtSSmkUYxjHBCYxhWnMYLZU9CuH1wa3bGIL29hBDXU00EQr0L2Ru+Mfc48HtNFBN4u717i5jgaaaGE3xd0vcIkrXOMGt4H3D3ziCz30MQi8z/FNz2MBZVRQzdzd3d3d3d3d3d3d3d3dY+3/7evAAw==
   </data>
  </layer>
  <layer name="bg2" width="60" height="50">
@@ -168,12 +90,12 @@
  </layer>
  <layer name="ground" width="60" height="50">
   <data encoding="base64" compression="zlib">
-   eJztyEkNgEAUBcFvZNDA6t8OqweeCA4kU5X0pasAAAAAAACgX3urOtKZrnSnp/3vf2UcqqY0pyWtaRv+9wEAAADo0wsIJThx
+   eJztyEkNgEAUBcE/KGD1b4fVE08EB5KpSvrSVQAAAAAAANCvvVUd6UxXutPT/ve/Mg5VU5rTkta0Df/7AAAAAPTpBetaJME=
   </data>
  </layer>
  <layer name="objects" width="60" height="50">
   <data encoding="base64" compression="zlib">
-   eJztzlEJgEAURcEFa2gCoxjHKBvHKJaxw4N3WXDm/8AZAwAAAACAtHNft+lwFz5STYen8JFqOmzHuk2Hq/CRajrMwkeq6fAWPlINAAAAAPzBB8QsC5g=
+   eJztzkENgDAQRcH2jBTkVApykIIcjOChyd9swsz9JW8MAAAAAACqHY2bhNW4SbgbNwlv4ybhnH2bhGvjo6pJeDY+qhoAAAAA+IMPvjYJqQ==
   </data>
  </layer>
  <layer name="fg" width="60" height="50">

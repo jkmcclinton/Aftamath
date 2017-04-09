@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="16" tileheight="16" nextobjectid="29">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="10" tilewidth="16" tileheight="16" nextobjectid="29">
  <properties>
   <property name="ambient" value="INDOOR"/>
-  <property name="bgm" value="Misdirection"/>
+  <property name="bgm" value="Bright Days"/>
  </properties>
- <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16">
   <image source="tilesets/indoors.png" width="960" height="771"/>
  </tileset>
- <layer name="bg1" width="30" height="10">
+ <tileset firstgid="2881" name="tileset" tilewidth="16" tileheight="16">
+  <image source="tilesets/housing.png" width="960" height="771"/>
+ </tileset>
+ <layer name="bg1" width="100" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBhcwBaI7cikYWxy7ITpZQZiFiQxUjG59toDsQOd7K2E4iogrgbiGiQxUjEpYCsUbwPi7UC8A0mMVDwKRiYAAKNMIy4=
+   eJxjYBgFQwHYArEdjehRtahqiYkLmFpmIGZBEhvF1MekxIc9EDsMAjcPZ0wIVEJxFRBXA3ENktgopj4mBLZC8TYg3g7EO5DERjH1MT2BLiN2ehSMglEwCkbB0AYA8syuZA==
   </data>
  </layer>
- <layer name="bg2" width="30" height="10">
+ <layer name="bg2" width="100" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjIKhAQAEsAAB
+   eJztx8EJgDAMQNF2JkcQ6liCjiW0Yyl4acAcQi8SyEHhP/iHnxKAP5s1q0iL4xFn1axN2h2POIdmVak5HnFObXQNf788Ykz5CQDwHR2iqBFs
   </data>
  </layer>
- <layer name="ground" width="30" height="10">
+ <layer name="ground" width="100" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYMAEuozUw6QAUtVTy5xRe4ePvbjS4UcGyjE5/h2ofDQQ9tIDAAAORh1O
+   eJxjYMAEuoyjmN4YHyAkPwqoC0bjY3CB0fgYXGA0PgYXGI2PwQWQwxtXff+RYRTTCxOTP0bx4GrvjuLBEx+jYOAAAOOgitw=
   </data>
  </layer>
- <layer name="fg" width="30" height="10">
+ <layer name="fg" width="100" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjIKhAQAEsAAB
+   eJztwTEBAAAAwqD1T20MH6AAAACAtwEPoAAB
   </data>
  </layer>
  <objectgroup name="entities">

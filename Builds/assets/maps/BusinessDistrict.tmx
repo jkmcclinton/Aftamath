@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="115" height="100" tilewidth="16" tileheight="16" nextobjectid="8">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="115" height="100" tilewidth="16" tileheight="16" nextobjectid="14">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
@@ -10,7 +10,7 @@
   <property name="nextWarp" value="2"/>
   <property name="previous" value="High Rise"/>
  </properties>
- <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+ <tileset firstgid="1" name="Tiledtest" tilewidth="16" tileheight="16">
   <image source="tilesets/business.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -153,7 +153,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="7201" name="Tiledtest" tilewidth="16" tileheight="16" tilecount="7200">
+ <tileset firstgid="7201" name="Tiledtest" tilewidth="16" tileheight="16">
   <image source="tilesets/residential.png" width="1152" height="1608"/>
   <tile id="0">
    <properties>
@@ -376,6 +376,40 @@
     <property name="next" value="Lobby1"/>
     <property name="nextWarp" value="0"/>
     <property name="warp" value=""/>
+   </properties>
+  </object>
+  <object id="8" name="25" x="992" y="1248" width="16" height="16">
+   <properties>
+    <property name="ID" value="80"/>
+    <property name="NPC" value="boss2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="lawyer"/>
+    <property name="script" value="LawyerDefaultScript"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="9" x="853" y="1105.58" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="heroquest3" value="heroquestlawyer"/>
+   </properties>
+  </object>
+  <object id="10" x="1168" y="1185" width="80" height="80">
+   <properties>
+    <property name="event" value=""/>
+    <property name="makeItGreat" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="12" x="204" y="1104" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
+   </properties>
+  </object>
+  <object id="13" x="1640" y="1100" width="16" height="178.833">
+   <properties>
+    <property name="event" value=""/>
+    <property name="introDrumpf" value="!MetDrumpf and spawnedDrumpf"/>
    </properties>
   </object>
  </objectgroup>

@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -62,11 +63,11 @@ import handlers.JsonSerializer;
 import handlers.MyContactListener;
 import handlers.MyInput;
 import handlers.MyInput.Input;
-import main.Menu.MenuType;
 import handlers.MyInputProcessor;
 import handlers.Pair;
 import handlers.PositionalAudio;
 import handlers.Vars;
+import main.Menu.MenuType;
 import scenes.Scene;
 import scenes.Script;
 import scenes.Script.Option;
@@ -81,6 +82,7 @@ public class Main extends GameState {
 	public Mob narrator;
 	public History history;
 	public Evaluator evaluator;
+	public Map<String, Warp> warps;
 	public Script currentScript, loadScript;
 	public InputState stateType, prevStateType;
 	public int currentEmotion, dayState;
@@ -106,22 +108,24 @@ public class Main extends GameState {
 	private ArrayList<Particle> particles, ptclsToAdd, ptclsToRemove;
 	private ArrayList<LightObj> lights;
 	private ArrayList<PositionalAudio> sounds;
-	private Map<String, Warp> warps;
 	private Map<Entity, Float> healthBars;
 	private Box2DDebugRenderer b2dr;
 	private InputState beforePause;
 	private RayHandler rayHandler;
 	private MyContactListener cl = new MyContactListener(this);
 	private SpeechBubble[] choices;
+	private TextureRegion[] lFont;
+	
+	protected LoaderThread loader;
 
 	public static enum InputState{
-		MOVE, //can move and interact
-		MOVELISTEN, //listening to text and can move
-		LISTEN, //listening to text only
-		CHOICE, //choosing an option
-		PAUSED, //in pause menu
-		KEYBOARD, //input text
-		GENDERCHOICE, //temporary; used to allow the player to chose their appearance
+		MOVE, 			//can move and interact
+		MOVELISTEN, 	//listening to text and can move
+		LISTEN, 		//listening to text only
+		CHOICE, 		//choosing an option
+		PAUSED, 		//in pause menu
+		KEYBOARD, 		//input text
+		GENDERCHOICE,	//temporary; used to allow the player to chose their appearance
 	}
 
 	public static enum WeatherState{
@@ -144,7 +148,7 @@ public class Main extends GameState {
 						dbtrender 	= false, //render debug text?
 						debugging   = false,	 //in debug mode?
 						cwarps      = true,	 //create warps?
-						document    = false, //document variables?
+						document    = true, //document variables?
 						random;
 	public static String debugLoadLoc = "ResidentialDistrictN"; //where the player starts
 	public static String debugPlayerType = "underdog"; //what the player looks like in debug mode
@@ -183,6 +187,8 @@ public class Main extends GameState {
 		lightBuffer = new FrameBuffer(Format.RGBA8888, Vars.PowerOf2(Game.width), 
 				Vars.PowerOf2(Game.height), false);
 		//lightBufferRegion = new TextureRegion(Game.res.getTexture("lightMap"));
+		lFont = TextureRegion.split(Game.res.getTexture("text4"), 14, 20 )[0];
+
 		
 		Scene.clearEntityMapping();
 		Entity.clearMapping();
@@ -213,24 +219,29 @@ public class Main extends GameState {
 		b2dr.setDrawVelocities(true);
 
 		boolean loadwarps = cwarps && this.gameFile.equals("newgame");
-		if(loadwarps)
-			System.out.println("Don't Panic! The game is just linking levels together!");
-		//drawString(sb, "Loading...", Game.width/4, Game.height/4);
-
-		if(document){
-			documentVariables();
-		}
-		if(loadwarps) {
-			catalogueWarps();
-		}
-		load();
+		//			System.out.println("Don't Panic! The game is just linking levels together!");
+		loader = new LoaderThread(loadwarps, document);
+		loader.start();
 		hud = new HUD(this, hudCam);
-		handleDayCycle(Vars.DT);
-		handleWeather();
-		hud.showLocation();
 	}
 
+	float lTxtTime =0;
 	public void update(float dt) {
+		if(loader!=null) {
+			if(loader.finished){
+				load();
+				handleDayCycle(Vars.DT);
+				handleWeather();
+				hud.showLocation();
+				loader = null;
+			} else {
+//				loader.update(dt);
+
+				lTxtTime += dt; 
+				if (lTxtTime>=.5f*3+.3f) lTxtTime=0;
+				return;
+			}
+		}
 		super.update(dt);
 		buttonTime += dt;
 		hud.update(dt);
@@ -244,7 +255,6 @@ public class Main extends GameState {
 		//update the level specific loading script
 		if(loadScript!=null &&loading)
 			loadScript.update();
-
 		if (!paused){
 			speakTime += dt;
 			clockTime = (dayTime+DAY_TIME/6f)%DAY_TIME;
@@ -508,9 +518,21 @@ public class Main extends GameState {
 	}
 
 	public void render() {
-//		Gdx.gl20.glClearColor(skyColor.r, skyColor.b, skyColor.g, skyColor.a);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		
+		if(loader!=null) {
+			String txt = "Loading";
+			for(int i=0; i<((lTxtTime+.2f)/.5f);i++) txt+=".";
+			sb.setProjectionMatrix(hudCam.combined);
+			sb.begin();
+			drawString(sb, lFont, lFont[0].getRegionWidth(), txt, 
+					Game.width/4 - lFont[0].getRegionWidth()*"LOADING.".length()/2,
+					Game.height/4 - lFont[0].getRegionHeight()/2, 
+					false);
+			sb.end();
+			return;
+		}
+		
 		sb.setProjectionMatrix(cam.combined);
 		rayHandler.setCombinedMatrix(cam.combined);
 		scene.renderBG(sb);
@@ -561,17 +583,17 @@ public class Main extends GameState {
 		b2dCam.setPosition(character.getPosition().x, character.getPosition().y + 15 / PPM);
 		b2dCam.update();
 		if (dbRender) b2dr.render(world, b2dCam.combined);
-		hud.render(sb, currentEmotion);
+		hud.render(sb, currentEmotion); // draw hud
 		
 		//draw menu
-		if(!menus.isEmpty())
-			menus.peek().render(sb);
+		if(!menus.isEmpty()) menus.peek().render(sb);
 
 		//draw text input string
 		if(stateType == InputState.KEYBOARD){
 			sb.begin();
 			hud.drawInputBG(sb);
-			drawString(sb, Game.getInput(), Game.width/4 - Game.getInput().length()*font[0].getRegionWidth()/2,
+			drawString(sb, Game.getInput(), 
+					Game.width/4 - Game.getInput().length()*font[0].getRegionWidth()/2,
 					195);
 			if(keyIndexTime<.5f)
 				drawString(sb, "_", Game.width/4 - Game.getInput().length()*font[0].getRegionWidth()/2 +
@@ -959,7 +981,7 @@ public class Main extends GameState {
 
 								// This line of code is essential; it gives the game just enough time
 								// so that the script doesn't skip more than once to the end
-								int x12 = 1; if (x12==1) x12=2;
+//								int x12 = 1; if (x12==1) x12=1; //fuck you, this doesn't do shit
 
 								if(displayText.isEmpty()) {
 									if (currentScript != null) {
@@ -1445,26 +1467,6 @@ public class Main extends GameState {
 		b2dCam.bind(scene, true);
 		world.setGravity(scene.getGravity());
 	}
-
-	//precreates all existing warps across entire game and puts them to hashtable
-	public void catalogueWarps(){
-		Scene s;
-		Array<Warp> w;
-		// create warps from each level and add them to the hash
-		for(String l : Game.LEVEL_NAMES){	
-			s = new Scene(l);
-			w = s.createWarps();
-			for(Warp i : w)
-				warps.put(l+i.warpID, i);
-			
-		}
-
-		//link all warps together
-		for(Warp i : warps.values()){
-			i.setLink(warps.get(i.next + i.getLinkID()));
-//			System.out.println(i);
-		}
-	}
 	
 	//called from serializer to save warp entities
 	public Collection<Warp> getWarps() {
@@ -1774,246 +1776,293 @@ public class Main extends GameState {
 			healthBars.put(e, 3f);
 	}
 	
-	
-	
-	//create a file listing all used scene IDs from game
-	//create a file listing all events names
-	//create a file listing all used variable names
-	public void documentVariables(){
-		TreeSet<String> IDs = new TreeSet<>();
-		TreeSet<String> variables = new TreeSet<>();
-		TreeSet<String> events = new TreeSet<>();
-		Array<Integer> used = new Array<>();
-		Array<Pair<String, String>> entities = new Array<>(); //used for determining duplication
-
-		//load each level and collect data about NPCs and other Entities
-		for(String level : Game.LEVEL_NAMES){
-			TiledMap tileMap = new TmxMapLoader().load("assets/maps/" + level + ".tmx");
-			if(tileMap.getLayers().get("entities")!=null){
-				MapObjects objects = tileMap.getLayers().get("entities").getObjects();
-				for(MapObject object : objects) {
-					Object o = object.getProperties().get("NPC");
-					if(o!=null) {
-						String ID = object.getProperties().get("NPC", String.class);		//name used for art file
-						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
-						String name = object.getProperties().get("name", String.class);		//character name
-						String script = object.getProperties().get("script", String.class);		
-						if(ID!=null && sceneID!=null && name!=null){
-							if(Vars.isNumeric(sceneID))
-								if(Integer.parseInt(sceneID)<0)
-									continue;
-							String s = " ";
-							s = Vars.formatHundreds(s, sceneID.trim().length());
-							s+=sceneID+" - "+name+"; "+ID;
-							s+=Vars.addSpaces(s, 40)+": "+level+".tmx";
-							if(script!=null) s+=Vars.addSpaces(s, 75)+": " + script;
-							IDs.add(s);
-							
-							//conflicting entity!!!
-							if(used.contains(Integer.parseInt(sceneID), false))
-								s = "*"+s.substring(1, 4) + "*" + s.substring(5);
-							else {
-								used.add(Integer.parseInt(sceneID));
-								entities.add(new Pair<>(name, ID));
-							}
-						}	
-					}
-
-					o = object.getProperties().get("Entity");
-					if(o==null) o = object.getProperties().get("entity");
-					if(o!=null) {
-						String ID = object.getProperties().get("entity", String.class);		//name used for art file
-						if(ID==null) ID = object.getProperties().get("Entity", String.class);
-						String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
-						String script = object.getProperties().get("script", String.class);
-						String name = object.getProperties().get("name", String.class);
-
-						if(ID!=null && sceneID!=null){
-							if(Vars.isNumeric(sceneID))
-								if(Integer.parseInt(sceneID)<0)
-									continue;
-							String s = " ";
-							s = Vars.formatHundreds(s, sceneID.trim().length());
-							s+=sceneID+" - "+ID;
-							s+=Vars.addSpaces(s, 40)+": "+level;
-							if(script!=null) s+=Vars.addSpaces(s, 75)+": " + script;
-							IDs.add(s);
-							
-							//conflicting entity!!!
-							if(used.contains(Integer.parseInt(sceneID), false))
-								s = "*"+s.substring(1, 4) + "*" + s.substring(5);
-							else {
-								used.add(Integer.parseInt(sceneID));
-								entities.add(new Pair<>(name, ID));
-							}
-						}
-					}
-				}
-			}
+	class LoaderThread implements Runnable {
+		Thread t;
+		private boolean loadwarps, document;
+		public boolean finished = false;
+		public LoaderThread(boolean loadwarps, boolean document){
+			this.document = document;
+			this.loadwarps = loadwarps;
 		}
+		public void run(){
+			if(document) catalogueWarps();
+			else if(loadwarps) document();
+			
+			sb.fade();
+			while((sb.getFadeType()!=FadingSpriteBatch.FADE_IN))
+				finished = false;
+			finished = true;
+		}
+		
+		public void start(){
+			if(t!=null) return;
+			t = new Thread(this, "Loader");
+			t.start();
+		}
+		
+		//precreates all existing warps across entire game and puts them to hashtable
+		public void catalogueWarps(){
+			Scene s;
+			Array<Warp> w;
+			// create warps from each level and add them to the hash
+			for(String l : Game.LEVEL_NAMES){	
+				s = new Scene(l);
+				w = s.createWarps();
+				for(Warp i : w)
+					warps.put(l+i.warpID, i);
+			}
 
-		//define variables and events from scripts, as well as spawned entities
-		for(String script : Game.SCRIPT_LIST.keySet()){
-			try{
-				BufferedReader br = new BufferedReader(new FileReader(Game.res.getScript(script)));
-				try {
-					String line = br.readLine();
-					String command;
-					while (line != null ) {
-						//parse command
-						if (!line.startsWith("#")){
-							line = line.trim();
-							if (line.indexOf("(") == -1)
-								if(line.startsWith("["))
-									command = line.substring(line.indexOf("[")+1, line.indexOf("]"));
-								else command = line;
-							else command = line.substring(0, line.indexOf("("));
-							command = command.trim();
-							
-							String[] args = Script.args(line);
-							if(command.toLowerCase().equals("declare")){
-								if(args.length==4){
-									String s = args[0];
-									s+=Vars.addSpaces(s, 25) + ": " + args[2].toLowerCase();
-									s+=Vars.addSpaces(s, 36) + ": " + args[1].toLowerCase();
-									s+=Vars.addSpaces(s, 47) + ": " + script;
-									variables.add(s);
-								}
-							} if(command.toLowerCase().equals("setevent")){
-								String s = args[0];
-								s+=Vars.addSpaces(s, 25)+ ": " + script;
-								events.add(s);
-							} if(command.toLowerCase().equals("setflag")){ 
-								String s = args[0];
-								s+=Vars.addSpaces(s, 25) + ": flag";
-								s+=Vars.addSpaces(s, 36) + ": global";
-								s+=Vars.addSpaces(s, 47) + ": " + script;
-								variables.add(s);
-							} if(command.toLowerCase().equals("spawn")){
-								int sceneID = -1;
-								if(args.length==6)
-									if(Vars.isNumeric(args[5].trim()))
-										sceneID = Integer.parseInt(args[5].trim());
-								
-								String name=args[2].trim(), ID=args[1].trim();
-								
-								//sceneID is given and a new mob is spawned
-								Pair<String, String> p = new Pair<>(name, ID);
-								if(name==null)p = new Pair<>("", ID);
-								if(!entities.contains(p, false) && sceneID!=-1){
-									String s = " ";
-									s = Vars.formatHundreds(s, String.valueOf(sceneID).length());
-									if(name!=null)
-										s+=sceneID+" - "+name+"; "+ID;
-									else
-										s+=sceneID+" - "+ID;
-									s+=Vars.addSpaces(s, 40)+": "+script+".txt";
-									if(script!=null) s+=Vars.addSpaces(s, 75)+": ???";
-									IDs.add(s);
-									
-									//conflicting entity!!!
-									if(used.contains(sceneID, false))
-										s = "*"+s.substring(1, 4) + "*" + s.substring(5);
-									else {
-										used.add(sceneID);
-										entities.add(p);
-									}
-								}
-							}
-						}
-
-						line = br.readLine();
-					}
-				} finally {
-					br.close();
-				}
-			} catch(Exception e){
-				e.printStackTrace();
+			//link all warps together
+			for(Warp i : warps.values()){
+				i.setLink(warps.get(i.next + i.getLinkID()));
+//				System.out.println(i);
 			}
 		}
 		
-		//document unused sceneIDs
-		for(int i = 0; i<500; i++)
-			if(!used.contains(i, false)){
-				String s = " ";
-				s = Vars.formatHundreds(s, String.valueOf(i).length());
-				IDs.add(s+i+ " - ");
+		//create a file listing all used scene IDs from game
+		//create a file listing all events names
+		//create a file listing all used variable names
+		public void document(){
+			TreeSet<String> IDs = new TreeSet<>();
+			TreeSet<String> variables = new TreeSet<>();
+			TreeSet<String> events = new TreeSet<>();
+			Array<Integer> used = new Array<>();
+			Array<Pair<String, String>> entities = new Array<>(); //used for determining duplication
+
+			//load each level and collect data about NPCs and other Entities
+			for(String level : Game.LEVEL_NAMES){
+				TiledMap tileMap = new TmxMapLoader().load("assets/maps/" + level + ".tmx");
+				if(tileMap.getLayers().get("entities")!=null){
+					MapObjects objects = tileMap.getLayers().get("entities").getObjects();
+					for(MapObject object : objects) {
+						Object o = object.getProperties().get("NPC");
+						if(o!=null) {
+							String ID = object.getProperties().get("NPC", String.class);		//name used for art file
+							String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+							String name = object.getProperties().get("name", String.class);		//character name
+							String script = object.getProperties().get("script", String.class);		
+							if(ID!=null && sceneID!=null && name!=null){
+								if(Vars.isNumeric(sceneID))
+									if(Integer.parseInt(sceneID)<0)
+										continue;
+								String s = " ";
+								s = Vars.formatHundreds(s, sceneID.trim().length());
+								s+=sceneID+" - "+name+"; "+ID;
+								s+=Vars.addSpaces(s, 40)+": "+level+".tmx";
+								if(script!=null) s+=Vars.addSpaces(s, 75)+": " + script;
+								IDs.add(s);
+								
+								//conflicting entity!!!
+								if(used.contains(Integer.parseInt(sceneID), false))
+									s = "*"+s.substring(1, 4) + "*" + s.substring(5);
+								else {
+									used.add(Integer.parseInt(sceneID));
+									entities.add(new Pair<>(name, ID));
+								}
+							}	
+						}
+
+						o = object.getProperties().get("Entity");
+						if(o==null) o = object.getProperties().get("entity");
+						if(o!=null) {
+							String ID = object.getProperties().get("entity", String.class);		//name used for art file
+							if(ID==null) ID = object.getProperties().get("Entity", String.class);
+							String sceneID = object.getProperties().get("ID", String.class);	//unique int ID across scenes
+							String script = object.getProperties().get("script", String.class);
+							String name = object.getProperties().get("name", String.class);
+
+							if(ID!=null && sceneID!=null){
+								if(Vars.isNumeric(sceneID))
+									if(Integer.parseInt(sceneID)<0)
+										continue;
+								String s = " ";
+								s = Vars.formatHundreds(s, sceneID.trim().length());
+								s+=sceneID+" - "+ID;
+								s+=Vars.addSpaces(s, 40)+": "+level;
+								if(script!=null) s+=Vars.addSpaces(s, 75)+": " + script;
+								IDs.add(s);
+								
+								//conflicting entity!!!
+								if(used.contains(Integer.parseInt(sceneID), false))
+									s = "*"+s.substring(1, 4) + "*" + s.substring(5);
+								else {
+									used.add(Integer.parseInt(sceneID));
+									entities.add(new Pair<>(name, ID));
+								}
+							}
+						}
+					}
+				}
 			}
 
-		//collect default global variables
-		HashMap<String, Object> varList = history.getVarlist();
-		for(String v: varList.keySet()){
-			String c = varList.get(v).getClass().getSimpleName().toLowerCase();
-			String s = v+"";
-			s+=Vars.addSpaces(s, 25) + ": " + c;
-			s+=Vars.addSpaces(s, 36) + ": global";
-			variables.add(s);
-		}
+			//define variables and events from scripts, as well as spawned entities
+			for(String script : Game.SCRIPT_LIST.keySet()){
+				try{
+					BufferedReader br = new BufferedReader(new FileReader(Game.res.getScript(script)));
+					try {
+						String line = br.readLine();
+						String command;
+						while (line != null ) {
+							//parse command
+							if (!line.startsWith("#")){
+								line = line.trim();
+								if (line.indexOf("(") == -1)
+									if(line.startsWith("["))
+										command = line.substring(line.indexOf("[")+1, line.indexOf("]"));
+									else command = line;
+								else command = line.substring(0, line.indexOf("("));
+								command = command.trim();
+								
+								String[] args = Script.args(line);
+								if(command.toLowerCase().equals("declare")){
+									if(args.length==4){
+										String s = args[0];
+										s+=Vars.addSpaces(s, 25) + ": " + args[2].toLowerCase();
+										s+=Vars.addSpaces(s, 36) + ": " + args[1].toLowerCase();
+										s+=Vars.addSpaces(s, 47) + ": " + script;
+										variables.add(s);
+									}
+								} if(command.toLowerCase().equals("setevent")){
+									String s = args[0];
+									s+=Vars.addSpaces(s, 25)+ ": " + script;
+									events.add(s);
+								} if(command.toLowerCase().equals("setflag")){ 
+									String s = args[0];
+									s+=Vars.addSpaces(s, 25) + ": flag";
+									s+=Vars.addSpaces(s, 36) + ": global";
+									s+=Vars.addSpaces(s, 47) + ": " + script;
+									variables.add(s);
+								} if(command.toLowerCase().equals("spawn")){
+									int sceneID = -1;
+									if(args.length==6)
+										if(Vars.isNumeric(args[5].trim()))
+											sceneID = Integer.parseInt(args[5].trim());
+									
+									String name=args[2].trim(), ID=args[1].trim();
+									
+									//sceneID is given and a new mob is spawned
+									Pair<String, String> p = new Pair<>(name, ID);
+									if(name==null)p = new Pair<>("", ID);
+									if(!entities.contains(p, false) && sceneID!=-1){
+										String s = " ";
+										s = Vars.formatHundreds(s, String.valueOf(sceneID).length());
+										if(name!=null)
+											s+=sceneID+" - "+name+"; "+ID;
+										else
+											s+=sceneID+" - "+ID;
+										s+=Vars.addSpaces(s, 40)+": "+script+".txt";
+										if(script!=null) s+=Vars.addSpaces(s, 75)+": ???";
+										IDs.add(s);
+										
+										//conflicting entity!!!
+										if(used.contains(sceneID, false))
+											s = "*"+s.substring(1, 4) + "*" + s.substring(5);
+										else {
+											used.add(sceneID);
+											entities.add(p);
+										}
+									}
+								}
+							}
 
-		//write SceneID list to file
-		try {
-			FileHandle file = Gdx.files.local("assets/SceneID List.txt");
-			BufferedWriter wr = new BufferedWriter(file.writer(false));
+							line = br.readLine();
+						}
+					} finally {
+						br.close();
+					}
+				} catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			
+			//document unused sceneIDs
+			for(int i = 0; i<500; i++)
+				if(!used.contains(i, false)){
+					String s = " ";
+					s = Vars.formatHundreds(s, String.valueOf(i).length());
+					IDs.add(s+i+ " - ");
+				}
 
-			String s = "Scene ID";
-			s+=Vars.addSpaces(s, 40) + "Spawned by";
-			s+=Vars.addSpaces(s, 75) + "Script";
-			wr.write(s); wr.newLine();
-
-			Iterator<String> it = IDs.iterator();
-			while(it.hasNext()){
-				wr.write(it.next());
-				wr.newLine();
+			//collect default global variables
+			HashMap<String, Object> varList = history.getVarlist();
+			for(String v: varList.keySet()){
+				String c = varList.get(v).getClass().getSimpleName().toLowerCase();
+				String s = v+"";
+				s+=Vars.addSpaces(s, 25) + ": " + c;
+				s+=Vars.addSpaces(s, 36) + ": global";
+				variables.add(s);
 			}
 
-			wr.flush();
-			wr.close();
-		} catch(Exception e){
-			System.out.println("Could not write a sceneID list file.");
-			e.printStackTrace();
-		} 
+			//write SceneID list to file
+			try {
+				FileHandle file = Gdx.files.local("assets/SceneID List.txt");
+				BufferedWriter wr = new BufferedWriter(file.writer(false));
 
-		try{
-			FileHandle file = Gdx.files.local("assets/Variable List.txt");
-			BufferedWriter wr = new BufferedWriter(file.writer(false));
+				String s = "Scene ID";
+				s+=Vars.addSpaces(s, 40) + "Spawned by";
+				s+=Vars.addSpaces(s, 75) + "Script";
+				wr.write(s); wr.newLine();
 
-			String s = "Variable Name";
-			s+=Vars.addSpaces(s, 25) + "Type";
-			s+=Vars.addSpaces(s, 36) + "Scope";
-			s+=Vars.addSpaces(s, 47) + "Script";
-			wr.write(s); wr.newLine();
+				Iterator<String> it = IDs.iterator();
+				while(it.hasNext()){
+					wr.write(it.next());
+					wr.newLine();
+				}
 
-			Iterator<String> it = variables.iterator();
-			while(it.hasNext()){
-				wr.write(it.next());
-				wr.newLine();
+				wr.flush();
+				wr.close();
+			} catch(Exception e){
+				System.out.println("Could not write a sceneID list file.");
+				e.printStackTrace();
+			} 
+
+			try{
+				FileHandle file = Gdx.files.local("assets/Variable List.txt");
+				BufferedWriter wr = new BufferedWriter(file.writer(false));
+
+				String s = "Variable Name";
+				s+=Vars.addSpaces(s, 25) + "Type";
+				s+=Vars.addSpaces(s, 36) + "Scope";
+				s+=Vars.addSpaces(s, 47) + "Script";
+				wr.write(s); wr.newLine();
+
+				Iterator<String> it = variables.iterator();
+				while(it.hasNext()){
+					wr.write(it.next());
+					wr.newLine();
+				}
+
+				wr.flush();
+				wr.close();
+			} catch(Exception e){
+				System.out.println("Could not write variable list file");
 			}
 
-			wr.flush();
-			wr.close();
-		} catch(Exception e){
-			System.out.println("Could not write variable list file");
-		}
+			try{
+				FileHandle file = Gdx.files.local("assets/Event List.txt");
+				BufferedWriter wr = new BufferedWriter(file.writer(false));
 
-		try{
-			FileHandle file = Gdx.files.local("assets/Event List.txt");
-			BufferedWriter wr = new BufferedWriter(file.writer(false));
+				String s = "Event Name";
+				s+=Vars.addSpaces(s, 25) + "Script";
+				wr.write(s); wr.newLine();
 
-			String s = "Event Name";
-			s+=Vars.addSpaces(s, 25) + "Script";
-			wr.write(s); wr.newLine();
+				Iterator<String> it = events.iterator();
+				while(it.hasNext()){
+					wr.write(it.next());
+					wr.newLine();
+				}
 
-			Iterator<String> it = events.iterator();
-			while(it.hasNext()){
-				wr.write(it.next());
-				wr.newLine();
+				wr.flush();
+				wr.close();
+			} catch(Exception e){
+				System.out.println("Could not write event list file");
 			}
-
-			wr.flush();
-			wr.close();
-		} catch(Exception e){
-			System.out.println("Could not write event list file");
 		}
 	}
+	
+	
+	
+	
+	
 }
 

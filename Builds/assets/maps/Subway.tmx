@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="31">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="30" tilewidth="16" tileheight="16" nextobjectid="34">
  <properties>
   <property name="ambient" value="INDOOR"/>
   <property name="bgm day" value="Hawthorne"/>
@@ -8,7 +8,7 @@
   <property name="next" value="Sewers"/>
   <property name="previous" value="Central Station"/>
  </properties>
- <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
   <image source="tilesets/indoors.png" width="960" height="771"/>
   <tile id="1320">
    <properties>
@@ -559,7 +559,7 @@
     <property name="layer" value="back"/>
    </properties>
   </object>
-  <object id="30" name="26" x="576" y="96" width="16" height="16">
+  <object id="30" name="26" x="576" y="98" width="16" height="16">
    <properties>
     <property name="ID" value="-1"/>
     <property name="entity" value="sewerSign"/>

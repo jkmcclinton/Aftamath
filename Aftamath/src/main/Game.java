@@ -233,12 +233,13 @@ public class Game implements ApplicationListener {
 				}
 			}
 		}
-
 		public Texture getTexture(String key){
 			String path = textures.get(key);
-			if(path!=null)
+			if(path!=null){
+				if(Thread.currentThread().getName().equals("Loader"))
+					return null;
 				return new Texture(Gdx.files.internal(path));
-			else {
+			} else {
 //				System.out.println("Key \""+key+"\" is not a valid texture key");
 				return null;
 			}

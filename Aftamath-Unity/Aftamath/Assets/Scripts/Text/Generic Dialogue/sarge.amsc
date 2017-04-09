@@ -1,9 +1,0 @@
-Script Main
-lockplayer
-setSpeaker(this)
-if(VillainTut or GoodTutEvil)
-	text({Yo wutup, fool?})
-else
-	text({What you lookin' at, punk?})
-end
-done

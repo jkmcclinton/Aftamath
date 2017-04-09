@@ -23,7 +23,6 @@ public class HUD {
 	private float locationTime;
 	private boolean top;
 	private OrthographicCamera cam;
-	private Mob character;
 	private Mob speaker;
 	private Main main;
 	private Texture textures;
@@ -50,7 +49,6 @@ public class HUD {
 	public HUD(Main main, OrthographicCamera cam) {
 		this.cam = cam;
 		this.main = main;
-		this.character = main.character;
 		
 		//font = TextureRegion.split(Game.res.getTexture("text"), 8, 11)[0];
 		//font = TextureRegion.split(Game.res.getTexture("text2"), 7, 12)[0];
@@ -142,7 +140,7 @@ public class HUD {
 	}
 	
 	public void drawStats(SpriteBatch sb) {
-		int health = (int)(character.getHealth()/ character.getMaxHealth()* (hearts.length-1));
+		int health = (int)(main.character.getHealth()/main.character.getMaxHealth()* (hearts.length-1));
 		sb.draw(hearts[health], Game.width/2 - 24, Game.height/2 - 24 * 2);
 		sb.draw(cash, Game.width/2 - 24, Game.height/2 - 24);
 		

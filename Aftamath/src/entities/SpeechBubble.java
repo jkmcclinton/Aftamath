@@ -156,7 +156,7 @@ public class SpeechBubble extends Entity {
 				else if (positioningType==PositionType.CENTERED)
 					x = message.length()*font[0].getRegionWidth()/2f-1;
 				main.drawString(sb, font, font[0].getRegionWidth(), message, 
-						getPosition().x*Vars.PPM-rw-x+3, getPosition().y*Vars.PPM-rh+2f);
+						getPosition().x*Vars.PPM-rw-x+3, getPosition().y*Vars.PPM-rh+2f, false);
 			}
 		} else{
 			if(ID.contains("ble6")){
@@ -167,7 +167,7 @@ public class SpeechBubble extends Entity {
 				else if (positioningType==PositionType.CENTERED)
 					x = font[0].getRegionWidth()/2f-1;
 				main.drawString(sb, font, font[0].getRegionWidth(), message.substring(0, 1), 
-						getPosition().x*Vars.PPM-rw-x+3, getPosition().y*Vars.PPM-rh+2f);
+						getPosition().x*Vars.PPM-rw-x+3, getPosition().y*Vars.PPM-rh+2f, false);
 			} else
 			super.render(sb);
 		}

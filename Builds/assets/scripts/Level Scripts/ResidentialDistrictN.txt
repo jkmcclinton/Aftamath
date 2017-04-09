@@ -1,3 +1,0 @@
-Script Main
-value(set, player.niceness, 0)
-done

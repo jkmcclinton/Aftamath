@@ -117,7 +117,7 @@ public class Title extends GameState {
 	
 	public void updateDebugText() {
 		sb.begin();
-			drawString(sb, font, 13, debugText, 1,  Game.height/2 - font[0].getRegionHeight() - 2);
+			drawString(sb, font, 13, debugText, 1,  Game.height/2 - font[0].getRegionHeight() - 2, false);
 			//drawString(sb, debugText,1,  Game.height/2 - font[0].getRegionHeight()*4 - 2);
 		sb.end();
 	}
@@ -158,7 +158,7 @@ public class Title extends GameState {
 					sb.draw(btnHighlight.getFrame(), (Game.width/4 - PERIODX + 1), y-1);
 				}
 				
-				drawString(sb, font, px, menuOptions[i][j], x, y); // draw menu buttons
+				drawString(sb, font, px, menuOptions[i][j], x, y, false); // draw menu buttons
 			}
 	}
 	
@@ -175,7 +175,7 @@ public class Title extends GameState {
 		setSong(song, false);
 		sb.setOverlay(Color.WHITE);
 		sb.setOverlayDraw(false);
-
+		
 		font = TextureRegion.split(Game.res.getTexture("text4"), 14, 20 )[0];
 		
 		bgImage = Game.res.getTexture("titleBG");

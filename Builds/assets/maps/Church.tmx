@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="39">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="50" tilewidth="16" tileheight="16" nextobjectid="55">
  <properties>
   <property name="ambient" value="DAYNIGHT"/>
   <property name="bg" value="main"/>
-  <property name="bgm day" value="Silence"/>
+  <property name="bgm day" value="Second Day"/>
   <property name="bgm night" value="Second Day"/>
   <property name="name" value="Church"/>
   <property name="next" value="Tha Hood"/>
@@ -167,26 +167,26 @@
  </layer>
  <layer name="ground" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt08lRQlEUBuFHKIAghIIKaBggIISizGGATIaijGZC58DiHqq6q77dXZzi/WSZmZmZmZmZmZmZmZmZmZmZmd1rNTzhGS+oo4EmXvGW6E3Euz7xhSFGGGOCKWaYJ3oT8a5f/GGPA4444YwL/hO9iXhXPpdlBRTxgBLKeEQF1VyaNxHvaqGNd3TQRQ8f6GOQ6E3EuxZY4hsrrLHBFjv8JHoT8a6I389d3f+uIt4U9beKuHX/g+7KXbkrd+Wu3FW8uyJ+P3flrtyVu3JXt725AhRCbxA=
+   eJzt08lRQmEUBWGeimIY4kgoyKCEgYBDKCpjGCgghAIqQib0hpcAC65V3VXf7iz+gvsyGTMzMzMzMzMzMzMzMzMzMzP7ryU4wCGOkMUxTpDDqZt0U8QtSiijgirucI+am3Tzije8o40Ouuihj4GbdDPHAt/4wS+W+MMKazfp5owPMo9zXOASV7jGDQqJm+1miA98YoQxJvjCFLM9bSK+q44HNNBEC494wjNe9rSJ+K6I/1/Uu4r4pqi/VcRb9xv0rrwr78q78q68q3jvivj/eVfelXflXXlXu202HftQVw==
   </data>
  </layer>
  <layer name="ledge" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwzENAAAIA7DhCP/quPCwo02aAAAAAAAAAG+nLwAAAAAAAAC0OEOnBxY=
+   eJzt1lEJADAMQ8EKqLzNv5VNRaDlDp6A/KUKAAAAgA3Or4PdzCwAgLj0r/K7AAAAAAAAAJjkAam7BDs=
   </data>
  </layer>
  <layer name="objects" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJztwYEAAAAAw6D5Ux/hAlUBAAAAAAAAAAAAAAAAAMA3OpgAAQ==
+   eJztzkENADAIBDDeyEPe1E7GBdIqaBUAAAAAAAAAcFmnA4tMOrDISwcAAAAAAICID+YRAPc=
   </data>
  </layer>
  <layer name="fg" width="75" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt0DERw1AMRMGfOlAMx1AyQWMohmMiRqCJNGqUZLd83d1aAAAAAAAA8Nmz2P/ZXuwZv/rzUewZnZ8nu4o9o/PzZNuj1jM6P0/2Cj6Jekbn58newa6oZ3R+nuwMdkUdAAAAAAD4LjcEuAnZ
+   eJzt0MEJgDAQRUE9W4rlWIrlWIrl2IgVBLMswkZnjg8S2D9NAAAAAAAA8GwJ9j/bgr3HV3c+gr1HZufKrmDvkdm5snWO9R6ZnSt7Y6vM28r2xl2tnvlzdGfjrlYHAAAAAADGcgPNmAlF
   </data>
  </layer>
  <objectgroup name="entities">
-  <object id="2" x="592" y="448" width="16" height="16">
+  <object id="2" x="384" y="224" width="16" height="16">
    <properties>
     <property name="spawn" value=""/>
    </properties>
@@ -372,7 +372,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="25" name="29" x="704" y="448" width="16" height="16">
+  <object id="25" name="29" x="416" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="98"/>
     <property name="NPC" value="hero1"/>
@@ -382,7 +382,7 @@
     <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
-  <object id="26" name="30" x="736" y="448" width="16" height="16">
+  <object id="26" name="30" x="576" y="224" width="16" height="16">
    <properties>
     <property name="ID" value="99"/>
     <property name="NPC" value="villain1"/>
@@ -488,6 +488,106 @@
     <property name="name" value="TEST"/>
     <property name="script" value="actionTest"/>
     <property name="state" value="DANCING"/>
+   </properties>
+  </object>
+  <object id="39" name="31" x="832" y="448" width="16" height="16">
+   <properties>
+    <property name="ID" value="109"/>
+    <property name="NPC" value="dummy1"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Attack Dummy"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="40" name="31" x="864" y="448" width="16" height="16">
+   <properties>
+    <property name="ID" value="111"/>
+    <property name="NPC" value="dummy2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Attack Dummy"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="43" name="31" x="448" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="112"/>
+    <property name="NPC" value="hero2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Star"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="47" name="31" x="608" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="116"/>
+    <property name="NPC" value="villain2"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Killr"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="48" name="31" x="640" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="117"/>
+    <property name="NPC" value="villain4"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Tiny"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="49" name="31" x="672" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="118"/>
+    <property name="NPC" value="villain3"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="DoctorDisco"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="50" name="31" x="704" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="119"/>
+    <property name="NPC" value="villain5"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Wannabe Villain"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="52" name="31" x="480" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="113"/>
+    <property name="NPC" value="hero3"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Elder Man"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="53" name="31" x="512" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="114"/>
+    <property name="NPC" value="hero4"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Manly Man"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
+   </properties>
+  </object>
+  <object id="54" name="31" x="544" y="224" width="16" height="16">
+   <properties>
+    <property name="ID" value="115"/>
+    <property name="NPC" value="hero5"/>
+    <property name="layer" value="front"/>
+    <property name="name" value="Kris Devil"/>
+    <property name="script" value="actionTest"/>
+    <property name="state" value="FACEPLAYER"/>
    </properties>
   </object>
  </objectgroup>

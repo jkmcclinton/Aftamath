@@ -1,9 +1,4 @@
 Scene ID                                Spawned by                         Script
- 0-1 - breadstand                       : ResidentialDistrictN             : cart
- 0-1 - dumpster                         : CommercialDistrictNW             : dumpster
- 0-1 - sewerSign                        : Subway
- 0-1 - subwayAd                         : Subway
- 0-1 - subwaySign                       : Subway                           : trainSelection
  000 - 
  001 - Darrius; gangster1               : room1_1.tmx                      : realGangsta
  002 - Marquis; gangster3               : CommercialDistrictNW.tmx         : GangstaWar
@@ -16,7 +11,7 @@ Scene ID                                Spawned by                         Scrip
  009 - Ms. Pancakes; oldlady1           : ResidentialDistrictN.tmx         : generic_1
  010 - Narrator; narrator1              : ResidentialDistrictN.tmx         : intro
  011 - 
- 012 - Hero; hero1                      : ResidentialDistrictN.tmx         : superGlare
+ 012 - MrJustice; hero1                 : ResidentialDistrictN.tmx         : superGlare
  013 - Disco; villain3                  : ThaHood.tmx                      : disco
  014 - Sarge; burly2                    : CommercialDistrictNW.tmx         : sarge
  015 - Villain; villain1                : ResidentialDistrictN.tmx         : superGlare
@@ -84,6 +79,7 @@ Scene ID                                Spawned by                         Scrip
  077 - 
  078 - 
  079 - 
+ 080 - Lawyer; boss2                    : Subway.tmx                       : heroquest3
  080 - TEST; boss2                      : Church.tmx                       : actionTest
  081 - TEST; cashier                    : Church.tmx                       : actionTest
  082 - TEST; hippie                     : Church.tmx                       : actionTest
@@ -108,22 +104,26 @@ Scene ID                                Spawned by                         Scrip
  101 - HAHAHAHAHA; witch                : Church.tmx                       : actionTest
  102 - Darth Droid; robot1              : Church.tmx                       : actionTest
  103 - Your Maker; reaper               : Church.tmx                       : actionTest
- 104 - TEST; maleplayer1                : Church.tmx                       : actionTest
+ 104 - TEST; maleplayer1                : Church.tmx                       : MrJusticeAfterQ3I
  105 - TEST; maleplayer2                : Church.tmx                       : actionTest
  106 - TEST; maleplayer3                : Church.tmx                       : actionTest
  107 - TEST; maleplayer4                : Church.tmx                       : actionTest
  108 - Gigi; femaleplayer1              : Church.tmx                       : actionTest
- 109 - 
+ 109 - Attack Dummy; dummy1             : Church.tmx                       : actionTest
  110 - HLRMS-110; robot1                : BusinessDistrict.tmx             : getMail
- 111 - 
- 112 - 
- 113 - 
- 114 - 
- 115 - 
- 116 - 
- 117 - 
- 118 - 
- 119 - 
+ 111 - Attack Dummy; dummy2             : Church.tmx                       : actionTest
+ 112 - Star; hero2                      : Church.tmx                       : actionTest
+ 112 - Star; hero2                      : HeroLobby.tmx                    : HeroHQEntry
+ 113 - Elder Man; hero3                 : Church.tmx                       : actionTest
+ 113 - Elder Man; hero3                 : HeroLobby.tmx                    : HeroHQEntry
+ 114 - Manly Man; hero4                 : Church.tmx                       : actionTest
+ 114 - Manly Man; hero4                 : HeroLobby.tmx                    : HeroHQEntry
+ 115 - Kris Devil; hero5                : Church.tmx                       : actionTest
+ 115 - Kris Devil; hero5                : HeroLobby.tmx                    : HeroHQEntry
+ 116 - Killr; villain2                  : Church.tmx                       : actionTest
+ 117 - Tiny; villain4                   : Church.tmx                       : actionTest
+ 118 - DoctorDisco; villain3            : Church.tmx                       : actionTest
+ 119 - Wannabe Villain; villain5        : Church.tmx                       : actionTest
  120 - Argus; burly2                    : Factory.tmx                      : factoryWorkerEntrance
  121 - 
  122 - 

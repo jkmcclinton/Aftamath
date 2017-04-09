@@ -158,9 +158,12 @@ public class Entity implements Serializable {
 			TextureRegion[] sprites = TextureRegion.split(texture, width, height)[0];
 			setDefaultAnimation(sprites);
 		} else {
-			TextureRegion[] sprites = TextureRegion.split(Game.res.getTexture("empty"), 1, 1)[0];
-			setDefaultAnimation(sprites);
+			Texture e = Game.res.getTexture("empty");
+			if(e!=null){
+				TextureRegion[] sprites = TextureRegion.split(e, 1, 1)[0];
+				setDefaultAnimation(sprites);
 //			System.out.println("Could not find \""+ID+".png\"");
+			}
 		}
 	}
 	
@@ -332,6 +335,8 @@ public class Entity implements Serializable {
 	
 	public void render(FadingSpriteBatch sb) {
 		Color overlay = sb.getColor();
+		if(animation.getFrame()==null) loadSprite();
+		
 		if(frozen){
 			sb.draw(animation.getFrame(), getPixelPosition().x - rw, getPixelPosition().y - rh);
 			sb.setColor(Vars.blendColors(Vars.FROZEN_OVERLAY, overlay));

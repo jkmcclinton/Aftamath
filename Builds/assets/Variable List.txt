@@ -1,9 +1,12 @@
 Variable Name            Type       Scope      Script
 GaveSoul                 : flag     : global   : choice test
 GotRobbed                : flag     : global   : robbers1
+HeroIntroEvent           : flag     : global   : HeroHQEntry
+HeroIntroEvent           : flag     : global   : foundHQ
 Hobo1                    : flag     : global   : hobo2
 PaidPrince               : flag     : global   : princeRandom
 PowerBar                 : flag     : global   : There's A Bar
+Q3talk                   : integer  : global   : MrJusticeAfterQ3I
 SBAgreedWork             : flag     : global   : getMail
 SBCanPushButton          : flag     : global   : factoryWorkerEntrance
 SBCanPushButton          : flag     : global   : firstTask
@@ -11,7 +14,6 @@ SBDidMenialLabor         : flag     : global   : firstTask
 SBReceivedPromotion1     : flag     : global   : bossPromotion1
 SupaRewarded             : flag     : global   : foundHQ
 VisitedPier              : flag     : global   : Pier
-a                        : integer  : global   : HeroHQEntry
 address                  : string   : local    : choice test
 ask                      : integer  : local    : afterTutorial
 asked                    : integer  : global   : ask out
@@ -24,7 +26,7 @@ c                        : integer  : local    : Ms Pancakes Mishap
 c                        : integer  : local    : cashierAttack
 c                        : integer  : local    : shopper
 calledTrain              : flag     : global   : Subway
-calledTrain              : flag     : global   : TrainCar
+calledTrain              : flag     : global   : trainCar
 calledTrain              : flag     : global   : trainSelection
 cost                     : float    : local    : cashierBuy
 counter                  : integer  : local    : choice test
@@ -34,6 +36,7 @@ day                      : integer  : global
 debugger                 : flag     : global   : actionTest
 desc                     : string   : local    : Ms Pancakes Mishap
 desc                     : string   : local    : robbers1
+donnaHit                 : integer  : gloabal  : onAtackedDonna
 explainedShit            : flag     : global   : beforeTheShit
 explainedTrain           : flag     : global   : trainSelection
 extra                    : integer  : local    : intro
@@ -53,10 +56,14 @@ g                        : flag     : local    : GangstaWar
 g                        : string   : local    : annoyedPancakes
 greeting                 : string   : local    : credits
 helpingMarquis           : flag     : global   : GangstaWar
+heroquestlawyer          : flag     : global   : heroquest3
 i                        : integer  : local    : genericCivilian
 i                        : integer  : local    : genericWitch
 inSupTut                 : flag     : global   : afterTutorial
 inSupTut                 : flag     : global   : superTutIntro
+jElevatorLoc             : string   : global   : HeroLowerHall
+jElevatorLoc             : string   : global   : JusticeRoom
+jElevatorMoving          : flag     : global   : justiceElevatorSelection
 limitCounter             : integer  : local    : trainSelection
 loc                      : string   : local    : trainSelection
 lvC                      : float    : local    : girlfriend
@@ -75,26 +82,32 @@ name                     : string   : local    : trainSelection
 night                    : integer  : global
 noon                     : integer  : global
 not                      : integer  : local    : realGangsta
-notMoving                : flag     : global   : TrainCar
+notMoving                : flag     : global   : trainCar
 notMoving                : flag     : global   : trainSelection
 num                      : integer  : local    : superGlare
+ownResidentalN           : flag     : global   : forSaleResN
 pC                       : integer  : local    : onAttackedDisappointed
 pC                       : integer  : local    : supAttackedPartner
 part                     : integer  : local    : actionTest
+planet                   : flag     : global   : HeroHQEntry
+planet                   : flag     : global   : HeroHQEntryTEST
 playergender             : string   : local    : intro
 playertype               : integer  : local    : intro
 punchC                   : integer  : local    : attackedPartner
 punchCount               : integer  : local    : tutOnAttacked
 r                        : float    : local    : ask out
+readResNsign             : flag     : global   : forSaleResN
 sawBread                 : flag     : global   : cart
 shotCount                : integer  : local    : afterTutorial
 stealer                  : flag     : global   : cart
 str                      : string   : local    : GangstaWar
+talkbefore               : integer  : global   : heroquest3-1
 talked                   : integer  : local    : richComplaint
 talkedToDarrius          : flag     : global   : realGangsta
 talkedToGangsta          : flag     : global   : GangstaWar
 talkedToGrim             : integer  : global   : grimResponse
 talkedToHobo             : flag     : global   : hobo2
+talksuccess              : integer  : global   : heroquest3-1
 time                     : integer  : global
 title                    : string   : local    : disappointedVillain
 tookBread                : flag     : global   : cart
@@ -102,12 +115,13 @@ touchedC                 : integer  : global   : cashierTouch
 toucher                  : flag     : global   : cashierBuy
 toucher                  : flag     : global   : cashierTouch
 trainArrived             : flag     : global   : Subway
-trainArrived             : flag     : global   : TrainCar
+trainArrived             : flag     : global   : trainCar
 trainArrived             : flag     : global   : trainSelection
 trainDest                : string   : global
 trainLoc                 : string   : global
 true                     : string   : global
 tutAsked                 : integer  : global   : tutDescribe
 txt                      : integer  : local    : attackedPartner
+txt                      : integer  : local    : donnaScript
 txt                      : integer  : local    : girlfriend
 txt                      : integer  : local    : supAttackedPartner

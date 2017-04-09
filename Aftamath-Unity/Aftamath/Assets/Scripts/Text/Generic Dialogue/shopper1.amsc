@@ -1,6 +1,0 @@
-Script Shopper
-lockplayer
-setSpeaker(this)
-text({Ugh, I hate it when my wife sends me to the store to by shit.})
-text({It always ends up taking me like ten years just to get everything on the list.})
-done

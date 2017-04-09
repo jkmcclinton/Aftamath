@@ -1,6 +1,0 @@
-Script Main
-lockplayer
-setSpeaker(this)
-	text({Haha!})
-	text({(sob)... I don't wanna die!})
-done

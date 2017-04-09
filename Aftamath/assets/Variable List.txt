@@ -1,6 +1,8 @@
 Variable Name            Type       Scope      Script
 GaveSoul                 : flag     : global   : choice test
 GotRobbed                : flag     : global   : robbers1
+HeroHQentry2done         : flag     : global   : HeroHQEntry
+HeroHQentry2done         : flag     : global   : HeroHQEntry2
 HeroIntroEvent           : flag     : global   : HeroHQEntry
 HeroIntroEvent           : flag     : global   : foundHQ
 Hobo1                    : flag     : global   : hobo2
@@ -26,7 +28,7 @@ c                        : integer  : local    : Ms Pancakes Mishap
 c                        : integer  : local    : cashierAttack
 c                        : integer  : local    : shopper
 calledTrain              : flag     : global   : Subway
-calledTrain              : flag     : global   : trainCar
+calledTrain              : flag     : global   : TrainCar
 calledTrain              : flag     : global   : trainSelection
 cost                     : float    : local    : cashierBuy
 counter                  : integer  : local    : choice test
@@ -47,7 +49,9 @@ fill                     : string   : local    : superTutIntro
 found                    : flag     : global   : grimReaper
 found                    : flag     : local    : BusinessDistrict
 found                    : flag     : local    : CommercialDistrictNW
+found                    : flag     : local    : Downtown
 found                    : flag     : local    : Mansion
+found                    : flag     : local    : MunicipalDistrict
 found                    : flag     : local    : Pier
 found                    : flag     : local    : superGlare
 foundHQ                  : flag     : global   : HeroHQ
@@ -56,7 +60,14 @@ g                        : flag     : local    : GangstaWar
 g                        : string   : local    : annoyedPancakes
 greeting                 : string   : local    : credits
 helpingMarquis           : flag     : global   : GangstaWar
-heroquestlawyer          : flag     : global   : heroquest3
+heroquestlawyer          : flag     : global   : MrJusticeAfterQ3I
+heroquestlawyer          : flag     : global   : MrJusticeAfterQ3I-2
+heroquestlawyer          : flag     : global   : MrJusticeAfterQ3I-3
+heroquestlawyer          : flag     : global   : MrJusticeAfterQ3I-4
+heroquestlawyer          : flag     : global   : MrJusticeAfterQ3I-5
+heroquestlawyer          : flag     : global   : heroquest3-1
+heroquestlawyer          : flag     : global   : heroquest3-2
+heroquestlawyer          : flag     : global   : heroquest3-initiation
 i                        : integer  : local    : genericCivilian
 i                        : integer  : local    : genericWitch
 inSupTut                 : flag     : global   : afterTutorial
@@ -64,6 +75,7 @@ inSupTut                 : flag     : global   : superTutIntro
 jElevatorLoc             : string   : global   : HeroLowerHall
 jElevatorLoc             : string   : global   : JusticeRoom
 jElevatorMoving          : flag     : global   : justiceElevatorSelection
+laughedAtOldLady         : flag     : global   : Ms Pancakes Mishap
 limitCounter             : integer  : local    : trainSelection
 loc                      : string   : local    : trainSelection
 lvC                      : float    : local    : girlfriend
@@ -82,7 +94,7 @@ name                     : string   : local    : trainSelection
 night                    : integer  : global
 noon                     : integer  : global
 not                      : integer  : local    : realGangsta
-notMoving                : flag     : global   : trainCar
+notMoving                : flag     : global   : TrainCar
 notMoving                : flag     : global   : trainSelection
 num                      : integer  : local    : superGlare
 ownResidentalN           : flag     : global   : forSaleResN
@@ -97,10 +109,16 @@ punchC                   : integer  : local    : attackedPartner
 punchCount               : integer  : local    : tutOnAttacked
 r                        : float    : local    : ask out
 readResNsign             : flag     : global   : forSaleResN
+rnd                      : integer  : local    : onAttacked
 sawBread                 : flag     : global   : cart
 shotCount                : integer  : local    : afterTutorial
+spawnedDrumpf            : flag     : global   : BusinessDistrict
+spawnedDrumpf            : flag     : global   : CommercialDistrictNW
+spawnedDrumpf            : flag     : global   : Downtown
+spawnedDrumpf            : flag     : global   : MunicipalDistrict
 stealer                  : flag     : global   : cart
 str                      : string   : local    : GangstaWar
+t                        : string   : local    : makeItGreat
 talkbefore               : integer  : global   : heroquest3-1
 talked                   : integer  : local    : richComplaint
 talkedToDarrius          : flag     : global   : realGangsta
@@ -115,7 +133,7 @@ touchedC                 : integer  : global   : cashierTouch
 toucher                  : flag     : global   : cashierBuy
 toucher                  : flag     : global   : cashierTouch
 trainArrived             : flag     : global   : Subway
-trainArrived             : flag     : global   : trainCar
+trainArrived             : flag     : global   : TrainCar
 trainArrived             : flag     : global   : trainSelection
 trainDest                : string   : global
 trainLoc                 : string   : global
@@ -124,4 +142,5 @@ tutAsked                 : integer  : global   : tutDescribe
 txt                      : integer  : local    : attackedPartner
 txt                      : integer  : local    : donnaScript
 txt                      : integer  : local    : girlfriend
+txt                      : integer  : local    : onAttackedThug1
 txt                      : integer  : local    : supAttackedPartner

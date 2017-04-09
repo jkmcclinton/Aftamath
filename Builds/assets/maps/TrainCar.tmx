@@ -4,7 +4,7 @@
   <property name="ambient" value="INDOOR"/>
   <property name="bgm" value="Train Tracks"/>
  </properties>
- <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880">
+ <tileset firstgid="1" name="indoors" tilewidth="16" tileheight="16" tilecount="2880" columns="60">
   <image source="tilesets/indoors.png" width="960" height="771"/>
   <tile id="900">
    <animation>
@@ -252,7 +252,7 @@
     <property name="ID" value="1"/>
     <property name="next" value="Subway"/>
     <property name="nextWarp" value="2"/>
-    <property name="warp" value="notMoving"/>
+    <property name="warp" value=""/>
    </properties>
   </object>
  </objectgroup>

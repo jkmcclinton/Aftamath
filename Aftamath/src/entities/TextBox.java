@@ -178,7 +178,7 @@ public class TextBox extends Entity {
 			for(int i = 0; i<text.length; i++){
 				w = (maxWidth - (font[0].getRegionWidth()+1) * text[i].length()) / 2f;
 				main.drawString(sb, font, font[0].getRegionWidth(), text[i], 
-						v.x + w + d , v.y + maxHeight - (i + 1) * font[0].getRegionHeight());
+						v.x + w + d , v.y + maxHeight - (i + 1) * font[0].getRegionHeight(), true);
 			}
 		}
 		

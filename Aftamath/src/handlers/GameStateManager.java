@@ -33,7 +33,6 @@ public class GameStateManager {
 	public void update(float dt) {
 		GameState g = gameStates.peekFirst();
 		boolean faded = game.getSpriteBatch().update(dt);
-		
 		if(fading){
 			if(fadeType==1){
 				volume += dt * fadeType;
@@ -88,8 +87,7 @@ public class GameStateManager {
 			fadeType = -1;
 			g.getSpriteBatch().fade();
 			Song s = g.getSong();
-			if(s!=null)
-				s.forcedFadeOut();
+			if(s!=null) s.forcedFadeOut();
 		} else {
 			popState();
 			pushState(state, args);
@@ -105,7 +103,8 @@ public class GameStateManager {
 	private void popState() {
 		gameStates.pop().dispose();
 		gameStates.peekFirst().create();
-		gameStates.peekFirst().getSong().play();
+		Song song = gameStates.peekFirst().getSong();
+		if(song!=null) song.play();
 	}
 	
 	public Game game() { return game; }

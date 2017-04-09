@@ -1567,8 +1567,8 @@ public class Script implements Serializable {
 				String line = br.readLine();
 
 				while (line != null ) {
-				source.add(line);
-				line = br.readLine();
+					source.add(line);
+					line = br.readLine();
 				}
 			} finally {
 				br.close();

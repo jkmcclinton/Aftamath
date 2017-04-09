@@ -25,8 +25,8 @@ public class Vars {
 	public static final float DT = 1/60f;
 	public static final float PPM = 100f;
 	public static final float GRAVITY = -9.81f;
-	public static final float ANIMATION_RATE = .21f;
-	public static final float ACTION_ANIMATION_RATE = .09f;
+	public static final float ANIMATION_RATE = .210f;
+	public static final float ACTION_ANIMATION_RATE = .090f;
 	public static final float ALPHA = 254/255f;
 	public static final int FONT_OFFSET = -33;
 	public static final int OBJ_SCALE = 2;
@@ -127,6 +127,16 @@ public class Vars {
 	public static int PowerOf2(double num){
 		//TODO
 		return (int) num;
+	}
+	
+	public static String f(double i, int d){
+		double o = Math.pow(10, d);
+		return String.valueOf(((int)(i*o))/o);
+	}
+	
+	public static String formatNanoTime(long t){
+		double s = t/1000000000d;
+		return (s<60 ) ? f(s, 2) + " s" : (s/60d<60 ? f(s/60d, 2) + " m" : f(s/360d, 2) + " h" );	
 	}
 	
 	/**

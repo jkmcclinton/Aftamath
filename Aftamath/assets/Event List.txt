@@ -5,6 +5,8 @@ GoodBar                  : There's A Bar
 HeroTut                  : afterTutorial
 HeroTutEvil              : afterTutorial
 JoinedHeroes             : HeroHQEntry
+MetDrumpf                : makeItGreat
+MetDrumpf                : txtDrumpf
 RobberIntro              : robbers1
 RogueTutorial            : afterTutorial
 VillainTut               : afterTutorial
@@ -17,6 +19,11 @@ brokeUpWithPartner       : supAttackedPartner
 cowardBar                : There's A Bar
 credits                  : credits
 cursed                   : onAttackedWitch1
+finishedfirstquest       : MrJusticeAfterQ3I
+finishedfirstquest       : MrJusticeAfterQ3I-2
+finishedfirstquest       : MrJusticeAfterQ3I-3
+finishedfirstquest       : MrJusticeAfterQ3I-4
+finishedfirstquest       : MrJusticeAfterQ3I-5
 gaveSoul                 : grimResponse
 goneInBar                : There's A Bar
 metTheWitch              : Ms Pancakes Mishap

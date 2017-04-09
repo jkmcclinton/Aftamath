@@ -1,8 +1,0 @@
-Script Main
-lockplayer
-
-facePlayer(partner)
-setSpeaker(partner)
-text(normal, {No, I'm coming with you.})
-
-done
