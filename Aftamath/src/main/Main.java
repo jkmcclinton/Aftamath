@@ -148,7 +148,7 @@ public class Main extends GameState {
 						dbtrender 	= false, //render debug text?
 						debugging   = false,	 //in debug mode?
 						cwarps      = true,	 //create warps?
-						document    = true, //document variables?
+						document    = false, //document variables?
 						random;
 	public static String debugLoadLoc = "ResidentialDistrictN"; //where the player starts
 	public static String debugPlayerType = "underdog"; //what the player looks like in debug mode
@@ -234,6 +234,7 @@ public class Main extends GameState {
 				handleWeather();
 				hud.showLocation();
 				loader = null;
+				System.out.println("we are set to go!");
 			} else {
 //				loader.update(dt);
 
@@ -1785,13 +1786,14 @@ public class Main extends GameState {
 			this.loadwarps = loadwarps;
 		}
 		public void run(){
-			if(document) catalogueWarps();
-			else if(loadwarps) document();
+			if(document){ System.out.println("Cataloguing!"); document();}
+			else if(loadwarps){System.out.println("Loading Warps!"); catalogueWarps();}
 			
 			sb.fade();
 			while((sb.getFadeType()!=FadingSpriteBatch.FADE_IN))
 				finished = false;
 			finished = true;
+			System.out.println("Loaded!");
 		}
 		
 		public void start(){
@@ -1806,6 +1808,7 @@ public class Main extends GameState {
 			Array<Warp> w;
 			// create warps from each level and add them to the hash
 			for(String l : Game.LEVEL_NAMES){	
+				System.out.println("Loading scene \""+l+"\"...");
 				s = new Scene(l);
 				w = s.createWarps();
 				for(Warp i : w)
